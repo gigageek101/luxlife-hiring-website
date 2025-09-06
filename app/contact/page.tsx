@@ -28,17 +28,14 @@ export default function ContactPage() {
       })
 
       if (response.ok) {
-        setIsSubmitted(true)
-        setFormData({
-          name: '',
-          email: '',
-          instagram: '',
-          reach: '',
-          message: ''
-        })
+        // Redirect to thank you page
+        window.location.href = '/thank-you'
+      } else {
+        alert('There was an error submitting your message. Please try again.')
       }
     } catch (error) {
       console.error('Error submitting form:', error)
+      alert('There was an error submitting your message. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
