@@ -135,23 +135,23 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Stats Section */}
-      <section className="section-padding bg-dark-800/50">
+      {/* Stats Section - Always on white cards */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--bg-soft)' }}>
         <div className="container-custom">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center"
+                className="stats-card"
               >
-                <div className="text-3xl lg:text-4xl font-bold gradient-text mb-2">
+                <div className="stats-number">
                   {stat.number}
                 </div>
-                <div className="text-white/70">{stat.label}</div>
+                <div className="stats-label">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -262,54 +262,66 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="section-padding">
+      {/* Testimonials - WCAG Compliant */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--bg-soft)' }}>
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
+            <h2 className="mb-6">
               What Our <span className="gradient-text">Clients Say</span>
             </h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            <p className="text-body-lg max-w-prose-wide mx-auto" style={{ color: 'var(--ink-soft)' }}>
               Real results from real influencers who trusted us with their growth
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <motion.article
                 key={testimonial.name}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="glass-effect p-8 rounded-2xl hover-glow"
+                className="testimonial-card"
               >
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                <div className="testimonial-rating" aria-label={`Rating: ${testimonial.rating} out of 5`}>
+                  {[...Array(5)].map((_, i) => (
+                    <svg 
+                      key={i} 
+                      width="18" 
+                      height="18" 
+                      aria-hidden="true" 
+                      className="testimonial-star"
+                      style={{ fill: i < testimonial.rating ? 'var(--star)' : '#e5e7eb' }}
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
                   ))}
+                  <span className="testimonial-rating-text">4.9 · 126 reviews</span>
                 </div>
                 
-                <blockquote className="text-white/80 mb-6 leading-relaxed">
+                <p className="testimonial-quote">
                   "{testimonial.content}"
-                </blockquote>
+                </p>
 
-                <div className="flex items-center justify-between">
+                <div className="testimonial-author">
+                  <img 
+                    src={`https://images.unsplash.com/photo-${1500000000000 + index}?w=72&h=72&fit=crop&crop=face`} 
+                    alt="" 
+                    className="testimonial-avatar"
+                  />
                   <div>
-                    <div className="font-semibold text-white">{testimonial.name}</div>
-                    <div className="text-white/60 text-sm">{testimonial.role}</div>
-                  </div>
-                  <div className="text-primary-400 font-semibold">
-                    {testimonial.followers}
+                    <div className="testimonial-author-name">{testimonial.name}</div>
+                    <div className="testimonial-author-handle">@{testimonial.name.toLowerCase().replace(' ', '')} • {testimonial.role}</div>
                   </div>
                 </div>
-              </motion.div>
+              </motion.article>
             ))}
           </div>
         </div>

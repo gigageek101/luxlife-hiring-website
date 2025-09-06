@@ -6,19 +6,23 @@
 :root {
   --bg: #FFFFFF;
   --bg-soft: #FAFAFD;
+  --surface: #FFFFFF;
   --ink: #1A1A1A;
-  --ink-soft: #4B5563;
+  --ink-soft: #495057;
   --border: #E8E8EF;
+  --shadow: 0 10px 30px rgba(23, 23, 38, 0.06);
+  
   --pastel-coral: #FF9AA2;
   --pastel-peach: #FFD3B6;
   --pastel-mint: #B8F2D0;
   --pastel-aqua: #A2E4F5;
   --pastel-lav: #DCC9FF;
+  
   --brand: #FF9AA2;
   --brand-600: #F77C86;
   --brand-700: #DF6C75;
-  --surface: #FFFFFF;
-  --shadow: 0 10px 30px rgba(20, 20, 40, 0.06);
+  
+  --star: #FFB457;
 }
 
 @layer base {
@@ -113,6 +117,7 @@
     border: none;
     color: var(--brand);
     text-decoration: underline;
+    text-underline-offset: 3px;
     padding: 0;
   }
   
@@ -200,6 +205,88 @@
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
+  }
+
+  /* Testimonial Card - Exact specification */
+  .testimonial-card {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .testimonial-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .testimonial-star {
+    width: 18px;
+    height: 18px;
+    fill: var(--star);
+  }
+
+  .testimonial-rating-text {
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .testimonial-quote {
+    margin-top: 16px;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.75;
+    max-width: 60ch;
+  }
+
+  .testimonial-author {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .testimonial-avatar {
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+  }
+
+  .testimonial-author-name {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .testimonial-author-handle {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  /* Stats Card - Always on white */
+  .stats-card {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+
+  .stats-number {
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .stats-label {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--ink-soft);
   }
 
 }
