@@ -32,17 +32,17 @@ export default function ScrollRocket() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Rocket SVG */}
+      {/* Elegant Rocket SVG */}
       <motion.svg
-        width="60"
-        height="80"
-        viewBox="0 0 60 80"
-        className="drop-shadow-lg"
+        width="50"
+        height="70"
+        viewBox="0 0 50 70"
+        className="drop-shadow-sm"
         animate={{
-          y: [0, -3, 0],
+          y: [0, -2, 0],
         }}
         transition={{
-          duration: 2,
+          duration: 3,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -50,82 +50,101 @@ export default function ScrollRocket() {
         {/* Rocket Body */}
         <defs>
           <linearGradient id="rocketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f8fafc" />
+            <stop offset="30%" stopColor="#e2e8f0" />
+            <stop offset="70%" stopColor="#cbd5e1" />
+            <stop offset="100%" stopColor="#94a3b8" />
+          </linearGradient>
+          <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#3b82f6" />
             <stop offset="50%" stopColor="#60a5fa" />
-            <stop offset="100%" stopColor="#1e40af" />
+            <stop offset="100%" stopColor="#93c5fd" />
           </linearGradient>
-          <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#f59e0b" />
-            <stop offset="50%" stopColor="#f97316" />
-            <stop offset="100%" stopColor="#dc2626" />
+          <linearGradient id="softFlameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#fbbf24" />
+            <stop offset="50%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#d97706" />
           </linearGradient>
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
         
-        {/* Flame/Exhaust */}
-        <motion.path
-          d="M20 65 L30 80 L40 65 L35 70 L30 75 L25 70 Z"
-          fill="url(#flameGradient)"
+        {/* Soft Cloud Exhaust */}
+        <motion.g
           animate={{
-            scaleY: [1, 1.3, 1],
-            opacity: [0.8, 1, 0.8],
+            scaleY: [1, 1.2, 1],
+            opacity: [0.6, 0.8, 0.6],
           }}
           transition={{
-            duration: 0.5,
+            duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-        />
+        >
+          <ellipse cx="25" cy="58" rx="8" ry="4" fill="#fbbf24" opacity="0.3" />
+          <ellipse cx="25" cy="62" rx="6" ry="3" fill="#f59e0b" opacity="0.4" />
+          <ellipse cx="25" cy="65" rx="4" ry="2" fill="#d97706" opacity="0.5" />
+        </motion.g>
         
-        {/* Rocket Body */}
-        <ellipse cx="30" cy="15" rx="12" ry="15" fill="url(#rocketGradient)" />
-        <rect x="18" y="15" width="24" height="35" fill="url(#rocketGradient)" />
-        <ellipse cx="30" cy="50" rx="12" ry="8" fill="url(#rocketGradient)" />
+        {/* Main Rocket Body */}
+        <ellipse cx="25" cy="12" rx="10" ry="12" fill="url(#rocketGradient)" />
+        <rect x="15" y="12" width="20" height="30" fill="url(#rocketGradient)" />
+        <ellipse cx="25" cy="42" rx="10" ry="6" fill="url(#rocketGradient)" />
         
-        {/* Rocket Nose */}
-        <path d="M18 15 Q30 5 42 15" fill="#1e40af" />
+        {/* Elegant Nose Cone */}
+        <path d="M15 12 Q25 3 35 12" fill="url(#accentGradient)" />
         
-        {/* Rocket Wings */}
-        <path d="M18 45 L12 55 L18 50 Z" fill="#1e40af" />
-        <path d="M42 45 L48 55 L42 50 Z" fill="#1e40af" />
+        {/* Refined Wings */}
+        <path d="M15 38 L10 46 L15 42 Z" fill="url(#accentGradient)" />
+        <path d="M35 38 L40 46 L35 42 Z" fill="url(#accentGradient)" />
         
-        {/* Window */}
-        <circle cx="30" cy="25" r="6" fill="#0f172a" stroke="#60a5fa" strokeWidth="2" />
-        <circle cx="30" cy="25" r="3" fill="#60a5fa" opacity="0.5" />
+        {/* Elegant Window */}
+        <circle cx="25" cy="20" r="5" fill="#1e293b" stroke="url(#accentGradient)" strokeWidth="1.5" />
+        <circle cx="25" cy="20" r="2.5" fill="#3b82f6" opacity="0.3" filter="url(#softGlow)" />
         
-        {/* Details */}
-        <rect x="25" y="35" width="10" height="2" fill="#1e40af" />
-        <rect x="25" y="40" width="10" height="2" fill="#1e40af" />
+        {/* Subtle Details */}
+        <rect x="22" y="28" width="6" height="1.5" rx="0.75" fill="url(#accentGradient)" opacity="0.7" />
+        <rect x="22" y="32" width="6" height="1.5" rx="0.75" fill="url(#accentGradient)" opacity="0.7" />
+        <rect x="22" y="36" width="6" height="1.5" rx="0.75" fill="url(#accentGradient)" opacity="0.7" />
       </motion.svg>
       
-      {/* Particle Trail */}
+      {/* Soft Cloud Trail */}
       <motion.div
-        className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
+        className="absolute -bottom-1 left-1/2 transform -translate-x-1/2"
         animate={{
-          opacity: [0.3, 0.7, 0.3],
+          opacity: [0.2, 0.4, 0.2],
         }}
         transition={{
-          duration: 1,
+          duration: 2,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       >
-        {[...Array(5)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-blue-400 rounded-full"
+            className="absolute rounded-full"
             style={{
-              left: `${(i - 2) * 4}px`,
-              top: `${i * 8}px`,
+              width: `${6 - i}px`,
+              height: `${6 - i}px`,
+              backgroundColor: i % 2 === 0 ? '#93c5fd' : '#fbbf24',
+              left: `${(i - 1.5) * 3}px`,
+              top: `${i * 6}px`,
             }}
             animate={{
-              y: [0, 20, 40],
-              opacity: [1, 0.5, 0],
-              scale: [1, 0.5, 0],
+              y: [0, 15, 30],
+              opacity: [0.6, 0.3, 0],
+              scale: [1, 0.7, 0.3],
             }}
             transition={{
-              duration: 1.5,
+              duration: 2,
               repeat: Infinity,
-              delay: i * 0.1,
+              delay: i * 0.2,
               ease: "easeOut"
             }}
           />
