@@ -1,33 +1,3 @@
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Our Services - Instagram Monetization & Growth Strategies | POSTE MEDIA LLC',
-  description: 'Comprehensive influencer marketing services including monetization strategy, content optimization, audience growth, and revenue stream development.',
-  keywords: 'instagram monetization, influencer marketing services, content optimization, audience growth, revenue streams, social media marketing',
-  openGraph: {
-    title: 'Our Services - Instagram Monetization & Growth Strategies | POSTE MEDIA LLC',
-    description: 'Comprehensive influencer marketing services including monetization strategy, content optimization, audience growth, and revenue stream development.',
-    url: 'https://postemedia.com/services',
-    siteName: 'POSTE MEDIA LLC',
-    images: [
-      {
-        url: '/og-services.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'POSTE MEDIA LLC Services',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Our Services - Instagram Monetization & Growth Strategies | POSTE MEDIA LLC',
-    description: 'Comprehensive influencer marketing services including monetization strategy, content optimization, audience growth, and revenue stream development.',
-    images: ['/og-services.jpg'],
-  },
-}
-
 'use client'
 
 import { motion } from 'framer-motion'

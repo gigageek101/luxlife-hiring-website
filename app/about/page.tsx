@@ -1,35 +1,6 @@
-import type { Metadata } from 'next'
-import { motion } from 'framer-motion'
-
-export const metadata: Metadata = {
-  title: 'About POSTE MEDIA LLC - Influencer Marketing Experts',
-  description: 'Learn about POSTE MEDIA LLC, the leading influencer marketing agency helping creators monetize their following with proven strategies and expert guidance.',
-  keywords: 'about poste media, influencer marketing agency, social media experts, instagram monetization specialists',
-  openGraph: {
-    title: 'About POSTE MEDIA LLC - Influencer Marketing Experts',
-    description: 'Learn about POSTE MEDIA LLC, the leading influencer marketing agency helping creators monetize their following with proven strategies and expert guidance.',
-    url: 'https://postemedia.com/about',
-    siteName: 'POSTE MEDIA LLC',
-    images: [
-      {
-        url: '/og-about.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'About POSTE MEDIA LLC Team',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'About POSTE MEDIA LLC - Influencer Marketing Experts',
-    description: 'Learn about POSTE MEDIA LLC, the leading influencer marketing agency helping creators monetize their following with proven strategies and expert guidance.',
-    images: ['/og-about.jpg'],
-  },
-}
-
 'use client'
+
+import { motion } from 'framer-motion'
 
 import Link from 'next/link'
 import { 
