@@ -29,8 +29,10 @@ module.exports = {
           white: '#FDFDFD',
           ivory: '#FAF8F5',
           lilac: '#F8F7FC',
-          charcoal: '#333333',
-          lightGray: '#666666',
+          charcoal: '#1a1a1a',
+          darkText: '#2d2d2d',
+          mediumText: '#4a4a4a',
+          lightText: '#666666',
         },
         background: {
           primary: '#FDFDFD',

@@ -97,7 +97,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-light mb-8 leading-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-light mb-8 leading-tight text-pastel-darkText">
               Helping Influencers &{' '}
               <span className="gradient-text">Theme Pages</span>{' '}
               Monetize Their Following
@@ -107,7 +107,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-xl md:text-2xl text-pastel-lightGray mb-12 max-w-3xl mx-auto leading-relaxed font-light"
+              className="text-xl md:text-2xl text-pastel-mediumText mb-12 max-w-3xl mx-auto leading-relaxed font-light"
             >
               Custom strategies, proven marketing methods, real growth.
             </motion.p>
@@ -197,10 +197,10 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6 text-pastel-charcoal">
+            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6 text-pastel-darkText">
               Our <span className="gradient-text">Services</span>
             </h2>
-            <p className="text-xl text-pastel-lightGray max-w-2xl mx-auto">
+            <p className="text-xl text-pastel-mediumText max-w-2xl mx-auto">
               Comprehensive solutions designed to maximize your social media potential
             </p>
           </motion.div>
@@ -225,18 +225,18 @@ export default function Home() {
                 >
                   <div className="flex items-center mb-6">
                     <div className="p-3 bg-pastel-coral/20 rounded-lg mr-4 group-hover:bg-pastel-coral/30 transition-colors duration-300">
-                      <service.icon className="w-8 h-8 text-pastel-charcoal" />
+                      <service.icon className="w-8 h-8 text-pastel-darkText" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-pastel-charcoal">{service.title}</h3>
+                    <h3 className="text-2xl font-semibold text-pastel-darkText">{service.title}</h3>
                   </div>
                   
-                  <p className="text-pastel-lightGray mb-6 leading-relaxed">
+                  <p className="text-pastel-mediumText mb-6 leading-relaxed">
                     {service.description}
                   </p>
 
                   <ul className="space-y-2 mb-6">
                     {service.features.map((feature) => (
-                      <li key={feature} className="flex items-center text-pastel-charcoal">
+                      <li key={feature} className="flex items-center text-pastel-darkText">
                         <CheckCircle className="w-4 h-4 text-pastel-coral mr-2" />
                         {feature}
                       </li>
@@ -262,7 +262,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <Link href="/services" className="btn-primary text-lg">
+            <Link href="/services" className="btn-primary text-lg px-8 py-4">
               Learn More About Our Services
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>

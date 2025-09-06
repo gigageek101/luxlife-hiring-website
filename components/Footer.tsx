@@ -136,26 +136,9 @@ const Footer = () => {
                   viewport={{ once: true }}
                 >
                   <h3 className="text-lg font-semibold text-white mb-6">Stay Updated</h3>
-                  <p className="text-white/70 mb-4">
-                    Get the latest insights and strategies delivered to your inbox.
+                  <p className="text-white/70 mb-6">
+                    Follow us on social media for the latest updates and insights.
                   </p>
-                  
-                  {/* Newsletter Signup */}
-                  <form className="mb-6">
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input
-                        type="email"
-                        placeholder="Enter your email"
-                        className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary-400 transition-colors duration-200"
-                      />
-                      <button
-                        type="submit"
-                        className="btn-primary whitespace-nowrap"
-                      >
-                        Subscribe
-                      </button>
-                    </div>
-                  </form>
 
                   {/* Social Links */}
                   <div className="flex space-x-4">

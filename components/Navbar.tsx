@@ -56,7 +56,7 @@ const Navbar = () => {
               transition={{ duration: 0.3, ease: 'easeOut' }}
               className="text-2xl lg:text-3xl font-display font-light tracking-wide"
             >
-              <span className="text-pastel-charcoal">POSTE</span>
+              <span className="text-pastel-darkText">POSTE</span>
               <span className="text-pastel-coral ml-2">MEDIA</span>
             </motion.div>
           </Link>
@@ -72,7 +72,7 @@ const Navbar = () => {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-1 text-pastel-charcoal/70 hover:text-pastel-coral transition-colors duration-300 font-light relative group"
+                  className="flex items-center space-x-1 text-pastel-darkText hover:text-pastel-coral transition-colors duration-300 font-light relative group"
                 >
                   <span>{item.name}</span>
                   {item.dropdown && (

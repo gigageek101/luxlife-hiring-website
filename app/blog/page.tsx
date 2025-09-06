@@ -311,44 +311,6 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Newsletter Signup */}
-      <section className="section-padding bg-gradient-to-r from-primary-600/20 to-primary-500/20">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-              Never Miss an <span className="gradient-text">Insight</span>
-            </h2>
-            <p className="text-xl text-white/80 mb-8 leading-relaxed">
-              Subscribe to our newsletter and get the latest strategies, tips, and industry insights 
-              delivered straight to your inbox every week.
-            </p>
-            
-            <form className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto mb-8">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-1 w-full px-6 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-primary-400 transition-colors duration-200"
-              />
-              <button
-                type="submit"
-                className="btn-primary whitespace-nowrap px-8 py-3"
-              >
-                Subscribe
-              </button>
-            </form>
-
-            <p className="text-white/60 text-sm">
-              Join 10,000+ influencers who trust our insights. Unsubscribe anytime.
-            </p>
-          </motion.div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="section-padding">
