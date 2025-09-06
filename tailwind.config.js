@@ -9,38 +9,33 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: '#f0f4ff',
-          100: '#e0e9ff',
-          200: '#c7d6fe',
-          300: '#a5b8fc',
-          400: '#8b93f8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
+          50: '#fef7f7',
+          100: '#fef2f2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
         },
-        satin: {
-          blue: '#4a5568',
-          lightBlue: '#718096',
-          darkBlue: '#2d3748',
-          accent: '#63b3ed',
-          silver: '#e2e8f0',
-          pearl: '#f7fafc',
-          midnight: '#1a202c',
-          charcoal: '#2d3748',
+        pastel: {
+          coral: '#FF9AA2',
+          peach: '#FFDAC1',
+          mint: '#C7FFD8',
+          lavender: '#E0BBE4',
+          aqua: '#A2E4F5',
+          white: '#FDFDFD',
+          ivory: '#FAF8F5',
+          lilac: '#F8F7FC',
+          charcoal: '#333333',
+          lightGray: '#666666',
         },
-        dark: {
-          50: '#f7fafc',
-          100: '#edf2f7',
-          200: '#e2e8f0',
-          300: '#cbd5e0',
-          400: '#a0aec0',
-          500: '#718096',
-          600: '#4a5568',
-          700: '#2d3748',
-          800: '#1a202c',
-          900: '#171923',
+        background: {
+          primary: '#FDFDFD',
+          secondary: '#FAF8F5',
+          tertiary: '#F8F7FC',
         }
       },
       fontFamily: {
@@ -49,15 +44,15 @@ module.exports = {
         display: ['Playfair Display', 'Georgia', 'serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 1s ease-out',
-        'slide-up': 'slideUp 0.8s ease-out',
-        'slide-down': 'slideDown 0.8s ease-out',
-        'scale-in': 'scaleIn 0.6s ease-out',
-        'float': 'float 6s ease-in-out infinite',
-        'satin-glow': 'satinGlow 4s ease-in-out infinite',
-        'smooth-bounce': 'smoothBounce 2s ease-in-out infinite',
-        'elegant-slide': 'elegantSlide 0.6s ease-out',
-        'button-hover': 'buttonHover 0.3s ease-out',
+        'fade-in': 'fadeIn 0.8s ease-out',
+        'fade-up': 'fadeUp 0.6s ease-out',
+        'slide-up': 'slideUp 0.6s ease-out',
+        'scale-in': 'scaleIn 0.5s ease-out',
+        'float': 'float 8s ease-in-out infinite',
+        'gentle-bounce': 'gentleBounce 2s ease-in-out infinite',
+        'pastel-glow': 'pastelGlow 3s ease-in-out infinite',
+        'soft-lift': 'softLift 0.3s ease-out',
+        'pastel-hover': 'pastelHover 0.3s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -80,28 +75,33 @@ module.exports = {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
         },
-        satinGlow: {
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0px)' },
+        },
+        gentleBounce: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-4px)' },
+        },
+        pastelGlow: {
           '0%, 100%': { 
-            boxShadow: '0 8px 32px rgba(99, 179, 237, 0.1), 0 0 0 1px rgba(99, 179, 237, 0.05)',
+            boxShadow: '0 4px 20px rgba(255, 154, 162, 0.15)',
           },
           '50%': { 
-            boxShadow: '0 12px 40px rgba(99, 179, 237, 0.2), 0 0 0 1px rgba(99, 179, 237, 0.1)',
+            boxShadow: '0 8px 30px rgba(255, 154, 162, 0.25)',
           },
         },
-        smoothBounce: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-6px)' },
+        softLift: {
+          '0%': { transform: 'translateY(0px)', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' },
+          '100%': { transform: 'translateY(-4px)', boxShadow: '0 8px 25px rgba(255, 154, 162, 0.2)' },
         },
-        elegantSlide: {
-          '0%': { transform: 'translateX(-20px)', opacity: '0' },
-          '100%': { transform: 'translateX(0px)', opacity: '1' },
-        },
-        buttonHover: {
-          '0%': { transform: 'translateY(0px) scale(1)', boxShadow: '0 4px 12px rgba(99, 179, 237, 0.2)' },
-          '100%': { transform: 'translateY(-2px) scale(1.02)', boxShadow: '0 8px 25px rgba(99, 179, 237, 0.4)' },
+        pastelHover: {
+          '0%': { transform: 'scale(1)', backgroundColor: '#FF9AA2' },
+          '100%': { transform: 'scale(1.02)', backgroundColor: '#FFDAC1' },
         },
       },
     },
   },
   plugins: [],
 }
+

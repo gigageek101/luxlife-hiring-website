@@ -79,15 +79,15 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 gradient-bg">
-          <div className="absolute inset-0 bg-gradient-to-r from-satin-accent/10 via-transparent to-primary-400/10"></div>
-          {/* Elegant floating orbs */}
-          <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-satin-accent/10 rounded-full blur-3xl animate-float hidden lg:block"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-primary-400/8 rounded-full blur-3xl animate-float hidden lg:block" style={{ animationDelay: '3s' }}></div>
-          {/* Satin texture overlay */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(99, 179, 237, 0.4) 1px, transparent 0)`,
-            backgroundSize: '60px 60px'
+        <div className="absolute inset-0 pastel-gradient-bg">
+          {/* Floating pastel shapes */}
+          <div className="floating-shapes"></div>
+          <div className="floating-shapes"></div>
+          <div className="floating-shapes"></div>
+          {/* Subtle texture overlay */}
+          <div className="absolute inset-0 opacity-[0.02]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255, 154, 162, 0.3) 1px, transparent 0)`,
+            backgroundSize: '50px 50px'
           }}></div>
         </div>
 
@@ -106,8 +106,8 @@ export default function Home() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl md:text-2xl text-satin-pearl/80 mb-12 max-w-3xl mx-auto leading-relaxed font-light"
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-xl md:text-2xl text-pastel-lightGray mb-12 max-w-3xl mx-auto leading-relaxed font-light"
             >
               Custom strategies, proven marketing methods, real growth.
             </motion.p>
@@ -130,14 +130,14 @@ export default function Home() {
 
         </div>
 
-        {/* Elegant Scroll Indicator */}
+        {/* Gentle Scroll Indicator */}
         <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ y: [0, 4, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
         >
-          <div className="w-6 h-10 border border-satin-accent/50 rounded-full flex justify-center satin-glow">
-            <div className="w-1 h-3 bg-satin-accent/80 rounded-full mt-2 animate-smooth-bounce"></div>
+          <div className="w-6 h-10 border border-pastel-coral/50 rounded-full flex justify-center pastel-glow">
+            <div className="w-1 h-3 bg-pastel-coral/80 rounded-full mt-2 animate-gentle-bounce"></div>
           </div>
         </motion.div>
       </section>
@@ -188,62 +188,71 @@ export default function Home() {
       </section>
 
       {/* Services Overview */}
-      <section className="section-padding bg-dark-800/30">
+      <section className="section-padding bg-white">
         <div className="container-custom">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
+            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6 text-pastel-charcoal">
               Our <span className="gradient-text">Services</span>
             </h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            <p className="text-xl text-pastel-lightGray max-w-2xl mx-auto">
               Comprehensive solutions designed to maximize your social media potential
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="glass-effect p-8 rounded-2xl hover-glow group cursor-pointer"
-              >
-                <div className="flex items-center mb-6">
-                  <div className="p-3 bg-primary-500/20 rounded-lg mr-4 group-hover:bg-primary-500/30 transition-colors duration-300">
-                    <service.icon className="w-8 h-8 text-primary-400" />
-                  </div>
-                  <h3 className="text-2xl font-semibold">{service.title}</h3>
-                </div>
-                
-                <p className="text-white/70 mb-6 leading-relaxed">
-                  {service.description}
-                </p>
-
-                <ul className="space-y-2 mb-6">
-                  {service.features.map((feature) => (
-                    <li key={feature} className="flex items-center text-white/80">
-                      <CheckCircle className="w-4 h-4 text-primary-400 mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link 
-                  href="/services" 
-                  className="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium group-hover:translate-x-1 transition-transform duration-200"
+            {services.map((service, index) => {
+              const cardClasses = [
+                'pastel-card-coral',
+                'pastel-card-mint', 
+                'pastel-card-lavender',
+                'pastel-card-aqua'
+              ];
+              
+              return (
+                <motion.div
+                  key={service.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className={`${cardClasses[index % 4]} group cursor-pointer`}
                 >
-                  Learn More
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </motion.div>
-            ))}
+                  <div className="flex items-center mb-6">
+                    <div className="p-3 bg-pastel-coral/20 rounded-lg mr-4 group-hover:bg-pastel-coral/30 transition-colors duration-300">
+                      <service.icon className="w-8 h-8 text-pastel-charcoal" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-pastel-charcoal">{service.title}</h3>
+                  </div>
+                  
+                  <p className="text-pastel-lightGray mb-6 leading-relaxed">
+                    {service.description}
+                  </p>
+
+                  <ul className="space-y-2 mb-6">
+                    {service.features.map((feature) => (
+                      <li key={feature} className="flex items-center text-pastel-charcoal">
+                        <CheckCircle className="w-4 h-4 text-pastel-coral mr-2" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link 
+                    href="/services" 
+                    className="inline-flex items-center text-pastel-coral hover:text-pastel-peach font-medium group-hover:translate-x-1 transition-all duration-200"
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
 
           <motion.div
