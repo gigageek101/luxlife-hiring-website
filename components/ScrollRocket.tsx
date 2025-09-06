@@ -1,48 +1,34 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 export default function ScrollRocket() {
-  const [isVisible, setIsVisible] = useState(false)
   const { scrollYProgress } = useScroll()
   
-  // Transform scroll progress to rocket position
-  const y = useTransform(scrollYProgress, [0, 1], [100, -200])
-  const rotate = useTransform(scrollYProgress, [0, 0.5, 1], [0, 5, -5])
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1.2, 1, 0.8])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrolled = window.scrollY
-      setIsVisible(scrolled > 100)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  if (!isVisible) return null
+  // Transform scroll progress to rocket position - starts in view, flies up as you scroll
+  const y = useTransform(scrollYProgress, [0, 0.3, 0.7], [0, -300, -800])
+  const rotate = useTransform(scrollYProgress, [0, 0.5], [0, -10])
+  const scale = useTransform(scrollYProgress, [0, 0.3, 0.7], [1, 1.1, 0.8])
+  const opacity = useTransform(scrollYProgress, [0, 0.1, 0.6, 0.8], [0.3, 0.6, 0.4, 0.1])
 
   return (
     <motion.div
-      className="fixed right-8 bottom-8 z-50 pointer-events-none"
-      style={{ y, rotate, scale }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      className="absolute right-10 md:right-20 bottom-10 md:bottom-20 pointer-events-none z-0"
+      style={{ y, rotate, scale, opacity }}
+      initial={{ opacity: 0.3 }}
+      animate={{ opacity: 0.6 }}
     >
-      {/* Elegant Rocket SVG */}
+      {/* Large Background Rocket SVG */}
       <motion.svg
-        width="50"
-        height="70"
+        width="300"
+        height="400"
         viewBox="0 0 50 70"
-        className="drop-shadow-sm"
+        className="drop-shadow-2xl"
         animate={{
-          y: [0, -2, 0],
+          y: [0, -5, 0],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -113,38 +99,38 @@ export default function ScrollRocket() {
         <rect x="22" y="36" width="6" height="1.5" rx="0.75" fill="url(#accentGradient)" opacity="0.7" />
       </motion.svg>
       
-      {/* Soft Cloud Trail */}
+      {/* Large Soft Cloud Trail */}
       <motion.div
-        className="absolute -bottom-1 left-1/2 transform -translate-x-1/2"
+        className="absolute -bottom-8 left-1/2 transform -translate-x-1/2"
         animate={{
-          opacity: [0.2, 0.4, 0.2],
+          opacity: [0.1, 0.3, 0.1],
         }}
         transition={{
-          duration: 2,
+          duration: 3,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       >
-        {[...Array(4)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
-              width: `${6 - i}px`,
-              height: `${6 - i}px`,
+              width: `${24 - i * 3}px`,
+              height: `${24 - i * 3}px`,
               backgroundColor: i % 2 === 0 ? '#93c5fd' : '#fbbf24',
-              left: `${(i - 1.5) * 3}px`,
-              top: `${i * 6}px`,
+              left: `${(i - 2.5) * 8}px`,
+              top: `${i * 20}px`,
             }}
             animate={{
-              y: [0, 15, 30],
-              opacity: [0.6, 0.3, 0],
-              scale: [1, 0.7, 0.3],
+              y: [0, 60, 120],
+              opacity: [0.4, 0.2, 0],
+              scale: [1, 0.8, 0.4],
             }}
             transition={{
-              duration: 2,
+              duration: 4,
               repeat: Infinity,
-              delay: i * 0.2,
+              delay: i * 0.3,
               ease: "easeOut"
             }}
           />

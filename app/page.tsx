@@ -69,12 +69,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* Scroll Rocket Animation */}
-      <ScrollRocket />
-      
-      {/* Hero Section with increased top padding */}
-      <section className="section pt-32 md:pt-40">
-        <div className="container">
+      {/* Hero Section with Large Background Rocket */}
+      <section className="section pt-32 md:pt-40 relative overflow-hidden min-h-screen flex items-center">
+        {/* Large Background Rocket */}
+        <ScrollRocket />
+        <div className="container relative z-10">
           <motion.div 
             className="max-w-4xl mx-auto text-center"
             initial={{ opacity: 0, scale: 0.9 }}
