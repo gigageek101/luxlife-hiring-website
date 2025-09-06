@@ -2,6 +2,53 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs/promises'
 import path from 'path'
 
+// Telegram Bot Configuration
+const TELEGRAM_BOT_TOKEN = '8491965924:AAHBz28OuBgEKIXZywBENwl2xe-y1rVNQfk'
+const TELEGRAM_CHAT_ID = '2108767741'
+
+async function sendTelegramNotification(submission: any) {
+  try {
+    // Create a formatted message with emojis
+    const message = `
+🎉 *NEW LEAD ALERT!* 🎉
+
+👤 *Name:* ${submission.name}
+📧 *Email:* ${submission.email}
+📱 *Instagram:* ${submission.instagram}
+📊 *Monthly Reach:* ${submission.reach}
+
+💬 *Message:*
+${submission.message}
+
+⏰ *Received:* ${new Date(submission.timestamp).toLocaleString()}
+
+🚀 _Reply within 24 hours to close the deal!_
+    `.trim()
+
+    const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
+    
+    const response = await fetch(telegramUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'Markdown',
+      }),
+    })
+
+    if (!response.ok) {
+      console.error('Telegram API error:', await response.text())
+    } else {
+      console.log('Telegram notification sent successfully!')
+    }
+  } catch (error) {
+    console.error('Error sending Telegram notification:', error)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -54,6 +101,9 @@ export async function POST(request: NextRequest) {
     // Save updated submissions
     await fs.writeFile(filePath, JSON.stringify(submissions, null, 2))
     
+    // Send Telegram notification
+    await sendTelegramNotification(submission)
+    
     // Log for monitoring
     console.log('=== NEW CONTACT FORM SUBMISSION ===')
     console.log('ID:', submission.id)
@@ -64,9 +114,6 @@ export async function POST(request: NextRequest) {
     console.log('Message:', message)
     console.log('Timestamp:', submission.timestamp)
     console.log('=====================================')
-
-    // Optional: Send email notification to office@postemediallc.com
-    // You can integrate with SendGrid, Resend, or other email services here
 
     return NextResponse.json(
       { 
