@@ -107,44 +107,45 @@ export default function ServicesPage() {
                 viewport={{ once: true }}
                 className="card hover-lift hover-glow group"
               >
-                <div className="flex items-start gap-4 mb-6">
-                  <motion.div 
-                    className="p-4 rounded-xl flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <service.icon className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <div>
-                    <h3 className="mb-2">{service.title}</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>
-                      {service.description}
-                    </p>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-6">
-                  {service.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <CheckCircle 
-                        className="w-5 h-5 mt-0.5 flex-shrink-0" 
-                        style={{ color: 'var(--success)' }} 
-                      />
-                      <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
                 <Link 
                   href={service.link || '/contact'} 
-                  className="inline-flex items-center gap-2 font-medium"
-                  style={{ color: 'var(--accent)' }}
+                  className="block h-full"
                 >
-                  {service.cta}
-                  <ArrowRight className="w-4 h-4" />
+                  <div className="flex items-start gap-4 mb-6">
+                    <motion.div 
+                      className="p-4 rounded-xl flex-shrink-0"
+                      style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <service.icon className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <div>
+                      <h3 className="mb-2">{service.title}</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>
+                        {service.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-3 mb-6">
+                    {service.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3">
+                        <CheckCircle 
+                          className="w-5 h-5 mt-0.5 flex-shrink-0" 
+                          style={{ color: 'var(--success)' }} 
+                        />
+                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="inline-flex items-center gap-2 font-medium group-hover:gap-3 transition-all duration-300" style={{ color: 'var(--accent)' }}>
+                    {service.cta}
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
                 </Link>
               </motion.div>
             ))}
