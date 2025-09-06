@@ -8,58 +8,48 @@ export default function Blog() {
   const blogPosts = [
     {
       id: 1,
-      title: "Top 5 Ways Influencers Can Monetize Instagram in 2025",
-      excerpt: "Discover the most effective strategies to turn your Instagram following into sustainable income streams. From brand partnerships to digital products.",
-      author: "Sarah Martinez",
+      title: "7 Proven Monetization Strategies for Creators in 2025",
+      excerpt: "The creator economy is growing faster than ever. Discover 7 proven ways to monetize your audience whether you have 1,000 followers or 1M+.",
       date: "January 15, 2025",
-      readTime: "8 min read",
+      readTime: "3 min read",
       category: "Monetization",
-      image: "/api/placeholder/600/400",
-      slug: "monetize-instagram-2025"
+      slug: "monetization-strategies-2025"
     },
     {
       id: 2,
-      title: "Why Engagement Rate Matters More Than Follower Count",
-      excerpt: "Learn why brands are shifting focus from vanity metrics to meaningful engagement and how to optimize your content for better interaction rates.",
-      author: "Mike Johnson",
+      title: "How to Match Content With Your Actual Audience",
+      excerpt: "Creating content your audience actually cares about is the difference between scrolling past and stopping to engage. Here's how to optimize.",
       date: "January 12, 2025",
-      readTime: "6 min read",
+      readTime: "2 min read",
       category: "Strategy",
-      image: "/api/placeholder/600/400",
-      slug: "engagement-vs-followers"
+      slug: "match-content-audience"
     },
     {
       id: 3,
-      title: "Theme Page Strategies: How to Scale Beyond Ads",
-      excerpt: "Transform your theme page from ad-dependent to a diversified business with multiple revenue streams and sustainable growth tactics.",
-      author: "Emma Davis",
+      title: "Finding Hidden Niches in a Crowded Market",
+      excerpt: "The online world feels oversaturated, but there are still thousands of untapped niches waiting to be discovered. Here's how to find them.",
       date: "January 10, 2025",
-      readTime: "10 min read",
+      readTime: "3 min read",
       category: "Growth",
-      image: "/api/placeholder/600/400",
-      slug: "theme-page-scaling"
+      slug: "hidden-niches-crowded-market"
     },
     {
       id: 4,
-      title: "How to Turn Your Passion Page Into a Full-Time Income",
-      excerpt: "Step-by-step guide to monetizing your niche content and building a sustainable business around your passion and expertise.",
-      author: "Alex Chen",
+      title: "Why Social Media Marketing Changed: The Era of Short Attention Spans",
+      excerpt: "Audiences have an average attention span of 8 seconds or less. Here's why social media marketing has changed forever and how to adapt.",
       date: "January 8, 2025",
-      readTime: "12 min read",
-      category: "Business",
-      image: "/api/placeholder/600/400",
-      slug: "passion-to-income"
+      readTime: "2 min read",
+      category: "Strategy",
+      slug: "short-attention-spans-marketing"
     },
     {
       id: 5,
-      title: "The Psychology of Viral Content: What Makes Posts Shareable",
-      excerpt: "Understand the psychological triggers that make content go viral and how to apply these principles to boost your reach and engagement.",
-      author: "Dr. Lisa Park",
+      title: "Why Doing It All Yourself as a Creator Won't Work",
+      excerpt: "Trying to do everything yourself is the fastest way to burn out and limit your growth. Here's why creators who delegate scale faster.",
       date: "January 5, 2025",
-      readTime: "7 min read",
-      category: "Content",
-      image: "/api/placeholder/600/400",
-      slug: "viral-content-psychology"
+      readTime: "3 min read",
+      category: "Business",
+      slug: "creator-delegation-growth"
     }
   ]
 
@@ -160,17 +150,13 @@ export default function Blog() {
                     <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
                       <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--text-muted)' }}>
                         <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
-                          {post.author}
-                        </div>
-                        <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           {post.date}
                         </div>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm" style={{ color: 'var(--text-muted)' }}>
-                        <Clock className="w-4 h-4" />
-                        {post.readTime}
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {post.readTime}
+                        </div>
                       </div>
                     </div>
 
@@ -200,7 +186,7 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Newsletter CTA */}
+      {/* Contact CTA */}
       <section className="section">
         <div className="container">
           <motion.div
@@ -211,21 +197,13 @@ export default function Blog() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="mb-4 text-white">Stay Updated</h2>
+            <h2 className="mb-4 text-white">Ready to Grow Your Influence?</h2>
             <p className="mb-6 text-white/90">
-              Get the latest insights and strategies delivered to your inbox weekly.
+              Get personalized strategies to monetize your following and scale your creator business.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg border-0 focus:ring-2 focus:ring-white/50"
-                style={{ background: 'rgba(255,255,255,0.9)' }}
-              />
-              <button className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                Subscribe
-              </button>
-            </div>
+            <Link href="/contact" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
+              Get Your Free Strategy Call
+            </Link>
           </motion.div>
         </div>
       </section>
