@@ -78,20 +78,12 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
           >
             <motion.h1 
-              className="mb-6 relative"
-              initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.6, 0.01, -0.05, 0.95] }}
+              className="mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              Helping Influencers & 
-              <motion.span 
-                className="text-gradient inline-block mx-2"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                Theme Pages
-              </motion.span>
+              Helping Influencers & <span className="text-gradient">Theme Pages</span>
               <br />Monetize Their Following
             </motion.h1>
             
@@ -112,11 +104,11 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Link href="/contact" className="btn-primary shine relative overflow-hidden">
+              <Link href="/contact" className="btn-primary btn-shine hover-lift">
                 Get a Free Quote
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link href="/services" className="btn-secondary glass">
+              <Link href="/services" className="btn-secondary hover-lift">
                 Explore Services
               </Link>
             </motion.div>
@@ -136,33 +128,23 @@ export default function Home() {
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 40, scale: 0.8 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: '0 20px 40px rgba(59, 130, 246, 0.2)'
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ 
-                  duration: 0.6, 
+                  duration: 0.5, 
                   delay: index * 0.1,
-                  ease: [0.6, 0.01, -0.05, 0.95]
+                  ease: "easeOut"
                 }}
                 viewport={{ once: true }}
-                className="stat-card glass shine"
+                className="stat-card hover-lift hover-glow"
               >
-                <motion.div 
-                  className="stat-number"
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
-                  viewport={{ once: true }}
-                >
+                <div className="stat-number">
                   <AnimatedCounter 
                     value={stat.number} 
                     suffix={stat.suffix}
-                    duration={2.5}
+                    duration={2}
                   />
-                </motion.div>
+                </div>
                 <div className="stat-label">{stat.label}</div>
               </motion.div>
             ))}
@@ -201,33 +183,23 @@ export default function Home() {
             {services.map((service, index) => (
               <motion.div
                 key={service.title}
-                initial={{ opacity: 0, y: 30, rotateX: -15 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                whileHover={{ scale: 1.02, y: -5 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ 
-                  duration: 0.6, 
-                  delay: index * 0.15,
-                  ease: [0.6, -0.05, 0.01, 0.99]
+                  duration: 0.5, 
+                  delay: index * 0.1,
+                  ease: "easeOut"
                 }}
                 viewport={{ once: true }}
-                className="card group glass shine"
-                style={{
-                  backdropFilter: 'blur(20px)',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))'
-                }}
+                className="card hover-lift glass-card"
               >
                 <div className="flex items-start gap-4">
-                  <motion.div 
-                    className="p-4 rounded-xl flex-shrink-0 glow"
+                  <div 
+                    className="p-4 rounded-xl flex-shrink-0"
                     style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
-                    whileHover={{ 
-                      rotate: [0, -10, 10, -10, 0],
-                      scale: 1.1
-                    }}
-                    transition={{ duration: 0.5 }}
                   >
                     <service.icon className="w-7 h-7 text-white" />
-                  </motion.div>
+                  </div>
                   <div className="flex-1">
                     <h3 className="mb-2">{service.title}</h3>
                     <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
@@ -321,11 +293,11 @@ export default function Home() {
                 Join thousands of creators who've transformed their following into a business.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/contact" className="btn-primary">
+                <Link href="/contact" className="btn-primary btn-shine hover-lift">
                   Get Started Today
                   <Zap className="w-5 h-5" />
                 </Link>
-                <Link href="/services" className="btn-secondary">
+                <Link href="/services" className="btn-secondary hover-lift">
                   Our Services
                 </Link>
               </div>
