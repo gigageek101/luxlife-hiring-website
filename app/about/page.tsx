@@ -1,327 +1,175 @@
 'use client'
 
-import { motion } from 'framer-motion'
-
 import Link from 'next/link'
 import { 
   Target, 
-  Eye, 
-  Heart, 
-  Users, 
-  TrendingUp, 
-  Shield, 
-  Lightbulb,
-  Award,
+  Lightbulb, 
+  Trophy, 
+  Heart,
   ArrowRight,
   CheckCircle
 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import Reveal from '@/components/Reveal'
 
-export default function About() {
+export default function AboutPage() {
   const values = [
     {
-      icon: Shield,
-      title: 'Transparency',
-      description: 'Clear processes, no hidden agendas. We believe in open communication and honest reporting at every step of your journey.'
-    },
-    {
-      icon: TrendingUp,
+      icon: Target,
       title: 'Results-Driven',
-      description: 'Every action is aimed at measurable growth. We focus on metrics that matter and deliver tangible outcomes for your business.'
+      description: 'Every strategy is designed with measurable outcomes in mind.'
     },
     {
       icon: Lightbulb,
       title: 'Innovation',
-      description: 'We stay ahead of trends to keep you ahead of the competition. Our strategies evolve with the ever-changing social media landscape.'
-    }
-  ]
-
-  const whyChooseUs = [
-    'Personalized strategies tailored to your unique audience',
-    'Proven track record with 500+ successful campaigns',
-    'Data-driven approach with transparent reporting',
-    'Dedicated account management and support',
-    'Cutting-edge tools and industry insights',
-    'Flexible packages to fit any budget'
-  ]
-
-  const teamMembers = [
-    {
-      name: 'Alex Johnson',
-      role: 'CEO & Founder',
-      description: 'Former Instagram marketing executive with 8+ years of experience helping creators monetize their content.',
-      expertise: ['Strategy Development', 'Platform Relations', 'Business Growth']
+      description: 'We stay ahead of trends to keep you ahead of the competition.'
     },
     {
-      name: 'Sarah Chen',
-      role: 'Head of Content Strategy',
-      description: 'Content optimization specialist who has helped creators achieve over 10M+ total followers.',
-      expertise: ['Content Optimization', 'Trend Analysis', 'Audience Growth']
+      icon: Trophy,
+      title: 'Excellence',
+      description: 'We deliver nothing but the best for our clients.'
     },
     {
-      name: 'Marcus Rodriguez',
-      role: 'Revenue Operations Director',
-      description: 'Monetization expert specializing in brand partnerships and revenue stream diversification.',
-      expertise: ['Monetization', 'Partnerships', 'Revenue Optimization']
+      icon: Heart,
+      title: 'Transparency',
+      description: 'Clear processes, honest communication, no hidden agendas.'
     }
-  ]
-
-  const achievements = [
-    { number: '500+', label: 'Successful Campaigns' },
-    { number: '2M+', label: 'Followers Generated' },
-    { number: '300%', label: 'Average Revenue Increase' },
-    { number: '98%', label: 'Client Retention Rate' }
   ]
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen bg-[var(--bg)] pt-20">
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-4xl lg:text-6xl font-display font-bold mb-6">
-              About <span className="gradient-text">POSTE MEDIA LLC</span>
-            </h1>
-            <p className="text-xl lg:text-2xl text-white/80 leading-relaxed">
-              We are passionate about helping creators succeed in the digital age. Our agency is built for 
-              influencers and Instagram theme pages who want more than just likes—they want sustainable 
-              growth and real revenue.
-            </p>
-          </motion.div>
+      <section className="section">
+        <div className="container">
+          <Reveal>
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="mb-6">About POSTE MEDIA LLC</h1>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+                We are passionate about helping creators succeed in the digital age. 
+                Our agency is built for influencers and Instagram theme pages who want 
+                more than just likes—they want sustainable growth and real revenue.
+              </p>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-center mb-6">
-                <Target className="w-8 h-8 text-primary-400 mr-4" />
-                <h2 className="text-3xl lg:text-4xl font-display font-bold">Our Mission</h2>
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+        <div className="container">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <Reveal>
+              <div>
+                <h2 className="mb-6">Our Mission</h2>
+                <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
+                  To empower influencers with strategies that turn their online presence 
+                  into thriving businesses. We believe every creator has the potential to 
+                  build something extraordinary.
+                </p>
+                <ul className="space-y-3">
+                  {[
+                    'Custom strategies for every creator',
+                    'Data-driven approach to growth',
+                    'Long-term sustainable monetization',
+                    'Continuous support and optimization'
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3">
+                      <CheckCircle className="w-5 h-5" style={{ color: 'var(--success)' }} />
+                      <span style={{ color: 'var(--text-secondary)' }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-xl text-white/80 leading-relaxed mb-6">
-                To empower influencers with strategies that turn their online presence into thriving businesses.
-              </p>
-              <p className="text-white/70 leading-relaxed">
-                We believe every creator has the potential to build a sustainable income from their passion. 
-                Our mission is to provide the tools, strategies, and support needed to transform social media 
-                influence into lasting financial success.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="glass-effect p-8 rounded-2xl"
-            >
-              <div className="grid grid-cols-2 gap-6">
-                {achievements.map((achievement, index) => (
-                  <div key={achievement.label} className="text-center">
-                    <div className="text-3xl font-bold gradient-text mb-2">
-                      {achievement.number}
-                    </div>
-                    <div className="text-white/70 text-sm">{achievement.label}</div>
-                  </div>
-                ))}
+            </Reveal>
+            
+            <Reveal delay={0.2}>
+              <div className="card">
+                <h3 className="mb-4">Why Choose Us?</h3>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                  We don't believe in one-size-fits-all. Every influencer is unique, 
+                  and so are our solutions. With years of experience and hundreds of 
+                  successful campaigns, we know what works.
+                </p>
               </div>
-            </motion.div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="section-padding bg-dark-800/30">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-              Our <span className="gradient-text">Values</span>
-            </h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              The principles that guide everything we do
-            </p>
-          </motion.div>
+      <section className="section">
+        <div className="container">
+          <Reveal>
+            <div className="text-center mb-12">
+              <h2 className="mb-4">Our Values</h2>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+                The principles that guide everything we do
+              </p>
+            </div>
+          </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
               <motion.div
                 key={value.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="glass-effect p-8 rounded-2xl hover-glow text-center"
+                className="text-center"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-500/20 rounded-full mb-6">
-                  <value.icon className="w-8 h-8 text-primary-400" />
+                <div 
+                  className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+                  style={{ background: 'var(--surface)' }}
+                >
+                  <value.icon className="w-8 h-8" style={{ color: 'var(--accent)' }} />
                 </div>
-                <h3 className="text-2xl font-semibold mb-4">{value.title}</h3>
-                <p className="text-white/70 leading-relaxed">{value.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-                Why Choose <span className="gradient-text">Us</span>?
-              </h2>
-              <p className="text-xl text-white/80 mb-8 leading-relaxed">
-                Because we don't believe in one-size-fits-all. Every influencer is unique, and so are our solutions.
-              </p>
-              
-              <div className="space-y-4">
-                {whyChooseUs.map((reason, index) => (
-                  <motion.div
-                    key={reason}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="flex items-center space-x-3"
-                  >
-                    <CheckCircle className="w-5 h-5 text-primary-400 flex-shrink-0" />
-                    <span className="text-white/80">{reason}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="glass-effect p-8 rounded-2xl"
-            >
-              <div className="text-center">
-                <Award className="w-16 h-16 text-primary-400 mx-auto mb-6" />
-                <h3 className="text-2xl font-semibold mb-4">Industry Recognition</h3>
-                <p className="text-white/70 mb-6">
-                  Trusted by top influencers and recognized as a leading agency in social media monetization. Based in Oakland Park, Florida.
+                <h3 className="mb-2">{value.title}</h3>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  {value.description}
                 </p>
-                <div className="space-y-3 mb-6">
-                  <div className="text-primary-400 font-semibold">Top 10 Influencer Marketing Agency 2024</div>
-                  <div className="text-primary-400 font-semibold">Best Growth Strategy Award 2023</div>
-                  <div className="text-primary-400 font-semibold">Client Choice Award 2023</div>
-                </div>
-                <div className="glass-effect p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold mb-2 text-neon-cyan">Our Location</h4>
-                  <p className="text-white/80 text-sm">
-                    2880 W Oakland Park Blvd Suite 225C<br />
-                    Oakland Park, FL 33311
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="section-padding bg-dark-800/30">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-              Meet Our <span className="gradient-text">Team</span>
-            </h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Experienced professionals dedicated to your success
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="glass-effect p-8 rounded-2xl hover-glow text-center"
-              >
-                <div className="w-24 h-24 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <Users className="w-12 h-12 text-white" />
-                </div>
-                
-                <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
-                <div className="text-primary-400 font-medium mb-4">{member.role}</div>
-                <p className="text-white/70 text-sm mb-6 leading-relaxed">{member.description}</p>
-                
-                <div className="space-y-2">
-                  {member.expertise.map((skill) => (
-                    <div key={skill} className="inline-block bg-primary-500/20 text-primary-300 text-xs px-3 py-1 rounded-full mr-2 mb-2">
-                      {skill}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+      {/* Location Section */}
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+        <div className="container">
+          <Reveal>
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="mb-6">Our Location</h2>
+              <div className="card">
+                <p className="text-lg mb-4" style={{ color: 'var(--text-primary)' }}>
+                  POSTE MEDIA LLC
+                </p>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                  2880 W Oakland Park Blvd<br />
+                  Suite 225C<br />
+                  Oakland Park, FL 33311
+                </p>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600/20 to-primary-500/20">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-              Ready to Work With <span className="gradient-text">Industry Experts</span>?
-            </h2>
-            <p className="text-xl text-white/80 mb-8 leading-relaxed">
-              Join the hundreds of successful influencers who have transformed their social media 
-              presence into thriving businesses with our expert guidance.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/contact" className="btn-primary text-lg px-8 py-4">
-                Start Your Journey Today
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-              <Link href="/services" className="btn-secondary text-lg px-8 py-4">
-                Explore Our Services
+      <section className="section">
+        <div className="container">
+          <Reveal>
+            <div className="text-center">
+              <h2 className="mb-4">Ready to Work Together?</h2>
+              <p className="text-xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Let's discuss how we can help you grow your influence and income.
+              </p>
+              <Link href="/contact" className="btn-primary">
+                Get Started
+                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
     </div>

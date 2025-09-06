@@ -41,10 +41,14 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed w-full z-50 bg-surface/95 backdrop-blur-md border-b border-border"
-      style={{ boxShadow: 'var(--shadow)' }}
+      className="fixed w-full z-50 border-b"
+      style={{ 
+        background: 'rgba(10, 10, 10, 0.8)',
+        backdropFilter: 'blur(10px)',
+        borderColor: 'var(--border)'
+      }}
     >
-      <div className="container-custom">
+      <div className="container">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
@@ -53,8 +57,8 @@ const Navbar = () => {
               transition={{ duration: 0.3, ease: 'easeOut' }}
               className="text-2xl lg:text-3xl font-display font-light tracking-wide"
             >
-              <span className="text-ink">POSTE</span>
-              <span className="text-brand ml-2">MEDIA</span>
+              <span className="text-white">POSTE</span>
+              <span className="text-blue-500 ml-2">MEDIA</span>
             </motion.div>
           </Link>
 
@@ -69,7 +73,7 @@ const Navbar = () => {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-1 text-ink hover:text-brand transition-colors duration-200 font-medium relative group"
+                  className="flex items-center space-x-1 text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
                 >
                   <span>{item.name}</span>
                   {item.dropdown && (
@@ -103,7 +107,7 @@ const Navbar = () => {
               </div>
             ))}
             
-            <Link href="/contact" className="button button--primary">
+            <Link href="/contact" className="btn-primary">
               Get Started
             </Link>
           </div>

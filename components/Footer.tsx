@@ -1,200 +1,141 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Instagram, Twitter, Linkedin, ArrowUp } from 'lucide-react'
+import { Instagram, Twitter, Linkedin, Mail, MapPin } from 'lucide-react'
 
-const Footer = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const footerLinks = {
-    services: [
-      { name: 'Monetization Strategy', href: '/services#monetization' },
-      { name: 'Content Optimization', href: '/services#content' },
-      { name: 'Audience Growth', href: '/services#growth' },
-      { name: 'Revenue Streams', href: '/services#revenue' },
-    ],
-    company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Case Studies', href: '/case-studies' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Contact', href: '/contact' },
-    ],
-    legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-    ],
-  }
-
-  const socialLinks = [
-    { name: 'Instagram', icon: Instagram, href: '#' },
-    { name: 'Twitter', icon: Twitter, href: '#' },
-    { name: 'LinkedIn', icon: Linkedin, href: '#' },
-  ]
+export default function Footer() {
+  const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative bg-dark-900 border-t border-white/10">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-transparent"></div>
-      </div>
+    <footer style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
+      <div className="container py-12">
+        <div className="grid md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div>
+            <div className="text-2xl font-bold mb-4">
+              <span className="text-white">POSTE</span>
+              <span className="text-blue-500 ml-2">MEDIA</span>
+            </div>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              Helping influencers and theme pages monetize their following with proven strategies.
+            </p>
+          </div>
 
-      <div className="relative">
-        {/* Main Footer Content */}
-        <div className="section-padding">
-          <div className="container-custom">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-              {/* Company Info */}
-              <div className="lg:col-span-1">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  viewport={{ once: true }}
-                >
-                  <Link href="/" className="inline-block mb-6">
-                    <div className="text-2xl font-display font-bold gradient-text">
-                      POSTE MEDIA
-                    </div>
-                  </Link>
-                  <p className="text-white/70 mb-6 leading-relaxed">
-                    Helping influencers and Instagram theme pages monetize their following 
-                    with custom strategies and proven marketing methods.
-                  </p>
-                  
-                  {/* Contact Info */}
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 text-satin-pearl/70">
-                      <Mail className="w-4 h-4 text-satin-accent" />
-                      <span>info@postemedia.com</span>
-                    </div>
-                    <div className="flex items-center space-x-3 text-satin-pearl/70">
-                      <MapPin className="w-4 h-4 text-satin-accent" />
-                      <span>2880 W Oakland Park Blvd Suite 225C, Oakland Park, FL 33311</span>
-                    </div>
-                  </div>
-                </motion.div>
+          {/* Quick Links */}
+          <div>
+            <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/about" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/case-studies" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  Case Studies
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  Blog
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h4 className="font-semibold mb-4 text-white">Services</h4>
+            <ul className="space-y-2">
+              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Monetization Strategy
+              </li>
+              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Content Optimization
+              </li>
+              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Audience Growth
+              </li>
+              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Revenue Streams
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="font-semibold mb-4 text-white">Contact</h4>
+            <div className="space-y-3">
+              <a 
+                href="mailto:info@postemedia.com" 
+                className="flex items-center gap-2 text-sm hover:text-white transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <Mail className="w-4 h-4" />
+                info@postemedia.com
+              </a>
+              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <MapPin className="w-4 h-4 mt-0.5" />
+                <span>
+                  2880 W Oakland Park Blvd<br />
+                  Suite 225C<br />
+                  Oakland Park, FL 33311
+                </span>
               </div>
+            </div>
 
-              {/* Services Links */}
-              <div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <h3 className="text-lg font-semibold text-white mb-6">Services</h3>
-                  <ul className="space-y-3">
-                    {footerLinks.services.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className="text-white/70 hover:text-primary-400 transition-colors duration-200"
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              </div>
-
-              {/* Company Links */}
-              <div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  viewport={{ once: true }}
-                >
-                  <h3 className="text-lg font-semibold text-white mb-6">Company</h3>
-                  <ul className="space-y-3">
-                    {footerLinks.company.map((link) => (
-                      <li key={link.name}>
-                        <Link
-                          href={link.href}
-                          className="text-white/70 hover:text-primary-400 transition-colors duration-200"
-                        >
-                          {link.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              </div>
-
-              {/* Newsletter & Social */}
-              <div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  viewport={{ once: true }}
-                >
-                  <h3 className="text-lg font-semibold text-white mb-6">Stay Updated</h3>
-                  <p className="text-white/70 mb-6">
-                    Follow us on social media for the latest updates and insights.
-                  </p>
-
-                  {/* Social Links */}
-                  <div className="flex space-x-4">
-                    {socialLinks.map((social) => (
-                      <Link
-                        key={social.name}
-                        href={social.href}
-                        className="p-2 glass-effect rounded-lg hover:bg-white/10 transition-colors duration-200 group"
-                      >
-                        <social.icon className="w-5 h-5 text-white/70 group-hover:text-primary-400 transition-colors duration-200" />
-                      </Link>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
+            {/* Social Links */}
+            <div className="flex gap-4 mt-6">
+              <a 
+                href="#" 
+                className="p-2 rounded-lg transition-colors"
+                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a 
+                href="#" 
+                className="p-2 rounded-lg transition-colors"
+                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
+                aria-label="Twitter"
+              >
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a 
+                href="#" 
+                className="p-2 rounded-lg transition-colors"
+                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/10">
-          <div className="container-custom">
-            <div className="flex flex-col sm:flex-row items-center justify-between py-6 space-y-4 sm:space-y-0">
-              <div className="text-white/60 text-sm">
-                © 2024 POSTE MEDIA LLC. All rights reserved.
-              </div>
-              
-              <div className="flex items-center space-x-6">
-                {footerLinks.legal.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="text-white/60 hover:text-white text-sm transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
+        <div className="mt-12 pt-8 border-t" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              © {currentYear} POSTE MEDIA LLC. All rights reserved.
+            </p>
+            <div className="flex gap-6">
+              <Link href="/privacy" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>
+                Terms of Service
+              </Link>
             </div>
           </div>
         </div>
-
-        {/* Scroll to Top Button */}
-        <motion.button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 p-3 glass-effect rounded-full hover:bg-white/10 transition-colors duration-200 z-40"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ArrowUp className="w-5 h-5 text-primary-400" />
-        </motion.button>
       </div>
     </footer>
   )
 }
-
-export default Footer

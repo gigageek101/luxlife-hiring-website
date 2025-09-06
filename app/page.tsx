@@ -11,8 +11,7 @@ import {
   ArrowRight,
   CheckCircle,
   BarChart3,
-  Zap,
-  Shield
+  Zap
 } from 'lucide-react'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
@@ -22,376 +21,239 @@ export default function Home() {
     {
       icon: DollarSign,
       title: 'Monetization Strategy',
-      description: 'Unlock new income streams tailored to your audience.',
-      features: ['Audience Analysis', 'Revenue Optimization', 'Custom Strategies']
+      description: 'Transform your following into multiple revenue streams with proven strategies.',
+      features: ['Brand partnerships', 'Product launches', 'Affiliate programs']
     },
     {
       icon: BarChart3,
       title: 'Content Optimization',
-      description: 'Improve performance with data-driven insights.',
-      features: ['Performance Analytics', 'Trend Analysis', 'Content Planning']
+      description: 'Boost engagement and reach with data-driven content strategies.',
+      features: ['Algorithm optimization', 'Posting schedules', 'Trend analysis']
     },
     {
       icon: Users,
       title: 'Audience Growth',
-      description: 'Build a loyal community through organic and paid methods.',
-      features: ['Organic Growth', 'Paid Campaigns', 'Community Building']
+      description: 'Build a loyal, engaged community that converts.',
+      features: ['Organic growth tactics', 'Community building', 'Engagement strategies']
     },
     {
       icon: TrendingUp,
       title: 'Revenue Streams',
-      description: 'Scale your brand with partnerships, products, and collaborations.',
-      features: ['Brand Partnerships', 'Product Development', 'Collaboration Networks']
+      description: 'Diversify income with multiple monetization channels.',
+      features: ['Digital products', 'Subscriptions', 'Sponsored content']
     }
   ]
 
   const testimonials = [
     {
+      content: 'POSTE MEDIA helped us grow from 50K to 300K followers in 6 months. Their strategies actually work.',
       name: 'Sarah Johnson',
       role: 'Fashion Influencer',
-      content: 'POSTE MEDIA helped us grow 5x in three months. Their strategies actually work.',
-      rating: 5,
-      followers: '250K'
+      rating: 5
     },
     {
+      content: 'Finally making consistent income from my Instagram. Game changer for content creators.',
       name: 'Mike Chen',
-      role: 'Tech Theme Page Owner',
-      content: 'Incredible results! My revenue increased by 300% within 6 months.',
-      rating: 5,
-      followers: '180K'
+      role: 'Food Blogger',
+      rating: 5
     },
     {
-      name: 'Emma Rodriguez',
+      content: 'The ROI was incredible. Tripled our revenue in the first quarter working with them.',
+      name: 'Emma Davis',
       role: 'Lifestyle Creator',
-      content: 'Professional, results-driven, and genuinely care about our success.',
-      rating: 5,
-      followers: '420K'
+      rating: 5
     }
   ]
 
-  const stats = [
-    { number: '500+', label: 'Successful Campaigns' },
-    { number: '2M+', label: 'Followers Grown' },
-    { number: '300%', label: 'Average Revenue Increase' },
-    { number: '98%', label: 'Client Satisfaction' }
-  ]
-
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[var(--bg)]">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Subtle gradient background */}
-        <div className="absolute inset-0">
-          <div className="gradient-bg absolute inset-0"></div>
+      <section className="section">
+        <div className="container">
+          <Reveal>
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="mb-6">
+                Helping Influencers & <span className="text-gradient">Theme Pages</span>
+                <br />Monetize Their Following
+              </h1>
+              
+              <p className="text-xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Custom strategies, proven marketing methods, real growth.
+                <br />Turn your social media presence into a thriving business.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/contact" className="btn-primary">
+                  Get a Free Quote
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link href="/case-studies" className="btn-secondary">
+                  View Case Studies
+                </Link>
+              </div>
+            </div>
+          </Reveal>
         </div>
-
-        <div className="relative z-10 container-custom text-center">
-          {/* Hero card with white surface */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="surface-card max-w-4xl mx-auto"
-          >
-            <h1 className="mb-6">
-              Helping Influencers &{' '}
-              <span className="gradient-text">Theme Pages</span>{' '}
-              Monetize Their Following
-            </h1>
-            
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-body-lg text-ink-soft mb-8 max-w-prose-wide mx-auto"
-            >
-              Custom strategies, proven marketing methods, real growth.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <Link href="/contact" className="button button--primary">
-                Get a Free Quote
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-              <Link href="/case-studies" className="button button--secondary">
-                View Case Studies
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Gentle Scroll Indicator */}
-        <motion.div
-          animate={{ y: [0, 4, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
-        >
-          <div className="w-6 h-10 border border-pastel-coral/50 rounded-full flex justify-center pastel-glow">
-            <div className="w-1 h-3 bg-pastel-coral/80 rounded-full mt-2 animate-gentle-bounce"></div>
-          </div>
-        </motion.div>
       </section>
 
-      {/* Stats Section - Always on white cards with animated counters */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--bg-soft)' }}>
-        <div className="container-custom">
+      {/* Stats Section */}
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+        <div className="container">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { number: 500, suffix: '+', label: 'Successful Campaigns' },
+              { number: 500, suffix: '+', label: 'Campaigns' },
               { number: 2, suffix: 'M+', label: 'Followers Grown' },
               { number: 300, suffix: '%', label: 'Average ROI' },
-              { number: 98, suffix: '%', label: 'Client Satisfaction' }
+              { number: 98, suffix: '%', label: 'Satisfaction' }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ 
-                  duration: 0.5, 
-                  delay: index * 0.1,
-                  ease: [0.22, 1, 0.36, 1]
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="stats-card group hover:scale-105 transition-transform duration-300"
+                className="stat-card"
               >
-                <div className="stats-number">
+                <div className="stat-number">
                   <AnimatedCounter 
                     value={stat.number} 
                     suffix={stat.suffix}
-                    duration={2 + index * 0.2}
+                    duration={2}
                   />
                 </div>
-                <div className="stats-label">{stat.label}</div>
+                <div className="stat-label">{stat.label}</div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* About Us Short Intro */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-              Turning Influence Into <span className="gradient-text">Income</span>
-            </h2>
-            <p className="text-xl text-white/80 leading-relaxed">
-              At POSTE MEDIA LLC, we specialize in turning influence into income. Whether you're an Instagram influencer, 
-              content creator, or theme page owner, our strategies are designed to maximize your reach, engagement, 
-              and revenue potential.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {/* Services Section */}
+      <section className="section">
+        <div className="container">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="mb-4">Our Services</h2>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+                Everything you need to monetize your social media presence
+              </p>
+            </div>
+          </Reveal>
 
-      {/* Services Overview */}
-      <section className="section-padding bg-bg-soft">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="mb-6">
-              Our <span className="gradient-text">Services</span>
-            </h2>
-            <p className="text-body-lg text-ink-soft max-w-prose-wide mx-auto">
-              Comprehensive solutions designed to maximize your social media potential
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {services.map((service, index) => {
-              const cardVariants = [
-                'service-card--coral',
-                'service-card--peach', 
-                'service-card--mint',
-                'service-card--aqua'
-              ];
-              
-              return (
-                <motion.div
-                  key={service.title}
-                  initial={{ opacity: 0, y: 30, rotateX: -10 }}
-                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                  whileHover={{ 
-                    y: -8, 
-                    transition: { duration: 0.2 }
-                  }}
-                  transition={{ 
-                    duration: 0.5, 
-                    delay: index * 0.1,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  viewport={{ once: true }}
-                  className={`service-card ${cardVariants[index % 4]} group cursor-pointer`}
-                >
-                  <div className="flex items-center mb-6">
-                    <div className="p-3 bg-brand/10 rounded-lg mr-4 group-hover:bg-brand/20 transition-colors duration-200">
-                      <service.icon className="w-8 h-8 text-ink" />
-                    </div>
-                    <h3>{service.title}</h3>
+          <div className="grid md:grid-cols-2 gap-8">
+            {services.map((service, index) => (
+              <motion.div
+                key={service.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="card group"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-lg" style={{ background: 'var(--accent)', opacity: 0.1 }}>
+                    <service.icon className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                   </div>
-                  
-                  <p className="text-ink-soft mb-6 max-w-prose">
-                    {service.description}
-                  </p>
-
-                  <ul className="space-y-2 mb-6">
-                    {service.features.map((feature) => (
-                      <li key={feature} className="flex items-start text-ink text-small">
-                        <CheckCircle className="w-4 h-4 text-brand mr-2 mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link 
-                    href="/services" 
-                    className="button button--tertiary group-hover:translate-x-1 transition-transform duration-200"
-                  >
-                    Learn More →
-                  </Link>
-                </motion.div>
-              );
-            })}
+                  <div className="flex-1">
+                    <h3 className="mb-2">{service.title}</h3>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                      {service.description}
+                    </p>
+                    <ul className="space-y-2">
+                      {service.features.map((feature) => (
+                        <li key={feature} className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                          <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <Link href="/services" className="button button--primary">
-              Learn More About Our Services
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </motion.div>
+          <Reveal delay={0.3}>
+            <div className="text-center mt-12">
+              <Link href="/services" className="btn-primary">
+                Explore All Services
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Testimonials - WCAG Compliant */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--bg-soft)' }}>
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="mb-6">
-              What Our <span className="gradient-text">Clients Say</span>
-            </h2>
-            <p className="text-body-lg max-w-prose-wide mx-auto" style={{ color: 'var(--ink-soft)' }}>
-              Real results from real influencers who trusted us with their growth
-            </p>
-          </motion.div>
+      {/* Testimonials Section */}
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+        <div className="container">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="mb-4">Client Success Stories</h2>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+                Real results from real creators
+              </p>
+            </div>
+          </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.article
+              <motion.div
                 key={testimonial.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="testimonial-card"
+                className="testimonial"
               >
-                <div className="testimonial-rating" aria-label={`Rating: ${testimonial.rating} out of 5`}>
+                <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <svg 
+                    <Star 
                       key={i} 
-                      width="18" 
-                      height="18" 
-                      aria-hidden="true" 
-                      className="testimonial-star"
-                      style={{ fill: i < testimonial.rating ? 'var(--star)' : '#e5e7eb' }}
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+                      className="w-5 h-5" 
+                      style={{ 
+                        color: 'var(--star)',
+                        fill: i < testimonial.rating ? 'var(--star)' : 'transparent'
+                      }} 
+                    />
                   ))}
-                  <span className="testimonial-rating-text">4.9 · 126 reviews</span>
                 </div>
                 
-                <p className="testimonial-quote">
+                <p className="mb-6" style={{ color: 'var(--text-primary)' }}>
                   "{testimonial.content}"
                 </p>
 
-                <div className="testimonial-author">
-                  <img 
-                    src={`https://images.unsplash.com/photo-${1500000000000 + index}?w=72&h=72&fit=crop&crop=face`} 
-                    alt="" 
-                    className="testimonial-avatar"
-                  />
-                  <div>
-                    <div className="testimonial-author-name">{testimonial.name}</div>
-                    <div className="testimonial-author-handle">@{testimonial.name.toLowerCase().replace(' ', '')} • {testimonial.role}</div>
+                <div>
+                  <div className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    {testimonial.name}
+                  </div>
+                  <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    {testimonial.role}
                   </div>
                 </div>
-              </motion.article>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA - Tasteful Emojis */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--bg)' }}>
-        <div className="container-custom">
+      {/* CTA Section */}
+      <section className="section">
+        <div className="container">
           <Reveal>
-            <div className="text-center max-w-4xl mx-auto surface-card">
-              <h2 className="mb-6">
-                Ready to grow your Instagram into a business?
-              </h2>
-              <p className="text-body-lg max-w-prose-wide mx-auto mb-8" style={{ color: 'var(--ink-soft)' }}>
-                Join creators who scaled with POSTE MEDIA's strategies.
+            <div className="max-w-3xl mx-auto text-center card" style={{ background: 'var(--surface)' }}>
+              <h2 className="mb-4">Ready to Grow Your Instagram?</h2>
+              <p className="text-xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Join thousands of creators who've transformed their following into a business.
               </p>
-              <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <Link href="/contact" className="button button--primary">
-                  Get a Free Quote
-                  <span className="ml-2">🚀</span>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/contact" className="btn-primary">
+                  Get Started Today
+                  <Zap className="w-5 h-5" />
                 </Link>
-                <Link href="/case-studies" className="button button--secondary">
-                  View Case Studies
-                  <span className="ml-2">✨</span>
+                <Link href="/case-studies" className="btn-secondary">
+                  View Success Stories
                 </Link>
-              </motion.div>
-
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap justify-center items-center gap-8 mt-12 pt-8 border-t" style={{ borderColor: 'var(--border)' }}>
-                <div className="flex items-center space-x-2" style={{ color: 'var(--ink-soft)' }}>
-                  <Shield className="w-5 h-5" style={{ color: 'var(--brand)' }} />
-                  <span>100% Confidential</span>
-                </div>
-                <div className="flex items-center space-x-2" style={{ color: 'var(--ink-soft)' }}>
-                  <Zap className="w-5 h-5" style={{ color: 'var(--brand)' }} />
-                  <span>Fast Results</span>
-                </div>
-                <div className="flex items-center space-x-2" style={{ color: 'var(--ink-soft)' }}>
-                  <CheckCircle className="w-5 h-5" style={{ color: 'var(--brand)' }} />
-                  <span>Proven Strategies</span>
-                </div>
               </div>
             </div>
           </Reveal>
