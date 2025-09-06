@@ -16,6 +16,7 @@ import {
 import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
 import ParallaxText from '@/components/ParallaxText'
+import ScrollRocket from '@/components/ScrollRocket'
 
 export default function Home() {
   const services = [
@@ -68,6 +69,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
+      {/* Scroll Rocket Animation */}
+      <ScrollRocket />
+      
       {/* Hero Section with increased top padding */}
       <section className="section pt-32 md:pt-40">
         <div className="container">
