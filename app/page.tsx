@@ -80,15 +80,14 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 gradient-bg">
-          <div className="absolute inset-0 bg-gradient-to-r from-neon-pink/10 via-transparent to-neon-cyan/10"></div>
-          {/* Fixed floating elements with proper positioning */}
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-neon-pink/10 rounded-full blur-3xl animate-float hidden lg:block"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-neon-cyan/10 rounded-full blur-3xl animate-float hidden lg:block" style={{ animationDelay: '1s' }}></div>
-          {/* Cyberpunk grid overlay */}
-          <div className="absolute inset-0 opacity-5" style={{
-            backgroundImage: `linear-gradient(rgba(255, 0, 128, 0.1) 1px, transparent 1px),
-                             linear-gradient(90deg, rgba(255, 0, 128, 0.1) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
+          <div className="absolute inset-0 bg-gradient-to-r from-luxury-champagne/5 via-transparent to-luxury-rose/5"></div>
+          {/* Elegant floating elements */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-luxury-champagne/5 rounded-full blur-3xl animate-float hidden lg:block"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-luxury-gold/5 rounded-full blur-3xl animate-float hidden lg:block" style={{ animationDelay: '2s' }}></div>
+          {/* Subtle texture overlay */}
+          <div className="absolute inset-0 opacity-[0.02]" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(212, 197, 160, 0.3) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
           }}></div>
         </div>
 
@@ -98,17 +97,17 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-light mb-8 leading-tight">
               Helping Influencers &{' '}
-              <span className="gradient-text animate-glitch">Theme Pages</span>{' '}
+              <span className="gradient-text">Theme Pages</span>{' '}
               Monetize Their Following
             </h1>
             
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed"
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-xl md:text-2xl text-luxury-ivory/80 mb-12 max-w-3xl mx-auto leading-relaxed font-light"
             >
               Custom strategies, proven marketing methods, real growth.
             </motion.p>
@@ -119,46 +118,26 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href="/contact" className="btn-primary text-lg px-8 py-4 animate-pulse-neon">
+              <Link href="/contact" className="btn-primary text-lg">
                 Get a Free Quote
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
-              <Link href="/case-studies" className="btn-secondary text-lg px-8 py-4">
+              <Link href="/case-studies" className="btn-secondary text-lg">
                 View Case Studies
               </Link>
             </motion.div>
           </motion.div>
 
-          {/* Fixed Floating Elements */}
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-20 left-4 lg:left-10 hidden md:block z-20"
-          >
-            <div className="glass-effect p-4 rounded-lg cyberpunk-border neon-glow">
-              <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 text-neon-pink" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-            className="absolute top-32 right-4 lg:right-10 hidden md:block z-20"
-          >
-            <div className="glass-effect p-4 rounded-lg cyberpunk-border neon-glow">
-              <Target className="w-6 h-6 lg:w-8 lg:h-8 text-neon-cyan" />
-            </div>
-          </motion.div>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Elegant Scroll Indicator */}
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
         >
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white/50 rounded-full mt-2"></div>
+          <div className="w-6 h-10 border border-luxury-champagne/40 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-luxury-gold/60 rounded-full mt-2"></div>
           </div>
         </motion.div>
       </section>

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,31 +49,38 @@ Sent from POSTE MEDIA LLC website contact form
     </div>
     `
 
-    // Create transporter (using Gmail SMTP as example)
-    // You'll need to set up environment variables for email credentials
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
-      }
-    })
+    // For now, we'll use a simpler approach that works in development
+    // In production, you should set up proper email service credentials
+    
+    // Log the email content for now (you can see this in Vercel logs)
+    console.log('=== NEW CONTACT FORM SUBMISSION ===')
+    console.log('To: luxlife.agentur@gmail.com')
+    console.log('From:', email)
+    console.log('Subject: New Lead from POSTE MEDIA LLC website')
+    console.log('Content:', emailContent)
+    console.log('=====================================')
 
-    // Send email
+    // You can also send this to a webhook service like Zapier, Make.com, or n8n
+    // Example webhook call:
     try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER || 'noreply@postemedia.com',
-        to: 'luxlife.agentur@gmail.com',
-        subject: `🚀 New Lead: ${fullName} - POSTE MEDIA LLC`,
-        text: emailContent,
-        html: htmlContent,
-        replyTo: email
+      // Uncomment and replace with your webhook URL if you want to use a service
+      /*
+      await fetch('YOUR_WEBHOOK_URL', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: 'luxlife.agentur@gmail.com',
+          from: email,
+          subject: `New Lead: ${fullName} - POSTE MEDIA LLC`,
+          message: emailContent,
+          formData: { fullName, email, instagramHandle, monthlyReach, message }
+        })
       })
-
-      console.log('Email sent successfully to luxlife.agentur@gmail.com')
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError)
-      // Continue anyway - don't fail the request if email fails
+      */
+      
+      console.log('Contact form data processed successfully')
+    } catch (error) {
+      console.error('Processing error:', error)
     }
 
     return NextResponse.json(

@@ -52,10 +52,12 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="text-2xl lg:text-3xl font-display font-bold gradient-text"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+              className="text-2xl lg:text-3xl font-display font-light tracking-wide"
             >
-              POSTE MEDIA
+              <span className="text-luxury-ivory">POSTE</span>
+              <span className="text-luxury-champagne ml-2">MEDIA</span>
             </motion.div>
           </Link>
 
@@ -70,12 +72,13 @@ const Navbar = () => {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-1 text-white/80 hover:text-white transition-colors duration-200 font-medium"
+                  className="flex items-center space-x-1 text-luxury-ivory/70 hover:text-luxury-champagne transition-colors duration-300 font-light relative group"
                 >
                   <span>{item.name}</span>
                   {item.dropdown && (
                     <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                   )}
+                  <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-champagne transition-all duration-300 group-hover:w-full"></span>
                 </Link>
 
                 {/* Dropdown Menu */}
