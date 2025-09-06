@@ -52,10 +52,13 @@ ${submission.message}
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    console.log('Received form data:', body)
+    
     const { name, email, instagram, reach, message } = body
 
     // Validate required fields
     if (!name || !email || !message) {
+      console.error('Missing required fields:', { name: !!name, email: !!email, message: !!message })
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -74,32 +77,38 @@ export async function POST(request: NextRequest) {
       status: 'new'
     }
 
-    // Define the path for storing submissions
-    const dataDir = path.join(process.cwd(), 'data')
-    const filePath = path.join(dataDir, 'submissions.json')
-    
-    // Ensure data directory exists
+    // Try to save to file system (will work locally, might fail on Vercel)
     try {
-      await fs.access(dataDir)
-    } catch {
-      await fs.mkdir(dataDir, { recursive: true })
+      const dataDir = path.join(process.cwd(), 'data')
+      const filePath = path.join(dataDir, 'submissions.json')
+      
+      // Ensure data directory exists
+      try {
+        await fs.access(dataDir)
+      } catch {
+        await fs.mkdir(dataDir, { recursive: true })
+      }
+      
+      // Read existing submissions or create new array
+      let submissions = []
+      try {
+        const fileContent = await fs.readFile(filePath, 'utf-8')
+        submissions = JSON.parse(fileContent)
+      } catch {
+        // File doesn't exist yet, start with empty array
+        submissions = []
+      }
+      
+      // Add new submission
+      submissions.push(submission)
+      
+      // Save updated submissions
+      await fs.writeFile(filePath, JSON.stringify(submissions, null, 2))
+      console.log('Submission saved to file system')
+    } catch (fileError) {
+      // File system might not be writable on Vercel, but that's okay
+      console.log('Could not save to file system (normal on Vercel):', fileError)
     }
-    
-    // Read existing submissions or create new array
-    let submissions = []
-    try {
-      const fileContent = await fs.readFile(filePath, 'utf-8')
-      submissions = JSON.parse(fileContent)
-    } catch {
-      // File doesn't exist yet, start with empty array
-      submissions = []
-    }
-    
-    // Add new submission
-    submissions.push(submission)
-    
-    // Save updated submissions
-    await fs.writeFile(filePath, JSON.stringify(submissions, null, 2))
     
     // Send Telegram notification
     await sendTelegramNotification(submission)
