@@ -98,17 +98,20 @@ export default function ServicesPage() {
                 key={service.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -5 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card group"
+                className="card hover-lift hover-glow group"
               >
                 <div className="flex items-start gap-4 mb-6">
-                  <div 
-                    className="p-3 rounded-lg"
-                    style={{ background: 'var(--accent)', opacity: 0.1 }}
+                  <motion.div 
+                    className="p-4 rounded-xl flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <service.icon className="w-8 h-8" style={{ color: 'var(--accent)' }} />
-                  </div>
+                    <service.icon className="w-8 h-8 text-white" />
+                  </motion.div>
                   <div>
                     <h3 className="mb-2">{service.title}</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>
