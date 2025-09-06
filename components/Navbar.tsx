@@ -31,6 +31,7 @@ const Navbar = () => {
         { name: 'Revenue Streams', href: '/services#revenue' },
       ]
     },
+    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ]
 
