@@ -78,26 +78,6 @@ export default function Blog() {
             </p>
           </motion.div>
 
-          {/* Category Filter */}
-          <motion.div
-            className="flex flex-wrap justify-center gap-4 mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {categories.map((category, index) => (
-              <button
-                key={category}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
-                  index === 0 
-                    ? 'bg-[var(--accent)] text-white' 
-                    : 'bg-[var(--surface)] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)]'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </motion.div>
         </div>
       </section>
 

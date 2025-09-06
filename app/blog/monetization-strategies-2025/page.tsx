@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, DollarSign, Users, Lock, FileText, UserCheck, Video, Globe } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, DollarSign, Users, Lock, FileText, UserCheck, Video, Globe, ArrowRight } from 'lucide-react'
 
 export default function MonetizationStrategies2025() {
   return (
@@ -30,8 +30,8 @@ export default function MonetizationStrategies2025() {
               transition={{ duration: 0.8 }}
             >
               {/* Header Icon */}
-              <div className="flex items-center justify-center w-20 h-20 rounded-full mb-8 mx-auto" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
-                <DollarSign className="w-10 h-10 text-white" />
+              <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                <DollarSign className="w-12 h-12 text-white" />
               </div>
 
               {/* Category */}
@@ -71,13 +71,16 @@ export default function MonetizationStrategies2025() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ color: 'var(--text-primary)' }}
+              style={{ 
+                color: 'var(--text-primary)',
+                lineHeight: '1.8'
+              } as React.CSSProperties}
             >
               <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
                 The creator economy is growing faster than ever. But here's the truth: followers don't equal income unless you have the right monetization strategies in place.
               </p>
 
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 If you're an influencer, content creator, or online entrepreneur, this guide will show you 7 proven ways to monetize your audience in 2025. Whether you have 1,000 followers or 1M+, these strategies can help you increase influencer income, build sustainable revenue, and protect yourself from algorithm changes.
               </p>
 
@@ -259,16 +262,23 @@ export default function MonetizationStrategies2025() {
               viewport={{ once: true }}
             >
               <h2 className="mb-8" style={{ color: 'var(--text-primary)' }}>Continue Reading</h2>
-              <Link href="/blog/match-content-audience" className="card hover-lift group">
-                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  How to Match Content With Your Actual Audience
-                </h3>
-                <p style={{ color: 'var(--text-secondary)' }}>
-                  Creating content your audience actually cares about is the difference between scrolling past and stopping to engage.
-                </p>
-                <div className="flex items-center gap-2 mt-4 text-[var(--accent)] font-medium group-hover:gap-3 transition-all duration-300">
-                  Read Next
-                  <BookOpen className="w-4 h-4" />
+              <Link href="/blog/match-content-audience" className="card hover-lift group block">
+                <div className="flex items-start gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full flex-shrink-0" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                    <BookOpen className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                      How to Match Content With Your Actual Audience
+                    </h3>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                      Creating content your audience actually cares about is the difference between scrolling past and stopping to engage.
+                    </p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>
+                      Read Next Article
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </Link>
             </motion.div>

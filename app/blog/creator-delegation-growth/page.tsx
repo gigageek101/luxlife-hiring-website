@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, AlertTriangle, TrendingDown, Zap, Target, Rocket } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, AlertTriangle, TrendingDown, Zap, Target, Rocket, ArrowRight } from 'lucide-react'
 
 export default function CreatorDelegationGrowth() {
   return (
@@ -27,8 +27,8 @@ export default function CreatorDelegationGrowth() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="flex items-center justify-center w-20 h-20 rounded-full mb-8 mx-auto" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
-                <AlertTriangle className="w-10 h-10 text-white" />
+              <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                <AlertTriangle className="w-12 h-12 text-white" />
               </div>
 
               <span 
@@ -64,17 +64,20 @@ export default function CreatorDelegationGrowth() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ color: 'var(--text-primary)' }}
+              style={{ 
+                color: 'var(--text-primary)',
+                lineHeight: '1.8'
+              } as React.CSSProperties}
             >
               <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
                 Here's the hard truth: if you're a creator or running an Instagram theme page, trying to do everything yourself is the fastest way to burn out and limit your growth.
               </p>
 
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 Yes, you can manage your own marketing, outreach, and monetization. But should you? ❌ Not if you want real ROI.
               </p>
 
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 The creators who win in 2025 are the ones who focus on what they do best: creating content their audience loves.
               </p>
 
@@ -215,16 +218,23 @@ export default function CreatorDelegationGrowth() {
               viewport={{ once: true }}
             >
               <h2 className="mb-8" style={{ color: 'var(--text-primary)' }}>Continue Reading</h2>
-              <Link href="/blog/monetization-strategies-2025" className="card hover-lift group">
-                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  7 Proven Monetization Strategies for Creators in 2025
-                </h3>
-                <p style={{ color: 'var(--text-secondary)' }}>
-                  The creator economy is growing faster than ever. Discover 7 proven ways to monetize your audience whether you have 1,000 followers or 1M+.
-                </p>
-                <div className="flex items-center gap-2 mt-4 text-[var(--accent)] font-medium group-hover:gap-3 transition-all duration-300">
-                  Read Next
-                  <BookOpen className="w-4 h-4" />
+              <Link href="/blog/monetization-strategies-2025" className="card hover-lift group block">
+                <div className="flex items-start gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full flex-shrink-0" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                    <BookOpen className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                      7 Proven Monetization Strategies for Creators in 2025
+                    </h3>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                      The creator economy is growing faster than ever. Discover 7 proven ways to monetize your audience whether you have 1,000 followers or 1M+.
+                    </p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>
+                      Read Next Article
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </Link>
             </motion.div>
