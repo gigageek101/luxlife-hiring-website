@@ -31,6 +31,7 @@ const Navbar = () => {
         { name: 'Revenue Streams', href: '/services#revenue' },
       ]
     },
+    { name: 'Case Study', href: '/case-study-tania' },
     { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ]
@@ -89,7 +90,7 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-64 glass-effect rounded-lg shadow-xl border border-white/10 overflow-hidden"
+                      className="absolute top-full left-0 mt-2 w-64 glass-effect rounded-lg shadow-xl border border-white/10 overflow-hidden z-50"
                     >
                       {item.dropdown.map((dropdownItem) => (
                         <Link

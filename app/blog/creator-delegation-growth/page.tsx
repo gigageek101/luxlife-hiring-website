@@ -191,12 +191,13 @@ export default function CreatorDelegationGrowth() {
               </p>
 
               <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
-                <h3>Ready to Focus on What You Do Best?</h3>
+                <h3>Tired of Theory and Wanna Know a Real Success Story?</h3>
                 <p className="mb-4 text-white/90">
-                  Let our team handle the growth and monetization while you focus on creating amazing content. Get a personalized delegation strategy.
+                  Find out how our client Tania went from burnout fitness influencer to organized business woman.
                 </p>
-                <Link href="/contact" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                  Scale Your Creator Business
+                <Link href="/case-study-tania" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90 inline-flex items-center gap-2">
+                  Read Tania's Success Story
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
