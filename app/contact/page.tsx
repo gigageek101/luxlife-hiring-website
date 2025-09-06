@@ -80,12 +80,6 @@ export default function Contact() {
       description: 'Send us an email anytime'
     },
     {
-      icon: Phone,
-      title: 'Call Us',
-      content: '+1 (555) 123-4567',
-      description: 'Mon-Fri from 9am to 6pm EST'
-    },
-    {
       icon: MapPin,
       title: 'Visit Us',
       content: '2880 W Oakland Park Blvd Suite 225C, Oakland Park, FL 33311',
@@ -133,8 +127,8 @@ export default function Contact() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-md mx-auto px-4"
         >
-          <div className="glass-effect p-8 rounded-2xl cyberpunk-border">
-            <CheckCircle className="w-16 h-16 text-neon-cyan mx-auto mb-6 animate-pulse-neon" />
+          <div className="smooth-card">
+            <CheckCircle className="w-16 h-16 text-satin-accent mx-auto mb-6 satin-glow" />
             <h2 className="text-2xl font-display font-bold mb-4 gradient-text">Thank You!</h2>
             <p className="text-white/80 mb-6">
               We've received your message and will get back to you within 24 hours with a personalized growth strategy.

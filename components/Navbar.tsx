@@ -53,11 +53,11 @@ const Navbar = () => {
           <Link href="/" className="flex items-center space-x-2">
             <motion.div
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
               className="text-2xl lg:text-3xl font-display font-light tracking-wide"
             >
-              <span className="text-luxury-ivory">POSTE</span>
-              <span className="text-luxury-champagne ml-2">MEDIA</span>
+              <span className="text-satin-pearl">POSTE</span>
+              <span className="text-satin-accent ml-2">MEDIA</span>
             </motion.div>
           </Link>
 
@@ -72,13 +72,13 @@ const Navbar = () => {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-1 text-luxury-ivory/70 hover:text-luxury-champagne transition-colors duration-300 font-light relative group"
+                  className="flex items-center space-x-1 text-satin-pearl/70 hover:text-satin-accent transition-colors duration-400 font-light relative group"
                 >
                   <span>{item.name}</span>
                   {item.dropdown && (
                     <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                   )}
-                  <span className="absolute bottom-0 left-0 w-0 h-px bg-luxury-champagne transition-all duration-300 group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-px bg-satin-accent transition-all duration-400 group-hover:w-full"></span>
                 </Link>
 
                 {/* Dropdown Menu */}

@@ -80,14 +80,14 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 gradient-bg">
-          <div className="absolute inset-0 bg-gradient-to-r from-luxury-champagne/5 via-transparent to-luxury-rose/5"></div>
-          {/* Elegant floating elements */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-luxury-champagne/5 rounded-full blur-3xl animate-float hidden lg:block"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-luxury-gold/5 rounded-full blur-3xl animate-float hidden lg:block" style={{ animationDelay: '2s' }}></div>
-          {/* Subtle texture overlay */}
-          <div className="absolute inset-0 opacity-[0.02]" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(212, 197, 160, 0.3) 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
+          <div className="absolute inset-0 bg-gradient-to-r from-satin-accent/10 via-transparent to-primary-400/10"></div>
+          {/* Elegant floating orbs */}
+          <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-satin-accent/10 rounded-full blur-3xl animate-float hidden lg:block"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-primary-400/8 rounded-full blur-3xl animate-float hidden lg:block" style={{ animationDelay: '3s' }}></div>
+          {/* Satin texture overlay */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(99, 179, 237, 0.4) 1px, transparent 0)`,
+            backgroundSize: '60px 60px'
           }}></div>
         </div>
 
@@ -106,8 +106,8 @@ export default function Home() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-xl md:text-2xl text-luxury-ivory/80 mb-12 max-w-3xl mx-auto leading-relaxed font-light"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-satin-pearl/80 mb-12 max-w-3xl mx-auto leading-relaxed font-light"
             >
               Custom strategies, proven marketing methods, real growth.
             </motion.p>
@@ -132,12 +132,12 @@ export default function Home() {
 
         {/* Elegant Scroll Indicator */}
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
         >
-          <div className="w-6 h-10 border border-luxury-champagne/40 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-luxury-gold/60 rounded-full mt-2"></div>
+          <div className="w-6 h-10 border border-satin-accent/50 rounded-full flex justify-center satin-glow">
+            <div className="w-1 h-3 bg-satin-accent/80 rounded-full mt-2 animate-smooth-bounce"></div>
           </div>
         </motion.div>
       </section>

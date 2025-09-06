@@ -9,7 +9,7 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-luxury-warm via-luxury-charcoal to-luxury-navy text-luxury-ivory font-sans;
+    @apply bg-gradient-to-br from-dark-900 via-satin-midnight to-satin-charcoal text-satin-pearl font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-attachment: fixed;
     line-height: 1.7;
@@ -22,63 +22,62 @@
 
 @layer components {
   .gradient-text {
-    @apply bg-gradient-to-r from-luxury-champagne via-luxury-gold to-luxury-rose bg-clip-text text-transparent font-display;
-    animation: letterSpacing 1.2s ease-out;
+    @apply bg-gradient-to-r from-satin-accent via-primary-400 to-satin-lightBlue bg-clip-text text-transparent font-display;
+    animation: fade-in 1.5s ease-out;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-luxury-warm via-luxury-charcoal to-luxury-navy;
+    @apply bg-gradient-to-br from-dark-900 via-satin-midnight to-satin-charcoal;
   }
 
   .glass-effect {
-    @apply bg-luxury-ivory/5 backdrop-blur-xl border border-luxury-champagne/20;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    @apply bg-satin-pearl/5 backdrop-blur-xl border border-satin-accent/20 rounded-2xl;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 179, 237, 0.1);
   }
 
   .hover-glow {
-    @apply transition-all duration-500 ease-out;
+    @apply transition-all duration-700 ease-out rounded-2xl;
   }
   
   .hover-glow:hover {
-    box-shadow: 0 8px 40px rgba(212, 197, 160, 0.15);
-    transform: translateY(-4px);
+    box-shadow: 0 12px 48px rgba(99, 179, 237, 0.2);
+    transform: translateY(-6px) scale(1.02);
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-luxury-champagne to-luxury-gold text-luxury-warm font-semibold py-4 px-10 rounded-sm transition-all duration-500 relative overflow-hidden;
-    box-shadow: 0 4px 20px rgba(212, 197, 160, 0.2);
+    @apply bg-gradient-to-r from-satin-accent to-primary-500 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-500 relative overflow-hidden;
+    box-shadow: 0 8px 25px rgba(99, 179, 237, 0.3);
     letter-spacing: 0.02em;
   }
   
   .btn-primary:hover {
-    box-shadow: 0 8px 30px rgba(212, 197, 160, 0.3);
-    transform: translateY(-2px);
+    animation: button-hover 0.3s ease-out forwards;
+    box-shadow: 0 12px 35px rgba(99, 179, 237, 0.4);
   }
   
-  .btn-primary::after {
+  .btn-primary::before {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(212, 197, 160, 0.8), transparent);
-    transition: all 0.5s ease;
-    transform: translateX(-50%);
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
   }
   
-  .btn-primary:hover::after {
-    width: 100%;
+  .btn-primary:hover::before {
+    left: 100%;
   }
 
   .btn-secondary {
-    @apply glass-effect hover:bg-luxury-ivory/10 text-luxury-ivory font-medium py-4 px-10 rounded-sm transition-all duration-500 border border-luxury-champagne/30 relative overflow-hidden;
+    @apply glass-effect hover:bg-satin-pearl/10 text-satin-pearl font-medium py-4 px-8 transition-all duration-500 border border-satin-accent/30 relative overflow-hidden;
   }
   
   .btn-secondary:hover {
-    border-color: rgba(212, 197, 160, 0.5);
-    box-shadow: 0 8px 25px rgba(212, 197, 160, 0.1);
-    transform: translateY(-1px);
+    border-color: rgba(99, 179, 237, 0.6);
+    box-shadow: 0 8px 25px rgba(99, 179, 237, 0.2);
+    transform: translateY(-2px) scale(1.02);
   }
   
   .btn-secondary::after {
@@ -87,26 +86,27 @@
     bottom: 0;
     left: 0;
     width: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 197, 160, 0.6), transparent);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(99, 179, 237, 0.8), transparent);
     transition: width 0.5s ease;
+    border-radius: 0 0 1rem 1rem;
   }
   
   .btn-secondary:hover::after {
     width: 100%;
   }
 
-  .elegant-glow {
-    box-shadow: 0 4px 20px rgba(212, 197, 160, 0.1);
-    animation: elegantGlow 4s ease-in-out infinite;
+  .satin-glow {
+    animation: satin-glow 4s ease-in-out infinite;
   }
 
-  .luxury-border {
+  .satin-border {
     position: relative;
-    border: 1px solid rgba(212, 197, 160, 0.2);
+    border: 1px solid rgba(99, 179, 237, 0.2);
+    border-radius: 1rem;
   }
   
-  .luxury-border::before {
+  .satin-border::before {
     content: '';
     position: absolute;
     top: 0;
@@ -115,9 +115,19 @@
     bottom: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(212, 197, 160, 0.3), transparent, rgba(212, 197, 160, 0.1));
+    background: linear-gradient(135deg, rgba(99, 179, 237, 0.3), transparent, rgba(99, 179, 237, 0.1));
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
+  }
+
+  .smooth-card {
+    @apply glass-effect satin-border hover-glow p-8 rounded-3xl;
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .smooth-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(99, 179, 237, 0.25);
   }
 
   .section-padding {

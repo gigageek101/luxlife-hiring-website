@@ -67,16 +67,12 @@ const Footer = () => {
                   
                   {/* Contact Info */}
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-3 text-white/70">
-                      <Mail className="w-4 h-4 text-primary-400" />
+                    <div className="flex items-center space-x-3 text-satin-pearl/70">
+                      <Mail className="w-4 h-4 text-satin-accent" />
                       <span>info@postemedia.com</span>
                     </div>
-                    <div className="flex items-center space-x-3 text-white/70">
-                      <Phone className="w-4 h-4 text-primary-400" />
-                      <span>+1 (555) 123-4567</span>
-                    </div>
-                    <div className="flex items-center space-x-3 text-white/70">
-                      <MapPin className="w-4 h-4 text-primary-400" />
+                    <div className="flex items-center space-x-3 text-satin-pearl/70">
+                      <MapPin className="w-4 h-4 text-satin-accent" />
                       <span>2880 W Oakland Park Blvd Suite 225C, Oakland Park, FL 33311</span>
                     </div>
                   </div>
