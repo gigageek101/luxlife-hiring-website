@@ -18,9 +18,6 @@ export default function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef(null)
   const motionValue = useMotionValue(0)
-  const rounded = useTransform(motionValue, (latest) => {
-    return Math.round(latest)
-  })
   const [displayValue, setDisplayValue] = useState('0')
   const isInView = useInView(ref, { once: true, amount: 0.5 })
 
@@ -30,7 +27,12 @@ export default function AnimatedCounter({
         duration,
         ease: [0.22, 1, 0.36, 1],
         onUpdate: (latest) => {
-          setDisplayValue(Math.round(latest).toString())
+          // Handle decimal numbers
+          if (value % 1 !== 0) {
+            setDisplayValue(latest.toFixed(1))
+          } else {
+            setDisplayValue(Math.round(latest).toString())
+          }
         }
       })
       

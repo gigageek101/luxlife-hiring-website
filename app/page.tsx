@@ -121,10 +121,10 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { number: 500, suffix: '+', label: 'Campaigns' },
-              { number: 2, suffix: 'M+', label: 'Followers Grown' },
-              { number: 300, suffix: '%', label: 'Average ROI' },
-              { number: 98, suffix: '%', label: 'Satisfaction' }
+              { number: 1.4, suffix: 'M+', label: 'Followers Gained' },
+              { number: 52, prefix: '+', suffix: '%', label: 'Conversion Rates Up' },
+              { number: 72, prefix: '+', suffix: '%', label: 'Engagement Rates' },
+              { number: 98, suffix: '%', label: 'Client Retention' }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -141,6 +141,7 @@ export default function Home() {
                 <div className="stat-number">
                   <AnimatedCounter 
                     value={stat.number} 
+                    prefix={stat.prefix}
                     suffix={stat.suffix}
                     duration={2}
                   />
