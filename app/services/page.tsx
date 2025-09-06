@@ -202,8 +202,8 @@ export default function ServicesPage() {
                   Get Started Today
                   <ArrowRight className="w-5 h-5" />
                 </Link>
-                <Link href="/case-studies" className="btn-secondary">
-                  View Success Stories
+                <Link href="/about" className="btn-secondary">
+                  Learn About Us
                 </Link>
               </div>
             </div>

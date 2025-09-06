@@ -81,11 +81,11 @@ export default function ContactPage() {
                     <div>
                       <h3 className="mb-2">Email Us</h3>
                       <a 
-                        href="mailto:info@postemedia.com"
+                        href="mailto:office@postemediallc.com"
                         className="hover:text-white transition-colors"
                         style={{ color: 'var(--text-secondary)' }}
                       >
-                        info@postemedia.com
+                        office@postemediallc.com
                       </a>
                     </div>
                   </div>

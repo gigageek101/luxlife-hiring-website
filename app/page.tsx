@@ -67,32 +67,51 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* Hero Section */}
-      <section className="section">
+      {/* Hero Section with increased top padding */}
+      <section className="section pt-32 md:pt-40">
         <div className="container">
-          <Reveal>
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="mb-6">
-                Helping Influencers & <span className="text-gradient">Theme Pages</span>
-                <br />Monetize Their Following
-              </h1>
-              
-              <p className="text-xl mb-8" style={{ color: 'var(--text-secondary)' }}>
-                Custom strategies, proven marketing methods, real growth.
-                <br />Turn your social media presence into a thriving business.
-              </p>
+          <motion.div 
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
+          >
+            <motion.h1 
+              className="mb-6"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Helping Influencers & <span className="text-gradient">Theme Pages</span>
+              <br />Monetize Their Following
+            </motion.h1>
+            
+            <motion.p 
+              className="text-xl mb-8" 
+              style={{ color: 'var(--text-secondary)' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Custom strategies, proven marketing methods, real growth.
+              <br />Turn your social media presence into a thriving business.
+            </motion.p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/contact" className="btn-primary">
-                  Get a Free Quote
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link href="/case-studies" className="btn-secondary">
-                  View Case Studies
-                </Link>
-              </div>
-            </div>
-          </Reveal>
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <Link href="/contact" className="btn-primary">
+                Get a Free Quote
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link href="/services" className="btn-secondary">
+                Explore Services
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -144,16 +163,26 @@ export default function Home() {
             {services.map((service, index) => (
               <motion.div
                 key={service.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 30, rotateX: -15 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.15,
+                  ease: [0.6, -0.05, 0.01, 0.99]
+                }}
                 viewport={{ once: true }}
                 className="card group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-lg" style={{ background: 'var(--accent)', opacity: 0.1 }}>
-                    <service.icon className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                  </div>
+                  <motion.div 
+                    className="p-4 rounded-xl flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
+                    whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <service.icon className="w-7 h-7 text-white" />
+                  </motion.div>
                   <div className="flex-1">
                     <h3 className="mb-2">{service.title}</h3>
                     <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
@@ -251,8 +280,8 @@ export default function Home() {
                   Get Started Today
                   <Zap className="w-5 h-5" />
                 </Link>
-                <Link href="/case-studies" className="btn-secondary">
-                  View Success Stories
+                <Link href="/services" className="btn-secondary">
+                  Our Services
                 </Link>
               </div>
             </div>

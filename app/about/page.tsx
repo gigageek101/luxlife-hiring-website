@@ -134,27 +134,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Location Section */}
-      <section className="section" style={{ background: 'var(--bg-soft)' }}>
-        <div className="container">
-          <Reveal>
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="mb-6">Our Location</h2>
-              <div className="card">
-                <p className="text-lg mb-4" style={{ color: 'var(--text-primary)' }}>
-                  POSTE MEDIA LLC
-                </p>
-                <p style={{ color: 'var(--text-secondary)' }}>
-                  2880 W Oakland Park Blvd<br />
-                  Suite 225C<br />
-                  Oakland Park, FL 33311
-                </p>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="section">
         <div className="container">

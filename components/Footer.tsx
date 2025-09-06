@@ -35,16 +35,6 @@ export default function Footer() {
                   Services
                 </Link>
               </li>
-              <li>
-                <Link href="/case-studies" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                  Case Studies
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                  Blog
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -72,12 +62,12 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-white">Contact</h4>
             <div className="space-y-3">
               <a 
-                href="mailto:info@postemedia.com" 
+                href="mailto:office@postemediallc.com" 
                 className="flex items-center gap-2 text-sm hover:text-white transition-colors"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 <Mail className="w-4 h-4" />
-                info@postemedia.com
+                office@postemediallc.com
               </a>
               <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                 <MapPin className="w-4 h-4 mt-0.5" />

@@ -31,8 +31,6 @@ const Navbar = () => {
         { name: 'Revenue Streams', href: '/services#revenue' },
       ]
     },
-    { name: 'Case Studies', href: '/case-studies' },
-    { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
   ]
 
