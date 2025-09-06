@@ -79,33 +79,6 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Social Links */}
-            <div className="flex gap-4 mt-6">
-              <a 
-                href="#" 
-                className="p-2 rounded-lg transition-colors"
-                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
-                aria-label="Instagram"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a 
-                href="#" 
-                className="p-2 rounded-lg transition-colors"
-                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a 
-                href="#" 
-                className="p-2 rounded-lg transition-colors"
-                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
           </div>
         </div>
 

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
+import ParallaxText from '@/components/ParallaxText'
 
 export default function Home() {
   const services = [
@@ -77,12 +78,20 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
           >
             <motion.h1 
-              className="mb-6"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mb-6 relative"
+              initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.6, 0.01, -0.05, 0.95] }}
             >
-              Helping Influencers & <span className="text-gradient">Theme Pages</span>
+              Helping Influencers & 
+              <motion.span 
+                className="text-gradient inline-block mx-2"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                Theme Pages
+              </motion.span>
               <br />Monetize Their Following
             </motion.h1>
             
@@ -103,11 +112,11 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Link href="/contact" className="btn-primary">
+              <Link href="/contact" className="btn-primary shine relative overflow-hidden">
                 Get a Free Quote
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link href="/services" className="btn-secondary">
+              <Link href="/services" className="btn-secondary glass">
                 Explore Services
               </Link>
             </motion.div>
@@ -127,19 +136,33 @@ export default function Home() {
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 40, scale: 0.8 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: '0 20px 40px rgba(59, 130, 246, 0.2)'
+                }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.1,
+                  ease: [0.6, 0.01, -0.05, 0.95]
+                }}
                 viewport={{ once: true }}
-                className="stat-card"
+                className="stat-card glass shine"
               >
-                <div className="stat-number">
+                <motion.div 
+                  className="stat-number"
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
+                  viewport={{ once: true }}
+                >
                   <AnimatedCounter 
                     value={stat.number} 
                     suffix={stat.suffix}
-                    duration={2}
+                    duration={2.5}
                   />
-                </div>
+                </motion.div>
                 <div className="stat-label">{stat.label}</div>
               </motion.div>
             ))}
@@ -150,14 +173,29 @@ export default function Home() {
       {/* Services Section */}
       <section className="section">
         <div className="container">
-          <Reveal>
+          <ParallaxText offset={30}>
             <div className="text-center mb-16">
-              <h2 className="mb-4">Our Services</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+              <motion.h2 
+                className="mb-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                Our Services
+              </motion.h2>
+              <motion.p 
+                className="text-xl" 
+                style={{ color: 'var(--text-secondary)' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
                 Everything you need to monetize your social media presence
-              </p>
+              </motion.p>
             </div>
-          </Reveal>
+          </ParallaxText>
 
           <div className="grid md:grid-cols-2 gap-8">
             {services.map((service, index) => (
@@ -172,13 +210,20 @@ export default function Home() {
                   ease: [0.6, -0.05, 0.01, 0.99]
                 }}
                 viewport={{ once: true }}
-                className="card group"
+                className="card group glass shine"
+                style={{
+                  backdropFilter: 'blur(20px)',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))'
+                }}
               >
                 <div className="flex items-start gap-4">
                   <motion.div 
-                    className="p-4 rounded-xl flex-shrink-0"
+                    className="p-4 rounded-xl flex-shrink-0 glow"
                     style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
-                    whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                    whileHover={{ 
+                      rotate: [0, -10, 10, -10, 0],
+                      scale: 1.1
+                    }}
                     transition={{ duration: 0.5 }}
                   >
                     <service.icon className="w-7 h-7 text-white" />

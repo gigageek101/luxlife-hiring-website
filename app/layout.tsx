@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'POSTE MEDIA LLC' }],
   creator: 'POSTE MEDIA LLC',
   publisher: 'POSTE MEDIA LLC',
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
