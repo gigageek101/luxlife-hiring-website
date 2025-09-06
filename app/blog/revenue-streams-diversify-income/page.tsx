@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, DollarSign, Lock, GraduationCap, Shirt, Zap, ArrowRight } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, TrendingUp, Lock, GraduationCap, Shirt, Zap, ArrowRight } from 'lucide-react'
 
 export default function RevenueStreamsDiversifyIncome() {
   return (
@@ -33,8 +33,8 @@ export default function RevenueStreamsDiversifyIncome() {
               transition={{ duration: 0.8 }}
             >
               {/* Header Icon */}
-              <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
-                <DollarSign className="w-12 h-12 text-white" />
+              <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }}>
+                <TrendingUp className="w-12 h-12 text-white" />
               </div>
 
               {/* Category */}

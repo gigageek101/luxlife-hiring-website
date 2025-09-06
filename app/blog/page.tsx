@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowRight, User, DollarSign, Target, Search, Brain, AlertTriangle } from 'lucide-react'
+import { Calendar, Clock, ArrowRight, User, DollarSign, Target, Search, Brain, AlertTriangle, TrendingUp } from 'lucide-react'
 
 export default function Blog() {
   const blogPosts = [
@@ -58,8 +58,8 @@ export default function Blog() {
       readTime: "4 min read",
       category: "Revenue",
       slug: "revenue-streams-diversify-income",
-      icon: DollarSign,
-      iconColor: "linear-gradient(135deg, #10b981, #059669)"
+      icon: TrendingUp,
+      iconColor: "linear-gradient(135deg, #3b82f6, #1d4ed8)"
     },
     {
       id: 6,
@@ -170,18 +170,6 @@ export default function Blog() {
             ))}
           </div>
 
-          {/* Load More Button */}
-          <motion.div
-            className="text-center mt-12"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <button className="btn-secondary hover-lift">
-              Load More Articles
-            </button>
-          </motion.div>
         </div>
       </section>
 
