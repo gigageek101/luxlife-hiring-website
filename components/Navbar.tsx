@@ -90,30 +90,16 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-64 bg-black rounded-lg shadow-2xl border border-blue-500/50 overflow-hidden z-50"
+                      className="absolute top-full left-0 mt-2 w-64 bg-black/95 rounded-lg shadow-xl border border-white/20 overflow-hidden z-50"
                       style={{
-                        boxShadow: '0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(59, 130, 246, 0.3)',
-                        backdropFilter: 'blur(20px)'
+                        backdropFilter: 'blur(10px)'
                       }}
                     >
                       {item.dropdown.map((dropdownItem) => (
                         <Link
                           key={dropdownItem.name}
                           href={dropdownItem.href}
-                          className="block px-4 py-3 text-white/90 hover:text-white hover:bg-blue-500/20 transition-all duration-300 relative group"
-                          style={{
-                            borderLeft: '3px solid transparent'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.borderLeft = '3px solid #3b82f6'
-                            e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.1)'
-                            e.currentTarget.style.boxShadow = 'inset 0 0 20px rgba(59, 130, 246, 0.2)'
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.borderLeft = '3px solid transparent'
-                            e.currentTarget.style.backgroundColor = 'transparent'
-                            e.currentTarget.style.boxShadow = 'none'
-                          }}
+                          className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200"
                         >
                           {dropdownItem.name}
                         </Link>
