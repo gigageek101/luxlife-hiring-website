@@ -8,42 +8,56 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Design system tokens
+        'bg': '#FFFFFF',
+        'bg-soft': '#FAFAFD',
+        'ink': '#1A1A1A',
+        'ink-soft': '#4B5563',
+        'border': '#E8E8EF',
+        'surface': '#FFFFFF',
+        
+        // Pastel palette
+        'pastel-coral': '#FF9AA2',
+        'pastel-peach': '#FFD3B6',
+        'pastel-mint': '#B8F2D0',
+        'pastel-aqua': '#A2E4F5',
+        'pastel-lav': '#DCC9FF',
+        
+        // Brand colors
+        'brand': '#FF9AA2',
+        'brand-600': '#F77C86',
+        'brand-700': '#DF6C75',
+        
+        // Legacy support
         primary: {
-          50: '#fef7f7',
-          100: '#fef2f2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
-        },
-        pastel: {
-          coral: '#FF9AA2',
-          peach: '#FFDAC1',
-          mint: '#C7FFD8',
-          lavender: '#E0BBE4',
-          aqua: '#A2E4F5',
-          white: '#FDFDFD',
-          ivory: '#FAF8F5',
-          lilac: '#F8F7FC',
-          charcoal: '#1a1a1a',
-          darkText: '#2d2d2d',
-          mediumText: '#4a4a4a',
-          lightText: '#666666',
-        },
-        background: {
-          primary: '#FDFDFD',
-          secondary: '#FAF8F5',
-          tertiary: '#F8F7FC',
+          500: '#FF9AA2',
+          600: '#F77C86',
+          700: '#DF6C75',
         }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         serif: ['Playfair Display', 'Georgia', 'serif'],
         display: ['Playfair Display', 'Georgia', 'serif'],
+      },
+      fontSize: {
+        'h1-mobile': ['36px', { lineHeight: '1.1', fontWeight: '400' }],
+        'h1-desktop': ['64px', { lineHeight: '1.1', fontWeight: '400' }],
+        'h2-mobile': ['28px', { lineHeight: '1.2', fontWeight: '600' }],
+        'h2-desktop': ['40px', { lineHeight: '1.2', fontWeight: '600' }],
+        'h3-mobile': ['22px', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3-desktop': ['28px', { lineHeight: '1.3', fontWeight: '600' }],
+        'body': ['16px', { lineHeight: '1.6' }],
+        'body-lg': ['18px', { lineHeight: '1.75' }],
+        'small': ['14px', { lineHeight: '1.5' }],
+      },
+      maxWidth: {
+        'prose': '68ch',
+        'prose-wide': '74ch',
+      },
+      boxShadow: {
+        'surface': '0 10px 30px rgba(20, 20, 40, 0.06)',
+        'button': '0 6px 16px rgba(255, 154, 162, 0.25)',
       },
       animation: {
         'fade-in': 'fadeIn 0.8s ease-out',

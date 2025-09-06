@@ -41,11 +41,8 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'glass-effect shadow-lg shadow-black/20' 
-          : 'bg-transparent'
-      }`}
+      className="fixed w-full z-50 bg-surface/95 backdrop-blur-md border-b border-border"
+      style={{ boxShadow: 'var(--shadow)' }}
     >
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 lg:h-20">
@@ -56,8 +53,8 @@ const Navbar = () => {
               transition={{ duration: 0.3, ease: 'easeOut' }}
               className="text-2xl lg:text-3xl font-display font-light tracking-wide"
             >
-              <span className="text-pastel-darkText">POSTE</span>
-              <span className="text-pastel-coral ml-2">MEDIA</span>
+              <span className="text-ink">POSTE</span>
+              <span className="text-brand ml-2">MEDIA</span>
             </motion.div>
           </Link>
 
@@ -72,13 +69,13 @@ const Navbar = () => {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-1 text-pastel-darkText hover:text-pastel-coral transition-colors duration-300 font-light relative group"
+                  className="flex items-center space-x-1 text-ink hover:text-brand transition-colors duration-200 font-medium relative group"
                 >
                   <span>{item.name}</span>
                   {item.dropdown && (
                     <ChevronDown className="w-4 h-4 transition-transform duration-200" />
                   )}
-                  <span className="absolute bottom-0 left-0 w-0 h-px bg-pastel-coral transition-all duration-300 group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-px bg-brand transition-all duration-200 group-hover:w-full"></span>
                 </Link>
 
                 {/* Dropdown Menu */}
@@ -106,7 +103,7 @@ const Navbar = () => {
               </div>
             ))}
             
-            <Link href="/contact" className="btn-primary">
+            <Link href="/contact" className="button button--primary">
               Get Started
             </Link>
           </div>

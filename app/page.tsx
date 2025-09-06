@@ -78,26 +78,20 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 pastel-gradient-bg">
-          {/* Floating pastel shapes */}
-          <div className="floating-shapes"></div>
-          <div className="floating-shapes"></div>
-          <div className="floating-shapes"></div>
-          {/* Subtle texture overlay */}
-          <div className="absolute inset-0 opacity-[0.02]" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255, 154, 162, 0.3) 1px, transparent 0)`,
-            backgroundSize: '50px 50px'
-          }}></div>
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0">
+          <div className="gradient-bg absolute inset-0"></div>
         </div>
 
-        <div className="relative z-10 container-custom text-center px-4">
+        <div className="relative z-10 container-custom text-center">
+          {/* Hero card with white surface */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
+            className="surface-card max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-light mb-8 leading-tight text-pastel-darkText">
+            <h1 className="mb-6">
               Helping Influencers &{' '}
               <span className="gradient-text">Theme Pages</span>{' '}
               Monetize Their Following
@@ -106,8 +100,8 @@ export default function Home() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-xl md:text-2xl text-pastel-mediumText mb-12 max-w-3xl mx-auto leading-relaxed font-light"
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-body-lg text-ink-soft mb-8 max-w-prose-wide mx-auto"
             >
               Custom strategies, proven marketing methods, real growth.
             </motion.p>
@@ -115,19 +109,18 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href="/contact" className="btn-primary text-lg">
+              <Link href="/contact" className="button button--primary">
                 Get a Free Quote
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
-              <Link href="/case-studies" className="btn-secondary text-lg">
+              <Link href="/case-studies" className="button button--secondary">
                 View Case Studies
               </Link>
             </motion.div>
           </motion.div>
-
         </div>
 
         {/* Gentle Scroll Indicator */}
@@ -188,30 +181,30 @@ export default function Home() {
       </section>
 
       {/* Services Overview */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-bg-soft">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6 text-pastel-darkText">
+            <h2 className="mb-6">
               Our <span className="gradient-text">Services</span>
             </h2>
-            <p className="text-xl text-pastel-mediumText max-w-2xl mx-auto">
+            <p className="text-body-lg text-ink-soft max-w-prose-wide mx-auto">
               Comprehensive solutions designed to maximize your social media potential
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service, index) => {
-              const cardClasses = [
-                'pastel-card-coral',
-                'pastel-card-mint', 
-                'pastel-card-lavender',
-                'pastel-card-aqua'
+              const cardVariants = [
+                'service-card--coral',
+                'service-card--peach', 
+                'service-card--mint',
+                'service-card--aqua'
               ];
               
               return (
@@ -219,36 +212,35 @@ export default function Home() {
                   key={service.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className={`${cardClasses[index % 4]} group cursor-pointer`}
+                  className={`service-card ${cardVariants[index % 4]} group cursor-pointer`}
                 >
                   <div className="flex items-center mb-6">
-                    <div className="p-3 bg-pastel-coral/20 rounded-lg mr-4 group-hover:bg-pastel-coral/30 transition-colors duration-300">
-                      <service.icon className="w-8 h-8 text-pastel-darkText" />
+                    <div className="p-3 bg-brand/10 rounded-lg mr-4 group-hover:bg-brand/20 transition-colors duration-200">
+                      <service.icon className="w-8 h-8 text-ink" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-pastel-darkText">{service.title}</h3>
+                    <h3>{service.title}</h3>
                   </div>
                   
-                  <p className="text-pastel-mediumText mb-6 leading-relaxed">
+                  <p className="text-ink-soft mb-6 max-w-prose">
                     {service.description}
                   </p>
 
                   <ul className="space-y-2 mb-6">
                     {service.features.map((feature) => (
-                      <li key={feature} className="flex items-center text-pastel-darkText">
-                        <CheckCircle className="w-4 h-4 text-pastel-coral mr-2" />
-                        {feature}
+                      <li key={feature} className="flex items-start text-ink text-small">
+                        <CheckCircle className="w-4 h-4 text-brand mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <Link 
                     href="/services" 
-                    className="inline-flex items-center text-pastel-coral hover:text-pastel-peach font-medium group-hover:translate-x-1 transition-all duration-200"
+                    className="button button--tertiary group-hover:translate-x-1 transition-transform duration-200"
                   >
-                    Learn More
-                    <ArrowRight className="ml-2 w-4 h-4" />
+                    Learn More →
                   </Link>
                 </motion.div>
               );
@@ -258,11 +250,11 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <Link href="/services" className="btn-primary text-lg px-8 py-4">
+            <Link href="/services" className="button button--primary">
               Learn More About Our Services
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
