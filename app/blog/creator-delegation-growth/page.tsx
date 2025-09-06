@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, AlertTriangle, TrendingDown, Zap, Target, Rocket, ArrowRight } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, AlertTriangle, TrendingDown, Zap, Target, Rocket, ArrowRight, DollarSign } from 'lucide-react'
 
 export default function CreatorDelegationGrowth() {
   return (
@@ -81,13 +81,13 @@ export default function CreatorDelegationGrowth() {
                 The creators who win in 2025 are the ones who focus on what they do best: creating content their audience loves.
               </p>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>1. ⏳ Time Is Your Scarcest Resource</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. ⏳ Time Is Your Scarcest Resource</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Clock className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Content creation alone takes hours: filming, editing, posting, engaging.
                     Now add:
                   </p>
@@ -105,13 +105,13 @@ export default function CreatorDelegationGrowth() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>2. 📉 DIY Leads to Slow Growth</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 📉 DIY Leads to Slow Growth</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <TrendingDown className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Creators who try to do it all themselves usually:
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -125,23 +125,30 @@ export default function CreatorDelegationGrowth() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>3. 💰 The ROI Is in Content, Not Admin Work</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>Ask yourself:</p>
-              <ul style={{ color: 'var(--text-secondary)' }}>
-                <li>Is your time better spent editing a Reel that hits 1M views…</li>
-                <li>Or answering endless emails from brands?</li>
-              </ul>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                The content is what attracts the audience, drives engagement, and makes deals possible. Without strong content, no monetization strategy matters.
-              </p>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 💰 The ROI Is in Content, Not Admin Work</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
+                  <DollarSign className="w-6 h-6" style={{ color: 'var(--accent)' }} />
+                </div>
+                <div>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>Ask yourself:</p>
+                  <ul style={{ color: 'var(--text-secondary)' }}>
+                    <li>Is your time better spent editing a Reel that hits 1M views…</li>
+                    <li>Or answering endless emails from brands?</li>
+                  </ul>
+                  <p style={{ color: 'var(--text-secondary)' }}>
+                    The content is what attracts the audience, drives engagement, and makes deals possible. Without strong content, no monetization strategy matters.
+                  </p>
+                </div>
+              </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>4. 🧑‍🎨 Focus on Your Genius Zone</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 🧑‍🎨 Focus on Your Genius Zone</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Target className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Every successful creator has one genius zone:
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -157,13 +164,13 @@ export default function CreatorDelegationGrowth() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>5. 🚀 High ROI Comes From Doubling Down</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🚀 High ROI Comes From Doubling Down</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Rocket className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     The creators who scale to 6- and 7-figures focus on maximizing the one thing only they can do: making content that resonates with their audience.
                   </p>
                   <p style={{ color: 'var(--text-secondary)' }}>
@@ -172,7 +179,7 @@ export default function CreatorDelegationGrowth() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
               <p style={{ color: 'var(--text-secondary)' }}>
                 Doing it yourself feels "safe" — but it's also slow and costly.
               </p>
@@ -193,7 +200,7 @@ export default function CreatorDelegationGrowth() {
                 </Link>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>❓FAQ: Should Creators Do It Themselves?</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Should Creators Do It Themselves?</h2>
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: Can a creator handle everything alone at the start?</h3>

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, Search, TrendingUp, Zap, Users, TestTube, ArrowRight } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, Search, TrendingUp, Zap, Users, TestTube, ArrowRight, Eye } from 'lucide-react'
 
 export default function HiddenNichesCrowdedMarket() {
   return (
@@ -79,13 +79,13 @@ export default function HiddenNichesCrowdedMarket() {
 
               <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Here's how to uncover hidden niches in 2025 👇</p>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>1. 🌱 Start With Micro-Communities</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. 🌱 Start With Micro-Communities</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Users className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Big niches (fitness, beauty, travel) are crowded. The gold is in micro-communities.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -101,13 +101,13 @@ export default function HiddenNichesCrowdedMarket() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>2. 📈 Spot Underserved Trends</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 📈 Spot Underserved Trends</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <TrendingUp className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     New markets appear every month. Look for gaps where demand is high but content is low.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -117,13 +117,13 @@ export default function HiddenNichesCrowdedMarket() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>3. 🔗 Combine Niches for an Edge</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 🔗 Combine Niches for an Edge</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Zap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Instead of one big niche, blend two smaller ones.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -137,21 +137,30 @@ export default function HiddenNichesCrowdedMarket() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>4. 👀 Analyze Your Competitors</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>Look at top creators in your niche:</p>
-              <ul style={{ color: 'var(--text-secondary)' }}>
-                <li>What content works for them?</li>
-                <li>Where are they missing out?</li>
-                <li>Can you fill that content gap with a twist?</li>
-              </ul>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 👀 Analyze Your Competitors</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
+                  <Eye className="w-6 h-6" style={{ color: 'var(--accent)' }} />
+                </div>
+                <div>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
+                    Look at top creators in your niche:
+                  </p>
+                  <ul style={{ color: 'var(--text-secondary)' }}>
+                    <li>What content works for them?</li>
+                    <li>Where are they missing out?</li>
+                    <li>Can you fill that content gap with a twist?</li>
+                  </ul>
+                </div>
+              </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>5. 🧪 Test Fast, Scale Winners</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🧪 Test Fast, Scale Winners</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <TestTube className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Don't spend months overthinking. Post quickly, watch results, adjust.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -166,7 +175,7 @@ export default function HiddenNichesCrowdedMarket() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
               <p style={{ color: 'var(--text-secondary)' }}>
                 In a crowded digital landscape, the winners are not the ones who shout the loudest — they're the ones who find niches, serve them well, and own the space.
               </p>
@@ -184,7 +193,7 @@ export default function HiddenNichesCrowdedMarket() {
                 </Link>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>❓FAQ: Niche Discovery</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Niche Discovery</h2>
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: What is the easiest way to find a niche?</h3>

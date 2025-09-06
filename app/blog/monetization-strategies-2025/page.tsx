@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, DollarSign, Users, Lock, FileText, UserCheck, Video, Globe, ArrowRight } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, DollarSign, Users, Lock, FileText, UserCheck, Video, Globe, ArrowRight, GraduationCap } from 'lucide-react'
 
 export default function MonetizationStrategies2025() {
   return (
@@ -189,14 +189,21 @@ export default function MonetizationStrategies2025() {
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>6. 🧑‍🏫 Coaching & Consulting Services</h2>
-              <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                If you're skilled in a niche (marketing, fitness, design, music, etc.), sell your knowledge as a service.
-              </p>
-              <ul style={{ color: 'var(--text-secondary)' }}>
-                <li>1:1 coaching calls</li>
-                <li>Group workshops</li>
-                <li>Long-term consulting packages</li>
-              </ul>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
+                  <GraduationCap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
+                </div>
+                <div>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
+                    If you're skilled in a niche (marketing, fitness, design, music, etc.), sell your knowledge as a service.
+                  </p>
+                  <ul style={{ color: 'var(--text-secondary)' }}>
+                    <li>1:1 coaching calls</li>
+                    <li>Group workshops</li>
+                    <li>Long-term consulting packages</li>
+                  </ul>
+                </div>
+              </div>
               <p style={{ color: 'var(--text-secondary)' }}>
                 This is a high-ticket monetization strategy that builds authority.
               </p>

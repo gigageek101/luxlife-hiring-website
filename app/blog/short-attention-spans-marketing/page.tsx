@@ -81,13 +81,13 @@ export default function ShortAttentionSpansMarketing() {
                 Here's why social media marketing has changed forever — and how you can adapt.
               </p>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>1. ⚡ Instant Hooks Are Everything</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. ⚡ Instant Hooks Are Everything</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Zap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     The first 3 seconds of your post or video decide if someone keeps watching.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -103,13 +103,13 @@ export default function ShortAttentionSpansMarketing() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>2. 🎥 Short-Form Video Rules</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 🎥 Short-Form Video Rules</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Video className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Platforms like TikTok, Instagram Reels, and YouTube Shorts dominate.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -120,23 +120,30 @@ export default function ShortAttentionSpansMarketing() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>3. 🧩 Micro-Content &gt; Long Walls of Text</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                Forget long essays on Instagram captions. People skim.
-              </p>
-              <ul style={{ color: 'var(--text-secondary)' }}>
-                <li>Use bullet points ✅</li>
-                <li>Break text with emojis 🎯</li>
-                <li>Keep it mobile-friendly 📱</li>
-              </ul>
-
-              <h2 style={{ color: 'var(--text-primary)' }}>4. 🔊 Sound & Trends Drive Reach</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 🧩 Micro-Content &gt; Long Walls of Text</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Hash className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
+                    Forget long essays on Instagram captions. People skim.
+                  </p>
+                  <ul style={{ color: 'var(--text-secondary)' }}>
+                    <li>Use bullet points ✅</li>
+                    <li>Break text with emojis 🎯</li>
+                    <li>Keep it mobile-friendly 📱</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 🔊 Sound & Trends Drive Reach</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
+                  <Hash className="w-6 h-6" style={{ color: 'var(--accent)' }} />
+                </div>
+                <div>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Audiences respond to:
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -152,13 +159,13 @@ export default function ShortAttentionSpansMarketing() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>5. 🤝 Engagement Beats Perfection</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🤝 Engagement Beats Perfection</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <MessageCircle className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     With short attention spans, the goal is interaction — not perfection.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -169,7 +176,7 @@ export default function ShortAttentionSpansMarketing() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
               <p style={{ color: 'var(--text-secondary)' }}>
                 Social media marketing has evolved into a game of attention. If you can capture interest in seconds, you'll win followers, engagement, and sales.
               </p>
@@ -187,7 +194,7 @@ export default function ShortAttentionSpansMarketing() {
                 </Link>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>❓FAQ: Short Attention Span Marketing</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Short Attention Span Marketing</h2>
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: How long should social media videos be?</h3>
