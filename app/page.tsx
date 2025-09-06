@@ -11,7 +11,13 @@ import {
   ArrowRight,
   CheckCircle,
   BarChart3,
-  Zap
+  Zap,
+  Search,
+  Brain,
+  AlertTriangle,
+  Dumbbell,
+  BookOpen,
+  Clock
 } from 'lucide-react'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
@@ -281,6 +287,207 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Blog Posts Teaser */}
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+        <div className="container">
+          <Reveal>
+            <div className="text-center mb-12">
+              <h2 className="mb-4">Latest Insights for Creators</h2>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+                Discover proven strategies to grow and monetize your following
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Blog Post 1 - Monetization Strategies */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/monetization-strategies-2025" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                  <DollarSign className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  7 Proven Monetization Strategies
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Discover 7 proven ways to monetize your audience in 2025
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  3 min read
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Blog Post 2 - Content Matching */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/match-content-audience" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
+                  <Target className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  Match Content With Your Audience
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Create content your audience actually cares about
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  2 min read
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Blog Post 3 - Hidden Niches */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/hidden-niches-crowded-market" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                  <Search className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  Finding Hidden Niches
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Discover untapped niches in a crowded market
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  3 min read
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Blog Post 4 - Attention Spans */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/short-attention-spans-marketing" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}>
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  Era of Short Attention Spans
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Why social media marketing changed forever
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  2 min read
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Blog Post 5 - Revenue Streams */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/revenue-streams-diversify-income" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }}>
+                  <TrendingUp className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  Diversify Your Income Streams
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Build multiple revenue channels for stability
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  4 min read
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Blog Post 6 - Creator Delegation */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/creator-delegation-growth" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                  <AlertTriangle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  Why DIY Won't Work
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Why creators who delegate scale faster
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  3 min read
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+
+          <Reveal delay={0.3}>
+            <div className="text-center mt-12">
+              <Link href="/blog" className="btn-primary">
+                View All Articles
+                <BookOpen className="w-5 h-5" />
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Case Study Teaser */}
+      <section className="section">
+        <div className="container">
+          <Reveal>
+            <div className="max-w-4xl mx-auto">
+              <Link href="/case-study-tania" className="card hover-lift group block" style={{ background: 'linear-gradient(135deg, var(--surface), var(--bg-soft))' }}>
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  <div className="flex items-center justify-center w-24 h-24 rounded-2xl flex-shrink-0" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                    <Dumbbell className="w-12 h-12 text-white" />
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="inline-block px-3 py-1 text-xs font-medium rounded-full mb-3" style={{ background: 'var(--accent)', color: 'white' }}>
+                      Success Story
+                    </div>
+                    <h3 className="mb-3 group-hover:text-[var(--accent)] transition-colors">
+                      How Fitness Influencer Tania S Transformed Her Brand
+                    </h3>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                      From burnout and 12-hour days to organized business success. Discover how POSTE MEDIA helped Tania build a sustainable creator business with better work-life balance and aligned partnerships.
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-[var(--accent)] font-medium group-hover:gap-3 transition-all duration-300">
+                      Read Success Story
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
