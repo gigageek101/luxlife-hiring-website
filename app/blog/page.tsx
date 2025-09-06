@@ -52,6 +52,17 @@ export default function Blog() {
     },
     {
       id: 5,
+      title: "Revenue Streams: How to Diversify Your Income as a Creator",
+      excerpt: "Relying on one income source is risky. Learn 5 powerful revenue streams to build stable, diversified creator income in 2025.",
+      date: "January 7, 2025",
+      readTime: "4 min read",
+      category: "Revenue",
+      slug: "revenue-streams-diversify-income",
+      icon: DollarSign,
+      iconColor: "linear-gradient(135deg, #10b981, #059669)"
+    },
+    {
+      id: 6,
       title: "Why Doing It All Yourself as a Creator Won't Work",
       excerpt: "Trying to do everything yourself is the fastest way to burn out and limit your growth. Here's why creators who delegate scale faster.",
       date: "January 5, 2025",

@@ -29,7 +29,8 @@ export default function ServicesPage() {
         'Affiliate program setup',
         'Revenue optimization'
       ],
-      cta: 'Start Monetizing'
+      cta: 'Start Monetizing',
+      link: '/blog/monetization-strategies-2025'
     },
     {
       icon: BarChart3,
@@ -42,7 +43,8 @@ export default function ServicesPage() {
         'Engagement rate improvement',
         'Hashtag strategy'
       ],
-      cta: 'Optimize Content'
+      cta: 'Optimize Content',
+      link: '/blog/match-content-audience'
     },
     {
       icon: Users,
@@ -55,7 +57,8 @@ export default function ServicesPage() {
         'Influencer collaborations',
         'Targeted follower acquisition'
       ],
-      cta: 'Grow Audience'
+      cta: 'Grow Audience',
+      link: '/blog/hidden-niches-crowded-market'
     },
     {
       icon: TrendingUp,
@@ -68,7 +71,8 @@ export default function ServicesPage() {
         'Merchandise strategies',
         'Passive income systems'
       ],
-      cta: 'Build Revenue'
+      cta: 'Build Revenue',
+      link: '/blog/revenue-streams-diversify-income'
     }
   ]
 
@@ -135,7 +139,7 @@ export default function ServicesPage() {
                 </ul>
 
                 <Link 
-                  href="/contact" 
+                  href={service.link || '/contact'} 
                   className="inline-flex items-center gap-2 font-medium"
                   style={{ color: 'var(--accent)' }}
                 >

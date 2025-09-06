@@ -105,7 +105,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               <Link href="/contact" className="btn-primary btn-shine hover-lift">
-                Get a Free Quote
+                Book a Free Consultation
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link href="/services" className="btn-secondary hover-lift">
