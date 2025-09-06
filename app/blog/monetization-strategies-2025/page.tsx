@@ -84,13 +84,13 @@ export default function MonetizationStrategies2025() {
                 If you're an influencer, content creator, or online entrepreneur, this guide will show you 7 proven ways to monetize your audience in 2025. Whether you have 1,000 followers or 1M+, these strategies can help you increase influencer income, build sustainable revenue, and protect yourself from algorithm changes.
               </p>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>1. 📢 Brand Deals & Sponsorships</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. 📢 Brand Deals & Sponsorships</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <UserCheck className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Brand collaborations are still one of the top ways influencers monetize.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -106,13 +106,13 @@ export default function MonetizationStrategies2025() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>2. 🔒 Exclusive Memberships & Subscriptions</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 🔒 Exclusive Memberships & Subscriptions</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Lock className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Turn loyal fans into paying members. Platforms like Patreon, Fanhouse, or private Discord communities make this easy.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -126,13 +126,13 @@ export default function MonetizationStrategies2025() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>3. 📕 Sell Digital Products</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 📕 Sell Digital Products</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <FileText className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Digital products are high-profit, low-maintenance. Examples:
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -146,13 +146,13 @@ export default function MonetizationStrategies2025() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>4. 🤝 Affiliate Marketing</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 🤝 Affiliate Marketing</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Users className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Affiliate marketing is a simple but powerful creator monetization strategy.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -168,13 +168,13 @@ export default function MonetizationStrategies2025() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>5. 🎥 Pay-Per-View or Premium Content</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🎥 Pay-Per-View or Premium Content</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Video className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Offer exclusive, one-time paid content such as:
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -188,8 +188,8 @@ export default function MonetizationStrategies2025() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>6. 🧑‍🏫 Coaching & Consulting Services</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>6. 🧑‍🏫 Coaching & Consulting Services</h2>
+              <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                 If you're skilled in a niche (marketing, fitness, design, music, etc.), sell your knowledge as a service.
               </p>
               <ul style={{ color: 'var(--text-secondary)' }}>
@@ -201,13 +201,13 @@ export default function MonetizationStrategies2025() {
                 This is a high-ticket monetization strategy that builds authority.
               </p>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>7. 🌐 Diversify Your Income Streams</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>7. 🌐 Diversify Your Income Streams</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Globe className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     The #1 rule of influencer monetization: don't rely on just one platform.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -218,7 +218,7 @@ export default function MonetizationStrategies2025() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
               <p style={{ color: 'var(--text-secondary)' }}>
                 The future of the creator economy belongs to those who mix creativity with monetization strategies. Start small, test multiple revenue streams, and track results.
               </p>
@@ -236,7 +236,7 @@ export default function MonetizationStrategies2025() {
                 </Link>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>❓FAQ: Monetization for Creators</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Monetization for Creators</h2>
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: What is the fastest way to monetize as a creator?</h3>

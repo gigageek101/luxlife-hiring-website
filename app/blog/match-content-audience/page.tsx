@@ -88,13 +88,13 @@ export default function MatchContentAudience() {
                 Here's how to do it in 2025 👇
               </p>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>1. 📊 Study Your Analytics</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. 📊 Study Your Analytics</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <BarChart3 className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Your followers leave clues in the numbers:
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -110,13 +110,13 @@ export default function MatchContentAudience() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>2. 🗣️ Ask Your Audience Directly</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 🗣️ Ask Your Audience Directly</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <MessageCircle className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Don't guess — ask.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -130,13 +130,13 @@ export default function MatchContentAudience() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>3. 🎥 Test Different Content Formats</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 🎥 Test Different Content Formats</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <Video className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Some audiences love quick Reels/Shorts, others prefer longer tutorials.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -147,8 +147,8 @@ export default function MatchContentAudience() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>4. 🎯 Adapt Your Tone & Style</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 🎯 Adapt Your Tone & Style</h2>
+              <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                 A fitness creator speaking to busy moms won't sound the same as one speaking to hardcore athletes.
               </p>
               <ul style={{ color: 'var(--text-secondary)' }}>
@@ -156,13 +156,13 @@ export default function MatchContentAudience() {
                 <li>Stay authentic, but mirror your audience's energy.</li>
               </ul>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>5. 🔁 Iterate & Evolve</h2>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 rounded-lg" style={{ background: 'var(--accent-muted)' }}>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🔁 Iterate & Evolve</h2>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
                   <RefreshCw className="w-6 h-6" style={{ color: 'var(--accent)' }} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     The audience you have today isn't the same one you'll have in 6 months.
                   </p>
                   <ul style={{ color: 'var(--text-secondary)' }}>
@@ -173,7 +173,7 @@ export default function MatchContentAudience() {
                 </div>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
               <p style={{ color: 'var(--text-secondary)' }}>
                 The most successful creators aren't the loudest — they're the ones who listen to their audience and adapt fast. Matching your content to your actual audience leads to:
               </p>
@@ -196,7 +196,7 @@ export default function MatchContentAudience() {
                 </Link>
               </div>
 
-              <h2 style={{ color: 'var(--text-primary)' }}>❓FAQ: Content & Audience Matching</h2>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Content & Audience Matching</h2>
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: How do I know if my content matches my audience?</h3>

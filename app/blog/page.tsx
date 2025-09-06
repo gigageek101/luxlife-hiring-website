@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowRight, User } from 'lucide-react'
+import { Calendar, Clock, ArrowRight, User, DollarSign, Target, Search, Brain, AlertTriangle } from 'lucide-react'
 
 export default function Blog() {
   const blogPosts = [
@@ -13,7 +13,9 @@ export default function Blog() {
       date: "January 15, 2025",
       readTime: "3 min read",
       category: "Monetization",
-      slug: "monetization-strategies-2025"
+      slug: "monetization-strategies-2025",
+      icon: DollarSign,
+      iconColor: "linear-gradient(135deg, #10b981, #059669)"
     },
     {
       id: 2,
@@ -22,7 +24,9 @@ export default function Blog() {
       date: "January 12, 2025",
       readTime: "2 min read",
       category: "Strategy",
-      slug: "match-content-audience"
+      slug: "match-content-audience",
+      icon: Target,
+      iconColor: "linear-gradient(135deg, #8b5cf6, #7c3aed)"
     },
     {
       id: 3,
@@ -31,7 +35,9 @@ export default function Blog() {
       date: "January 10, 2025",
       readTime: "3 min read",
       category: "Growth",
-      slug: "hidden-niches-crowded-market"
+      slug: "hidden-niches-crowded-market",
+      icon: Search,
+      iconColor: "linear-gradient(135deg, #f59e0b, #d97706)"
     },
     {
       id: 4,
@@ -40,7 +46,9 @@ export default function Blog() {
       date: "January 8, 2025",
       readTime: "2 min read",
       category: "Strategy",
-      slug: "short-attention-spans-marketing"
+      slug: "short-attention-spans-marketing",
+      icon: Brain,
+      iconColor: "linear-gradient(135deg, #ef4444, #dc2626)"
     },
     {
       id: 5,
@@ -49,7 +57,9 @@ export default function Blog() {
       date: "January 5, 2025",
       readTime: "3 min read",
       category: "Business",
-      slug: "creator-delegation-growth"
+      slug: "creator-delegation-growth",
+      icon: AlertTriangle,
+      iconColor: "linear-gradient(135deg, #f97316, #ea580c)"
     }
   ]
 
@@ -95,20 +105,18 @@ export default function Blog() {
                 viewport={{ once: true }}
               >
                 <Link href={`/blog/${post.slug}`}>
-                  {/* Post Image */}
-                  <div className="relative overflow-hidden rounded-lg mb-6">
-                    <div 
-                      className="w-full h-48 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-hover)] opacity-20"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  {/* Post Header with Icon */}
+                  <div className="relative overflow-hidden rounded-lg mb-6 flex items-center justify-center h-48" style={{ background: post.iconColor }}>
+                    <post.icon className="w-16 h-16 text-white" />
                     
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
                       <span 
                         className="px-3 py-1 text-xs font-medium rounded-full"
                         style={{ 
-                          background: 'var(--accent)', 
-                          color: 'white' 
+                          background: 'rgba(255,255,255,0.2)', 
+                          color: 'white',
+                          backdropFilter: 'blur(10px)'
                         }}
                       >
                         {post.category}
