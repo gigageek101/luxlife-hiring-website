@@ -14,6 +14,8 @@ import {
   Zap,
   Shield
 } from 'lucide-react'
+import AnimatedCounter from '@/components/AnimatedCounter'
+import Reveal from '@/components/Reveal'
 
 export default function Home() {
   const services = [
@@ -135,21 +137,34 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Stats Section - Always on white cards */}
+      {/* Stats Section - Always on white cards with animated counters */}
       <section className="section-padding" style={{ backgroundColor: 'var(--bg-soft)' }}>
         <div className="container-custom">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
+            {[
+              { number: 500, suffix: '+', label: 'Successful Campaigns' },
+              { number: 2, suffix: 'M+', label: 'Followers Grown' },
+              { number: 300, suffix: '%', label: 'Average ROI' },
+              { number: 98, suffix: '%', label: 'Client Satisfaction' }
+            ].map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: index * 0.1,
+                  ease: [0.22, 1, 0.36, 1]
+                }}
                 viewport={{ once: true }}
-                className="stats-card"
+                className="stats-card group hover:scale-105 transition-transform duration-300"
               >
                 <div className="stats-number">
-                  {stat.number}
+                  <AnimatedCounter 
+                    value={stat.number} 
+                    suffix={stat.suffix}
+                    duration={2 + index * 0.2}
+                  />
                 </div>
                 <div className="stats-label">{stat.label}</div>
               </motion.div>
@@ -210,9 +225,17 @@ export default function Home() {
               return (
                 <motion.div
                   key={service.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  initial={{ opacity: 0, y: 30, rotateX: -10 }}
+                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                  whileHover={{ 
+                    y: -8, 
+                    transition: { duration: 0.2 }
+                  }}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: index * 0.1,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
                   viewport={{ once: true }}
                   className={`service-card ${cardVariants[index % 4]} group cursor-pointer`}
                 >
@@ -327,50 +350,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="section-padding bg-gradient-to-r from-primary-600/20 to-primary-500/20">
+      {/* Final CTA - Tasteful Emojis */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--bg)' }}>
         <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h2 className="text-3xl lg:text-4xl font-display font-bold mb-6">
-              Ready to Start Growing Your Instagram Into a <span className="gradient-text">Business</span>?
-            </h2>
-            <p className="text-xl text-white/80 mb-8 leading-relaxed">
-              Join hundreds of successful influencers who have transformed their social media presence 
-              into thriving businesses with our proven strategies.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/contact" className="btn-primary text-lg px-8 py-4">
-                Request a Quote Today
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-              <Link href="/case-studies" className="btn-secondary text-lg px-8 py-4">
-                View Success Stories
-              </Link>
-            </div>
+          <Reveal>
+            <div className="text-center max-w-4xl mx-auto surface-card">
+              <h2 className="mb-6">
+                Ready to grow your Instagram into a business?
+              </h2>
+              <p className="text-body-lg max-w-prose-wide mx-auto mb-8" style={{ color: 'var(--ink-soft)' }}>
+                Join creators who scaled with POSTE MEDIA's strategies.
+              </p>
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Link href="/contact" className="button button--primary">
+                  Get a Free Quote
+                  <span className="ml-2">🚀</span>
+                </Link>
+                <Link href="/case-studies" className="button button--secondary">
+                  View Case Studies
+                  <span className="ml-2">✨</span>
+                </Link>
+              </motion.div>
 
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center items-center gap-8 mt-12 pt-8 border-t border-white/10">
-              <div className="flex items-center space-x-2 text-white/60">
-                <Shield className="w-5 h-5 text-primary-400" />
-                <span>100% Confidential</span>
-              </div>
-              <div className="flex items-center space-x-2 text-white/60">
-                <Zap className="w-5 h-5 text-primary-400" />
-                <span>Fast Results</span>
-              </div>
-              <div className="flex items-center space-x-2 text-white/60">
-                <CheckCircle className="w-5 h-5 text-primary-400" />
-                <span>Proven Strategies</span>
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap justify-center items-center gap-8 mt-12 pt-8 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-center space-x-2" style={{ color: 'var(--ink-soft)' }}>
+                  <Shield className="w-5 h-5" style={{ color: 'var(--brand)' }} />
+                  <span>100% Confidential</span>
+                </div>
+                <div className="flex items-center space-x-2" style={{ color: 'var(--ink-soft)' }}>
+                  <Zap className="w-5 h-5" style={{ color: 'var(--brand)' }} />
+                  <span>Fast Results</span>
+                </div>
+                <div className="flex items-center space-x-2" style={{ color: 'var(--ink-soft)' }}>
+                  <CheckCircle className="w-5 h-5" style={{ color: 'var(--brand)' }} />
+                  <span>Proven Strategies</span>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </Reveal>
         </div>
       </section>
     </div>
