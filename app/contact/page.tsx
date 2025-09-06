@@ -40,11 +40,36 @@ export default function Contact() {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setIsSubmitted(true)
+        setFormData({
+          fullName: '',
+          email: '',
+          instagramHandle: '',
+          monthlyReach: '',
+          message: ''
+        })
+      } else {
+        console.error('Form submission error:', result.error)
+        alert('There was an error sending your message. Please try again.')
+      }
+    } catch (error) {
+      console.error('Network error:', error)
+      alert('Network error. Please check your connection and try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactInfo = [
@@ -63,7 +88,7 @@ export default function Contact() {
     {
       icon: MapPin,
       title: 'Visit Us',
-      content: 'New York, NY',
+      content: '2880 W Oakland Park Blvd Suite 225C, Oakland Park, FL 33311',
       description: 'Schedule an in-person meeting'
     },
     {
@@ -108,9 +133,9 @@ export default function Contact() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-md mx-auto px-4"
         >
-          <div className="glass-effect p-8 rounded-2xl">
-            <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-6" />
-            <h2 className="text-2xl font-display font-bold mb-4">Thank You!</h2>
+          <div className="glass-effect p-8 rounded-2xl cyberpunk-border">
+            <CheckCircle className="w-16 h-16 text-neon-cyan mx-auto mb-6 animate-pulse-neon" />
+            <h2 className="text-2xl font-display font-bold mb-4 gradient-text">Thank You!</h2>
             <p className="text-white/80 mb-6">
               We've received your message and will get back to you within 24 hours with a personalized growth strategy.
             </p>

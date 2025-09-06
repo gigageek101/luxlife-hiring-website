@@ -225,12 +225,19 @@ export default function About() {
                 <Award className="w-16 h-16 text-primary-400 mx-auto mb-6" />
                 <h3 className="text-2xl font-semibold mb-4">Industry Recognition</h3>
                 <p className="text-white/70 mb-6">
-                  Trusted by top influencers and recognized as a leading agency in social media monetization.
+                  Trusted by top influencers and recognized as a leading agency in social media monetization. Based in Oakland Park, Florida.
                 </p>
-                <div className="space-y-3">
+                <div className="space-y-3 mb-6">
                   <div className="text-primary-400 font-semibold">Top 10 Influencer Marketing Agency 2024</div>
                   <div className="text-primary-400 font-semibold">Best Growth Strategy Award 2023</div>
                   <div className="text-primary-400 font-semibold">Client Choice Award 2023</div>
+                </div>
+                <div className="glass-effect p-4 rounded-lg">
+                  <h4 className="text-lg font-semibold mb-2 text-neon-cyan">Our Location</h4>
+                  <p className="text-white/80 text-sm">
+                    2880 W Oakland Park Blvd Suite 225C<br />
+                    Oakland Park, FL 33311
+                  </p>
                 </div>
               </div>
             </motion.div>

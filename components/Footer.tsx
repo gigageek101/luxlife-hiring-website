@@ -77,7 +77,7 @@ const Footer = () => {
                     </div>
                     <div className="flex items-center space-x-3 text-white/70">
                       <MapPin className="w-4 h-4 text-primary-400" />
-                      <span>New York, NY</span>
+                      <span>2880 W Oakland Park Blvd Suite 225C, Oakland Park, FL 33311</span>
                     </div>
                   </div>
                 </motion.div>

@@ -9,8 +9,9 @@
   }
   
   body {
-    @apply bg-dark-900 text-white font-sans;
+    @apply bg-gradient-to-br from-black via-gray-900 to-purple-900 text-white font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-attachment: fixed;
   }
 
   html {
@@ -20,27 +21,72 @@
 
 @layer components {
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-neon-pink via-neon-cyan to-neon-purple bg-clip-text text-transparent;
+    animation: pulseNeon 3s ease-in-out infinite;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900;
+    @apply bg-gradient-to-br from-black via-gray-900 to-purple-900;
   }
 
   .glass-effect {
     @apply bg-white/5 backdrop-blur-md border border-white/10;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .hover-glow {
-    @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/25;
+    @apply transition-all duration-300;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+    transform: translateY(-2px);
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary-500/25;
+    @apply bg-gradient-to-r from-neon-pink to-neon-cyan text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 relative overflow-hidden;
+    box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  
+  .btn-primary:hover {
+    animation: pulse-neon 0.5s ease-in-out, shake 0.5s ease-in-out;
+    box-shadow: 0 0 30px rgba(255, 0, 128, 0.8), 0 0 60px rgba(0, 255, 255, 0.6);
+    transform: scale(1.05);
   }
 
   .btn-secondary {
-    @apply glass-effect hover:bg-white/10 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105;
+    @apply glass-effect hover:bg-white/10 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 border-2 border-neon-cyan/50;
+  }
+  
+  .btn-secondary:hover {
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    transform: scale(1.02);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+  }
+
+  .cyberpunk-border {
+    position: relative;
+  }
+  
+  .cyberpunk-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    border-radius: inherit;
+    background: linear-gradient(45deg, #ff0080, #00ffff, #8b5cf6) border-box;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: neonBorder 3s ease-in-out infinite;
   }
 
   .section-padding {

@@ -17,8 +17,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: 'POSTE MEDIA LLC - Helping Influencers & Theme Pages Monetize Their Following',
-  description: 'Custom strategies, proven marketing methods, real growth. We help influencers and Instagram theme pages monetize their following with tailored approaches.',
-  keywords: 'influencer marketing, Instagram monetization, theme pages, social media growth, content optimization, revenue streams',
+  description: 'Custom strategies, proven marketing methods, real growth. We help influencers and Instagram theme pages monetize their following with tailored approaches. Located in Oakland Park, FL.',
+  keywords: 'influencer marketing, Instagram monetization, theme pages, social media growth, content optimization, revenue streams, Oakland Park FL, Florida marketing agency',
   authors: [{ name: 'POSTE MEDIA LLC' }],
   creator: 'POSTE MEDIA LLC',
   publisher: 'POSTE MEDIA LLC',

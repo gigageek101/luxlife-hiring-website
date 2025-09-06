@@ -80,9 +80,16 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 gradient-bg">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-transparent"></div>
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary-600/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-neon-pink/10 via-transparent to-neon-cyan/10"></div>
+          {/* Fixed floating elements with proper positioning */}
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-neon-pink/10 rounded-full blur-3xl animate-float hidden lg:block"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-neon-cyan/10 rounded-full blur-3xl animate-float hidden lg:block" style={{ animationDelay: '1s' }}></div>
+          {/* Cyberpunk grid overlay */}
+          <div className="absolute inset-0 opacity-5" style={{
+            backgroundImage: `linear-gradient(rgba(255, 0, 128, 0.1) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(255, 0, 128, 0.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}></div>
         </div>
 
         <div className="relative z-10 container-custom text-center px-4">
@@ -93,7 +100,7 @@ export default function Home() {
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6">
               Helping Influencers &{' '}
-              <span className="gradient-text">Theme Pages</span>{' '}
+              <span className="gradient-text animate-glitch">Theme Pages</span>{' '}
               Monetize Their Following
             </h1>
             
@@ -112,7 +119,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href="/contact" className="btn-primary text-lg px-8 py-4">
+              <Link href="/contact" className="btn-primary text-lg px-8 py-4 animate-pulse-neon">
                 Get a Free Quote
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -122,24 +129,24 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Floating Elements */}
+          {/* Fixed Floating Elements */}
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-20 left-10 hidden lg:block"
+            className="absolute top-20 left-4 lg:left-10 hidden md:block z-20"
           >
-            <div className="glass-effect p-4 rounded-lg">
-              <TrendingUp className="w-8 h-8 text-primary-400" />
+            <div className="glass-effect p-4 rounded-lg cyberpunk-border neon-glow">
+              <TrendingUp className="w-6 h-6 lg:w-8 lg:h-8 text-neon-pink" />
             </div>
           </motion.div>
 
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-            className="absolute top-32 right-10 hidden lg:block"
+            className="absolute top-32 right-4 lg:right-10 hidden md:block z-20"
           >
-            <div className="glass-effect p-4 rounded-lg">
-              <Target className="w-8 h-8 text-primary-400" />
+            <div className="glass-effect p-4 rounded-lg cyberpunk-border neon-glow">
+              <Target className="w-6 h-6 lg:w-8 lg:h-8 text-neon-cyan" />
             </div>
           </motion.div>
         </div>
