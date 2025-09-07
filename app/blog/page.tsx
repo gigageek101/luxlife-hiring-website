@@ -4,6 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Calendar, Clock, ArrowRight, User, DollarSign, Target, Search, Brain, AlertTriangle, TrendingUp } from 'lucide-react'
+import { trackDiscordClick } from '@/utils/analytics'
 
 export default function Blog() {
   const blogPosts = [
@@ -194,6 +195,7 @@ export default function Blog() {
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-primary"
+              onClick={trackDiscordClick}
             >
               Join Our Discord Community
             </a>

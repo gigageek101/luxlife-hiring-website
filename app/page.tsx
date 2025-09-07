@@ -25,6 +25,7 @@ import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
 import ParallaxText from '@/components/ParallaxText'
 import DynamicBackground from '@/components/DynamicBackground'
+import { trackDiscordClick } from '@/utils/analytics'
 
 export default function Home() {
   const benefits = [
@@ -167,6 +168,7 @@ export default function Home() {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="btn-primary hover-lift hover-glow text-xl px-12 py-6 font-bold"
+                onClick={trackDiscordClick}
               >
                 👉 Join Our Discord Now (Free Access)
                 <ExternalLink className="w-6 h-6" />
@@ -293,6 +295,7 @@ export default function Home() {
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
+                onClick={trackDiscordClick}
               >
                 🔥 Join Our Discord Today →
                 <ExternalLink className="w-5 h-5" />
@@ -597,6 +600,7 @@ export default function Home() {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
+                  onClick={trackDiscordClick}
                 >
                   👉 Join Our Discord Now – Free Access
                   <ExternalLink className="w-5 h-5" />

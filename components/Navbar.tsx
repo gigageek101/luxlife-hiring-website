@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { trackDiscordClick } from '@/utils/analytics'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -78,7 +79,13 @@ const Navbar = () => {
               </Link>
             ))}
             
-            <a href="https://myallsocials.com/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary">
+            <a 
+              href="https://myallsocials.com/luxlife" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn-primary"
+              onClick={trackDiscordClick}
+            >
               Join Discord
             </a>
           </div>
@@ -114,15 +121,18 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
-                <a
-                  href="https://myallsocials.com/luxlife"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full text-center btn-primary mt-4"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Join Discord
-                </a>
+                            <a
+                              href="https://myallsocials.com/luxlife"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block w-full text-center btn-primary mt-4"
+                              onClick={() => {
+                                trackDiscordClick();
+                                setIsOpen(false);
+                              }}
+                            >
+                              Join Discord
+                            </a>
               </div>
             </motion.div>
           )}

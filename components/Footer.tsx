@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
+import { trackDiscordClick } from '@/utils/analytics'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -58,6 +59,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm hover:text-white transition-colors flex items-center gap-1" 
                   style={{ color: 'var(--text-secondary-on-black)' }}
+                  onClick={trackDiscordClick}
                 >
                   Join Discord
                   <ExternalLink className="w-3 h-3" />
