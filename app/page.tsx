@@ -24,6 +24,7 @@ import {
 import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
 import ParallaxText from '@/components/ParallaxText'
+import DynamicBackground from '@/components/DynamicBackground'
 
 export default function Home() {
   const benefits = [
@@ -118,9 +119,11 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen relative">
+      <DynamicBackground />
+      
       {/* Hero Section */}
-      <section className="section pt-32 md:pt-40">
+      <section className="section pt-32 md:pt-40 relative z-10">
         <div className="container">
           <motion.div 
             className="max-w-4xl mx-auto text-center"
@@ -129,12 +132,12 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.6, -0.05, 0.01, 0.99] }}
           >
             <motion.h1 
-              className="mb-6"
+              className="mb-6 text-6xl md:text-7xl font-bold leading-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              🌟 Find Your Next <span className="text-gradient">Career Opportunity</span>
+              🌟 Find Your Next <span className="gradient-text">Career Opportunity</span>
               <br />in the Philippines
             </motion.h1>
             
@@ -158,10 +161,10 @@ export default function Home() {
                 href="https://myallsocials.com/luxlife" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
+                className="btn-primary hover-lift hover-glow text-xl px-12 py-6 font-bold"
               >
                 👉 Join Our Discord Now (Free Access)
-                <ExternalLink className="w-5 h-5" />
+                <ExternalLink className="w-6 h-6" />
               </a>
             </motion.div>
 
@@ -182,7 +185,7 @@ export default function Home() {
       </section>
 
       {/* Why HiringPhilippines Section */}
-      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+      <section className="section relative z-10" style={{ background: 'var(--surface)' }}>
         <div className="container">
           <ParallaxText offset={30}>
             <div className="text-center mb-16">
@@ -220,7 +223,7 @@ export default function Home() {
                   ease: "easeOut"
                 }}
                 viewport={{ once: true }}
-                className="card hover-lift glass-card"
+                className="card hover-lift hover-glow glass-card"
               >
                 <div className="flex items-start gap-4">
                   <div 

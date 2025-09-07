@@ -33,9 +33,10 @@ const Navbar = () => {
       transition={{ duration: 0.5 }}
       className="fixed w-full z-50 border-b"
       style={{ 
-        background: 'rgba(10, 10, 10, 0.8)',
-        backdropFilter: 'blur(10px)',
-        borderColor: 'var(--border)'
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow-sm)'
       }}
     >
       <div className="container">
@@ -57,8 +58,8 @@ const Navbar = () => {
                 />
               </div>
               <div className="text-xl lg:text-2xl font-bold tracking-wide">
-                <span className="text-white">HiringPhilippines</span>
-                <div className="text-xs text-orange-400 -mt-1">by LuxLife Agency</div>
+                <span className="text-black">HiringPhilippines</span>
+                <div className="text-xs -mt-1" style={{ color: 'var(--accent)' }}>by LuxLife Agency</div>
               </div>
             </motion.div>
           </Link>
@@ -69,10 +70,11 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
+                className="transition-colors duration-200 font-medium relative group hover-lift"
+                style={{ color: 'var(--text-primary)' }}
               >
                 <span>{item.name}</span>
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-px transition-all duration-200 group-hover:w-full" style={{ background: 'var(--accent)' }}></span>
               </Link>
             ))}
             
