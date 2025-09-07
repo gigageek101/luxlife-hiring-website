@@ -133,13 +133,17 @@ export default function Home() {
           >
             <motion.h1 
               className="mb-6 text-6xl md:text-7xl font-bold leading-tight"
-              style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              🌟 Find Your Next <span className="gradient-text">Career Opportunity</span>
-              <br />in the Philippines
+              <span style={{ color: '#000000', textShadow: '0 2px 4px rgba(255, 255, 255, 0.3)' }}>Find Your Next</span>{' '}
+              <span className="elegant-text">Career Opportunity</span>
+              <br />
+              <span style={{ color: '#000000', textShadow: '0 2px 4px rgba(255, 255, 255, 0.3)' }} className="inline-flex items-center gap-3">
+                in the Philippines
+                <span className="text-4xl md:text-5xl">🇵🇭</span>
+              </span>
             </motion.h1>
             
             <motion.p 

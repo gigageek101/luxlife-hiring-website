@@ -359,30 +359,74 @@
     50% { transform: scale(1.05); opacity: 0.8; }
   }
 
-  /* Gold shine text with scroll effect */
-  .gradient-text {
-    color: #ffffff; /* White base color */
+  /* Elegant floating glow animation */
+  .elegant-text {
+    color: #ffffff;
     font-weight: 700;
     position: relative;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 
+      0 0 10px rgba(255, 255, 255, 0.5),
+      0 0 20px rgba(255, 255, 255, 0.3),
+      0 0 30px rgba(255, 255, 255, 0.2);
+    animation: elegantFloat 4s ease-in-out infinite;
   }
   
-  .gradient-text::before {
+  .elegant-text::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 20px;
+    animation: elegantPulse 3s ease-in-out infinite;
+    z-index: -1;
+  }
+  
+  .elegant-text::after {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.8), transparent);
-    animation: goldShine 3s ease-in-out infinite;
-    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    animation: elegantShimmer 6s linear infinite;
+    z-index: -1;
   }
   
-  @keyframes goldShine {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    100% { left: -100%; }
+  @keyframes elegantFloat {
+    0%, 100% { 
+      transform: translateY(0px);
+      text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.5),
+        0 0 20px rgba(255, 255, 255, 0.3),
+        0 0 30px rgba(255, 255, 255, 0.2);
+    }
+    50% { 
+      transform: translateY(-5px);
+      text-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.7),
+        0 0 25px rgba(255, 255, 255, 0.4),
+        0 0 35px rgba(255, 255, 255, 0.3);
+    }
+  }
+  
+  @keyframes elegantPulse {
+    0%, 100% { 
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.6;
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes elegantShimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(200%) rotate(45deg); }
   }
   
   /* Ensure gradient text is readable on different backgrounds */
