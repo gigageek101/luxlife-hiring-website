@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { ExternalLink } from 'lucide-react'
 
 export default function Footer() {
@@ -15,7 +14,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
               <div className="relative">
-                <Image
+                <img
                   src="/luxlife-logo.svg"
                   alt="LuxLife Agency"
                   width={50}
@@ -54,7 +53,7 @@ export default function Footer() {
               </li>
               <li>
                 <a 
-                  href="https://discord.gg/luxlife" 
+                  href="https://myallsocials.com/luxlife" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-sm hover:text-white transition-colors flex items-center gap-1" 

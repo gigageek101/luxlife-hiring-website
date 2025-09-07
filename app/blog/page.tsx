@@ -189,7 +189,7 @@ export default function Blog() {
               Join our Discord community and connect with verified employers who value Filipino talent.
             </p>
             <a 
-              href="https://discord.gg/luxlife" 
+              href="https://myallsocials.com/luxlife" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90"

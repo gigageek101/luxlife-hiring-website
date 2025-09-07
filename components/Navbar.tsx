@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
@@ -49,7 +48,7 @@ const Navbar = () => {
               className="flex items-center space-x-3"
             >
               <div className="relative">
-                <Image
+                <img
                   src="/luxlife-logo.svg"
                   alt="LuxLife Agency"
                   width={60}
@@ -77,7 +76,7 @@ const Navbar = () => {
               </Link>
             ))}
             
-            <a href="https://discord.gg/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary">
+            <a href="https://myallsocials.com/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary">
               Join Discord
             </a>
           </div>
@@ -113,7 +112,7 @@ const Navbar = () => {
                   </Link>
                 ))}
                 <a
-                  href="https://discord.gg/luxlife"
+                  href="https://myallsocials.com/luxlife"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full text-center btn-primary mt-4"

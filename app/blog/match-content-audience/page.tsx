@@ -172,7 +172,7 @@ export default function HiddenScams() {
                   Join our free Discord today and turn effort into opportunity.
                 </p>
                 <a 
-                  href="https://discord.gg/luxlife" 
+                  href="https://myallsocials.com/luxlife" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-white text-[var(--accent)] px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
