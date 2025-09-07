@@ -49,11 +49,11 @@ const Navbar = () => {
             >
               <div className="relative">
                 <img
-                  src="/luxlife-logo.svg"
+                  src="/favicon.svg"
                   alt="LuxLife Agency"
-                  width={60}
-                  height={36}
-                  className="filter drop-shadow-lg"
+                  width={40}
+                  height={40}
+                  className="filter drop-shadow-lg hover:scale-110 transition-transform duration-300"
                 />
               </div>
               <div className="text-xl lg:text-2xl font-bold tracking-wide">

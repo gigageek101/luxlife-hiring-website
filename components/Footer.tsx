@@ -15,11 +15,11 @@ export default function Footer() {
             <div className="flex items-center space-x-3 mb-4">
               <div className="relative">
                 <img
-                  src="/luxlife-logo.svg"
+                  src="/favicon.svg"
                   alt="LuxLife Agency"
-                  width={50}
-                  height={30}
-                  className="filter drop-shadow-lg"
+                  width={35}
+                  height={35}
+                  className="filter drop-shadow-lg hover:scale-110 transition-transform duration-300"
                 />
               </div>
               <div>

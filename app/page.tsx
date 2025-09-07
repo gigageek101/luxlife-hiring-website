@@ -524,17 +524,17 @@ export default function Home() {
               <Link href="/case-study" className="card hover-lift group block" style={{ background: 'linear-gradient(135deg, var(--surface), var(--bg-soft))' }}>
                 <div className="flex flex-col md:flex-row items-center gap-8">
                   <div className="flex items-center justify-center w-24 h-24 rounded-2xl flex-shrink-0" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                    <Dumbbell className="w-12 h-12 text-white" />
+                    <TrendingUp className="w-12 h-12 text-white" />
                   </div>
                   <div className="flex-1 text-center md:text-left">
                     <div className="inline-block px-3 py-1 text-xs font-medium rounded-full mb-3" style={{ background: 'var(--accent)', color: 'white' }}>
                       Success Story
                     </div>
                     <h3 className="mb-3 group-hover:text-[var(--accent)] transition-colors">
-                      How Fitness Influencer Tania S Transformed Her Brand
+                      How Nik Turned Struggles Into a Career Path 🚀
                     </h3>
                     <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
-                      From burnout and 12-hour days to organized business success. Discover how POSTE MEDIA helped Tania build a sustainable creator business with better work-life balance and aligned partnerships.
+                      From unpaid overtime and scams to a structured role in digital marketing analytics. Discover how HiringPhilippines.Careers helped Nik build a sustainable career with 3x income increase and real work-life balance.
                     </p>
                     <div className="inline-flex items-center gap-2 text-[var(--accent)] font-medium group-hover:gap-3 transition-all duration-300">
                       Read Success Story
