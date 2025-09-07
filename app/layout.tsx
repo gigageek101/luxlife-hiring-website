@@ -16,12 +16,12 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'POSTE MEDIA LLC - Helping Influencers & Theme Pages Monetize Their Following',
-  description: 'Custom strategies, proven marketing methods, real growth. We help influencers and Instagram theme pages monetize their following with tailored approaches. Located in Oakland Park, FL.',
-  keywords: 'influencer marketing, Instagram monetization, theme pages, social media growth, content optimization, revenue streams, Oakland Park FL, Florida marketing agency',
-  authors: [{ name: 'POSTE MEDIA LLC' }],
-  creator: 'POSTE MEDIA LLC',
-  publisher: 'POSTE MEDIA LLC',
+  title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Join Our Discord',
+  description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Join our free Discord community today and connect with trusted employers.',
+  keywords: 'jobs Philippines, remote work PH, verified careers Philippines, hiring community PH, join hiring Discord, Filipino job opportunities, work from home jobs Philippines, safe job postings Philippines',
+  authors: [{ name: 'LuxLife Association' }],
+  creator: 'LuxLife Association',
+  publisher: 'HiringPhilippines.Careers',
   icons: {
     icon: '/icon.svg',
     shortcut: '/icon.svg',
@@ -30,23 +30,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://postemedia.com',
-    siteName: 'POSTE MEDIA LLC',
-    title: 'POSTE MEDIA LLC - Helping Influencers & Theme Pages Monetize Their Following',
-    description: 'Custom strategies, proven marketing methods, real growth. We help influencers and Instagram theme pages monetize their following with tailored approaches.',
+    url: 'https://hiringphilippines.careers',
+    siteName: 'HiringPhilippines.Careers',
+    title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Join Our Discord',
+    description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Join our free Discord community today and connect with trusted employers.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'POSTE MEDIA LLC - Influencer Marketing Agency',
+        alt: 'HiringPhilippines.Careers - Verified Job Opportunities in the Philippines',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'POSTE MEDIA LLC - Helping Influencers & Theme Pages Monetize Their Following',
-    description: 'Custom strategies, proven marketing methods, real growth. We help influencers and Instagram theme pages monetize their following with tailored approaches.',
+    title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Join Our Discord',
+    description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Join our free Discord community today and connect with trusted employers.',
     images: ['/og-image.jpg'],
   },
   robots: {

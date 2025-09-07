@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Instagram, Twitter, Linkedin, Mail, MapPin } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -9,15 +9,20 @@ export default function Footer() {
   return (
     <footer style={{ background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' }}>
       <div className="container py-12">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           {/* Company Info */}
-          <div>
-            <div className="text-2xl font-bold mb-4">
-              <span className="text-white">POSTE</span>
-              <span className="text-blue-500 ml-2">MEDIA</span>
+          <div className="md:col-span-2">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                <span className="text-white font-bold text-lg">L</span>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-white">HiringPhilippines.Careers</div>
+                <div className="text-xs text-orange-400">by LuxLife Agency</div>
+              </div>
             </div>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Helping influencers and theme pages monetize their following with proven strategies.
+            <p className="text-sm max-w-md" style={{ color: 'var(--text-secondary)' }}>
+              HiringPhilippines.Careers is part of the LuxLife Association. Our mission is to connect Filipino talent with trusted employers through a safe and exclusive community platform. Join our Discord today and discover your next opportunity.
             </p>
           </div>
 
@@ -26,67 +31,48 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                  About Us
+                <Link href="/#how-it-works" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  How It Works
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
-                  Services
+                <Link href="/#reviews" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  Reviews
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="font-semibold mb-4 text-white">Services</h4>
-            <ul className="space-y-2">
-              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Monetization Strategy
+              <li>
+                <Link href="/#faq" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-secondary)' }}>
+                  FAQ
+                </Link>
               </li>
-              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Content Optimization
-              </li>
-              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Audience Growth
-              </li>
-              <li className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Revenue Streams
+              <li>
+                <a 
+                  href="https://discord.gg/luxlife" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm hover:text-white transition-colors flex items-center gap-1" 
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Join Discord
+                  <ExternalLink className="w-3 h-3" />
+                </a>
               </li>
             </ul>
           </div>
+        </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold mb-4 text-white">Contact</h4>
-            <div className="space-y-3">
-              <a 
-                href="mailto:office@postemediallc.com" 
-                className="flex items-center gap-2 text-sm hover:text-white transition-colors"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                <Mail className="w-4 h-4" />
-                office@postemediallc.com
-              </a>
-              <div className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                <MapPin className="w-4 h-4 mt-0.5" />
-                <span>
-                  2880 W Oakland Park Blvd<br />
-                  Suite 225C<br />
-                  Oakland Park, FL 33311
-                </span>
-              </div>
-            </div>
-
-          </div>
+        {/* SEO Footer Content */}
+        <div className="mt-8 p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            <strong className="text-white">SEO Keywords:</strong> job opportunities Philippines, careers in PH, verified employers PH, remote work Philippines, hiring Discord, Filipino career growth, LuxLife Association hiring
+          </p>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t" style={{ borderColor: 'var(--border)' }}>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              © {currentYear} POSTE MEDIA LLC. All rights reserved.
+              © {currentYear} LuxLife Association. All rights reserved.
             </p>
             <div className="flex gap-6">
               <Link href="/privacy" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--text-muted)' }}>

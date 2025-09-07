@@ -20,20 +20,11 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { 
-      name: 'Services', 
-      href: '/services',
-      dropdown: [
-        { name: 'Monetization Strategy', href: '/services#monetization' },
-        { name: 'Content Optimization', href: '/services#content' },
-        { name: 'Audience Growth', href: '/services#growth' },
-        { name: 'Revenue Streams', href: '/services#revenue' },
-      ]
-    },
+    { name: 'How It Works', href: '#how-it-works' },
+    { name: 'Reviews', href: '#reviews' },
     { name: 'Case Study', href: '/case-study-tania' },
     { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'FAQ', href: '#faq' },
   ]
 
   return (
@@ -51,14 +42,19 @@ const Navbar = () => {
       <div className="container">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-3">
             <motion.div
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="text-2xl lg:text-3xl font-display font-light tracking-wide"
+              className="flex items-center space-x-3"
             >
-              <span className="text-white">POSTE</span>
-              <span className="text-blue-500 ml-2">MEDIA</span>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                <span className="text-white font-bold text-lg">L</span>
+              </div>
+              <div className="text-xl lg:text-2xl font-bold tracking-wide">
+                <span className="text-white">HiringPhilippines</span>
+                <div className="text-xs text-orange-400 -mt-1">by LuxLife Agency</div>
+              </div>
             </motion.div>
           </Link>
 
@@ -110,9 +106,9 @@ const Navbar = () => {
               </div>
             ))}
             
-            <Link href="/contact" className="btn-primary">
-              Get Started
-            </Link>
+            <a href="https://discord.gg/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary">
+              Join Discord
+            </a>
           </div>
 
           {/* Mobile menu button */}
@@ -160,13 +156,15 @@ const Navbar = () => {
                     )}
                   </div>
                 ))}
-                <Link
-                  href="/contact"
+                <a
+                  href="https://discord.gg/luxlife"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="block w-full text-center btn-primary mt-4"
                   onClick={() => setIsOpen(false)}
                 >
-                  Get Started
-                </Link>
+                  Join Discord
+                </a>
               </div>
             </motion.div>
           )}

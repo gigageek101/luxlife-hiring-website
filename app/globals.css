@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  /* Dark theme with perfect readability */
+  /* Orange-Black theme */
   --bg: #0a0a0a;
   --bg-soft: #111111;
   --surface: #1a1a1a;
@@ -15,14 +15,14 @@
   --text-secondary: #a3a3a3;
   --text-muted: #737373;
   
-  /* Simple accent color */
-  --accent: #3b82f6;
-  --accent-hover: #60a5fa;
-  --accent-muted: #1e40af;
+  /* Orange accent colors */
+  --accent: #f97316;
+  --accent-hover: #fb923c;
+  --accent-muted: #ea580c;
   
   /* Borders and effects */
   --border: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-hover: rgba(249, 115, 22, 0.3);
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
   

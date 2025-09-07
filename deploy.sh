@@ -1,4 +1,4 @@
-#!/bin/bash
+h#!/bin/bash
 
 # POSTE MEDIA LLC Website Deployment Script
 echo "🚀 Setting up POSTE MEDIA LLC website for deployment..."

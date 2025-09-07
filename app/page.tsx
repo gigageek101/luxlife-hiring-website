@@ -3,78 +3,123 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { 
-  TrendingUp, 
-  Target, 
+  Shield, 
   Users, 
-  DollarSign, 
+  Zap, 
+  MessageCircle, 
   Star, 
   ArrowRight,
   CheckCircle,
-  BarChart3,
-  Zap,
-  Search,
-  Brain,
+  Clock,
+  BookOpen,
   AlertTriangle,
   Dumbbell,
-  BookOpen,
-  Clock
+  Search,
+  Brain,
+  TrendingUp,
+  DollarSign,
+  Target,
+  ExternalLink
 } from 'lucide-react'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
 import ParallaxText from '@/components/ParallaxText'
 
 export default function Home() {
-  const services = [
+  const benefits = [
     {
-      icon: DollarSign,
-      title: 'Monetization Strategy',
-      description: 'Transform your following into multiple revenue streams with proven strategies.',
-      features: ['Brand partnerships', 'Product launches', 'Affiliate programs']
+      icon: Shield,
+      title: 'Exclusive Access',
+      description: 'Find opportunities you won\'t see in random Facebook groups or spammy websites.'
     },
     {
-      icon: BarChart3,
-      title: 'Content Optimization',
-      description: 'Boost engagement and reach with data-driven content strategies.',
-      features: ['Algorithm optimization', 'Posting schedules', 'Trend analysis']
+      icon: CheckCircle,
+      title: 'Verified Employers',
+      description: 'Every post is vetted by the LuxLife Association to keep you safe from scams.'
     },
     {
       icon: Users,
-      title: 'Audience Growth',
-      description: 'Build a loyal, engaged community that converts.',
-      features: ['Organic growth tactics', 'Community building', 'Engagement strategies']
+      title: 'Career Community',
+      description: 'Connect with others, exchange tips, and grow together.'
     },
     {
-      icon: TrendingUp,
-      title: 'Revenue Streams',
-      description: 'Diversify income with multiple monetization channels.',
-      features: ['Digital products', 'Subscriptions', 'Sponsored content']
+      icon: Zap,
+      title: 'Fast Announcements',
+      description: 'See opportunities the moment they go live.'
+    }
+  ]
+
+  const steps = [
+    {
+      number: '1',
+      title: 'Click Join Discord',
+      description: 'Hit the button below to access our community.'
+    },
+    {
+      number: '2',
+      title: 'Verify Your Email',
+      description: 'Quick and secure setup takes less than a minute.'
+    },
+    {
+      number: '3',
+      title: 'Check the Announcements Channel',
+      description: 'That\'s where opportunities and updates live.'
     }
   ]
 
   const testimonials = [
     {
-      content: 'POSTE MEDIA helped us grow from 50K to 300K followers in 6 months. Their strategies actually work.',
-      name: 'Sarah Johnson',
-      role: 'Fashion Influencer',
+      content: 'Finally, a safe place to find work online. I joined the Discord and within a week I had a real interview lined up.',
+      name: 'Andrea',
+      location: 'Manila',
       rating: 5
     },
     {
-      content: 'Finally making consistent income from my Instagram. Game changer for content creators.',
-      name: 'Mike Chen',
-      role: 'Food Blogger',
+      content: 'I used to waste time on Facebook job groups. Here, everything is clear and organized. No scams, no nonsense.',
+      name: 'Jerome',
+      location: 'Cebu',
       rating: 5
     },
     {
-      content: 'The ROI was incredible. Tripled our revenue in the first quarter working with them.',
-      name: 'Emma Davis',
-      role: 'Lifestyle Creator',
+      content: 'I didn\'t just find opportunities—I found a network. People here actually help each other succeed.',
+      name: 'Clara',
+      location: 'Davao',
       rating: 5
+    },
+    {
+      content: 'Joining was the best decision I made. It gave me focus and direction in my career search.',
+      name: 'Rafael',
+      location: 'Iloilo',
+      rating: 5
+    }
+  ]
+
+  const faqs = [
+    {
+      question: 'Is Discord free to join?',
+      answer: 'Yes, it\'s 100% free. You only need an email address.'
+    },
+    {
+      question: 'Do I need experience to apply?',
+      answer: 'Not always. Many employers welcome motivated beginners.'
+    },
+    {
+      question: 'What will I find inside the Discord?',
+      answer: 'Exclusive announcements, verified job postings, and valuable career advice.'
+    },
+    {
+      question: 'How do I know it\'s not a scam?',
+      answer: 'Every post inside the community is verified by the LuxLife Association.'
+    },
+    {
+      question: 'Why should I check regularly?',
+      answer: 'Because opportunities can disappear quickly once filled. Staying active means staying ahead.'
     }
   ]
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* Hero Section with increased top padding */}
+      {/* Hero Section */}
       <section className="section pt-32 md:pt-40">
         <div className="container">
           <motion.div 
@@ -89,8 +134,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             >
-              Helping Influencers & <span className="text-gradient">Theme Pages</span>
-              <br />Monetize Their Following
+              🌟 Find Your Next <span className="text-gradient">Career Opportunity</span>
+              <br />in the Philippines
             </motion.h1>
             
             <motion.p 
@@ -100,8 +145,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Custom strategies, proven marketing methods, real growth.
-              <br />Turn your social media presence into a thriving business.
+              Verified employers. Real opportunities. One trusted community.
             </motion.p>
 
             <motion.div 
@@ -110,57 +154,35 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Link href="/contact" className="btn-primary btn-shine hover-lift">
-                Book a Free Consultation
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link href="/services" className="btn-secondary hover-lift">
-                Explore Services
-              </Link>
+              <a 
+                href="https://discord.gg/luxlife" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
+              >
+                👉 Join Our Discord Now (Free Access)
+                <ExternalLink className="w-5 h-5" />
+              </a>
+            </motion.div>
+
+            <motion.div 
+              className="mt-6 text-sm"
+              style={{ color: 'var(--text-muted)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <span className="inline-flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}></div>
+                Powered by LuxLife Association
+              </span>
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Why HiringPhilippines Section */}
       <section className="section" style={{ background: 'var(--bg-soft)' }}>
-        <div className="container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { number: 1.4, suffix: 'M+', label: 'Followers Gained' },
-              { number: 52, prefix: '+', suffix: '%', label: 'Conversion Rates Up' },
-              { number: 72, prefix: '+', suffix: '%', label: 'Engagement Rates' },
-              { number: 98, suffix: '%', label: 'Client Retention' }
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.5, 
-                  delay: index * 0.1,
-                  ease: "easeOut"
-                }}
-                viewport={{ once: true }}
-                className="stat-card hover-lift hover-glow"
-              >
-                <div className="stat-number">
-                  <AnimatedCounter 
-                    value={stat.number} 
-                    prefix={stat.prefix}
-                    suffix={stat.suffix}
-                    duration={2}
-                  />
-                </div>
-                <div className="stat-label">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="section">
         <div className="container">
           <ParallaxText offset={30}>
             <div className="text-center mb-16">
@@ -171,25 +193,25 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                Our Services
+                🚀 Why Thousands of Filipinos Trust Our Platform
               </motion.h2>
               <motion.p 
-                className="text-xl" 
+                className="text-xl max-w-4xl mx-auto" 
                 style={{ color: 'var(--text-secondary)' }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
               >
-                Everything you need to monetize your social media presence
+                Most job seekers in the Philippines waste hours scrolling through unverified ads, fake listings, and dead-end opportunities. That's why we created HiringPhilippines.Careers – a secure, community-first space where real talent connects with real opportunities.
               </motion.p>
             </div>
           </ParallaxText>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {services.map((service, index) => (
+            {benefits.map((benefit, index) => (
               <motion.div
-                key={service.title}
+                key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ 
@@ -205,51 +227,86 @@ export default function Home() {
                     className="p-4 rounded-xl flex-shrink-0"
                     style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
                   >
-                    <service.icon className="w-7 h-7 text-white" />
+                    <benefit.icon className="w-7 h-7 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="mb-2">{service.title}</h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
-                      {service.description}
+                    <h3 className="mb-2">{benefit.title}</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                      {benefit.description}
                     </p>
-                    <ul className="space-y-2">
-                      {service.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
-                          <CheckCircle className="w-4 h-4" style={{ color: 'var(--success)' }} />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="section">
+        <div className="container">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="mb-4">⚡ Here's How to Get Started in Minutes</h2>
+              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+                💡 Tip: The people who succeed are the ones who check Discord regularly.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((step, index) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto mb-6"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
+                >
+                  {step.number}
+                </div>
+                <h3 className="mb-4">{step.title}</h3>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                  {step.description}
+                </p>
               </motion.div>
             ))}
           </div>
 
           <Reveal delay={0.3}>
             <div className="text-center mt-12">
-              <Link href="/services" className="btn-primary">
-                Explore All Services
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+              <a 
+                href="https://discord.gg/luxlife" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
+              >
+                🔥 Join Our Discord Today →
+                <ExternalLink className="w-5 h-5" />
+              </a>
             </div>
           </Reveal>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+      <section id="reviews" className="section" style={{ background: 'var(--bg-soft)' }}>
         <div className="container">
           <Reveal>
             <div className="text-center mb-16">
-              <h2 className="mb-4">Client Success Stories</h2>
+              <h2 className="mb-4">💬 What Our Members Say About Us</h2>
               <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
-                Real results from real creators
+                Real results from real Filipino workers
               </p>
             </div>
           </Reveal>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
@@ -281,7 +338,7 @@ export default function Home() {
                     {testimonial.name}
                   </div>
                   <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {testimonial.role}
+                    {testimonial.location}
                   </div>
                 </div>
               </motion.div>
@@ -291,7 +348,7 @@ export default function Home() {
       </section>
 
       {/* Blog Posts Teaser */}
-      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+      <section className="section">
         <div className="container">
           <Reveal>
             <div className="text-center mb-12">
@@ -460,7 +517,7 @@ export default function Home() {
       </section>
 
       {/* Case Study Teaser */}
-      <section className="section">
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
         <div className="container">
           <Reveal>
             <div className="max-w-4xl mx-auto">
@@ -491,24 +548,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section">
+      {/* FAQ Section */}
+      <section id="faq" className="section">
+        <div className="container">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="mb-4">🙋 Frequently Asked Questions</h2>
+            </div>
+          </Reveal>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={faq.question}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="card"
+              >
+                <h3 className="mb-3 text-lg">{faq.question}</h3>
+                <p style={{ color: 'var(--text-secondary)' }}>{faq.answer}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
         <div className="container">
           <Reveal>
             <div className="max-w-3xl mx-auto text-center card" style={{ background: 'var(--surface)' }}>
-              <h2 className="mb-4">Ready to Grow Your Instagram?</h2>
+              <h2 className="mb-4">🎯 Don't Leave Your Career to Chance – Join the Community That Works</h2>
               <p className="text-xl mb-8" style={{ color: 'var(--text-secondary)' }}>
-                Join thousands of creators who've transformed their following into a business.
+                You've seen the fake ads. You've wasted time on spam. Now it's time to step into a safe, trusted space designed for Filipino talent.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/contact" className="btn-primary btn-shine hover-lift">
-                  Get Started Today
-                  <Zap className="w-5 h-5" />
-                </Link>
-                <Link href="/services" className="btn-secondary hover-lift">
-                  Our Services
-                </Link>
-              </div>
+              <a 
+                href="https://discord.gg/luxlife" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
+              >
+                👉 Join Our Discord Now – Free Access
+                <ExternalLink className="w-5 h-5" />
+              </a>
             </div>
           </Reveal>
         </div>
