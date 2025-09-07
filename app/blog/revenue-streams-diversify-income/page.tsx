@@ -2,42 +2,35 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, TrendingUp, Lock, GraduationCap, Shirt, Zap, ArrowRight } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, TrendingUp, ArrowRight } from 'lucide-react'
 
-export default function RevenueStreamsDiversifyIncome() {
+export default function NoStructureNoSuccess() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* Back Navigation */}
       <section className="pt-24 pb-8">
         <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <Link 
+            href="/blog" 
+            className="inline-flex items-center gap-2 text-[var(--accent)] hover:gap-3 transition-all duration-300"
           >
-            <Link href="/blog" className="inline-flex items-center text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors group">
-              <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-              Back to Blog
-            </Link>
-          </motion.div>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Blog
+          </Link>
         </div>
       </section>
 
-      {/* Blog Post Content */}
-      <section className="section pt-0">
+      <section className="section">
         <div className="container">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              {/* Header Icon */}
               <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }}>
                 <TrendingUp className="w-12 h-12 text-white" />
               </div>
 
-              {/* Category */}
               <span 
                 className="inline-block px-4 py-2 text-sm font-medium rounded-full mb-6"
                 style={{ background: 'var(--accent)', color: 'white' }}
@@ -46,23 +39,23 @@ export default function RevenueStreamsDiversifyIncome() {
               </span>
 
               <h1 className="mb-6">No Structure, No Success: Why Filipinos Deserve Better 📉</h1>
-              <div className="flex items-center gap-4 text-sm mb-12" style={{ color: 'var(--text-muted)' }}>
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  January 7, 2025
+
+              <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
+                  <Calendar className="w-5 h-5" />
+                  <span>January 7, 2025</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  4 min read
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
+                  <Clock className="w-5 h-5" />
+                  <span>3 min read</span>
                 </div>
-                <button className="flex items-center gap-1 hover:text-[var(--accent)] transition-colors">
-                  <Share2 className="w-4 h-4" />
+                <button className="flex items-center gap-2 text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
+                  <Share2 className="w-5 h-5" />
                   <span>Share</span>
                 </button>
               </div>
             </motion.div>
 
-            {/* Article Content */}
             <motion.article
               className="prose prose-lg max-w-none"
               initial={{ opacity: 0, y: 20 }}
@@ -80,148 +73,62 @@ export default function RevenueStreamsDiversifyIncome() {
                 </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. 📕 Digital Product Creation</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <BookOpen className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Digital products are the backbone of creator income because they're:
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
-                    <li><strong>Scalable</strong> → one-time creation, infinite sales.</li>
-                    <li><strong>High-margin</strong> → no inventory or shipping costs.</li>
-                    <li><strong>Authority-building</strong> → positions you as an expert.</li>
-                  </ul>
-                  <p className="text-sm mt-4" style={{ color: 'var(--text-muted)' }}>
-                    💡 Examples: Ebooks (fitness plans, photography guides, growth hacks), Templates (Lightroom presets, Canva designs, Notion dashboards), Resource packs (stock photos, caption banks, planners).
-                  </p>
-                  <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
-                    ✅ Action Step: Start by solving one problem for your audience and turn it into a $9–$49 product. It's simple, affordable, and easy to scale.
-                  </p>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🚩 The Problems</h2>
+                <ul className="list-disc pl-6 space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
+                  <li>❓ No clear manager = lost direction</li>
+                  <li>🔄 Tasks change daily = no focus</li>
+                  <li>📉 Turnover rises = no growth</li>
+                </ul>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 🔒 Subscription Models</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Lock className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Recurring revenue = financial stability. Subscriptions allow fans to pay monthly for exclusive access.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    🔥 Platforms: Patreon, Fanhouse, Substack, Memberstack, or even private Discord servers.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    💡 Offerings: Early access to content, Bonus behind-the-scenes clips, VIP communities with Q&As, Discounts on merch or products
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    Why it works: Predictable cash flow. Even 500 subscribers paying $5/month = $2,500/month stable income.
-                  </p>
-                  <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
-                    ✅ Action Step: Launch a low-cost subscription tier to test demand, then add higher-priced VIP tiers later.
-                  </p>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">📊 Business Truth</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Companies with structured workflows see 40% less turnover. Filipino workers want clarity, not chaos.
+                </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 🎓 Course Development</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <GraduationCap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Courses are high-ticket revenue streams that let you monetize your expertise in a structured way.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    💡 Examples: A 6-week fitness challenge with video tutorials, A "Monetize Your Instagram" growth course, A design masterclass for beginners.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    Why it works: You get higher upfront payments ($99–$499 or more), Courses establish you as an authority in your niche, Students = highly loyal fans who often buy more later.
-                  </p>
-                  <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
-                    ✅ Action Step: Don't start with a huge course. Instead, create a mini-course (2–3 hours) and price it affordably. Expand once you validate demand.
-                  </p>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">⚡ What You'll Find Inside</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Our Discord community solves this by connecting Filipinos to structured, verified opportunities.
+                </p>
+                <ul className="list-disc pl-6 space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
+                  <li>🛡️ Clear roles from day one</li>
+                  <li>📈 Defined growth paths</li>
+                  <li>💬 Support on staying organized</li>
+                </ul>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 👕 Merchandise Strategies</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Shirt className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Merch is more than T-shirts — it's brand identity made physical. It lets fans feel like part of your tribe.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    💡 Options: Branded clothing (hoodies, shirts, hats), Lifestyle products (mugs, notebooks, tote bags), Limited drops (scarcity creates hype and urgency).
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    Why it works: Merch is both revenue + marketing. Every hoodie worn is a walking billboard for your brand.
-                  </p>
-                  <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
-                    ✅ Action Step: Use print-on-demand platforms (Printful, Teespring, Merch by Amazon) to avoid inventory risks. Start with 1–2 items tied to a catchphrase, logo, or inside joke your audience already loves.
-                  </p>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🧑‍💻 Mark's Lesson</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Mark started as a VA with no clear tasks. One day he handled social media, the next — accounting. Frustrated, he quit. Inside our Discord, he found a structured marketing assistant role — and thrived.
+                </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 💤 Passive Income Systems</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Zap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    This is the holy grail of creator income — money flowing in while you sleep.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    💡 Examples: Affiliate Marketing → promote products & earn commissions (Amazon, Impact, ShareASale), Ad Revenue → from YouTube, blogs, or podcasts, Automated Sales Funnels → email sequences that sell digital products on autopilot.
-                  </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    Why it works: Passive systems free up time so you can focus on content creation — your highest ROI activity.
-                  </p>
-                  <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
-                    ✅ Action Step: Start with affiliate links for products you already use. Once you see results, build an email funnel that sells your digital product or course automatically.
-                  </p>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🎯 Structure Builds Careers</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Ambition grows where systems exist.
+                </p>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  👉 Join our free Discord today and find opportunities with clarity.
+                </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                The days of surviving on just brand deals are over. The most successful creators in 2025 are building 5+ income streams that complement each other.
-              </p>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                👉 Start small: pick one stream (digital products or subscriptions), validate it, then expand.
-              </p>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Within a year, you could have a stack of reliable revenue sources generating both active and passive income.
-              </p>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Remember: content attracts the audience, but diversified monetization builds the business.
-              </p>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Creator Revenue Streams</h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: What's the easiest revenue stream to start?</h3>
-                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Digital products or affiliate marketing — low cost, fast to launch, beginner-friendly.</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q2: How many income streams should a creator have?</h3>
-                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Aim for at least 3–5 to stay stable, but don't overwhelm yourself by starting them all at once.</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q3: Which revenue stream is best for long-term growth?</h3>
-                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Subscriptions and courses. Subscriptions = recurring cash flow. Courses = high-ticket, authority-building products.</p>
-                </div>
+              <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
+                <h3>Ready to Find Structured Opportunities?</h3>
+                <p className="mb-4 text-white/90">
+                  Join our Discord community and connect with employers who provide clear roles, defined growth paths, and proper structure from day one.
+                </p>
+                <a href="https://myallsocials.com/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
+                  Join Our Discord Community
+                </a>
               </div>
             </motion.article>
 
-            {/* Related Articles */}
             <motion.div
               className="mt-16"
               initial={{ opacity: 0, y: 20 }}
@@ -237,10 +144,10 @@ export default function RevenueStreamsDiversifyIncome() {
                   </div>
                   <div className="flex-1">
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                      Why Doing It All Yourself as a Creator Won't Work
+                      How to Work Hard Without Burning Out in Remote Jobs
                     </h3>
                     <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                      Trying to do everything yourself is the fastest way to burn out and limit your growth.
+                      Learn how to maintain your ambition while protecting your well-being in remote work environments.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>
                       Read Next Article
