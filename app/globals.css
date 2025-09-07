@@ -70,20 +70,30 @@
     scroll-behavior: smooth;
   }
 
-  /* Typography - Clean and readable */
+  /* Typography - Maximum contrast headers */
   h1 {
     @apply text-4xl md:text-6xl font-bold;
-    color: var(--text-primary);
+    color: #000000; /* Pure black for maximum contrast */
   }
   
   h2 {
     @apply text-3xl md:text-4xl font-bold;
-    color: var(--text-primary);
+    color: #000000; /* Pure black for maximum contrast */
   }
   
   h3 {
     @apply text-xl md:text-2xl font-semibold;
-    color: var(--text-primary);
+    color: #000000; /* Pure black for maximum contrast */
+  }
+  
+  /* Headers on dark backgrounds */
+  .bg-dark h1,
+  .bg-dark h2,
+  .bg-dark h3,
+  footer h1,
+  footer h2,
+  footer h3 {
+    color: #ffffff !important; /* Pure white on dark backgrounds */
   }
   
   p {
@@ -292,13 +302,22 @@
     color: transparent;
   }
 
-  /* Modern hover lift */
+  /* Modern hover lift - less aggressive */
   .hover-lift {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .hover-lift:hover {
-    transform: translateY(-12px) scale(1.03);
+    transform: translateY(-4px) scale(1.02);
+  }
+  
+  /* Subtle hover for navigation */
+  .nav-hover {
+    transition: all 0.2s ease;
+  }
+  
+  .nav-hover:hover {
+    transform: translateY(-1px);
   }
 
   /* Modern glow effect */
@@ -340,15 +359,16 @@
     50% { transform: scale(1.05); opacity: 0.8; }
   }
 
-  /* Gradient text - always readable with yellow tones */
+  /* Gradient text - WCAG AA compliant with darker orange */
   .gradient-text {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+    background: linear-gradient(135deg, #FF7A00, #FFB347, #FF7A00);
     background-clip: text;
     -webkit-background-clip: text;
-    color: #f59e0b; /* Yellow fallback for browsers that don't support background-clip */
+    color: #FF7A00; /* Darker orange fallback for better contrast */
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
     font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow for better readability */
   }
   
   /* Ensure gradient text is readable on different backgrounds */

@@ -19,7 +19,7 @@ export default function Footer() {
                   alt="LuxLife Agency"
                   width={35}
                   height={35}
-                  className="filter drop-shadow-lg hover:scale-110 transition-transform duration-300"
+                  className="filter drop-shadow-lg hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div>

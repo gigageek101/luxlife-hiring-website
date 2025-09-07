@@ -54,7 +54,7 @@ const Navbar = () => {
                   alt="LuxLife Agency"
                   width={40}
                   height={40}
-                  className="filter drop-shadow-lg hover:scale-110 transition-transform duration-300"
+                  className="filter drop-shadow-lg hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="text-xl lg:text-2xl font-bold tracking-wide">
@@ -70,11 +70,11 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="transition-colors duration-200 font-medium relative group hover-lift"
+                className="transition-colors duration-200 font-medium relative group px-2 py-1"
                 style={{ color: 'var(--text-on-white)' }}
               >
-                <span>{item.name}</span>
-                <span className="absolute bottom-0 left-0 w-0 h-px transition-all duration-200 group-hover:w-full" style={{ background: 'var(--accent)' }}></span>
+                <span className="relative z-10">{item.name}</span>
+                <span className="absolute bottom-0 left-0 w-0 h-px transition-all duration-300 group-hover:w-full" style={{ background: 'var(--accent)' }}></span>
               </Link>
             ))}
             
