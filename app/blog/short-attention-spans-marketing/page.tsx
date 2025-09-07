@@ -44,11 +44,11 @@ export default function ShortAttentionSpansMarketing() {
               </h1>
 
               <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b" style={{ borderColor: 'var(--border)' }}>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Calendar className="w-5 h-5" />
                   <span>January 8, 2025</span>
                 </div>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Clock className="w-5 h-5" />
                   <span>2 min read</span>
                 </div>
@@ -69,15 +69,15 @@ export default function ShortAttentionSpansMarketing() {
                 lineHeight: '1.8'
               } as React.CSSProperties}
             >
-              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Let's face it: the way people use social media in 2025 is completely different than just a few years ago.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Today, audiences have an average attention span of 8 seconds or less 🧠⚡. That means if your content doesn't grab attention instantly… it's gone 👋.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Here's why social media marketing has changed forever — and how you can adapt.
               </p>
 
@@ -90,7 +90,7 @@ export default function ShortAttentionSpansMarketing() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     The first 3 seconds of your post or video decide if someone keeps watching.
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Start with a pattern break (unexpected visuals or bold text).</li>
                     <li>Ask a direct question ("Would you quit your job for this?").</li>
                     <li>Use captions to preview the value.</li>
@@ -112,7 +112,7 @@ export default function ShortAttentionSpansMarketing() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Platforms like TikTok, Instagram Reels, and YouTube Shorts dominate.
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Short clips get higher reach.</li>
                     <li>Algorithms push fast, snackable content.</li>
                     <li>Long-form still works — but only if you earn attention first.</li>
@@ -129,7 +129,7 @@ export default function ShortAttentionSpansMarketing() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Forget long essays on Instagram captions. People skim.
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Use bullet points ✅</li>
                     <li>Break text with emojis 🎯</li>
                     <li>Keep it mobile-friendly 📱</li>
@@ -146,7 +146,7 @@ export default function ShortAttentionSpansMarketing() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Audiences respond to:
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Trending audio 🔥</li>
                     <li>Memes + cultural references</li>
                     <li>Relatable moments that feel authentic</li>
@@ -168,7 +168,7 @@ export default function ShortAttentionSpansMarketing() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     With short attention spans, the goal is interaction — not perfection.
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Add polls, Q&As, comment triggers.</li>
                     <li>Reply quickly to comments & DMs.</li>
                     <li>Make your audience feel part of the story.</li>
@@ -177,10 +177,10 @@ export default function ShortAttentionSpansMarketing() {
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p style={{ color: 'var(--text-secondary-on-white)' }}>
                 Social media marketing has evolved into a game of attention. If you can capture interest in seconds, you'll win followers, engagement, and sales.
               </p>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p style={{ color: 'var(--text-secondary-on-white)' }}>
                 👉 The new rule: be quick, be real, be engaging.
               </p>
 
@@ -198,15 +198,15 @@ export default function ShortAttentionSpansMarketing() {
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: How long should social media videos be?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Best performing: 7–30 seconds on TikTok/Reels.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Best performing: 7–30 seconds on TikTok/Reels.</p>
                 </div>
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q2: Are long posts dead?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Not dead — but break them into bite-sized sections so users can skim.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Not dead — but break them into bite-sized sections so users can skim.</p>
                 </div>
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q3: What's the #1 tip for grabbing attention?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Use a strong hook in the first 3 seconds. Surprise, curiosity, or bold claims work best.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Use a strong hook in the first 3 seconds. Surprise, curiosity, or bold claims work best.</p>
                 </div>
               </div>
             </motion.article>
@@ -228,7 +228,7 @@ export default function ShortAttentionSpansMarketing() {
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                       Why Doing It All Yourself as a Creator Won't Work
                     </h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                       Trying to do everything yourself is the fastest way to burn out and limit your growth. Here's why creators who delegate scale faster.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>

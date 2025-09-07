@@ -50,11 +50,11 @@ export default function HiddenScams() {
 
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b" style={{ borderColor: 'var(--border)' }}>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Calendar className="w-5 h-5" />
                   <span>January 12, 2025</span>
                 </div>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Clock className="w-5 h-5" />
                   <span>3 min read</span>
                 </div>
@@ -78,7 +78,7 @@ export default function HiddenScams() {
             >
               <h2 className="mb-6 mt-8" style={{ color: 'var(--text-primary)' }}>😠 When Motivation Meets Manipulation</h2>
               
-              <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Ambitious Filipinos chase opportunities online every day. But scammers know this — and they exploit it. The harder you're willing to work, the more likely you are to get targeted with fake promises.
               </p>
 
@@ -89,7 +89,7 @@ export default function HiddenScams() {
                   <div className="text-2xl">💸</div>
                   <div>
                     <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Fake Job Posts</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Too-good-to-be-true offers that ask for "training fees"</p>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>Too-good-to-be-true offers that ask for "training fees"</p>
                   </div>
                 </div>
 
@@ -97,7 +97,7 @@ export default function HiddenScams() {
                   <div className="text-2xl">👻</div>
                   <div>
                     <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Ghost Employers</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Work gets done, but payments never arrive</p>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>Work gets done, but payments never arrive</p>
                   </div>
                 </div>
 
@@ -105,7 +105,7 @@ export default function HiddenScams() {
                   <div className="text-2xl">📄</div>
                   <div>
                     <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No Contracts</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Leaving workers with zero protection</p>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>Leaving workers with zero protection</p>
                   </div>
                 </div>
               </div>
@@ -118,41 +118,41 @@ export default function HiddenScams() {
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>📊 Why High Performers Suffer Most</h2>
               
-              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Scammers love ambitious people. If you're the type to show up early, stay late, and prove yourself — you're the type they exploit hardest. Instead of building a career, you waste energy on traps.
               </p>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🛡️ The Safer Option</h2>
               
-              <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-6" style={{ color: 'var(--text-secondary-on-white)' }}>
                 That's why we created HiringPhilippines.Careers. Inside our free Discord, every single posting is verified.
               </p>
 
-              <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>Here's what you get:</p>
+              <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>Here's what you get:</p>
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3">
                   <div className="text-xl">🔐</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Security</strong> – only trusted employers</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Security</strong> – only trusted employers</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-xl">🛡️</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Protection</strong> – no fake training fees, no ghost jobs</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Protection</strong> – no fake training fees, no ghost jobs</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-xl">💬</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>A Network</strong> – people helping each other grow</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>A Network</strong> – people helping each other grow</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-xl">🚀</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Speed</strong> – real opportunities posted the moment they're live</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Speed</strong> – real opportunities posted the moment they're live</span>
                 </div>
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🧑‍💻 Jerome's Story</h2>
               
               <div className="card p-6 mb-8" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
-                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   Jerome from Cebu lost ₱5,000 to a "job training program" that turned out fake. He nearly gave up freelancing. After joining our Discord, he found a verified role in two weeks — with real pay, a contract, and a future.
                 </p>
                 <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
@@ -162,7 +162,7 @@ export default function HiddenScams() {
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🎯 Stop Letting Scams Win</h2>
               
-              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary-on-white)' }}>
                 If you're ready to work hard, do it in the right place.
               </p>
 
@@ -184,7 +184,7 @@ export default function HiddenScams() {
 
               <div className="mt-12 p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <h3 className="mb-4" style={{ color: 'var(--text-primary)' }}>🚨 Red Flags to Watch For:</h3>
-                <ul className="space-y-2" style={{ color: 'var(--text-secondary)' }}>
+                <ul className="space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <li>• Jobs asking for upfront payments or "training fees"</li>
                   <li>• Employers who won't provide company details or contracts</li>
                   <li>• Promises of unrealistic earnings with minimal work</li>
@@ -212,7 +212,7 @@ export default function HiddenScams() {
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                       No Days Off? The Dark Side of Outsourcing in the Philippines
                     </h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                       Discover why many Filipino remote workers face constant pressure to stay online every day.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>

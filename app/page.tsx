@@ -143,7 +143,7 @@ export default function Home() {
             
             <motion.p 
               className="text-xl mb-8" 
-              style={{ color: 'var(--text-secondary)' }}
+              style={{ color: 'var(--text-secondary-on-white)' }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -170,13 +170,13 @@ export default function Home() {
 
             <motion.div 
               className="mt-6 text-sm"
-              style={{ color: 'var(--text-muted)' }}
+              style={{ color: 'var(--text-muted-on-white)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
               <span className="inline-flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}></div>
+                <div className="w-4 h-4 rounded-full" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-dark))' }}></div>
                 Powered by LuxLife Association
               </span>
             </motion.div>
@@ -185,7 +185,7 @@ export default function Home() {
       </section>
 
       {/* Why HiringPhilippines Section */}
-      <section className="section relative z-10" style={{ background: 'var(--surface)' }}>
+      <section className="section relative z-10" style={{ background: 'var(--bg-primary)' }}>
         <div className="container">
           <ParallaxText offset={30}>
             <div className="text-center mb-16">
@@ -200,7 +200,7 @@ export default function Home() {
               </motion.h2>
               <motion.p 
                 className="text-xl max-w-4xl mx-auto" 
-                style={{ color: 'var(--text-secondary)' }}
+                style={{ color: 'var(--text-secondary-on-white)' }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -234,7 +234,7 @@ export default function Home() {
                   </div>
                   <div className="flex-1">
                     <h3 className="mb-2">{benefit.title}</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>
                       {benefit.description}
                     </p>
                   </div>
@@ -251,7 +251,7 @@ export default function Home() {
           <Reveal>
             <div className="text-center mb-16">
               <h2 className="mb-4">⚡ Here's How to Get Started in Minutes</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
                 💡 Tip: The people who succeed are the ones who check Discord regularly.
               </p>
             </div>
@@ -274,7 +274,7 @@ export default function Home() {
                   {step.number}
                 </div>
                 <h3 className="mb-4">{step.title}</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
                   {step.description}
                 </p>
               </motion.div>
@@ -303,7 +303,7 @@ export default function Home() {
           <Reveal>
             <div className="text-center mb-16">
               <h2 className="mb-4">💬 What Our Members Say About Us</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Real results from real Filipino workers
               </p>
             </div>
@@ -340,7 +340,7 @@ export default function Home() {
                   <div className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                     {testimonial.name}
                   </div>
-                  <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <div className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>
                     {testimonial.location}
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export default function Home() {
           <Reveal>
             <div className="text-center mb-12">
               <h2 className="mb-4">Career Insights for Hardworking Filipinos</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Real stories and practical advice to help you find better opportunities
               </p>
             </div>
@@ -377,10 +377,10 @@ export default function Home() {
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                   Why Hardworking Filipinos Get Overworked
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   Instead of being rewarded, high performers get piled with more work
                 </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                   <Clock className="w-4 h-4" />
                   4 min read
                 </div>
@@ -401,10 +401,10 @@ export default function Home() {
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                   Hidden Scams That Target Filipinos
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   Learn how scammers exploit hardworking Filipino job seekers
                 </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                   <Clock className="w-4 h-4" />
                   3 min read
                 </div>
@@ -425,10 +425,10 @@ export default function Home() {
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                   No Days Off? The Dark Side of Outsourcing
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   Why many Filipinos face pressure to work every day
                 </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                   <Clock className="w-4 h-4" />
                   3 min read
                 </div>
@@ -449,10 +449,10 @@ export default function Home() {
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                   Why High Performers Quit
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   The balance problem in Philippine outsourcing
                 </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                   <Clock className="w-4 h-4" />
                   3 min read
                 </div>
@@ -473,10 +473,10 @@ export default function Home() {
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                   No Structure, No Success
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   Why Filipinos deserve better workplace structure
                 </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                   <Clock className="w-4 h-4" />
                   3 min read
                 </div>
@@ -497,10 +497,10 @@ export default function Home() {
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                   Work Hard Without Burning Out
                 </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   How to stay ambitious without breaking yourself
                 </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                   <Clock className="w-4 h-4" />
                   4 min read
                 </div>
@@ -536,7 +536,7 @@ export default function Home() {
                     <h3 className="mb-3 group-hover:text-[var(--accent)] transition-colors">
                       How Nik Turned Struggles Into a Career Path 🚀
                     </h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                       From unpaid overtime and scams to a structured role in digital marketing analytics. Discover how HiringPhilippines.Careers helped Nik build a sustainable career with 3x income increase and real work-life balance.
                     </p>
                     <div className="inline-flex items-center gap-2 text-[var(--accent)] font-medium group-hover:gap-3 transition-all duration-300">
@@ -571,7 +571,7 @@ export default function Home() {
                 className="card"
               >
                 <h3 className="mb-3 text-lg">{faq.question}</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>{faq.answer}</p>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>{faq.answer}</p>
               </motion.div>
             ))}
           </div>
@@ -584,7 +584,7 @@ export default function Home() {
           <Reveal>
             <div className="max-w-3xl mx-auto text-center card" style={{ background: 'var(--surface)' }}>
               <h2 className="mb-4">🎯 Don't Leave Your Career to Chance – Join the Community That Works</h2>
-              <p className="text-xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 You've seen the fake ads. You've wasted time on spam. Now it's time to step into a safe, trusted space designed for Filipino talent.
               </p>
                 <a 

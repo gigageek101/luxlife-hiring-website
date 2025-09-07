@@ -4,31 +4,43 @@
 @tailwind utilities;
 
 :root {
-  /* Orange, Black, White theme */
-  --bg: #000000;
-  --bg-soft: #0a0a0a;
-  --bg-accent: #1a0a00;
-  --surface: #ffffff;
-  --surface-dark: #1a1a1a;
-  --surface-hover: #f5f5f5;
+  /* Core theme colors - Orange, Black, White only */
+  --color-orange: #ff6b35;
+  --color-orange-hover: #ff8c42;
+  --color-orange-dark: #e55a2b;
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-gray-light: #f8f9fa;
+  --color-gray-dark: #1a1a1a;
   
-  /* High contrast text colors */
-  --text-primary: #000000;
-  --text-primary-inverse: #ffffff;
-  --text-secondary: #4a4a4a;
-  --text-secondary-inverse: #cccccc;
-  --text-muted: #666666;
-  --text-muted-inverse: #999999;
+  /* Background colors */
+  --bg-primary: var(--color-white);
+  --bg-secondary: var(--color-gray-light);
+  --bg-dark: var(--color-black);
+  --bg-accent: var(--color-orange);
   
-  /* Orange accent colors */
-  --accent: #ff6b35;
-  --accent-hover: #ff8c42;
-  --accent-dark: #e55a2b;
-  --accent-light: #ffb5a0;
+  /* Text colors with guaranteed contrast */
+  --text-on-white: var(--color-black);
+  --text-on-black: var(--color-white);
+  --text-on-orange: var(--color-white);
+  --text-secondary-on-white: #4a4a4a;
+  --text-secondary-on-black: #cccccc;
+  --text-muted-on-white: #666666;
+  --text-muted-on-black: #999999;
+  
+  /* Dynamic text colors based on context */
+  --text-primary: var(--text-on-white);
+  --text-secondary: var(--text-secondary-on-white);
+  --text-muted: var(--text-muted-on-white);
+  
+  /* Accent colors */
+  --accent: var(--color-orange);
+  --accent-hover: var(--color-orange-hover);
+  --accent-dark: var(--color-orange-dark);
   
   /* Borders and effects */
   --border: rgba(0, 0, 0, 0.1);
-  --border-inverse: rgba(255, 255, 255, 0.2);
+  --border-dark: rgba(255, 255, 255, 0.2);
   --border-hover: rgba(255, 107, 53, 0.3);
   --shadow: 0 20px 60px rgba(255, 107, 53, 0.15);
   --shadow-dark: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -45,7 +57,7 @@
   }
   
   body {
-    background: var(--surface);
+    background: var(--bg-primary);
     color: var(--text-primary);
     font-family: 'Inter', system-ui, sans-serif;
     line-height: 1.6;
@@ -184,9 +196,10 @@
     box-shadow: var(--shadow);
   }
 
-  /* Modern card design */
+  /* Modern card design - always readable */
   .card {
-    background: var(--surface);
+    background: var(--bg-primary);
+    color: var(--text-on-white);
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 32px;
@@ -209,7 +222,7 @@
   }
   
   .card:hover {
-    background: var(--surface-hover);
+    background: var(--bg-secondary);
     transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow);
   }
@@ -220,14 +233,31 @@
 
   /* Dark card variant */
   .card-dark {
-    background: var(--surface-dark);
-    border: 1px solid var(--border-inverse);
-    color: var(--text-primary-inverse);
+    background: var(--bg-dark);
+    color: var(--text-on-black);
+    border: 1px solid var(--border-dark);
   }
   
   .card-dark:hover {
-    background: var(--bg-soft);
+    background: var(--color-gray-dark);
     box-shadow: var(--shadow-dark);
+  }
+  
+  /* Card text elements */
+  .card h3 {
+    color: var(--text-on-white);
+  }
+  
+  .card p {
+    color: var(--text-secondary-on-white);
+  }
+  
+  .card-dark h3 {
+    color: var(--text-on-black);
+  }
+  
+  .card-dark p {
+    color: var(--text-secondary-on-black);
   }
 
   /* Container system */
@@ -310,14 +340,22 @@
     50% { transform: scale(1.05); opacity: 0.8; }
   }
 
-  /* Gradient text */
+  /* Gradient text - always readable */
   .gradient-text {
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover), var(--accent-dark));
+    background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover), var(--color-orange-dark));
     background-clip: text;
     -webkit-background-clip: text;
-    color: transparent;
+    color: var(--color-orange); /* Fallback for browsers that don't support background-clip */
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
+    font-weight: 700;
+  }
+  
+  /* Ensure gradient text is readable on different backgrounds */
+  .bg-dark .gradient-text,
+  .bg-black .gradient-text {
+    background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover), var(--color-white));
+    color: var(--color-orange);
   }
   
   @keyframes gradientShift {

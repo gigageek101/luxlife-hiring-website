@@ -44,11 +44,11 @@ export default function CreatorDelegationGrowth() {
               </h1>
 
               <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b" style={{ borderColor: 'var(--border)' }}>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Calendar className="w-5 h-5" />
                   <span>January 5, 2025</span>
                 </div>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Clock className="w-5 h-5" />
                   <span>3 min read</span>
                 </div>
@@ -69,15 +69,15 @@ export default function CreatorDelegationGrowth() {
                 lineHeight: '1.8'
               } as React.CSSProperties}
             >
-              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Here's the hard truth: if you're a creator or running an Instagram theme page, trying to do everything yourself is the fastest way to burn out and limit your growth.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Yes, you can manage your own marketing, outreach, and monetization. But should you? ❌ Not if you want real ROI.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 The creators who win in 2025 are the ones who focus on what they do best: creating content their audience loves.
               </p>
 
@@ -91,7 +91,7 @@ export default function CreatorDelegationGrowth() {
                     Content creation alone takes hours: filming, editing, posting, engaging.
                     Now add:
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Marketing strategy 📊</li>
                     <li>Negotiating brand deals 💼</li>
                     <li>Tracking analytics 📈</li>
@@ -114,12 +114,12 @@ export default function CreatorDelegationGrowth() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Creators who try to do it all themselves usually:
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Post inconsistently.</li>
                     <li>Miss out on new monetization opportunities.</li>
                     <li>Burn out from managing too many moving parts.</li>
                   </ul>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>
                     Meanwhile, those who delegate or get support scale faster because they spend 80% of time on content creation (the thing that actually drives growth).
                   </p>
                 </div>
@@ -132,11 +132,11 @@ export default function CreatorDelegationGrowth() {
                 </div>
                 <div>
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>Ask yourself:</p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Is your time better spent editing a Reel that hits 1M views…</li>
                     <li>Or answering endless emails from brands?</li>
                   </ul>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>
                     The content is what attracts the audience, drives engagement, and makes deals possible. Without strong content, no monetization strategy matters.
                   </p>
                 </div>
@@ -151,7 +151,7 @@ export default function CreatorDelegationGrowth() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Every successful creator has one genius zone:
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li>Being entertaining 🎭</li>
                     <li>Educating 👩‍🏫</li>
                     <li>Inspiring 🌟</li>
@@ -173,20 +173,20 @@ export default function CreatorDelegationGrowth() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     The creators who scale to 6- and 7-figures focus on maximizing the one thing only they can do: making content that resonates with their audience.
                   </p>
-                  <p style={{ color: 'var(--text-secondary)' }}>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>
                     Everything else — scheduling, outreach, monetization, optimization — should be handled by systems, tools, or a team.
                   </p>
                 </div>
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p style={{ color: 'var(--text-secondary-on-white)' }}>
                 Doing it yourself feels "safe" — but it's also slow and costly.
               </p>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p style={{ color: 'var(--text-secondary-on-white)' }}>
                 👉 The real ROI comes when you focus 100% on content creation while letting experts, tools, or partners handle growth and monetization.
               </p>
-              <p style={{ color: 'var(--text-secondary)' }}>
+              <p style={{ color: 'var(--text-secondary-on-white)' }}>
                 Content is the magnet. Everything else is just logistics.
               </p>
 
@@ -205,15 +205,15 @@ export default function CreatorDelegationGrowth() {
               <div className="space-y-4">
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: Can a creator handle everything alone at the start?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Yes, but it quickly caps growth. The faster you systemize, the faster you scale.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Yes, but it quickly caps growth. The faster you systemize, the faster you scale.</p>
                 </div>
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q2: What should creators never outsource?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Your voice and creativity. Audiences follow you for you.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Your voice and creativity. Audiences follow you for you.</p>
                 </div>
                 <div className="card p-4">
                   <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q3: What's the first thing to delegate?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Low-ROI tasks: scheduling, outreach, and analytics tracking.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Low-ROI tasks: scheduling, outreach, and analytics tracking.</p>
                 </div>
               </div>
             </motion.article>
@@ -235,7 +235,7 @@ export default function CreatorDelegationGrowth() {
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                       7 Proven Monetization Strategies for Creators in 2025
                     </h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                       The creator economy is growing faster than ever. Discover 7 proven ways to monetize your audience whether you have 1,000 followers or 1M+.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>

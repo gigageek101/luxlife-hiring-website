@@ -93,7 +93,7 @@ export default function Blog() {
             </h1>
             <p 
               className="text-xl max-w-2xl mx-auto"
-              style={{ color: 'var(--text-secondary)' }}
+              style={{ color: 'var(--text-secondary-on-white)' }}
             >
               Real stories, practical advice, and insights to help Filipino workers find better opportunities and avoid common pitfalls.
             </p>
@@ -141,13 +141,13 @@ export default function Blog() {
                       {post.title}
                     </h3>
                     
-                    <p style={{ color: 'var(--text-secondary)' }}>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>
                       {post.excerpt}
                     </p>
 
                     {/* Meta Information */}
                     <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
-                      <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+                      <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--text-muted-on-white)' }}>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           {post.date}

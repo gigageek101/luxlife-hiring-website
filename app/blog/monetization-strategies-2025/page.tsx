@@ -50,11 +50,11 @@ export default function HardworkingFilipinos() {
 
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b" style={{ borderColor: 'var(--border)' }}>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Calendar className="w-5 h-5" />
                   <span>January 15, 2025</span>
                 </div>
-                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <Clock className="w-5 h-5" />
                   <span>4 min read</span>
                 </div>
@@ -78,11 +78,11 @@ export default function HardworkingFilipinos() {
             >
               <h2 className="mb-6 mt-8" style={{ color: 'var(--text-primary)' }}>💪 Dedication That Backfires</h2>
               
-              <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Filipinos are known worldwide for being hardworking and committed. Many remote workers push themselves to deliver top results — often working late nights and weekends. But instead of being rewarded, high performers usually get piled with even more work.
               </p>
 
-              <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Over time, this leads to:
               </p>
 
@@ -91,7 +91,7 @@ export default function HardworkingFilipinos() {
                   <div className="text-2xl">⏳</div>
                   <div>
                     <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Unpaid Overtime</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Always "just one more task"</p>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>Always "just one more task"</p>
                   </div>
                 </div>
 
@@ -99,7 +99,7 @@ export default function HardworkingFilipinos() {
                   <div className="text-2xl">💤</div>
                   <div>
                     <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No Off Days</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Expected to be online 24/7</p>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>Expected to be online 24/7</p>
                   </div>
                 </div>
 
@@ -107,7 +107,7 @@ export default function HardworkingFilipinos() {
                   <div className="text-2xl">🔄</div>
                   <div>
                     <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Burnout</h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Energy wasted with no growth in return</p>
+                    <p style={{ color: 'var(--text-secondary-on-white)' }}>Energy wasted with no growth in return</p>
                   </div>
                 </div>
               </div>
@@ -117,15 +117,15 @@ export default function HardworkingFilipinos() {
               <div className="grid md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <div className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>62%</div>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>of Filipino remote workers reported unpaid overtime at least once a week</p>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>of Filipino remote workers reported unpaid overtime at least once a week</p>
                 </div>
                 <div className="text-center p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <div className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>41%</div>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>had no structured off-days — rest becomes a luxury</p>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>had no structured off-days — rest becomes a luxury</p>
                 </div>
                 <div className="text-center p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   <div className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>#1</div>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Burnout is the top reason talent quits in less than a year</p>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>Burnout is the top reason talent quits in less than a year</p>
                 </div>
               </div>
 
@@ -137,45 +137,45 @@ export default function HardworkingFilipinos() {
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>⚡ A Better Path Exists</h2>
               
-              <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-6" style={{ color: 'var(--text-secondary-on-white)' }}>
                 At HiringPhilippines.Careers, we built a safe Discord community to make sure ambition gets rewarded — not abused.
               </p>
 
-              <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>Inside, you'll find:</p>
+              <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>Inside, you'll find:</p>
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3">
                   <div className="text-xl">🔐</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Verified Employers</strong> – no scams, no shady contracts</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Verified Employers</strong> – no scams, no shady contracts</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-xl">🛡️</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Safe Job Listings</strong> – every post vetted by the LuxLife Association</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Safe Job Listings</strong> – every post vetted by the LuxLife Association</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-xl">💬</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Supportive Community</strong> – connect with motivated Filipinos like you</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Supportive Community</strong> – connect with motivated Filipinos like you</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-xl">🚀</div>
-                  <span style={{ color: 'var(--text-secondary)' }}><strong>Real Growth</strong> – opportunities that value performance with structure</span>
+                  <span style={{ color: 'var(--text-secondary-on-white)' }}><strong>Real Growth</strong> – opportunities that value performance with structure</span>
                 </div>
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🧑‍💻 A Real Story</h2>
               
               <div className="card p-6 mb-8" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
-                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                   Maria from Cebu gave everything to her first remote job. Within months, she was managing triple the workload — with no raise. She burned out and almost quit freelancing.
                 </p>
-                <p style={{ color: 'var(--text-secondary)' }}>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
                   After joining our Discord, Maria found a verified employer who respected her hours, gave her weekends off, and offered career growth. Now, her hard work finally pays off.
                 </p>
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🎯 Don't Let Effort Become Exploitation</h2>
               
-              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary-on-white)' }}>
                 If you're ready to give your best, make sure it's for people who value it.
               </p>
 
@@ -214,7 +214,7 @@ export default function HardworkingFilipinos() {
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                       The Hidden Scams That Target Hardworking Filipinos
                     </h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                       Learn how to identify and avoid the common scams that exploit motivated Filipino workers.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>

@@ -58,7 +58,7 @@ const Navbar = () => {
                 />
               </div>
               <div className="text-xl lg:text-2xl font-bold tracking-wide">
-                <span className="text-black">HiringPhilippines</span>
+                <span style={{ color: 'var(--text-on-white)' }}>HiringPhilippines</span>
                 <div className="text-xs -mt-1" style={{ color: 'var(--accent)' }}>by LuxLife Agency</div>
               </div>
             </motion.div>
@@ -71,7 +71,7 @@ const Navbar = () => {
                 key={item.name}
                 href={item.href}
                 className="transition-colors duration-200 font-medium relative group hover-lift"
-                style={{ color: 'var(--text-primary)' }}
+                style={{ color: 'var(--text-on-white)' }}
               >
                 <span>{item.name}</span>
                 <span className="absolute bottom-0 left-0 w-0 h-px transition-all duration-200 group-hover:w-full" style={{ background: 'var(--accent)' }}></span>
@@ -107,7 +107,8 @@ const Navbar = () => {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="block text-white/80 hover:text-white transition-colors duration-200 font-medium py-2"
+                    className="block transition-colors duration-200 font-medium py-2"
+                style={{ color: 'var(--text-on-white)' }}
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}

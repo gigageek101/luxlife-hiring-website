@@ -73,19 +73,19 @@ export default function RevenueStreamsDiversifyIncome() {
                 lineHeight: '1.8'
               } as React.CSSProperties}
             >
-              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 If you're a creator, influencer, or running an Instagram theme page, relying on one single income source is like building a house on one leg of a chair — unstable and risky.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 👉 Algorithms change. Platforms die. Brands ghost. Trends shift.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 The creators who thrive long-term are the ones who diversify their revenue streams. By building multiple income channels, you not only earn more but also protect yourself from sudden disruptions.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Here's a breakdown of the five most powerful revenue streams for creators in 2025 — with practical ways to start today:
               </p>
 
@@ -98,7 +98,7 @@ export default function RevenueStreamsDiversifyIncome() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Digital products are the backbone of creator income because they're:
                   </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
+                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
                     <li><strong>Scalable</strong> → one-time creation, infinite sales.</li>
                     <li><strong>High-margin</strong> → no inventory or shipping costs.</li>
                     <li><strong>Authority-building</strong> → positions you as an expert.</li>
@@ -121,13 +121,13 @@ export default function RevenueStreamsDiversifyIncome() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Recurring revenue = financial stability. Subscriptions allow fans to pay monthly for exclusive access.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     🔥 Platforms: Patreon, Fanhouse, Substack, Memberstack, or even private Discord servers.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     💡 Offerings: Early access to content, Bonus behind-the-scenes clips, VIP communities with Q&As, Discounts on merch or products
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     Why it works: Predictable cash flow. Even 500 subscribers paying $5/month = $2,500/month stable income.
                   </p>
                   <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
@@ -145,10 +145,10 @@ export default function RevenueStreamsDiversifyIncome() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Courses are high-ticket revenue streams that let you monetize your expertise in a structured way.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     💡 Examples: A 6-week fitness challenge with video tutorials, A "Monetize Your Instagram" growth course, A design masterclass for beginners.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     Why it works: You get higher upfront payments ($99–$499 or more), Courses establish you as an authority in your niche, Students = highly loyal fans who often buy more later.
                   </p>
                   <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
@@ -166,10 +166,10 @@ export default function RevenueStreamsDiversifyIncome() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     Merch is more than T-shirts — it's brand identity made physical. It lets fans feel like part of your tribe.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     💡 Options: Branded clothing (hoodies, shirts, hats), Lifestyle products (mugs, notebooks, tote bags), Limited drops (scarcity creates hype and urgency).
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     Why it works: Merch is both revenue + marketing. Every hoodie worn is a walking billboard for your brand.
                   </p>
                   <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
@@ -187,10 +187,10 @@ export default function RevenueStreamsDiversifyIncome() {
                   <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                     This is the holy grail of creator income — money flowing in while you sleep.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     💡 Examples: Affiliate Marketing → promote products & earn commissions (Amazon, Impact, ShareASale), Ad Revenue → from YouTube, blogs, or podcasts, Automated Sales Funnels → email sequences that sell digital products on autopilot.
                   </p>
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                     Why it works: Passive systems free up time so you can focus on content creation — your highest ROI activity.
                   </p>
                   <p className="text-sm mt-4" style={{ color: 'var(--accent)' }}>
@@ -200,16 +200,16 @@ export default function RevenueStreamsDiversifyIncome() {
               </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 The days of surviving on just brand deals are over. The most successful creators in 2025 are building 5+ income streams that complement each other.
               </p>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 👉 Start small: pick one stream (digital products or subscriptions), validate it, then expand.
               </p>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Within a year, you could have a stack of reliable revenue sources generating both active and passive income.
               </p>
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Remember: content attracts the audience, but diversified monetization builds the business.
               </p>
 
@@ -217,15 +217,15 @@ export default function RevenueStreamsDiversifyIncome() {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: What's the easiest revenue stream to start?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Digital products or affiliate marketing — low cost, fast to launch, beginner-friendly.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Digital products or affiliate marketing — low cost, fast to launch, beginner-friendly.</p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q2: How many income streams should a creator have?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Aim for at least 3–5 to stay stable, but don't overwhelm yourself by starting them all at once.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Aim for at least 3–5 to stay stable, but don't overwhelm yourself by starting them all at once.</p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q3: Which revenue stream is best for long-term growth?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Subscriptions and courses. Subscriptions = recurring cash flow. Courses = high-ticket, authority-building products.</p>
+                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Subscriptions and courses. Subscriptions = recurring cash flow. Courses = high-ticket, authority-building products.</p>
                 </div>
               </div>
             </motion.article>
@@ -248,7 +248,7 @@ export default function RevenueStreamsDiversifyIncome() {
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
                       Why Doing It All Yourself as a Creator Won't Work
                     </h3>
-                    <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
                       Trying to do everything yourself is the fastest way to burn out and limit your growth.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>
