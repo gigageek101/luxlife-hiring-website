@@ -133,6 +133,7 @@ export default function Home() {
           >
             <motion.h1 
               className="mb-6 text-6xl md:text-7xl font-bold leading-tight"
+              style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -143,7 +144,7 @@ export default function Home() {
             
             <motion.p 
               className="text-xl mb-8" 
-              style={{ color: 'var(--text-secondary-on-white)' }}
+              style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)' }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -170,7 +171,7 @@ export default function Home() {
 
             <motion.div 
               className="mt-6 text-sm"
-              style={{ color: 'var(--text-muted-on-white)' }}
+              style={{ color: '#ffffff', textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}

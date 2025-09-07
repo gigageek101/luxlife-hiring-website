@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   creator: 'LuxLife Association',
   publisher: 'HiringPhilippines.Careers',
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.svg',
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
   openGraph: {
     type: 'website',
