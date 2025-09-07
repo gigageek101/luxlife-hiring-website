@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
@@ -47,8 +48,14 @@ const Navbar = () => {
               transition={{ duration: 0.3, ease: 'easeOut' }}
               className="flex items-center space-x-3"
             >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                <span className="text-white font-bold text-lg">L</span>
+              <div className="relative">
+                <Image
+                  src="/luxlife-logo.svg"
+                  alt="LuxLife Agency"
+                  width={60}
+                  height={36}
+                  className="filter drop-shadow-lg"
+                />
               </div>
               <div className="text-xl lg:text-2xl font-bold tracking-wide">
                 <span className="text-white">HiringPhilippines</span>

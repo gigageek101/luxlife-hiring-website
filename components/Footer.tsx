@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ExternalLink } from 'lucide-react'
 
 export default function Footer() {
@@ -13,8 +14,14 @@ export default function Footer() {
           {/* Company Info */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                <span className="text-white font-bold text-lg">L</span>
+              <div className="relative">
+                <Image
+                  src="/luxlife-logo.svg"
+                  alt="LuxLife Agency"
+                  width={50}
+                  height={30}
+                  className="filter drop-shadow-lg"
+                />
               </div>
               <div>
                 <div className="text-xl font-bold text-white">HiringPhilippines.Careers</div>

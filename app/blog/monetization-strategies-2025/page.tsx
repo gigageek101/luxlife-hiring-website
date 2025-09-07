@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Calendar, Clock, ArrowLeft, Share2, BookOpen, DollarSign, Users, Lock, FileText, UserCheck, Video, Globe, ArrowRight, GraduationCap } from 'lucide-react'
+import { Calendar, Clock, ArrowLeft, Share2, BookOpen, AlertTriangle, Users, Zap, ExternalLink, ArrowRight } from 'lucide-react'
 
-export default function MonetizationStrategies2025() {
+export default function HardworkingFilipinos() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       {/* Back Navigation */}
@@ -30,8 +30,8 @@ export default function MonetizationStrategies2025() {
               transition={{ duration: 0.8 }}
             >
               {/* Header Icon */}
-              <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
-                <DollarSign className="w-12 h-12 text-white" />
+              <div className="flex items-center justify-center w-24 h-24 rounded-2xl mb-8 mx-auto shadow-lg" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                <AlertTriangle className="w-12 h-12 text-white" />
               </div>
 
               {/* Category */}
@@ -39,13 +39,13 @@ export default function MonetizationStrategies2025() {
                 className="inline-block px-4 py-2 text-sm font-medium rounded-full mb-6"
                 style={{ background: 'var(--accent)', color: 'white' }}
               >
-                Monetization
+                Filipino Workers
               </span>
 
               {/* Title */}
               <h1 className="mb-6">
-                💰 7 Proven Monetization Strategies for 
-                <span className="text-gradient block mt-2">Creators in 2025</span>
+                🌟 Why Hardworking Filipinos Often Get 
+                <span className="text-gradient block mt-2">Overworked 😓</span>
               </h1>
 
               {/* Meta Info */}
@@ -56,7 +56,7 @@ export default function MonetizationStrategies2025() {
                 </div>
                 <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
                   <Clock className="w-5 h-5" />
-                  <span>3 min read</span>
+                  <span>4 min read</span>
                 </div>
                 <button className="flex items-center gap-2 text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">
                   <Share2 className="w-5 h-5" />
@@ -76,187 +76,123 @@ export default function MonetizationStrategies2025() {
                 lineHeight: '1.8'
               } as React.CSSProperties}
             >
-              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
-                The creator economy is growing faster than ever. But here's the truth: followers don't equal income unless you have the right monetization strategies in place.
+              <h2 className="mb-6 mt-8" style={{ color: 'var(--text-primary)' }}>💪 Dedication That Backfires</h2>
+              
+              <p className="text-lg leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Filipinos are known worldwide for being hardworking and committed. Many remote workers push themselves to deliver top results — often working late nights and weekends. But instead of being rewarded, high performers usually get piled with even more work.
               </p>
 
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                If you're an influencer, content creator, or online entrepreneur, this guide will show you 7 proven ways to monetize your audience in 2025. Whether you have 1,000 followers or 1M+, these strategies can help you increase influencer income, build sustainable revenue, and protect yourself from algorithm changes.
+              <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Over time, this leads to:
               </p>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. 📢 Brand Deals & Sponsorships</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <UserCheck className="w-6 h-6" style={{ color: 'var(--accent)' }} />
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-4 p-4 rounded-lg" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
+                  <div className="text-2xl">⏳</div>
+                  <div>
+                    <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Unpaid Overtime</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>Always "just one more task"</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Brand collaborations are still one of the top ways influencers monetize.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>Work with companies that match your niche.</li>
-                    <li>Negotiate for flat fees + commission bonuses.</li>
-                    <li>Micro-influencers often deliver better ROI for brands thanks to higher engagement rates.</li>
-                  </ul>
-                  <div className="card mt-4 p-4" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                      <strong>SEO tip:</strong> Search for "sponsorship platforms for creators" to connect with brands actively hiring influencers.
-                    </p>
+
+                <div className="flex items-start gap-4 p-4 rounded-lg" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
+                  <div className="text-2xl">💤</div>
+                  <div>
+                    <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No Off Days</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>Expected to be online 24/7</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 rounded-lg" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
+                  <div className="text-2xl">🔄</div>
+                  <div>
+                    <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Burnout</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>Energy wasted with no growth in return</p>
                   </div>
                 </div>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 🔒 Exclusive Memberships & Subscriptions</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Lock className="w-6 h-6" style={{ color: 'var(--accent)' }} />
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>📊 The Harsh Reality</h2>
+              
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="text-center p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                  <div className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>62%</div>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>of Filipino remote workers reported unpaid overtime at least once a week</p>
                 </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Turn loyal fans into paying members. Platforms like Patreon, Fanhouse, or private Discord communities make this easy.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>Offer behind-the-scenes content.</li>
-                    <li>Give VIP chat group access.</li>
-                    <li>Share discounts, early releases, or private livestreams.</li>
-                  </ul>
-                  <p style={{ color: 'var(--text-secondary)' }}>
-                    This creates recurring income and stronger fan relationships.
-                  </p>
+                <div className="text-center p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                  <div className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>41%</div>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>had no structured off-days — rest becomes a luxury</p>
+                </div>
+                <div className="text-center p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                  <div className="text-3xl font-bold mb-2" style={{ color: 'var(--accent)' }}>#1</div>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Burnout is the top reason talent quits in less than a year</p>
                 </div>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 📕 Sell Digital Products</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <FileText className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Digital products are high-profit, low-maintenance. Examples:
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>Ebooks 📘</li>
-                    <li>Presets & templates 🖼️</li>
-                    <li>Mini-courses 🎓</li>
-                  </ul>
-                  <p style={{ color: 'var(--text-secondary)' }}>
-                    Once created, they can generate passive income for months or even years.
-                  </p>
-                </div>
-              </div>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 🤝 Affiliate Marketing</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Users className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Affiliate marketing is a simple but powerful creator monetization strategy.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>Share links for products you love.</li>
-                    <li>Earn commissions from every sale.</li>
-                    <li>Use platforms like Amazon Associates, Impact, or niche programs.</li>
-                  </ul>
-                  <div className="card mt-4 p-4" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
-                    <p className="text-sm" style={{ color: 'var(--accent)' }}>
-                      <strong>Pro tip:</strong> Pair honest reviews with affiliate links for maximum conversions.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🎥 Pay-Per-View or Premium Content</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Video className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Offer exclusive, one-time paid content such as:
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>In-depth tutorials</li>
-                    <li>Advanced guides</li>
-                    <li>Personalized videos</li>
-                  </ul>
-                  <p style={{ color: 'var(--text-secondary)' }}>
-                    This works well for niches like fitness, education, finance, and coaching.
-                  </p>
-                </div>
-              </div>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>6. 🧑‍🏫 Coaching & Consulting Services</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <GraduationCap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    If you're skilled in a niche (marketing, fitness, design, music, etc.), sell your knowledge as a service.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>1:1 coaching calls</li>
-                    <li>Group workshops</li>
-                    <li>Long-term consulting packages</li>
-                  </ul>
-                </div>
-              </div>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                This is a high-ticket monetization strategy that builds authority.
-              </p>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>7. 🌐 Diversify Your Income Streams</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Globe className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    The #1 rule of influencer monetization: don't rely on just one platform.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary)' }}>
-                    <li>Build an email list (your only "owned" audience).</li>
-                    <li>Repurpose content across TikTok, YouTube, and Instagram.</li>
-                    <li>Add multiple income layers for security + growth.</li>
-                  </ul>
-                </div>
-              </div>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                The future of the creator economy belongs to those who mix creativity with monetization strategies. Start small, test multiple revenue streams, and track results.
-              </p>
-              <p style={{ color: 'var(--text-secondary)' }}>
-                👉 Remember: followers are attention, but monetization turns attention into income.
-              </p>
-
-              <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
-                <h3>Ready to Monetize Your Following?</h3>
-                <p className="mb-4 text-white/90">
-                  Get personalized strategies to turn your audience into sustainable income streams. Our team helps creators implement these monetization methods effectively.
+              <div className="card p-6 mb-8" style={{ background: 'var(--accent-muted)', border: '1px solid var(--accent)' }}>
+                <p className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
+                  Hard work is valuable. But without balance, it becomes a trap.
                 </p>
-                <Link href="/contact" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                  Get Your Free Strategy Call
-                </Link>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Monetization for Creators</h2>
-              <div className="space-y-4">
-                <div className="card p-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: What is the fastest way to monetize as a creator?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Selling digital products or affiliate marketing is often the quickest way to start earning.</p>
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>⚡ A Better Path Exists</h2>
+              
+              <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+                At HiringPhilippines.Careers, we built a safe Discord community to make sure ambition gets rewarded — not abused.
+              </p>
+
+              <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>Inside, you'll find:</p>
+
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="text-xl">🔐</div>
+                  <span style={{ color: 'var(--text-secondary)' }}><strong>Verified Employers</strong> – no scams, no shady contracts</span>
                 </div>
-                <div className="card p-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q2: How do small influencers monetize without big brands?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Leverage micro-niche audiences with affiliate links, memberships, or coaching.</p>
+                <div className="flex items-center gap-3">
+                  <div className="text-xl">🛡️</div>
+                  <span style={{ color: 'var(--text-secondary)' }}><strong>Safe Job Listings</strong> – every post vetted by the LuxLife Association</span>
                 </div>
-                <div className="card p-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q3: What's the best long-term monetization strategy?</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>Building an email list + digital products ensures sustainable income.</p>
+                <div className="flex items-center gap-3">
+                  <div className="text-xl">💬</div>
+                  <span style={{ color: 'var(--text-secondary)' }}><strong>Supportive Community</strong> – connect with motivated Filipinos like you</span>
                 </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-xl">🚀</div>
+                  <span style={{ color: 'var(--text-secondary)' }}><strong>Real Growth</strong> – opportunities that value performance with structure</span>
+                </div>
+              </div>
+
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🧑‍💻 A Real Story</h2>
+              
+              <div className="card p-6 mb-8" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
+                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Maria from Cebu gave everything to her first remote job. Within months, she was managing triple the workload — with no raise. She burned out and almost quit freelancing.
+                </p>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                  After joining our Discord, Maria found a verified employer who respected her hours, gave her weekends off, and offered career growth. Now, her hard work finally pays off.
+                </p>
+              </div>
+
+              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🎯 Don't Let Effort Become Exploitation</h2>
+              
+              <p className="mb-8 text-lg" style={{ color: 'var(--text-secondary)' }}>
+                If you're ready to give your best, make sure it's for people who value it.
+              </p>
+
+              <div className="card p-8 text-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', color: 'white' }}>
+                <h3 className="mb-4 text-white">Ready to Work Where You're Valued?</h3>
+                <p className="mb-6 text-white/90">
+                  Join our free Discord today and find jobs that respect your talent, your time, and your future.
+                </p>
+                <a 
+                  href="https://discord.gg/luxlife" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-white text-[var(--accent)] px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
+                >
+                  👉 Join Our Discord Now
+                  <ExternalLink className="w-4 h-4" />
+                </a>
               </div>
             </motion.article>
 
@@ -276,10 +212,10 @@ export default function MonetizationStrategies2025() {
                   </div>
                   <div className="flex-1">
                     <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                      How to Match Content With Your Actual Audience
+                      The Hidden Scams That Target Hardworking Filipinos
                     </h3>
                     <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
-                      Creating content your audience actually cares about is the difference between scrolling past and stopping to engage.
+                      Learn how to identify and avoid the common scams that exploit motivated Filipino workers.
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:gap-3" style={{ background: 'var(--accent)', color: 'white' }}>
                       Read Next Article
