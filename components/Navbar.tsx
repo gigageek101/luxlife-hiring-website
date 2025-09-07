@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,49 +60,14 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
-              <div
+              <Link
                 key={item.name}
-                className="relative"
-                onMouseEnter={() => item.dropdown && setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}
+                href={item.href}
+                className="text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
               >
-                <Link
-                  href={item.href}
-                  className="flex items-center space-x-1 text-gray-300 hover:text-white transition-colors duration-200 font-medium relative group"
-                >
-                  <span>{item.name}</span>
-                  {item.dropdown && (
-                    <ChevronDown className="w-4 h-4 transition-transform duration-200" />
-                  )}
-                  <span className="absolute bottom-0 left-0 w-0 h-px bg-brand transition-all duration-200 group-hover:w-full"></span>
-                </Link>
-
-                {/* Dropdown Menu */}
-                <AnimatePresence>
-                  {item.dropdown && activeDropdown === item.name && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-64 bg-black/95 rounded-lg shadow-xl border border-white/20 overflow-hidden z-50"
-                      style={{
-                        backdropFilter: 'blur(10px)'
-                      }}
-                    >
-                      {item.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.name}
-                          href={dropdownItem.href}
-                          className="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 transition-colors duration-200"
-                        >
-                          {dropdownItem.name}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                <span>{item.name}</span>
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
+              </Link>
             ))}
             
             <a href="https://discord.gg/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary">
@@ -132,29 +96,14 @@ const Navbar = () => {
             >
               <div className="px-4 py-6 space-y-4">
                 {navItems.map((item) => (
-                  <div key={item.name}>
-                    <Link
-                      href={item.href}
-                      className="block text-white/80 hover:text-white transition-colors duration-200 font-medium py-2"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                    {item.dropdown && (
-                      <div className="ml-4 mt-2 space-y-2">
-                        {item.dropdown.map((dropdownItem) => (
-                          <Link
-                            key={dropdownItem.name}
-                            href={dropdownItem.href}
-                            className="block text-white/60 hover:text-white transition-colors duration-200 py-1"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {dropdownItem.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="block text-white/80 hover:text-white transition-colors duration-200 font-medium py-2"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
                 ))}
                 <a
                   href="https://discord.gg/luxlife"
