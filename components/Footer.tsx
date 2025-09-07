@@ -7,7 +7,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer style={{ background: 'var(--bg-dark)', borderTop: '1px solid var(--border-dark)' }}>
+    <footer className="relative z-20" style={{ background: 'var(--bg-dark)', borderTop: '1px solid var(--border-dark)' }}>
       <div className="container py-12">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Company Info */}
@@ -67,12 +67,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* SEO Footer Content */}
-        <div className="mt-8 p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary-on-black)' }}>
-            <strong className="text-white">SEO Keywords:</strong> job opportunities Philippines, careers in PH, verified employers PH, remote work Philippines, hiring Discord, Filipino career growth, LuxLife Association hiring
-          </p>
-        </div>
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t" style={{ borderColor: 'var(--border)' }}>

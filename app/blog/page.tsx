@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Calendar, Clock, ArrowRight, User, DollarSign, Target, Search, Brain, AlertTriangle, TrendingUp } from 'lucide-react'
@@ -118,7 +119,7 @@ export default function Blog() {
                 <Link href={`/blog/${post.slug}`}>
                   {/* Post Header with Icon */}
                   <div className="relative overflow-hidden rounded-lg mb-6 flex items-center justify-center h-48" style={{ background: post.iconColor }}>
-                    <post.icon className="w-16 h-16 text-white" />
+                    {React.createElement(post.icon, { className: "w-16 h-16 text-white" })}
                     
                     {/* Category Badge */}
                     <div className="absolute top-4 left-4">
@@ -192,7 +193,7 @@ export default function Blog() {
               href="https://myallsocials.com/luxlife" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90"
+              className="btn-primary"
             >
               Join Our Discord Community
             </a>

@@ -28,13 +28,14 @@ export default function DynamicBackground() {
   return (
     <>
       {/* Dynamic background circles */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: -1 }}>
         {/* Main circle */}
         <div 
-          className="absolute -top-1/2 -right-1/4 w-[150%] h-[200%] rounded-full opacity-90 transition-transform duration-300 ease-out"
+          className="absolute -top-1/2 -right-1/4 w-[150%] h-[200%] rounded-full transition-transform duration-300 ease-out"
           style={{
             background: 'linear-gradient(135deg, #ff6b35 0%, #e55a2b 50%, #000000 100%)',
             transform: `translateY(${scrollY * 0.3}px) scale(${1 - scrollY * 0.0005})`,
+            opacity: Math.max(0.1, 0.9 - scrollY * 0.001),
           }}
         />
         

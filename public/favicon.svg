@@ -1,90 +1,43 @@
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Gradient for suit -->
-    <linearGradient id="suitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#333333;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
-    </linearGradient>
-    
-    <!-- Gradient for tie -->
-    <linearGradient id="tieGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#ea580c;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#c2410c;stop-opacity:1" />
-    </linearGradient>
-    
-    <!-- Shine effect -->
-    <linearGradient id="shineEffect" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
-      <stop offset="45%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
-      <stop offset="50%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
-      <stop offset="55%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
-      <stop offset="100%" style="stop-color:rgba(255,255,255,0);stop-opacity:0" />
-      <animateTransform attributeName="gradientTransform" type="translate" values="-40 0;40 0;-40 0" dur="2s" repeatCount="indefinite"/>
-    </linearGradient>
-    
-    <!-- Glow filter -->
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge> 
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <style>
+      .logo-circle { fill: #ff6b35; }
+      .logo-inner { fill: #1a1a1a; }
+      .logo-suit { fill: #ff6b35; }
+      .logo-tie { fill: #1a1a1a; }
+      .logo-face { fill: #ff6b35; }
+      
+      .logo-circle:hover { 
+        fill: #ff8c42; 
+        transform: scale(1.1);
+        transition: all 0.3s ease;
+      }
+      
+      .logo-suit:hover { 
+        fill: #ff8c42; 
+        transition: all 0.3s ease;
+      }
+    </style>
   </defs>
   
-  <!-- Background circle -->
-  <circle cx="16" cy="16" r="15" fill="#0a0a0a" stroke="url(#tieGradient)" stroke-width="1"/>
+  <!-- Outer orange circle -->
+  <circle cx="50" cy="50" r="48" class="logo-circle"/>
   
-  <!-- Head -->
-  <circle cx="16" cy="12" r="4" fill="#fdbcbc" stroke="#e5a3a3" stroke-width="0.5"/>
+  <!-- Inner black circle for head -->
+  <circle cx="50" cy="35" r="20" class="logo-inner"/>
+  
+  <!-- Face outline in orange -->
+  <path d="M35 25 Q35 15 50 15 Q65 15 65 25 Q65 35 60 40 Q55 45 50 45 Q45 45 40 40 Q35 35 35 25 Z" class="logo-face"/>
   
   <!-- Suit jacket -->
-  <path d="M10 16 L10 28 L22 28 L22 16 L20 15 L18 16 L14 16 L12 15 Z" 
-        fill="url(#suitGradient)" 
-        stroke="#666666" 
-        stroke-width="0.5"/>
-  
-  <!-- Shirt -->
-  <rect x="13" y="16" width="6" height="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="0.3"/>
-  
-  <!-- Tie -->
-  <path d="M15.5 16 L16.5 16 L17 28 L15 28 Z" 
-        fill="url(#tieGradient)" 
-        filter="url(#glow)"/>
+  <path d="M25 55 Q25 50 30 50 L35 50 Q40 45 50 45 Q60 45 65 50 L70 50 Q75 50 75 55 L75 85 Q75 90 70 90 L30 90 Q25 90 25 85 Z" class="logo-suit"/>
   
   <!-- Suit lapels -->
-  <path d="M12 15 L14 16 L14 20 L12 18 Z" fill="url(#suitGradient)" stroke="#666666" stroke-width="0.3"/>
-  <path d="M20 15 L18 16 L18 20 L20 18 Z" fill="url(#suitGradient)" stroke="#666666" stroke-width="0.3"/>
+  <path d="M30 50 L40 60 L50 55 L60 60 L70 50 L65 50 Q60 45 50 45 Q40 45 35 50 Z" class="logo-inner"/>
   
-  <!-- Buttons -->
-  <circle cx="16" cy="20" r="0.8" fill="#cccccc" stroke="#999999" stroke-width="0.2"/>
-  <circle cx="16" cy="23" r="0.8" fill="#cccccc" stroke="#999999" stroke-width="0.2"/>
+  <!-- Tie -->
+  <path d="M47 55 L50 50 L53 55 L53 80 Q53 85 50 85 Q47 85 47 80 Z" class="logo-tie"/>
   
-  <!-- Shine overlay -->
-  <rect x="0" y="0" width="32" height="32" fill="url(#shineEffect)" opacity="0.4"/>
-  
-  <!-- Hover animation -->
-  <style>
-    svg:hover #suitGradient stop:first-child {
-      stop-color: #f97316;
-      animation: colorPulse 0.5s ease-in-out;
-    }
-    
-    svg:hover circle[cx="16"][cy="12"] {
-      animation: bounce 0.6s ease-in-out;
-    }
-    
-    @keyframes colorPulse {
-      0% { stop-color: #1a1a1a; }
-      50% { stop-color: #f97316; }
-      100% { stop-color: #1a1a1a; }
-    }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-2px); }
-    }
-  </style>
+  <!-- Collar -->
+  <path d="M42 50 L47 55 L50 52 L53 55 L58 50 Q55 48 50 48 Q45 48 42 50 Z" class="logo-suit"/>
 </svg>

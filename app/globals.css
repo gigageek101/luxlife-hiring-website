@@ -340,12 +340,12 @@
     50% { transform: scale(1.05); opacity: 0.8; }
   }
 
-  /* Gradient text - always readable */
+  /* Gradient text - always readable with yellow tones */
   .gradient-text {
-    background: linear-gradient(135deg, var(--color-orange), var(--color-orange-hover), var(--color-orange-dark));
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
     background-clip: text;
     -webkit-background-clip: text;
-    color: var(--color-orange); /* Fallback for browsers that don't support background-clip */
+    color: #f59e0b; /* Yellow fallback for browsers that don't support background-clip */
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
     font-weight: 700;
