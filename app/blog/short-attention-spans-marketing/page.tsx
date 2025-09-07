@@ -35,12 +35,11 @@ export default function ShortAttentionSpansMarketing() {
                 className="inline-block px-4 py-2 text-sm font-medium rounded-full mb-6"
                 style={{ background: 'var(--accent)', color: 'white' }}
               >
-                Strategy
+                Career Growth
               </span>
 
               <h1 className="mb-6">
-                ⏳ Why Social Media Marketing Changed: The Era of 
-                <span className="text-gradient block mt-2">Short Attention Spans</span>
+                Why High Performers Quit: The Balance Problem in the Philippines 😤
               </h1>
 
               <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b" style={{ borderColor: 'var(--border)' }}>
@@ -69,145 +68,66 @@ export default function ShortAttentionSpansMarketing() {
                 lineHeight: '1.8'
               } as React.CSSProperties}
             >
-              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Let's face it: the way people use social media in 2025 is completely different than just a few years ago.
-              </p>
-
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Today, audiences have an average attention span of 8 seconds or less 🧠⚡. That means if your content doesn't grab attention instantly… it's gone 👋.
-              </p>
-
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Here's why social media marketing has changed forever — and how you can adapt.
-              </p>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. ⚡ Instant Hooks Are Everything</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Zap className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    The first 3 seconds of your post or video decide if someone keeps watching.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
-                    <li>Start with a pattern break (unexpected visuals or bold text).</li>
-                    <li>Ask a direct question ("Would you quit your job for this?").</li>
-                    <li>Use captions to preview the value.</li>
-                  </ul>
-                  <div className="card mt-4 p-4" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
-                    <p className="text-sm" style={{ color: 'var(--accent)' }}>
-                      👉 If you don't hook, you don't convert.
-                    </p>
-                  </div>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🏃‍♂️ Running Until Empty</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  High-performing Filipinos often quit not because they lack drive — but because companies mistake dedication for endless availability.
+                </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>2. 🎥 Short-Form Video Rules</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Video className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Platforms like TikTok, Instagram Reels, and YouTube Shorts dominate.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
-                    <li>Short clips get higher reach.</li>
-                    <li>Algorithms push fast, snackable content.</li>
-                    <li>Long-form still works — but only if you earn attention first.</li>
-                  </ul>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🚩 Why They Leave</h2>
+                <ul className="list-disc pl-6 space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
+                  <li>📉 Burnout from too much workload</li>
+                  <li>💸 No raises despite extra tasks</li>
+                  <li>🛑 No career path, just more pressure</li>
+                </ul>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>3. 🧩 Micro-Content &gt; Long Walls of Text</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Hash className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Forget long essays on Instagram captions. People skim.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
-                    <li>Use bullet points ✅</li>
-                    <li>Break text with emojis 🎯</li>
-                    <li>Keep it mobile-friendly 📱</li>
-                  </ul>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">📊 Research Speaks</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  High performers leave 2.5x faster if they feel exploited. In PH outsourcing, churn costs companies thousands — but it's the workers who suffer most.
+                </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>4. 🔊 Sound & Trends Drive Reach</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <Hash className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    Audiences respond to:
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
-                    <li>Trending audio 🔥</li>
-                    <li>Memes + cultural references</li>
-                    <li>Relatable moments that feel authentic</li>
-                  </ul>
-                  <div className="card mt-4 p-4" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                      👉 Marketing has shifted from perfectly polished to raw & real.
-                    </p>
-                  </div>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">⚡ A Smarter Way</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Our HiringPhilippines.Careers Discord offers:
+                </p>
+                <ul className="list-disc pl-6 space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
+                  <li>🛡️ Roles that value effort with structure</li>
+                  <li>📈 Growth paths, not dead ends</li>
+                  <li>💬 A network of ambitious professionals like you</li>
+                </ul>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>5. 🤝 Engagement Beats Perfection</h2>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg flex-shrink-0" style={{ background: 'var(--accent-muted)' }}>
-                  <MessageCircle className="w-6 h-6" style={{ color: 'var(--accent)' }} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
-                    With short attention spans, the goal is interaction — not perfection.
-                  </p>
-                  <ul style={{ color: 'var(--text-secondary-on-white)' }}>
-                    <li>Add polls, Q&As, comment triggers.</li>
-                    <li>Reply quickly to comments & DMs.</li>
-                    <li>Make your audience feel part of the story.</li>
-                  </ul>
-                </div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🧑‍💻 Ramon's Story</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Ramon, a Filipino developer, flawlessly managed two projects. His "reward"? A third project dumped on him — no raise. He left and found a new role via our Discord where performance = promotions.
+                </p>
               </div>
 
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🔑 Final Thoughts</h2>
-              <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                Social media marketing has evolved into a game of attention. If you can capture interest in seconds, you'll win followers, engagement, and sales.
-              </p>
-              <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                👉 The new rule: be quick, be real, be engaging.
-              </p>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🎯 Don't Let Your Talent Go to Waste</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  Hard workers deserve real recognition.
+                </p>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  👉 Join our free Discord today and grow in a community that values you.
+                </p>
+              </div>
 
               <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
-                <h3>Ready to Master Short-Form Content?</h3>
+                <h3>Ready to Find Better Opportunities?</h3>
                 <p className="mb-4 text-white/90">
-                  Our team specializes in creating attention-grabbing content that converts in the first 3 seconds. Get strategies tailored to your audience.
+                  Join our Discord community and connect with verified employers who value Filipino talent and respect work-life balance.
                 </p>
-                <Link href="/contact" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                  Boost Your Engagement
-                </Link>
-              </div>
-
-              <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>❓FAQ: Short Attention Span Marketing</h2>
-              <div className="space-y-4">
-                <div className="card p-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q1: How long should social media videos be?</h3>
-                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Best performing: 7–30 seconds on TikTok/Reels.</p>
-                </div>
-                <div className="card p-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q2: Are long posts dead?</h3>
-                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Not dead — but break them into bite-sized sections so users can skim.</p>
-                </div>
-                <div className="card p-4">
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Q3: What's the #1 tip for grabbing attention?</h3>
-                  <p style={{ color: 'var(--text-secondary-on-white)' }}>Use a strong hook in the first 3 seconds. Surprise, curiosity, or bold claims work best.</p>
-                </div>
+                <a href="https://myallsocials.com/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
+                  Join Our Discord Community
+                </a>
               </div>
             </motion.article>
 

@@ -42,10 +42,10 @@ export default function RevenueStreamsDiversifyIncome() {
                 className="inline-block px-4 py-2 text-sm font-medium rounded-full mb-6"
                 style={{ background: 'var(--accent)', color: 'white' }}
               >
-                Revenue
+                Workplace Structure
               </span>
 
-              <h1 className="mb-6">💵 Revenue Streams: How to Diversify Your Income as a Creator</h1>
+              <h1 className="mb-6">No Structure, No Success: Why Filipinos Deserve Better 📉</h1>
               <div className="flex items-center gap-4 text-sm mb-12" style={{ color: 'var(--text-muted)' }}>
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -73,21 +73,12 @@ export default function RevenueStreamsDiversifyIncome() {
                 lineHeight: '1.8'
               } as React.CSSProperties}
             >
-              <p className="text-xl leading-relaxed mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
-                If you're a creator, influencer, or running an Instagram theme page, relying on one single income source is like building a house on one leg of a chair — unstable and risky.
-              </p>
-
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                👉 Algorithms change. Platforms die. Brands ghost. Trends shift.
-              </p>
-
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                The creators who thrive long-term are the ones who diversify their revenue streams. By building multiple income channels, you not only earn more but also protect yourself from sudden disruptions.
-              </p>
-
-              <p className="mb-8 text-lg leading-relaxed" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Here's a breakdown of the five most powerful revenue streams for creators in 2025 — with practical ways to start today:
-              </p>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">🌀 The Chaos of Unclear Roles</h2>
+                <p style={{ color: 'var(--text-secondary-on-white)' }}>
+                  When companies don't set proper structure, Filipino workers end up confused, frustrated, and underperforming — even when they give their all.
+                </p>
+              </div>
 
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>1. 📕 Digital Product Creation</h2>
               <div className="flex items-center gap-4 mb-8">
