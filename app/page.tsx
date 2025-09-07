@@ -352,15 +352,15 @@ export default function Home() {
         <div className="container">
           <Reveal>
             <div className="text-center mb-12">
-              <h2 className="mb-4">Latest Insights for Creators</h2>
+              <h2 className="mb-4">Career Insights for Hardworking Filipinos</h2>
               <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
-                Discover proven strategies to grow and monetize your following
+                Real stories and practical advice to help you find better opportunities
               </p>
             </div>
           </Reveal>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Blog Post 1 - Monetization Strategies */}
+            {/* Blog Post 1 - Overworked Filipinos */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -368,23 +368,23 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Link href="/blog/monetization-strategies-2025" className="card hover-lift group block">
-                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
-                  <DollarSign className="w-8 h-8 text-white" />
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                  <AlertTriangle className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  7 Proven Monetization Strategies
+                  Why Hardworking Filipinos Get Overworked
                 </h3>
                 <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Discover 7 proven ways to monetize your audience in 2025
+                  Instead of being rewarded, high performers get piled with more work
                 </p>
                 <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                   <Clock className="w-4 h-4" />
-                  3 min read
+                  4 min read
                 </div>
               </Link>
             </motion.div>
 
-            {/* Blog Post 2 - Content Matching */}
+            {/* Blog Post 2 - Hidden Scams */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -392,38 +392,14 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Link href="/blog/match-content-audience" className="card hover-lift group block">
-                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
-                  <Target className="w-8 h-8 text-white" />
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}>
+                  <Shield className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  Match Content With Your Audience
+                  Hidden Scams That Target Filipinos
                 </h3>
                 <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Create content your audience actually cares about
-                </p>
-                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-                  <Clock className="w-4 h-4" />
-                  2 min read
-                </div>
-              </Link>
-            </motion.div>
-
-            {/* Blog Post 3 - Hidden Niches */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <Link href="/blog/hidden-niches-crowded-market" className="card hover-lift group block">
-                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-                  <Search className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  Finding Hidden Niches
-                </h3>
-                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Discover untapped niches in a crowded market
+                  Learn how scammers exploit hardworking Filipino job seekers
                 </p>
                 <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                   <Clock className="w-4 h-4" />
@@ -432,7 +408,31 @@ export default function Home() {
               </Link>
             </motion.div>
 
-            {/* Blog Post 4 - Attention Spans */}
+            {/* Blog Post 3 - No Days Off */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/blog/hidden-niches-crowded-market" className="card hover-lift group block">
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}>
+                  <Search className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
+                  No Days Off? The Dark Side of Outsourcing
+                </h3>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  Why many Filipinos face pressure to work every day
+                </p>
+                <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-4 h-4" />
+                  3 min read
+                </div>
+              </Link>
+            </motion.div>
+
+            {/* Blog Post 4 - High Performers Quit */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -440,23 +440,23 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Link href="/blog/short-attention-spans-marketing" className="card hover-lift group block">
-                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}>
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
                   <Brain className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  Era of Short Attention Spans
+                  Why High Performers Quit
                 </h3>
                 <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Why social media marketing changed forever
+                  The balance problem in Philippine outsourcing
                 </p>
                 <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                   <Clock className="w-4 h-4" />
-                  2 min read
+                  3 min read
                 </div>
               </Link>
             </motion.div>
 
-            {/* Blog Post 5 - Revenue Streams */}
+            {/* Blog Post 5 - No Structure */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -468,19 +468,19 @@ export default function Home() {
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  Diversify Your Income Streams
+                  No Structure, No Success
                 </h3>
                 <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Build multiple revenue channels for stability
+                  Why Filipinos deserve better workplace structure
                 </p>
                 <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                   <Clock className="w-4 h-4" />
-                  4 min read
+                  3 min read
                 </div>
               </Link>
             </motion.div>
 
-            {/* Blog Post 6 - Creator Delegation */}
+            {/* Blog Post 6 - Work Without Burnout */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -488,18 +488,18 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Link href="/blog/creator-delegation-growth" className="card hover-lift group block">
-                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                  <AlertTriangle className="w-8 h-8 text-white" />
+                <div className="flex items-center justify-center w-16 h-16 rounded-xl mb-4 mx-auto" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                  <DollarSign className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="mb-2 group-hover:text-[var(--accent)] transition-colors">
-                  Why DIY Won't Work
+                  Work Hard Without Burning Out
                 </h3>
                 <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Why creators who delegate scale faster
+                  How to stay ambitious without breaking yourself
                 </p>
                 <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                   <Clock className="w-4 h-4" />
-                  3 min read
+                  4 min read
                 </div>
               </Link>
             </motion.div>
@@ -521,7 +521,7 @@ export default function Home() {
         <div className="container">
           <Reveal>
             <div className="max-w-4xl mx-auto">
-              <Link href="/case-study-tania" className="card hover-lift group block" style={{ background: 'linear-gradient(135deg, var(--surface), var(--bg-soft))' }}>
+              <Link href="/case-study" className="card hover-lift group block" style={{ background: 'linear-gradient(135deg, var(--surface), var(--bg-soft))' }}>
                 <div className="flex flex-col md:flex-row items-center gap-8">
                   <div className="flex items-center justify-center w-24 h-24 rounded-2xl flex-shrink-0" style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
                     <Dumbbell className="w-12 h-12 text-white" />

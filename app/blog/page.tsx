@@ -8,73 +8,73 @@ export default function Blog() {
   const blogPosts = [
     {
       id: 1,
-      title: "7 Proven Monetization Strategies for Creators in 2025",
-      excerpt: "The creator economy is growing faster than ever. Discover 7 proven ways to monetize your audience whether you have 1,000 followers or 1M+.",
+      title: "Why Hardworking Filipinos Often Get Overworked 😓",
+      excerpt: "Filipinos are known worldwide for being hardworking and committed. But instead of being rewarded, high performers usually get piled with even more work.",
       date: "January 15, 2025",
-      readTime: "3 min read",
-      category: "Monetization",
+      readTime: "4 min read",
+      category: "Filipino Workers",
       slug: "monetization-strategies-2025",
-      icon: DollarSign,
-      iconColor: "linear-gradient(135deg, #10b981, #059669)"
+      icon: AlertTriangle,
+      iconColor: "linear-gradient(135deg, #f97316, #ea580c)"
     },
     {
       id: 2,
-      title: "How to Match Content With Your Actual Audience",
-      excerpt: "Creating content your audience actually cares about is the difference between scrolling past and stopping to engage. Here's how to optimize.",
+      title: "The Hidden Scams That Target Hardworking Filipinos 🚨",
+      excerpt: "Ambitious Filipinos chase opportunities online every day. But scammers know this — and they exploit it. Learn how to stay safe.",
       date: "January 12, 2025",
-      readTime: "2 min read",
-      category: "Strategy",
+      readTime: "3 min read",
+      category: "Scam Prevention",
       slug: "match-content-audience",
       icon: Target,
-      iconColor: "linear-gradient(135deg, #8b5cf6, #7c3aed)"
-    },
-    {
-      id: 3,
-      title: "Finding Hidden Niches in a Crowded Market",
-      excerpt: "The online world feels oversaturated, but there are still thousands of untapped niches waiting to be discovered. Here's how to find them.",
-      date: "January 10, 2025",
-      readTime: "3 min read",
-      category: "Growth",
-      slug: "hidden-niches-crowded-market",
-      icon: Search,
-      iconColor: "linear-gradient(135deg, #f59e0b, #d97706)"
-    },
-    {
-      id: 4,
-      title: "Why Social Media Marketing Changed: The Era of Short Attention Spans",
-      excerpt: "Audiences have an average attention span of 8 seconds or less. Here's why social media marketing has changed forever and how to adapt.",
-      date: "January 8, 2025",
-      readTime: "2 min read",
-      category: "Strategy",
-      slug: "short-attention-spans-marketing",
-      icon: Brain,
       iconColor: "linear-gradient(135deg, #ef4444, #dc2626)"
     },
     {
+      id: 3,
+      title: "No Days Off? The Dark Side of Outsourcing in the Philippines 😵‍💫",
+      excerpt: "Many Filipinos enter remote work dreaming of freedom. But instead, they face constant pressure to stay online every day — even weekends.",
+      date: "January 10, 2025",
+      readTime: "3 min read",
+      category: "Work-Life Balance",
+      slug: "hidden-niches-crowded-market",
+      icon: Search,
+      iconColor: "linear-gradient(135deg, #6366f1, #4f46e5)"
+    },
+    {
+      id: 4,
+      title: "Why High Performers Quit: The Balance Problem in the Philippines 😤",
+      excerpt: "High-performing Filipinos often quit not because they lack drive — but because companies mistake dedication for endless availability.",
+      date: "January 8, 2025",
+      readTime: "3 min read",
+      category: "Career Growth",
+      slug: "short-attention-spans-marketing",
+      icon: Brain,
+      iconColor: "linear-gradient(135deg, #8b5cf6, #7c3aed)"
+    },
+    {
       id: 5,
-      title: "Revenue Streams: How to Diversify Your Income as a Creator",
-      excerpt: "Relying on one income source is risky. Learn 5 powerful revenue streams to build stable, diversified creator income in 2025.",
+      title: "No Structure, No Success: Why Filipinos Deserve Better 📉",
+      excerpt: "When companies don't set proper structure, Filipino workers end up confused, frustrated, and underperforming — even when they give their all.",
       date: "January 7, 2025",
-      readTime: "4 min read",
-      category: "Revenue",
+      readTime: "3 min read",
+      category: "Workplace Structure",
       slug: "revenue-streams-diversify-income",
       icon: TrendingUp,
       iconColor: "linear-gradient(135deg, #3b82f6, #1d4ed8)"
     },
     {
       id: 6,
-      title: "Why Doing It All Yourself as a Creator Won't Work",
-      excerpt: "Trying to do everything yourself is the fastest way to burn out and limit your growth. Here's why creators who delegate scale faster.",
+      title: "How to Work Hard Without Burning Out in Remote Jobs 🌱",
+      excerpt: "Filipinos love to prove themselves. But too often, ambition turns into burnout because employers push workers past their limits.",
       date: "January 5, 2025",
-      readTime: "3 min read",
-      category: "Business",
+      readTime: "4 min read",
+      category: "Mental Health",
       slug: "creator-delegation-growth",
-      icon: AlertTriangle,
-      iconColor: "linear-gradient(135deg, #f97316, #ea580c)"
+      icon: DollarSign,
+      iconColor: "linear-gradient(135deg, #10b981, #059669)"
     }
   ]
 
-  const categories = ["All", "Monetization", "Strategy", "Growth", "Business", "Content"]
+  const categories = ["All", "Filipino Workers", "Scam Prevention", "Work-Life Balance", "Career Growth", "Mental Health"]
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
@@ -88,14 +88,14 @@ export default function Blog() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="mb-6">
-              Insights & Strategies for 
-              <span className="text-gradient block mt-2">Influencer Success</span>
+              Career Insights for 
+              <span className="text-gradient block mt-2">Hardworking Filipinos</span>
             </h1>
             <p 
               className="text-xl max-w-2xl mx-auto"
               style={{ color: 'var(--text-secondary)' }}
             >
-              Expert tips, proven strategies, and industry insights to help you grow your influence and monetize your following.
+              Real stories, practical advice, and insights to help Filipino workers find better opportunities and avoid common pitfalls.
             </p>
           </motion.div>
 
@@ -184,13 +184,18 @@ export default function Blog() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="mb-4 text-white">Ready to Grow Your Influence?</h2>
+            <h2 className="mb-4 text-white">Ready to Find Better Opportunities?</h2>
             <p className="mb-6 text-white/90">
-              Get personalized strategies to monetize your following and scale your creator business.
+              Join our Discord community and connect with verified employers who value Filipino talent.
             </p>
-            <Link href="/contact" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-              Get Your Free Strategy Call
-            </Link>
+            <a 
+              href="https://discord.gg/luxlife" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90"
+            >
+              Join Our Discord Community
+            </a>
           </motion.div>
         </div>
       </section>
