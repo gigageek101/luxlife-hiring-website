@@ -40,7 +40,7 @@ export default function ThankYouPage() {
       <div className="max-w-4xl mx-auto">
         <div className="rounded-xl shadow-lg p-8 mb-8" style={{ background: 'var(--surface)' }}>
           {isQualified ? (
-            // QUALIFIED USER - Show Discord link
+            // QUALIFIED USER - Show Cal.com booking link
             <div className="text-center space-y-6">
               <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: '#10b981' }}>
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,29 +117,44 @@ export default function ThankYouPage() {
               </div>
             </div>
           ) : (
-            // DISQUALIFIED USER - Generic thank you message
+            // DISQUALIFIED USER - Course is full message
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'var(--accent)' }}>
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: '#ef4444' }}>
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
               
               <h1 className="text-3xl md:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                Thank You for Applying
+                Application Not Approved
               </h1>
               
               <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
-                We appreciate you taking the time to complete our application process.
+                Thank you for your interest in joining our program.
               </p>
 
-              <div className="rounded-lg p-6 my-8" style={{ background: 'var(--bg-primary)' }}>
+              <div className="rounded-lg p-6 my-8" style={{ background: 'var(--bg-primary)', border: '2px solid #ef4444' }}>
+                <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                  Course Currently Full
+                </h3>
                 <p className="text-lg mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Your application has been received and is under review. We will get back to you soon if there's a match.
+                  Unfortunately, you did not meet all the qualification requirements at this time. Our course is currently at full capacity.
                 </p>
                 <p style={{ color: 'var(--text-muted)' }}>
-                  In the meantime, feel free to explore our website for career tips and insights.
+                  We encourage you to work on improving your skills and qualifications. You're welcome to reapply in the future when new spots open up.
                 </p>
+              </div>
+
+              <div className="rounded-lg p-6 mb-6" style={{ background: 'var(--bg-soft)' }}>
+                <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+                  💡 Tips for Next Time:
+                </h3>
+                <ul className="text-left space-y-2" style={{ color: 'var(--text-secondary)' }}>
+                  <li>• Practice your English skills - aim for at least 50% on the quiz</li>
+                  <li>• Work on your memory and attention to detail</li>
+                  <li>• Ensure you meet all basic requirements</li>
+                  <li>• Check our blog for career development tips</li>
+                </ul>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

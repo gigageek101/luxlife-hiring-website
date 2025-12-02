@@ -150,14 +150,17 @@ export default function ApplyPage() {
     const correctAnswers = finalAnswers.filter(answer => answer.isCorrect).length
     const score = Math.round((correctAnswers / quizQuestions.length) * 100)
     
+    // Pass if at least half correct (4 out of 8)
+    const passed = correctAnswers >= config.englishMinCorrect
+    
     const updatedData: Partial<ApplicantData> = {
       quizScore: score,
       quizAnswers: finalAnswers
     }
 
-    if (correctAnswers < config.englishMinCorrect) {
+    if (!passed) {
       updatedData.isDisqualified = true
-      updatedData.disqualificationReason = `You need to answer at least ${config.englishMinCorrect} out of ${quizQuestions.length} questions correctly on the English quiz.`
+      updatedData.disqualificationReason = `English Quiz: You need at least half correct (${config.englishMinCorrect} out of ${quizQuestions.length}). You got ${correctAnswers}.`
     }
     
     handleNext(updatedData)
@@ -166,14 +169,17 @@ export default function ApplyPage() {
   const handleMemoryTestSubmit = (result: MemoryTestResult) => {
     const score = Math.round((result.correctCount / result.totalCount) * 100)
     
+    // Pass if at least half correct (3 out of 6)
+    const passed = result.correctCount >= config.memoryTestMinCorrect
+    
     const updatedData: Partial<ApplicantData> = {
       memoryTestScore: score,
       memoryTestResult: result
     }
 
-    if (result.correctCount < config.memoryTestMinCorrect) {
+    if (!passed) {
       updatedData.isDisqualified = true
-      updatedData.disqualificationReason = `You need to get at least ${config.memoryTestMinCorrect} out of ${result.totalCount} correct on the memory test.`
+      updatedData.disqualificationReason = `Memory Test: You need at least half correct (${config.memoryTestMinCorrect} out of ${result.totalCount}). You got ${result.correctCount}.`
     }
     
     setMemoryTestResult(result)
@@ -929,41 +935,101 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
 }
 
 function Step8({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
-  const correctAnswers = data.quizAnswers ? data.quizAnswers.filter((answer: any) => answer.isCorrect).length : 0
-  const memoryTestPassed = data.memoryTestResult ? data.memoryTestResult.correctCount >= config.memoryTestMinCorrect : true
-  const englishPassed = correctAnswers >= config.englishMinCorrect
-  const isQualified = englishPassed && memoryTestPassed && !data.isDisqualified
+  // Calculate qualification status
+  const englishCorrect = data.quizAnswers ? data.quizAnswers.filter((answer: any) => answer.isCorrect).length : 0
+  const englishTotal = config.englishTotalQuestions
+  const englishPassed = englishCorrect >= config.englishMinCorrect
+  
+  const memoryCorrect = data.memoryTestResult ? data.memoryTestResult.correctCount : 0
+  const memoryTotal = config.memoryTestTotalItems
+  const memoryPassed = memoryCorrect >= config.memoryTestMinCorrect
+  
+  // Check all disqualification criteria
+  const ageQualified = data.age ? (data.age >= config.minAge && data.age <= config.maxAge) : false
+  const educationQualified = data.hasFinishedEducation === true && data.educationType !== 'Student'
+  const englishRatingQualified = data.englishRating !== 'Very Bad' && data.englishRating !== 'Bad'
+  const equipmentQualified = data.hasWorkingPc === true
+  
+  // Final qualification: ALL criteria must pass
+  const isQualified = ageQualified && educationQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed
 
   return (
     <div className="text-center">
-      <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: isQualified ? '#10b981' : 'var(--accent)' }}>
-        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
+      <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: isQualified ? '#10b981' : '#ef4444' }}>
+        {isQualified ? (
+          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        ) : (
+          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        )}
       </div>
       
-      <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-        {isQualified ? 'Congratulations! 🎉' : 'Application Completed'}
+      <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+        {isQualified ? '🎉 Congratulations!' : '❌ Application Not Approved'}
       </h2>
       
       <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
-        {isQualified ? 'You have passed the qualification process!' : 'Thank you for completing our application process.'}
+        {isQualified 
+          ? 'You have successfully passed all qualification requirements!' 
+          : 'Unfortunately, you did not meet all the qualification requirements.'}
       </p>
       
-      <div className="rounded-lg p-6 mb-6" style={{ background: 'var(--bg-primary)' }}>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          {isQualified 
-            ? 'Click below to continue to the next steps.' 
-            : 'Thanks for applying, we will get back to you soon.'}
-        </p>
+      {/* Show detailed results */}
+      <div className="rounded-lg p-6 mb-6 text-left" style={{ background: 'var(--bg-primary)', border: '2px solid ' + (isQualified ? '#10b981' : '#ef4444') }}>
+        <h3 className="font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>
+          📊 Your Results:
+        </h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span style={{ color: 'var(--text-secondary)' }}>English Quiz:</span>
+            <span className={`font-semibold ${englishPassed ? 'text-green-500' : 'text-red-500'}`}>
+              {englishCorrect}/{englishTotal} {englishPassed ? '✓ Passed' : '✗ Failed'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span style={{ color: 'var(--text-secondary)' }}>Memory Test:</span>
+            <span className={`font-semibold ${memoryPassed ? 'text-green-500' : 'text-red-500'}`}>
+              {memoryCorrect}/{memoryTotal} {memoryPassed ? '✓ Passed' : '✗ Failed'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span style={{ color: 'var(--text-secondary)' }}>Age Requirement:</span>
+            <span className={`font-semibold ${ageQualified ? 'text-green-500' : 'text-red-500'}`}>
+              {ageQualified ? '✓ Met' : '✗ Not Met'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span style={{ color: 'var(--text-secondary)' }}>Education:</span>
+            <span className={`font-semibold ${educationQualified ? 'text-green-500' : 'text-red-500'}`}>
+              {educationQualified ? '✓ Met' : '✗ Not Met'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span style={{ color: 'var(--text-secondary)' }}>Equipment:</span>
+            <span className={`font-semibold ${equipmentQualified ? 'text-green-500' : 'text-red-500'}`}>
+              {equipmentQualified ? '✓ Met' : '✗ Not Met'}
+            </span>
+          </div>
+        </div>
       </div>
       
+      {!isQualified && (
+        <div className="rounded-lg p-6 mb-6" style={{ background: 'var(--bg-soft)' }}>
+          <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
+            <strong>Note:</strong> The course is currently full. We appreciate your interest and encourage you to improve your skills and try again in the future.
+          </p>
+        </div>
+      )}
+      
       <button
-        onClick={() => onNext({ isCompleted: true })}
+        onClick={() => onNext({ isCompleted: true, isDisqualified: !isQualified })}
         className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200"
         style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
       >
-        Continue
+        {isQualified ? 'Continue to Booking' : 'Finish'}
       </button>
     </div>
   )
