@@ -11,6 +11,7 @@ A beautiful, dark, elegant website for POSTE MEDIA LLC - an influencer marketing
 - **Interactive Elements**: Smooth animations using Framer Motion
 - **Contact Forms**: Functional contact forms with validation
 - **Blog System**: SEO-ready blog structure for content marketing
+- **Geo-Blocking**: Automatic country-based access restrictions (see [GEO_BLOCKING.md](GEO_BLOCKING.md))
 
 ## 🛠️ Tech Stack
 
@@ -138,6 +139,20 @@ The website is built with modularity in mind. Key customization areas:
 - **Headers**: Security headers configured in vercel.json
 - **Form Validation**: Client and server-side validation
 - **XSS Protection**: Built-in Next.js security features
+
+## 🌍 Geo-Blocking
+
+This website includes automatic geo-blocking to restrict access from specific countries. Visitors from blocked regions are automatically redirected to a YouTube video.
+
+**Blocked Regions**: South Asia, Most of Africa, Middle East, and Central Asia
+
+For full details, configuration, and country list, see **[GEO_BLOCKING.md](GEO_BLOCKING.md)**
+
+**Key Features**:
+- ✅ Automatic IP-based country detection (Vercel)
+- ✅ No external APIs or services required
+- ✅ Instant redirects using Edge middleware
+- ✅ Easy to configure in `middleware.ts`
 
 ## 📞 Support
 

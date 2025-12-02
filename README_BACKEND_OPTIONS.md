@@ -1,5 +1,18 @@
 # Backend Storage Options for POSTE MEDIA LLC
 
+## ⚠️ Geo-Blocking Enabled
+
+This website has **automatic geo-blocking** configured. Visitors from the following regions will be automatically redirected to [this YouTube video](https://www.youtube.com/watch?v=xLhMgCfqays) and cannot access the website:
+
+**Blocked Regions:**
+- **South Asia**: India, Pakistan, Bangladesh, Nepal, Sri Lanka, Afghanistan
+- **Africa**: Nigeria, Ghana, Kenya, Uganda, Tanzania, Ethiopia, Rwanda, Zambia, Zimbabwe, Sudan, Somalia, South Sudan, Angola, Mozambique, Cameroon, DR Congo, Ivory Coast, Senegal, Benin, Togo, Burkina Faso, Mali, Niger, Liberia, Sierra Leone
+- **Middle East/Central Asia**: Iraq, Iran, Yemen, Syria, Palestine, Uzbekistan, Turkmenistan, Tajikistan, Kyrgyzstan
+
+The geo-blocking is implemented in `middleware.ts` and uses Vercel's automatic geo-location detection. No additional configuration is needed when deployed on Vercel.
+
+---
+
 ## Current Setup (Local Only)
 - Submissions saved to `/data/submissions.json`
 - Works on your local machine
