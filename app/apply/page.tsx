@@ -192,19 +192,19 @@ export default function ApplyPage() {
   }
 
   return (
-    <div className="min-h-screen py-4 md:py-8 px-3 md:px-4" style={{ background: 'var(--bg-primary)' }}>
-      <div className="container mx-auto max-w-2xl">
+    <div className="min-h-screen py-4 md:py-8" style={{ background: 'var(--bg-primary)' }}>
+      <div className="mx-auto max-w-2xl px-4 md:px-6">
         {/* Progress Bar */}
         <div className="mb-6 md:mb-8 rounded-xl p-4 md:p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-            <span className="text-sm md:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <span className="text-sm md:text-base font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>
               📋 Step {applicantData.currentStep} of 8
             </span>
-            <span className="px-3 py-1 rounded-full text-xs md:text-sm font-semibold inline-block w-fit" style={{ background: 'var(--accent)', color: 'white' }}>
+            <span className="px-3 py-1 rounded-full text-xs md:text-sm font-semibold inline-block w-fit whitespace-nowrap" style={{ background: 'var(--accent)', color: 'white' }}>
               {Math.round((applicantData.currentStep / 8) * 100)}% Complete
             </span>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-2 md:h-3 shadow-inner">
+          <div className="w-full bg-gray-700 rounded-full h-2 md:h-3 shadow-inner overflow-hidden">
             <div 
               className="h-2 md:h-3 rounded-full transition-all duration-500 shadow-lg"
               style={{ 
