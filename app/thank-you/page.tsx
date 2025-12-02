@@ -41,8 +41,10 @@ export default function ThankYouPage() {
     
     // Send notification that user agreed to terms and is ready to book
     try {
-      const applicantData = JSON.parse(localStorage.getItem('luxlife-applicant') || '{}')
-      await fetch('/api/notify', {
+      const applicantData = JSON.parse(localStorage.getItem('luxlife-application-data') || '{}')
+      console.log('Sending notification with data:', applicantData)
+      
+      const response = await fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,6 +54,9 @@ export default function ThankYouPage() {
           readyToBook: true
         })
       })
+      
+      const result = await response.json()
+      console.log('Notification response:', result)
     } catch (error) {
       console.error('Failed to send terms agreement notification:', error)
     }
