@@ -147,11 +147,8 @@ export default function ThankYouPage() {
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                           3. Performance-Based Salary Structure
                         </h3>
-                        <p className="mb-2 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                          Your hourly rate is based on the revenue you generate per shift. The more successful you are, the higher your earnings. Payment is bi-weekly to your Philippine bank account.
-                        </p>
-                        <p className="mb-4 text-xs md:text-sm italic" style={{ color: 'var(--text-muted)' }}>
-                          Note: Revenue is calculated based on what you generate during your individual shifts.
+                        <p className="mb-4 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
+                          Your hourly rate is based on the revenue you generate per shift. The more successful you are, the higher your earnings. Payment is bi-weekly to your Philippine bank account or in crypto to binance (you will receive a setup guide on how to setup binance).
                         </p>
                         <div className="overflow-x-auto -mx-2 md:mx-0">
                           <table className="w-full text-xs md:text-sm border-collapse min-w-[500px]">
