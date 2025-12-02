@@ -770,11 +770,11 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   const [currentMemoryIndex, setCurrentMemoryIndex] = useState(0)
   const [showSequence, setShowSequence] = useState(false)
   const [countdown, setCountdown] = useState(3)
-  const [memorizeCountdown, setMemorizeCountdown] = useState(10)
+  const [memorizeCountdown, setMemorizeCountdown] = useState(5)
   
   const memoryItems = ['🔴', '🔵', '⚪', '🟢', '🟡', '🟣']
   const sequenceLength = 6
-  const memorizeTime = 10 // 10 seconds to memorize
+  const memorizeTime = 5 // 5 seconds to memorize
   
   const startMemoryTest = () => {
     const newSequence = Array.from({ length: sequenceLength }, () => 
@@ -852,7 +852,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
             <p style={{ color: 'var(--text-secondary)' }}>
               <strong>Instructions:</strong><br/>
               1. Memorize the sequence of {sequenceLength} colored circles<br/>
-              2. You have 10 seconds to memorize the sequence<br/>
+              2. You have 5 seconds to memorize the sequence<br/>
               3. After the timer ends, the sequence disappears<br/>
               4. Click the circles in the same order you saw them<br/>
               5. You need at least {config.memoryTestMinCorrect} correct to pass
