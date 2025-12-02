@@ -192,7 +192,7 @@ export default function ApplyPage() {
   }
 
   return (
-    <div className="min-h-screen py-4 md:py-8" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-24 md:pt-32 pb-8" style={{ background: 'var(--bg-primary)' }}>
       <div className="mx-auto max-w-2xl px-4 md:px-6">
         {/* Progress Bar */}
         <div className="mb-6 md:mb-8 rounded-xl p-4 md:p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
