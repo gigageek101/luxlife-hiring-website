@@ -151,39 +151,49 @@ export default function ThankYouPage() {
                           Your hourly rate is based on the revenue you generate. The more successful you are, the higher your earnings. Payment is bi-weekly to your Philippine bank account.
                         </p>
                         <div className="overflow-x-auto -mx-2 md:mx-0">
-                          <table className="w-full text-xs md:text-sm border-collapse min-w-[500px]">
+                          <table className="w-full text-xs md:text-sm border-collapse min-w-[600px]">
                             <thead>
                               <tr style={{ background: 'var(--accent)' }}>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Revenue Generated</th>
+                                <th className="p-2 md:p-3 text-left text-white font-semibold">Revenue/Month</th>
+                                <th className="p-2 md:p-3 text-left text-white font-semibold">Per Shift (8h)</th>
                                 <th className="p-2 md:p-3 text-left text-white font-semibold">Hourly Rate</th>
                                 <th className="p-2 md:p-3 text-left text-white font-semibold">Monthly (160h)</th>
                               </tr>
                             </thead>
                             <tbody>
                               {[
-                                ['$0–499', '₱85.29/hr', '₱13,646'],
-                                ['$500–999', '₱113.72/hr', '₱18,195'],
-                                ['$1000–1499', '₱170.58/hr', '₱27,293'],
-                                ['$1500–1999', '₱199.01/hr', '₱31,842'],
-                                ['$2000–2499', '₱227.44/hr', '₱36,390'],
-                                ['$2500–2999', '₱284.30/hr', '₱45,488'],
-                                ['$3000–3499', '₱369.59/hr', '₱59,134'],
-                                ['$3500–3999', '₱454.88/hr', '₱72,781'],
-                                ['$4000–4499', '₱568.60/hr', '₱90,976'],
-                                ['$4500–4999', '₱625.46/hr', '₱100,074'],
-                                ['$5000–5499', '₱682.32/hr', '₱109,171'],
-                                ['$5500–5999', '₱824.47/hr', '₱131,939'],
-                                ['$6000–6499', '₱966.62/hr', '₱154,707'],
-                                ['$6500+', '₱1,108.77/hr', '₱177,475'],
+                                ['$0–499', '$0–25', '₱85.29/hr', '₱13,646'],
+                                ['$500–999', '$25–50', '₱113.72/hr', '₱18,195'],
+                                ['$1000–1499', '$50–75', '₱170.58/hr', '₱27,293'],
+                                ['$1500–1999', '$75–100', '₱199.01/hr', '₱31,842'],
+                                ['$2000–2499', '$100–125', '₱227.44/hr', '₱36,390'],
+                                ['$2500–2999', '$125–150', '₱284.30/hr', '₱45,488'],
+                                ['$3000–3499', '$150–175', '₱369.59/hr', '₱59,134'],
+                                ['$3500–3999', '$175–200', '₱454.88/hr', '₱72,781'],
+                                ['$4000–4499', '$200–225', '₱568.60/hr', '₱90,976'],
+                                ['$4500–4999', '$225–250', '₱625.46/hr', '₱100,074'],
+                                ['$5000–5499', '$250–275', '₱682.32/hr', '₱109,171'],
+                                ['$5500–5999', '$275–300', '₱824.47/hr', '₱131,939'],
+                                ['$6000–6499', '$300–325', '₱966.62/hr', '₱154,707'],
+                                ['$6500+', '$325+', '₱1,108.77/hr', '₱177,475'],
                               ].map((row, i) => (
                                 <tr key={i} style={{ background: i % 2 === 0 ? 'var(--surface)' : 'var(--bg-soft)' }}>
                                   <td className="p-2 md:p-3 whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>{row[0]}</td>
-                                  <td className="p-2 md:p-3 font-semibold whitespace-nowrap" style={{ color: 'var(--accent)' }}>{row[1]}</td>
-                                  <td className="p-2 md:p-3 font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>{row[2]}</td>
+                                  <td className="p-2 md:p-3 whitespace-nowrap" style={{ color: 'var(--text-secondary)' }}>{row[1]}</td>
+                                  <td className="p-2 md:p-3 font-semibold whitespace-nowrap" style={{ color: 'var(--accent)' }}>{row[2]}</td>
+                                  <td className="p-2 md:p-3 font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>{row[3]}</td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
+                        </div>
+                        <div className="mt-4 p-3 md:p-4 rounded-lg" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
+                          <p className="text-sm md:text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                            🎁 Team Success Bonus
+                          </p>
+                          <p className="text-xs md:text-sm" style={{ color: 'var(--text-secondary)' }}>
+                            When the whole team works together and meets the monthly revenue goals (set fairly according to each creator), everyone receives an additional success bonus! This encourages teamwork and rewards collective achievement.
+                          </p>
                         </div>
                       </div>
                     </div>
