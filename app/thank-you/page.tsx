@@ -34,10 +34,27 @@ export default function ThankYouPage() {
     setLoading(false)
   }, [router])
 
-  const handleAgreeToTerms = () => {
+  const handleAgreeToTerms = async () => {
     localStorage.setItem('luxlife-terms-agreed', 'true')
     setAgreedToTerms(true)
     setShowTerms(false)
+    
+    // Send notification that user agreed to terms and is ready to book
+    try {
+      const applicantData = JSON.parse(localStorage.getItem('luxlife-applicant') || '{}')
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...applicantData,
+          isQualified: true,
+          termsAgreed: true,
+          readyToBook: true
+        })
+      })
+    } catch (error) {
+      console.error('Failed to send terms agreement notification:', error)
+    }
   }
 
   const handleDisagreeToTerms = () => {

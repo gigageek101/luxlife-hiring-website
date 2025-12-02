@@ -125,8 +125,24 @@ export default function ApplyPage() {
       saveToLocalStorage(updatedData)
       
       // Mark application as completed in localStorage
+      const isQualified = !updatedData.isDisqualified
       localStorage.setItem('luxlife-application-completed', 'true')
-      localStorage.setItem('luxlife-application-qualified', updatedData.isDisqualified ? 'false' : 'true')
+      localStorage.setItem('luxlife-application-qualified', isQualified ? 'true' : 'false')
+      
+      // Send Telegram notification
+      try {
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...updatedData,
+            isQualified: isQualified
+          })
+        })
+      } catch (error) {
+        console.error('Failed to send notification:', error)
+        // Don't block the user flow if notification fails
+      }
       
       // Redirect to thank-you page
       router.push('/thank-you')
