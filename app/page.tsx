@@ -168,7 +168,7 @@ export default function Home() {
                 className="btn-primary hover-lift hover-glow text-xl px-12 py-6 font-bold"
                 onClick={trackDiscordClick}
               >
-                👉 Join Our Discord Now (Free Access)
+                👉 Apply Now (Takes 5 Minutes)
                 <ExternalLink className="w-6 h-6" />
               </Link>
             </motion.div>
@@ -293,7 +293,7 @@ export default function Home() {
                 className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
                 onClick={trackDiscordClick}
               >
-                🔥 Join Our Discord Today →
+                🔥 Apply Now (Takes 5 Minutes) →
                 <ExternalLink className="w-5 h-5" />
               </Link>
             </div>
@@ -596,7 +596,7 @@ export default function Home() {
                   className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
                   onClick={trackDiscordClick}
                 >
-                  👉 Join Our Discord Now – Free Access
+                  👉 Apply Now (Takes 5 Minutes)
                   <ExternalLink className="w-5 h-5" />
                 </Link>
             </div>

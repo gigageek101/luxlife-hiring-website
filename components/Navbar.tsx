@@ -84,7 +84,7 @@ const Navbar = () => {
               className="btn-primary"
               onClick={trackDiscordClick}
             >
-              Join Discord
+              Apply Now
             </Link>
           </div>
 
@@ -127,7 +127,7 @@ const Navbar = () => {
                                 setIsOpen(false);
                               }}
                             >
-                              Join Discord
+                              Apply Now
                             </Link>
               </div>
             </motion.div>

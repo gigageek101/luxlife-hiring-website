@@ -59,7 +59,7 @@ export default function Footer() {
                   style={{ color: 'var(--text-secondary-on-black)' }}
                   onClick={trackDiscordClick}
                 >
-                  Join Discord
+                  Apply Now
                   <ExternalLink className="w-3 h-3" />
                 </Link>
               </li>

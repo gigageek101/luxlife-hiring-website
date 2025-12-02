@@ -195,19 +195,25 @@ export default function ApplyPage() {
     <div className="min-h-screen py-8 px-4" style={{ background: 'var(--bg-primary)' }}>
       <div className="container mx-auto max-w-2xl">
         {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between text-sm mb-2" style={{ color: 'var(--text-primary)' }}>
-            <span>Step {applicantData.currentStep} of 8</span>
-            <span>{Math.round((applicantData.currentStep / 8) * 100)}% Complete</span>
+        <div className="mb-8 rounded-xl p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
+          <div className="flex items-center justify-between text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+            <span>📋 Step {applicantData.currentStep} of 8</span>
+            <span className="px-3 py-1 rounded-full text-sm" style={{ background: 'var(--accent)', color: 'white' }}>
+              {Math.round((applicantData.currentStep / 8) * 100)}% Complete
+            </span>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-2">
+          <div className="w-full bg-gray-700 rounded-full h-3 shadow-inner">
             <div 
-              className="h-2 rounded-full transition-all duration-300"
+              className="h-3 rounded-full transition-all duration-500 shadow-lg"
               style={{ 
                 width: `${(applicantData.currentStep / 8) * 100}%`,
-                background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))'
+                background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
+                boxShadow: '0 2px 8px rgba(255, 107, 0, 0.4)'
               }}
             ></div>
+          </div>
+          <div className="mt-2 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
+            ⏱️ Estimated time remaining: {Math.max(0, 5 - Math.round((applicantData.currentStep / 8) * 5))} minutes
           </div>
         </div>
 

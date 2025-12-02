@@ -195,7 +195,7 @@ export default function Blog() {
               className="btn-primary"
               onClick={trackDiscordClick}
             >
-              Join Our Discord Community
+              Apply Now (Takes 5 Minutes)
             </Link>
           </motion.div>
         </div>

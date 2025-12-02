@@ -126,7 +126,7 @@ export default function ShortAttentionSpansMarketing() {
                   Join our Discord community and connect with verified employers who value Filipino talent and respect work-life balance.
                 </p>
                 <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                  Join Our Discord Community
+                  Apply Now (Takes 5 Minutes)
                 </Link>
               </div>
             </motion.article>

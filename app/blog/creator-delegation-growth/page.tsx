@@ -130,7 +130,7 @@ export default function WorkHardWithoutBurnout() {
                   Join our Discord community and find opportunities that value your ambition while respecting your well-being and work-life balance.
                 </p>
                 <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                  Join Our Discord Community
+                  Apply Now (Takes 5 Minutes)
                 </Link>
               </div>
             </motion.article>

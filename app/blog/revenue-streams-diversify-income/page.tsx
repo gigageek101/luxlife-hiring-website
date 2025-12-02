@@ -124,7 +124,7 @@ export default function NoStructureNoSuccess() {
                   Join our Discord community and connect with employers who provide clear roles, defined growth paths, and proper structure from day one.
                 </p>
                 <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
-                  Join Our Discord Community
+                  Apply Now (Takes 5 Minutes)
                 </Link>
               </div>
             </motion.article>
