@@ -95,7 +95,7 @@ export default function WorkHardWithoutBurnout() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">⚡ A Healthier Option</h2>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Our free Discord is built for ambitious Filipinos who want to grow — without breaking themselves.
+                  Our free application is built for ambitious Filipinos who want to grow — without breaking themselves.
                 </p>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
                   Inside you'll get:
@@ -110,7 +110,7 @@ export default function WorkHardWithoutBurnout() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">🧑‍💻 Lisa's Lesson</h2>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Lisa once worked for a UK firm answering emails at 3 AM. Burnout destroyed her motivation. She later joined a verified role via our Discord that respected Philippine hours. Now, she's thriving again.
+                  Lisa once worked for a UK firm answering emails at 3 AM. Burnout destroyed her motivation. She later joined a verified role via our application process that respected Philippine hours. Now, she's thriving again.
                 </p>
               </div>
 
@@ -120,14 +120,14 @@ export default function WorkHardWithoutBurnout() {
                   Work hard, yes. But do it in the right environment.
                 </p>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  👉 Join our free Discord today and discover roles that respect both your ambition and your well-being.
+                  👉 Join our free application today and discover roles that respect both your ambition and your well-being.
                 </p>
               </div>
 
               <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
                 <h3>Ready to Work Smart, Not Just Hard?</h3>
                 <p className="mb-4 text-white/90">
-                  Join our Discord community and find opportunities that value your ambition while respecting your well-being and work-life balance.
+                  Apply now for a 15-minute introduction call and find opportunities that value your ambition while respecting your well-being and work-life balance.
                 </p>
                 <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
                   Apply Now (Takes 5 Minutes)

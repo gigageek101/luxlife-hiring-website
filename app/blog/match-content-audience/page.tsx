@@ -125,7 +125,7 @@ export default function HiddenScams() {
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>🛡️ The Safer Option</h2>
               
               <p className="mb-6" style={{ color: 'var(--text-secondary-on-white)' }}>
-                That's why we created HiringPhilippines.Careers. Inside our free Discord, every single posting is verified.
+                That's why we created HiringPhilippines.Careers. Inside our free application, every single posting is verified.
               </p>
 
               <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>Here's what you get:</p>
@@ -153,7 +153,7 @@ export default function HiddenScams() {
               
               <div className="card p-6 mb-8" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
                 <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Jerome from Cebu lost ₱5,000 to a "job training program" that turned out fake. He nearly gave up freelancing. After joining our Discord, he found a verified role in two weeks — with real pay, a contract, and a future.
+                  Jerome from Cebu lost ₱5,000 to a "job training program" that turned out fake. He nearly gave up freelancing. After joining our application process, he found a verified role in two weeks — with real pay, a contract, and a future.
                 </p>
                 <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
                   His lesson? Hard work deserves security.
@@ -169,7 +169,7 @@ export default function HiddenScams() {
               <div className="card p-8 text-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', color: 'white' }}>
                 <h3 className="mb-4 text-white">Protect Your Hard Work</h3>
                 <p className="mb-6 text-white/90">
-                  Join our free Discord today and turn effort into opportunity.
+                  Join our free application today and turn effort into opportunity.
                 </p>
                 <Link 
                   href="/apply"

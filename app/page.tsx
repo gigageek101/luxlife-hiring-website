@@ -54,24 +54,24 @@ export default function Home() {
   const steps = [
     {
       number: '1',
-      title: 'Click Join Discord',
-      description: 'Hit the button below to access our community.'
+      title: 'Complete the Application',
+      description: 'Takes just 5 minutes to complete our qualification process.'
     },
     {
       number: '2',
-      title: 'Verify Your Email',
-      description: 'Quick and secure setup takes less than a minute.'
+      title: 'Pass the Quick Tests',
+      description: 'Simple English and memory tests to ensure you\'re a good fit.'
     },
     {
       number: '3',
-      title: 'Check the Announcements Channel',
-      description: 'That\'s where opportunities and updates live.'
+      title: 'Schedule Your 15-Min Call',
+      description: 'Book a personal introduction call with our team to get started.'
     }
   ]
 
   const testimonials = [
     {
-      content: 'Finally, a safe place to find work online. I joined the Discord and within a week I had a real interview lined up.',
+      content: 'Finally, a safe place to find work online. I applied and within a week I had my introduction call and started training.',
       name: 'Andrea',
       location: 'Manila',
       rating: 5
@@ -98,16 +98,16 @@ export default function Home() {
 
   const faqs = [
     {
-      question: 'Is Discord free to join?',
-      answer: 'Yes, it\'s 100% free. You only need an email address.'
+      question: 'Is the application free?',
+      answer: 'Yes, it\'s 100% free. The application and introduction call cost nothing.'
     },
     {
       question: 'Do I need experience to apply?',
       answer: 'Not always. Many employers welcome motivated beginners.'
     },
     {
-      question: 'What will I find inside the Discord?',
-      answer: 'Exclusive announcements, verified job postings, and valuable career advice.'
+      question: 'What happens after I apply?',
+      answer: 'If you qualify, you\'ll schedule a 15-minute introduction call where we discuss opportunities and next steps.'
     },
     {
       question: 'How do I know it\'s not a scam?',
@@ -257,7 +257,7 @@ export default function Home() {
             <div className="text-center mb-16">
               <h2 className="mb-4">⚡ Here's How to Get Started in Minutes</h2>
               <p className="text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
-                💡 Tip: The people who succeed are the ones who check Discord regularly.
+                💡 Tip: The people who succeed are the ones who take action and apply today.
               </p>
             </div>
           </Reveal>

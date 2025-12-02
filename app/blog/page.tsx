@@ -188,7 +188,7 @@ export default function Blog() {
           >
             <h2 className="mb-4 text-white">Ready to Find Better Opportunities?</h2>
             <p className="mb-6 text-white/90">
-              Join our Discord community and connect with verified employers who value Filipino talent.
+              Apply now and schedule a 15-minute call with our team to discuss verified opportunities.
             </p>
             <Link 
               href="/apply"

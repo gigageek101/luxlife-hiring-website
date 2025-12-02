@@ -1,7 +1,7 @@
 # Qualification Funnel Implementation
 
 ## Overview
-Successfully integrated a complete qualification funnel into the LuxLife Hiring website. Users now go through an 8-step qualification process before being granted access to the Discord community.
+Successfully integrated a complete qualification funnel into the LuxLife Hiring website. Users now go through an 8-step qualification process before being able to schedule a 15-minute introduction call with the team.
 
 ## What Was Added
 
@@ -57,17 +57,18 @@ Two different experiences:
 
 #### Qualified Users:
 - Congratulations message
-- Discord invite link: `https://myallsocials.com/luxlife`
-- Instructions for joining and getting started
-- Important reminders about Discord verification
+- Cal.com booking link: `https://cal.com/luxlife-agency-ddefis/15min`
+- Instructions for scheduling the introduction call
+- Important reminders about attending the scheduled call
 
 #### Disqualified Users:
 - Generic thank you message
-- No Discord link shown
+- No booking link shown
+- Message that course is currently full
 - Links to blog and home page
 
-### 4. Updated All Discord Buttons
-Changed all "Join Discord" buttons throughout the site to redirect to `/apply` instead of directly to Discord:
+### 4. Updated All Apply Buttons
+Changed all "Apply Now" buttons throughout the site to redirect to `/apply` for the qualification process:
 - Main homepage (3 buttons)
 - Navbar (desktop + mobile)
 - Footer
@@ -104,20 +105,20 @@ Users are disqualified if they:
 - ✅ TypeScript types are valid
 
 ## User Flow
-1. User clicks "Join Discord" anywhere on the site
+1. User clicks "Apply Now" anywhere on the site
 2. Redirected to `/apply` page
 3. Goes through 8-step qualification process
 4. Data saved to localStorage after each step
 5. Upon completion, redirected to `/thank-you`
-6. Qualified users see Discord link
-7. Disqualified users see generic thank you
+6. Qualified users see Cal.com booking link for 15-minute call
+7. Disqualified users see "course is full" message
 
 ## Important Notes
 - **No database connections** - everything is client-side only
 - **No API routes** - all logic runs in the browser
 - **Persistent progress** - users can close and resume their application
 - **One-time completion** - once completed, users are redirected to thank-you page
-- **Discord link protected** - only qualified users can access the Discord invite
+- **Booking link protected** - only qualified users can access the Cal.com booking link
 
 ## Configuration
 Edit `/lib/config.ts` to change:
@@ -127,10 +128,10 @@ Edit `/lib/config.ts` to change:
 - Memory test passing score (default: 4/6)
 
 ## Files Modified
-- `/app/page.tsx` - Updated Discord buttons
-- `/components/Navbar.tsx` - Updated Discord button
-- `/components/Footer.tsx` - Updated Discord link
-- `/app/blog/page.tsx` - Updated Discord button
+- `/app/page.tsx` - Updated Apply buttons
+- `/components/Navbar.tsx` - Updated Apply button
+- `/components/Footer.tsx` - Updated Apply link
+- `/app/blog/page.tsx` - Updated Apply button
 - All blog post pages (6 files)
 - Both case study pages (2 files)
 

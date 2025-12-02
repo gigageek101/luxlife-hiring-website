@@ -108,7 +108,7 @@ export default function CaseStudyNik() {
                 <h2 className="mb-6" style={{ color: 'var(--text-primary)' }}>🔑 The Turning Point</h2>
                 
                 <p className="text-lg mb-6" style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Nik realized he didn't just need work — he needed a path. That's when he joined the HiringPhilippines.Careers Discord community.
+                  Nik realized he didn't just need work — he needed a path. That's when he joined the HiringPhilippines.Careers application and introduction call.
                 </p>
 
                 <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>Inside, things were different:</p>
@@ -186,7 +186,7 @@ export default function CaseStudyNik() {
                 <div className="card p-8" style={{ background: 'linear-gradient(135deg, var(--surface), var(--bg-soft))', border: '1px solid var(--border)' }}>
                   <MessageCircle className="w-12 h-12 mb-6" style={{ color: 'var(--accent)' }} />
                   <blockquote className="text-xl italic mb-6" style={{ color: 'var(--text-primary)' }}>
-                    "Before, I thought working hard just meant taking on more and more tasks. Now, I understand that structure, skills, and the right environment matter even more. Joining the Discord changed everything for me — I stopped wasting energy and started building my future."
+                    "Before, I thought working hard just meant taking on more and more tasks. Now, I understand that structure, skills, and the right environment matter even more. Applying and getting qualified changed everything for me — I stopped wasting energy and started building my future."
                   </blockquote>
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
@@ -211,7 +211,7 @@ export default function CaseStudyNik() {
                 <div className="card p-8 text-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', color: 'white' }}>
                   <h3 className="mb-4 text-white">Ready to Follow Nik's Path?</h3>
                   <p className="mb-6 text-white/90">
-                    Join our free Discord today and take the first step, just like Nik did. Because your effort deserves to create not just income — but a future.
+                    Join our free application today and take the first step, just like Nik did. Because your effort deserves to create not just income — but a future.
                   </p>
                   <Link 
                     href="/apply"

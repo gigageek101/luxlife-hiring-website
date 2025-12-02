@@ -126,7 +126,7 @@ export default function NoDaysOff() {
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>⚡ Where Balance Exists</h2>
               
               <p className="mb-6" style={{ color: 'var(--text-secondary-on-white)' }}>
-                Inside our free HiringPhilippines.Careers Discord, opportunities come with respect for structure.
+                Inside our free HiringPhilippines.Careers application process, opportunities come with respect for structure.
               </p>
 
               <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>You'll find:</p>
@@ -150,7 +150,7 @@ export default function NoDaysOff() {
               
               <div className="card p-6 mb-8" style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)' }}>
                 <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Anna worked every Sunday for an e-commerce company. Burnout hit hard, and she quit. Through our Discord, she found a verified role with a structured 5-day week.
+                  Anna worked every Sunday for an e-commerce company. Burnout hit hard, and she quit. Through our application process, she found a verified role with a structured 5-day week.
                 </p>
                 <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
                   Now, she performs better — because she finally rests.
@@ -166,7 +166,7 @@ export default function NoDaysOff() {
               <div className="card p-8 text-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', color: 'white' }}>
                 <h3 className="mb-4 text-white">Find Balance in Your Career</h3>
                 <p className="mb-6 text-white/90">
-                  Join our free Discord today and discover opportunities that respect both your ambition and your need for rest.
+                  Join our free application today and discover opportunities that respect both your ambition and your need for rest.
                 </p>
                 <Link 
                   href="/apply"

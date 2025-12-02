@@ -94,7 +94,7 @@ export default function ShortAttentionSpansMarketing() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">⚡ A Smarter Way</h2>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Our HiringPhilippines.Careers Discord offers:
+                  Our HiringPhilippines.Careers application process offers:
                 </p>
                 <ul className="list-disc pl-6 space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <li>🛡️ Roles that value effort with structure</li>
@@ -106,7 +106,7 @@ export default function ShortAttentionSpansMarketing() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">🧑‍💻 Ramon's Story</h2>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Ramon, a Filipino developer, flawlessly managed two projects. His "reward"? A third project dumped on him — no raise. He left and found a new role via our Discord where performance = promotions.
+                  Ramon, a Filipino developer, flawlessly managed two projects. His "reward"? A third project dumped on him — no raise. He left and found a new role via our application process where performance = promotions.
                 </p>
               </div>
 
@@ -116,14 +116,14 @@ export default function ShortAttentionSpansMarketing() {
                   Hard workers deserve real recognition.
                 </p>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  👉 Join our free Discord today and grow in a community that values you.
+                  👉 Join our free application today and grow in a community that values you.
                 </p>
               </div>
 
               <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
                 <h3>Ready to Find Better Opportunities?</h3>
                 <p className="mb-4 text-white/90">
-                  Join our Discord community and connect with verified employers who value Filipino talent and respect work-life balance.
+                  Apply now for a 15-minute introduction call and connect with verified employers who value Filipino talent and respect work-life balance.
                 </p>
                 <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
                   Apply Now (Takes 5 Minutes)

@@ -60,7 +60,7 @@ async function sendTelegramNotification(applicantData: any) {
 🔔 Watch for their Cal.com booking
 📞 Prepare for introduction call
 💼 Have onboarding materials ready
-🤝 Send Discord invite after call
+🤝 Ready to discuss next steps on call
 
 ━━━━━━━━━━━━━━━━━━━━
 ⏰ *Submitted:* ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })} (Manila Time)

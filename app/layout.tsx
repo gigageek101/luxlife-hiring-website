@@ -17,9 +17,9 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Join Our Discord',
-  description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Join our free Discord community today and connect with trusted employers.',
-  keywords: 'jobs Philippines, remote work PH, verified careers Philippines, hiring community PH, join hiring Discord, Filipino job opportunities, work from home jobs Philippines, safe job postings Philippines',
+  title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Apply Now',
+  description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Apply now for a free 15-minute introduction call with our team.',
+  keywords: 'jobs Philippines, remote work PH, verified careers Philippines, hiring community PH, apply for jobs Philippines, Filipino job opportunities, work from home jobs Philippines, safe job postings Philippines',
   authors: [{ name: 'LuxLife Association' }],
   creator: 'LuxLife Association',
   publisher: 'HiringPhilippines.Careers',
@@ -33,8 +33,8 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://hiringphilippines.careers',
     siteName: 'HiringPhilippines.Careers',
-    title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Join Our Discord',
-    description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Join our free Discord community today and connect with trusted employers.',
+    title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Apply Now',
+    description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Apply now for a free 15-minute introduction call with our team.',
     images: [
       {
         url: '/og-image.jpg',
@@ -46,8 +46,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Join Our Discord',
-    description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Join our free Discord community today and connect with trusted employers.',
+    title: 'HiringPhilippines.Careers | Verified Job Opportunities in the Philippines – Apply Now',
+    description: 'Discover verified job opportunities in the Philippines with HiringPhilippines.Careers – powered by LuxLife Association. Apply now for a free 15-minute introduction call with our team.',
     images: ['/og-image.jpg'],
   },
   robots: {
@@ -84,7 +84,7 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            // Note: We don't call gtag('config') here - only on Discord button clicks
+            // Note: We don't call gtag('config') here - only on Apply button clicks
           `}
         </Script>
       </head>

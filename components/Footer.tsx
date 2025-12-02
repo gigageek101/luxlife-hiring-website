@@ -29,7 +29,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm max-w-md" style={{ color: 'var(--text-secondary-on-black)' }}>
-              HiringPhilippines.Careers is part of the LuxLife Association. Our mission is to connect Filipino talent with trusted employers through a safe and exclusive community platform. Join our Discord today and discover your next opportunity.
+              HiringPhilippines.Careers is part of the LuxLife Association. Our mission is to connect Filipino talent with trusted employers through a safe and exclusive application process. Apply today for a 15-minute introduction call and discover your next opportunity.
             </p>
           </div>
 

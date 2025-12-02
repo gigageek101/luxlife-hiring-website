@@ -138,7 +138,7 @@ export default function HardworkingFilipinos() {
               <h2 className="mb-6 mt-12" style={{ color: 'var(--text-primary)' }}>⚡ A Better Path Exists</h2>
               
               <p className="mb-6" style={{ color: 'var(--text-secondary-on-white)' }}>
-                At HiringPhilippines.Careers, we built a safe Discord community to make sure ambition gets rewarded — not abused.
+                At HiringPhilippines.Careers, we built a safe application and introduction call to make sure ambition gets rewarded — not abused.
               </p>
 
               <p className="mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>Inside, you'll find:</p>
@@ -169,7 +169,7 @@ export default function HardworkingFilipinos() {
                   Maria from Cebu gave everything to her first remote job. Within months, she was managing triple the workload — with no raise. She burned out and almost quit freelancing.
                 </p>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  After joining our Discord, Maria found a verified employer who respected her hours, gave her weekends off, and offered career growth. Now, her hard work finally pays off.
+                  After joining our application process, Maria found a verified employer who respected her hours, gave her weekends off, and offered career growth. Now, her hard work finally pays off.
                 </p>
               </div>
 
@@ -182,7 +182,7 @@ export default function HardworkingFilipinos() {
               <div className="card p-8 text-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', color: 'white' }}>
                 <h3 className="mb-4 text-white">Ready to Work Where You're Valued?</h3>
                 <p className="mb-6 text-white/90">
-                  Join our free Discord today and find jobs that respect your talent, your time, and your future.
+                  Join our free application today and find jobs that respect your talent, your time, and your future.
                 </p>
                 <Link 
                   href="/apply"

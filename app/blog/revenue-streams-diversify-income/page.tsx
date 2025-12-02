@@ -92,7 +92,7 @@ export default function NoStructureNoSuccess() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">⚡ What You'll Find Inside</h2>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Our Discord community solves this by connecting Filipinos to structured, verified opportunities.
+                  Our application and introduction call solves this by connecting Filipinos to structured, verified opportunities.
                 </p>
                 <ul className="list-disc pl-6 space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
                   <li>🛡️ Clear roles from day one</li>
@@ -104,7 +104,7 @@ export default function NoStructureNoSuccess() {
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">🧑‍💻 Mark's Lesson</h2>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  Mark started as a VA with no clear tasks. One day he handled social media, the next — accounting. Frustrated, he quit. Inside our Discord, he found a structured marketing assistant role — and thrived.
+                  Mark started as a VA with no clear tasks. One day he handled social media, the next — accounting. Frustrated, he quit. Inside our application process, he found a structured marketing assistant role — and thrived.
                 </p>
               </div>
 
@@ -114,14 +114,14 @@ export default function NoStructureNoSuccess() {
                   Ambition grows where systems exist.
                 </p>
                 <p style={{ color: 'var(--text-secondary-on-white)' }}>
-                  👉 Join our free Discord today and find opportunities with clarity.
+                  👉 Join our free application today and find opportunities with clarity.
                 </p>
               </div>
 
               <div className="card my-8 p-6" style={{ background: 'linear-gradient(135deg, var(--accent-muted), var(--accent))', color: 'white' }}>
                 <h3>Ready to Find Structured Opportunities?</h3>
                 <p className="mb-4 text-white/90">
-                  Join our Discord community and connect with employers who provide clear roles, defined growth paths, and proper structure from day one.
+                  Apply now for a 15-minute introduction call and connect with employers who provide clear roles, defined growth paths, and proper structure from day one.
                 </p>
                 <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
                   Apply Now (Takes 5 Minutes)
