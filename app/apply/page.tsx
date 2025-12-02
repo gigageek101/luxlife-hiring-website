@@ -770,9 +770,11 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   const [currentMemoryIndex, setCurrentMemoryIndex] = useState(0)
   const [showSequence, setShowSequence] = useState(false)
   const [countdown, setCountdown] = useState(3)
+  const [memorizeCountdown, setMemorizeCountdown] = useState(10)
   
   const memoryItems = ['🔴', '🔵', '⚪', '🟢', '🟡', '🟣']
   const sequenceLength = 6
+  const memorizeTime = 10 // 10 seconds to memorize
   
   const startMemoryTest = () => {
     const newSequence = Array.from({ length: sequenceLength }, () => 
@@ -783,8 +785,21 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
     setGameState('memorize')
     setCurrentMemoryIndex(0)
     setShowSequence(true)
+    setMemorizeCountdown(memorizeTime)
+    
+    // Countdown timer during memorization
+    const memorizeInterval = setInterval(() => {
+      setMemorizeCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(memorizeInterval)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
     
     setTimeout(() => {
+      clearInterval(memorizeInterval)
       setShowSequence(false)
       setGameState('wait')
       setCountdown(3)
@@ -799,7 +814,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
           return prev - 1
         })
       }, 1000)
-    }, 4000)
+    }, memorizeTime * 1000)
   }
   
   const handleAnswerSelect = (item: string) => {
@@ -837,9 +852,10 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
             <p style={{ color: 'var(--text-secondary)' }}>
               <strong>Instructions:</strong><br/>
               1. Memorize the sequence of {sequenceLength} colored circles<br/>
-              2. After 4 seconds, the sequence disappears<br/>
-              3. Click the circles in the same order you saw them<br/>
-              4. You need at least {config.memoryTestMinCorrect} correct to pass
+              2. You have 10 seconds to memorize the sequence<br/>
+              3. After the timer ends, the sequence disappears<br/>
+              4. Click the circles in the same order you saw them<br/>
+              5. You need at least {config.memoryTestMinCorrect} correct to pass
             </p>
           </div>
         </div>
@@ -861,6 +877,17 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Memorize This Sequence</h2>
         
         <div className="border-2 rounded-lg p-6 mb-8" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full mb-4" style={{ background: 'var(--accent)', boxShadow: '0 4px 12px rgba(255, 107, 0, 0.3)' }}>
+              <span className="text-2xl">⏱️</span>
+              <span className="text-3xl font-bold text-white">{memorizeCountdown}</span>
+              <span className="text-sm text-white font-semibold">seconds</span>
+            </div>
+            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Memorize the sequence before time runs out!
+            </p>
+          </div>
+          
           <p className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Study this sequence carefully:</p>
           <div className="flex justify-center space-x-4 mb-4">
             {showSequence && sequence.map((item, index) => (
@@ -873,7 +900,6 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
               </div>
             ))}
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Sequence will disappear in a few seconds...</p>
         </div>
       </div>
     )
