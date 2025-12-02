@@ -192,19 +192,21 @@ export default function ApplyPage() {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen py-4 md:py-8 px-3 md:px-4" style={{ background: 'var(--bg-primary)' }}>
       <div className="container mx-auto max-w-2xl">
         {/* Progress Bar */}
-        <div className="mb-8 rounded-xl p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
-          <div className="flex items-center justify-between text-base font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-            <span>📋 Step {applicantData.currentStep} of 8</span>
-            <span className="px-3 py-1 rounded-full text-sm" style={{ background: 'var(--accent)', color: 'white' }}>
+        <div className="mb-6 md:mb-8 rounded-xl p-4 md:p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+            <span className="text-sm md:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+              📋 Step {applicantData.currentStep} of 8
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs md:text-sm font-semibold inline-block w-fit" style={{ background: 'var(--accent)', color: 'white' }}>
               {Math.round((applicantData.currentStep / 8) * 100)}% Complete
             </span>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-3 shadow-inner">
+          <div className="w-full bg-gray-700 rounded-full h-2 md:h-3 shadow-inner">
             <div 
-              className="h-3 rounded-full transition-all duration-500 shadow-lg"
+              className="h-2 md:h-3 rounded-full transition-all duration-500 shadow-lg"
               style={{ 
                 width: `${(applicantData.currentStep / 8) * 100}%`,
                 background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
@@ -213,28 +215,28 @@ export default function ApplyPage() {
             ></div>
           </div>
           <div className="mt-2 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-            ⏱️ Estimated time remaining: {Math.max(0, 5 - Math.round((applicantData.currentStep / 8) * 5))} minutes
+            ⏱️ Time remaining: ~{Math.max(0, 5 - Math.round((applicantData.currentStep / 8) * 5))} min
           </div>
         </div>
 
         {/* Purpose Statement */}
-        <div className="rounded-xl border p-6 mb-6" style={{ background: 'var(--surface)', borderColor: 'var(--accent)' }}>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+        <div className="rounded-xl border p-4 md:p-6 mb-4 md:mb-6" style={{ background: 'var(--surface)', borderColor: 'var(--accent)' }}>
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Why we need this information</h3>
-              <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base md:text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Why we need this information</h3>
+              <p className="mt-1 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
                 We use these details to find the <span className="font-medium" style={{ color: 'var(--accent)' }}>perfectly fitting opportunity</span> for your skills and preferences.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl shadow-lg p-8" style={{ background: 'var(--surface)' }}>
+        <div className="rounded-xl shadow-lg p-4 md:p-8" style={{ background: 'var(--surface)' }}>
           {applicantData.currentStep === 1 && <Step1 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 2 && <Step2 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 3 && <Step3 onNext={handleNext} data={applicantData} />}
@@ -274,7 +276,7 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Personal Information</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Personal Information</h2>
       
       <div className="space-y-4">
         <div>
@@ -286,7 +288,7 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
             required
             value={formData.fullName}
             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
+            className="w-full px-3 md:px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:border-transparent text-base"
             style={{ 
               background: 'var(--bg-primary)', 
               borderColor: 'var(--text-muted)',
@@ -305,7 +307,7 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
             required
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
+            className="w-full px-3 md:px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:border-transparent text-base"
             style={{ 
               background: 'var(--bg-primary)', 
               borderColor: 'var(--text-muted)',
@@ -324,7 +326,7 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
             required
             value={formData.city}
             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
+            className="w-full px-3 md:px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:border-transparent text-base"
             style={{ 
               background: 'var(--bg-primary)', 
               borderColor: 'var(--text-muted)',
@@ -337,7 +339,7 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
       
       <button
         type="submit"
-        className="mt-6 w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 cursor-pointer"
+        className="mt-6 w-full text-white font-semibold py-3 md:py-3.5 px-6 rounded-lg transition-all duration-200 cursor-pointer text-base md:text-lg"
         style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
       >
         Continue
@@ -356,7 +358,7 @@ function Step2({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Age Verification</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Age Verification</h2>
       
       <div>
         <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
@@ -369,7 +371,7 @@ function Step2({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
           max="65"
           value={age}
           onChange={(e) => setAge(e.target.value)}
-          className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
+          className="w-full px-3 md:px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:border-transparent text-base"
           style={{ 
             background: 'var(--bg-primary)', 
             borderColor: 'var(--text-muted)',
@@ -381,7 +383,7 @@ function Step2({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
       
       <button
         type="submit"
-        className="mt-6 w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 cursor-pointer"
+        className="mt-6 w-full text-white font-semibold py-3 md:py-3.5 px-6 rounded-lg transition-all duration-200 cursor-pointer text-base md:text-lg"
         style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
       >
         Continue
@@ -403,7 +405,7 @@ function Step3({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Education</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Education</h2>
       
       <div className="space-y-6">
         <div>
@@ -486,7 +488,7 @@ function Step4({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>English Skills</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>English Skills</h2>
       
       <div>
         <label className="block text-sm font-medium mb-4" style={{ color: 'var(--text-secondary)' }}>
@@ -533,7 +535,7 @@ function Step5({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Equipment</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Equipment</h2>
       
       <div>
         <label className="block text-sm font-medium mb-4" style={{ color: 'var(--text-secondary)' }}>
@@ -681,7 +683,7 @@ function Step6({
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>English Quiz</h2>
+        <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>English Quiz</h2>
         {timerStarted && (
           <div className="text-lg font-bold px-4 py-2 rounded-lg border-2" style={{ color: timerColor, borderColor: timerColor }}>
             ⏰ {formatTime(timeLeft)}
@@ -811,7 +813,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   if (gameState === 'intro') {
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Memory Test</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Memory Test</h2>
         
         <div className="mb-8">
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
@@ -846,7 +848,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   if (gameState === 'memorize') {
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Memorize This Sequence</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Memorize This Sequence</h2>
         
         <div className="border-2 rounded-lg p-6 mb-8" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
           <p className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Study this sequence carefully:</p>
@@ -870,7 +872,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   if (gameState === 'wait') {
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Get Ready!</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Get Ready!</h2>
         
         <div className="border-2 rounded-lg p-8 mb-8" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
           <div className="text-6xl font-bold mb-4" style={{ color: 'var(--accent)' }}>{countdown}</div>
@@ -883,7 +885,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   if (gameState === 'answer') {
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>
           Repeat the Sequence ({userAnswers.length}/{sequenceLength})
         </h2>
         
