@@ -168,15 +168,13 @@ export default function NoDaysOff() {
                 <p className="mb-6 text-white/90">
                   Join our free Discord today and discover opportunities that respect both your ambition and your need for rest.
                 </p>
-                <a 
-                  href="https://myallsocials.com/luxlife" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Link 
+                  href="/apply"
                   className="inline-flex items-center gap-2 bg-white text-[var(--accent)] px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
                 >
                   👉 Join Our Discord Now
                   <ExternalLink className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
 
               <div className="mt-12 p-6 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>

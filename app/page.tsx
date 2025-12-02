@@ -163,16 +163,14 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <a 
-                href="https://myallsocials.com/luxlife" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link 
+                href="/apply"
                 className="btn-primary hover-lift hover-glow text-xl px-12 py-6 font-bold"
                 onClick={trackDiscordClick}
               >
                 👉 Join Our Discord Now (Free Access)
                 <ExternalLink className="w-6 h-6" />
-              </a>
+              </Link>
             </motion.div>
 
             <motion.div 
@@ -290,16 +288,14 @@ export default function Home() {
 
           <Reveal delay={0.3}>
             <div className="text-center mt-12">
-              <a 
-                href="https://myallsocials.com/luxlife" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link 
+                href="/apply"
                 className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
                 onClick={trackDiscordClick}
               >
                 🔥 Join Our Discord Today →
                 <ExternalLink className="w-5 h-5" />
-              </a>
+              </Link>
             </div>
           </Reveal>
         </div>
@@ -595,16 +591,14 @@ export default function Home() {
               <p className="text-xl mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 You've seen the fake ads. You've wasted time on spam. Now it's time to step into a safe, trusted space designed for Filipino talent.
               </p>
-                <a 
-                  href="https://myallsocials.com/luxlife" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Link 
+                  href="/apply"
                   className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
                   onClick={trackDiscordClick}
                 >
                   👉 Join Our Discord Now – Free Access
                   <ExternalLink className="w-5 h-5" />
-                </a>
+                </Link>
             </div>
           </Reveal>
         </div>

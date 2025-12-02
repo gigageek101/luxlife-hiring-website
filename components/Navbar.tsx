@@ -79,15 +79,13 @@ const Navbar = () => {
               </Link>
             ))}
             
-            <a 
-              href="https://myallsocials.com/luxlife" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <Link 
+              href="/apply"
               className="btn-primary"
               onClick={trackDiscordClick}
             >
               Join Discord
-            </a>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -121,10 +119,8 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
-                            <a
-                              href="https://myallsocials.com/luxlife"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <Link
+                              href="/apply"
                               className="block w-full text-center btn-primary mt-4"
                               onClick={() => {
                                 trackDiscordClick();
@@ -132,7 +128,7 @@ const Navbar = () => {
                               }}
                             >
                               Join Discord
-                            </a>
+                            </Link>
               </div>
             </motion.div>
           )}

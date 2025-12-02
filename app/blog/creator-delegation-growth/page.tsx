@@ -129,9 +129,9 @@ export default function WorkHardWithoutBurnout() {
                 <p className="mb-4 text-white/90">
                   Join our Discord community and find opportunities that value your ambition while respecting your well-being and work-life balance.
                 </p>
-                <a href="https://myallsocials.com/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
+                <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
                   Join Our Discord Community
-                </a>
+                </Link>
               </div>
             </motion.article>
 

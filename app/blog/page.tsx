@@ -190,15 +190,13 @@ export default function Blog() {
             <p className="mb-6 text-white/90">
               Join our Discord community and connect with verified employers who value Filipino talent.
             </p>
-            <a 
-              href="https://myallsocials.com/luxlife" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <Link 
+              href="/apply"
               className="btn-primary"
               onClick={trackDiscordClick}
             >
               Join Our Discord Community
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>

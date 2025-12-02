@@ -184,15 +184,13 @@ export default function HardworkingFilipinos() {
                 <p className="mb-6 text-white/90">
                   Join our free Discord today and find jobs that respect your talent, your time, and your future.
                 </p>
-                <a 
-                  href="https://myallsocials.com/luxlife" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Link 
+                  href="/apply"
                   className="inline-flex items-center gap-2 bg-white text-[var(--accent)] px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
                 >
                   👉 Join Our Discord Now
                   <ExternalLink className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
             </motion.article>
 

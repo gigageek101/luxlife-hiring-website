@@ -123,9 +123,9 @@ export default function NoStructureNoSuccess() {
                 <p className="mb-4 text-white/90">
                   Join our Discord community and connect with employers who provide clear roles, defined growth paths, and proper structure from day one.
                 </p>
-                <a href="https://myallsocials.com/luxlife" target="_blank" rel="noopener noreferrer" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
+                <Link href="/apply" className="btn-primary bg-white text-[var(--accent)] hover:bg-white/90">
                   Join Our Discord Community
-                </a>
+                </Link>
               </div>
             </motion.article>
 
