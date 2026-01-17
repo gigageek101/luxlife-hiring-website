@@ -107,14 +107,14 @@ export default function ThankYouMarketingPage() {
                   <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
                     <div className="flex items-start gap-3 md:gap-4">
                       <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
-                        <span className="text-xl md:text-2xl">📝</span>
+                        <span className="text-xl md:text-2xl">🎬</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                          1. OnlyFans Chatter Position
+                          1. AI Reels Creation & Marketing Position
                         </h3>
                         <p className="text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                          You will be working as a professional chatter for OnlyFans creators. This role involves engaging with subscribers through messages to build relationships and drive revenue. You must be comfortable with the adult content industry and maintain strict professionalism.
+                          You will be working as an AI reels creator and marketing specialist for OnlyFans creators. This role involves creating engaging short-form video content using AI tools, managing social media marketing campaigns, and driving traffic to creator profiles. You must be comfortable with the adult content industry and maintain strict professionalism.
                         </p>
                       </div>
                     </div>
@@ -137,7 +137,7 @@ export default function ThankYouMarketingPage() {
                     </div>
                   </div>
 
-                  {/* Term 3 - Salary */}
+                  {/* Term 3 - Compensation */}
                   <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
                     <div className="flex items-start gap-3 md:gap-4">
                       <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
@@ -145,54 +145,11 @@ export default function ThankYouMarketingPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                          3. Performance-Based Salary Structure
+                          3. Compensation Structure
                         </h3>
-                        <p className="mb-4 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                          Your hourly rate is based on the revenue you generate per shift. The more successful you are, the higher your earnings. Payment is bi-weekly to your Philippine bank account or in crypto to binance (you will receive a setup guide on how to setup binance).
+                        <p className="text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
+                          Compensation details will be discussed during your introduction call. Payment is bi-weekly to your Philippine bank account or in crypto to Binance (you will receive a setup guide on how to setup Binance).
                         </p>
-                        <div className="overflow-x-auto -mx-2 md:mx-0">
-                          <table className="w-full text-xs md:text-sm border-collapse min-w-[500px]">
-                            <thead>
-                              <tr style={{ background: 'var(--accent)' }}>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Revenue Generated</th>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Hourly Rate</th>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Monthly (160h)</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {[
-                                ['$0–499', '₱85.29/hr', '₱13,646'],
-                                ['$500–999', '₱113.72/hr', '₱18,195'],
-                                ['$1000–1499', '₱170.58/hr', '₱27,293'],
-                                ['$1500–1999', '₱199.01/hr', '₱31,842'],
-                                ['$2000–2499', '₱227.44/hr', '₱36,390'],
-                                ['$2500–2999', '₱284.30/hr', '₱45,488'],
-                                ['$3000–3499', '₱369.59/hr', '₱59,134'],
-                                ['$3500–3999', '₱454.88/hr', '₱72,781'],
-                                ['$4000–4499', '₱568.60/hr', '₱90,976'],
-                                ['$4500–4999', '₱625.46/hr', '₱100,074'],
-                                ['$5000–5499', '₱682.32/hr', '₱109,171'],
-                                ['$5500–5999', '₱824.47/hr', '₱131,939'],
-                                ['$6000–6499', '₱966.62/hr', '₱154,707'],
-                                ['$6500+', '₱1,108.77/hr', '₱177,475'],
-                              ].map((row, i) => (
-                                <tr key={i} style={{ background: i % 2 === 0 ? 'var(--surface)' : 'var(--bg-soft)' }}>
-                                  <td className="p-2 md:p-3 whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>{row[0]}</td>
-                                  <td className="p-2 md:p-3 font-semibold whitespace-nowrap" style={{ color: 'var(--accent)' }}>{row[1]}</td>
-                                  <td className="p-2 md:p-3 font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>{row[2]}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div className="mt-4 p-3 md:p-4 rounded-lg" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
-                          <p className="text-sm md:text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-                            🎁 Team Success Bonus
-                          </p>
-                          <p className="text-xs md:text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            When the whole team works together and meets the monthly revenue goals (set fairly according to each creator), everyone receives an additional success bonus! This encourages teamwork and rewards collective achievement.
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -222,10 +179,10 @@ export default function ThankYouMarketingPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                          5. Fast Response Time Requirement
+                          5. Quality & Deadline Requirements
                         </h3>
                         <p className="text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                          You must maintain an average response time of <strong>90 seconds or faster</strong> to subscriber messages. Optimal performance is under 60 seconds. Quick, engaging responses are crucial for subscriber retention and revenue generation.
+                          You must deliver high-quality AI-generated reels and marketing content within agreed deadlines. Consistency, creativity, and attention to detail are crucial for campaign success and client satisfaction. You'll be expected to stay updated with the latest AI tools and social media trends.
                         </p>
                       </div>
                     </div>
