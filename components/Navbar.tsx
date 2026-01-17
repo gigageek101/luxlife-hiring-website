@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { trackDiscordClick } from '@/utils/analytics'
+import ApplicationModal from './ApplicationModal'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,13 +81,15 @@ const Navbar = () => {
               </Link>
             ))}
             
-            <Link 
-              href="/apply"
+            <button 
               className="btn-primary"
-              onClick={trackDiscordClick}
+              onClick={() => {
+                trackDiscordClick()
+                setShowModal(true)
+              }}
             >
               Apply Now
-            </Link>
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -119,21 +123,24 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
-                            <Link
-                              href="/apply"
+                            <button
                               className="block w-full text-center btn-primary mt-4"
                               onClick={() => {
                                 trackDiscordClick();
                                 setIsOpen(false);
+                                setShowModal(true);
                               }}
                             >
                               Apply Now
-                            </Link>
+                            </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Application Modal */}
+      <ApplicationModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </motion.nav>
   )
 }
