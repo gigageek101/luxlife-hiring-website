@@ -107,7 +107,7 @@ export default function ThankYouMarketingPage() {
                   <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
                     <div className="flex items-start gap-3 md:gap-4">
                       <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
-                        <span className="text-xl md:text-2xl">🎬</span>
+                        <span className="text-xl md:text-2xl">📝</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
@@ -137,7 +137,7 @@ export default function ThankYouMarketingPage() {
                     </div>
                   </div>
 
-                  {/* Term 3 - Compensation */}
+                  {/* Term 3 - Salary */}
                   <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
                     <div className="flex items-start gap-3 md:gap-4">
                       <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
@@ -218,7 +218,7 @@ export default function ThankYouMarketingPage() {
                 </div>
               </div>
             ) : (
-              // SHOW BOOKING LINK AFTER TERMS AGREED - WITH NEW CAL.COM LINK
+              // SHOW BOOKING LINK AFTER TERMS AGREED
               <div className="text-center space-y-6">
                 <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: '#10b981' }}>
                   <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

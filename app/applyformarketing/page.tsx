@@ -1064,3 +1064,4 @@ function Step8({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
     </div>
   )
 }
+
