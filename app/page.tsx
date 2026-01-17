@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { 
@@ -25,9 +26,11 @@ import AnimatedCounter from '@/components/AnimatedCounter'
 import Reveal from '@/components/Reveal'
 import ParallaxText from '@/components/ParallaxText'
 import DynamicBackground from '@/components/DynamicBackground'
+import JobSelectionModal from '@/components/JobSelectionModal'
 import { trackDiscordClick } from '@/utils/analytics'
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const benefits = [
     {
       icon: Shield,
@@ -163,14 +166,16 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Link 
-                href="/apply"
-                className="btn-primary hover-lift hover-glow text-xl px-12 py-6 font-bold"
-                onClick={trackDiscordClick}
+              <button 
+                onClick={() => {
+                  trackDiscordClick()
+                  setIsModalOpen(true)
+                }}
+                className="btn-primary hover-lift hover-glow text-xl px-12 py-6 font-bold inline-flex items-center gap-3"
               >
                 👉 Apply Now (Takes 5 Minutes)
                 <ExternalLink className="w-6 h-6" />
-              </Link>
+              </button>
             </motion.div>
 
             <motion.div 
@@ -288,14 +293,16 @@ export default function Home() {
 
           <Reveal delay={0.3}>
             <div className="text-center mt-12">
-              <Link 
-                href="/apply"
-                className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
-                onClick={trackDiscordClick}
+              <button 
+                onClick={() => {
+                  trackDiscordClick()
+                  setIsModalOpen(true)
+                }}
+                className="btn-primary btn-shine hover-lift text-lg px-8 py-4 inline-flex items-center gap-3"
               >
                 🔥 Apply Now (Takes 5 Minutes) →
                 <ExternalLink className="w-5 h-5" />
-              </Link>
+              </button>
             </div>
           </Reveal>
         </div>
@@ -591,18 +598,23 @@ export default function Home() {
               <p className="text-xl mb-8" style={{ color: 'var(--text-secondary-on-white)' }}>
                 You've seen the fake ads. You've wasted time on spam. Now it's time to step into a safe, trusted space designed for Filipino talent.
               </p>
-                <Link 
-                  href="/apply"
-                  className="btn-primary btn-shine hover-lift text-lg px-8 py-4"
-                  onClick={trackDiscordClick}
+                <button 
+                  onClick={() => {
+                    trackDiscordClick()
+                    setIsModalOpen(true)
+                  }}
+                  className="btn-primary btn-shine hover-lift text-lg px-8 py-4 inline-flex items-center gap-3"
                 >
                   👉 Apply Now (Takes 5 Minutes)
                   <ExternalLink className="w-5 h-5" />
-                </Link>
+                </button>
             </div>
           </Reveal>
         </div>
       </section>
+
+      {/* Job Selection Modal */}
+      <JobSelectionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }

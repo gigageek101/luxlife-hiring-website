@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import JobSelectionModal from '@/components/JobSelectionModal'
 import { trackDiscordClick } from '@/utils/analytics'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,13 +81,15 @@ const Navbar = () => {
               </Link>
             ))}
             
-            <Link 
-              href="/apply"
+            <button 
+              onClick={() => {
+                trackDiscordClick()
+                setIsModalOpen(true)
+              }}
               className="btn-primary"
-              onClick={trackDiscordClick}
             >
               Apply Now
-            </Link>
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -119,21 +123,24 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
-                            <Link
-                              href="/apply"
-                              className="block w-full text-center btn-primary mt-4"
+                            <button
                               onClick={() => {
                                 trackDiscordClick();
                                 setIsOpen(false);
+                                setIsModalOpen(true);
                               }}
+                              className="block w-full text-center btn-primary mt-4"
                             >
                               Apply Now
-                            </Link>
+                            </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Job Selection Modal */}
+      <JobSelectionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </motion.nav>
   )
 }
