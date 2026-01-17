@@ -24,15 +24,16 @@ export default function JobSelectionModal({ isOpen, onClose }: JobSelectionModal
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-[9999] overflow-y-auto"
       style={{ background: 'rgba(0, 0, 0, 0.85)' }}
       onClick={onClose}
     >
-      <div 
-        className="relative w-full max-w-4xl my-8 rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8"
-        style={{ background: '#1a1a1a' }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div 
+          className="relative w-full max-w-4xl rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8"
+          style={{ background: '#1a1a1a' }}
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -168,6 +169,7 @@ export default function JobSelectionModal({ isOpen, onClose }: JobSelectionModal
           <p className="text-xs sm:text-sm text-center" style={{ color: '#cccccc' }}>
             💡 <strong style={{ color: '#ff6b00' }}>Both positions are beginner-friendly!</strong> We provide full training and support. Choose based on your interests and strengths.
           </p>
+        </div>
         </div>
       </div>
     </div>
