@@ -131,7 +131,8 @@ export default function TrainingDay2() {
 
     } catch (error) {
       console.error('Error submitting test:', error)
-      alert('There was an error submitting your test. Please try again.')
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+      alert(`Error submitting test: ${errorMsg}\n\nPlease check the console for more details or contact support.`)
     } finally {
       setIsSubmitting(false)
     }
