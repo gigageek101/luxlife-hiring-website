@@ -110,7 +110,7 @@ async function sendTelegramNotification(submission: any) {
       passRequirement = 8 // Day 3 requires 8+ correct
       dayNumber = '3'
     } else if (totalQuestions === 6) {
-      passRequirement = 5 // Day 4 requires 5+ correct
+      passRequirement = 3 // Day 4 requires 3+ correct (50%)
       dayNumber = '4'
     }
     

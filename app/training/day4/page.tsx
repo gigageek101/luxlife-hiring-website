@@ -178,8 +178,8 @@ export default function TrainingDay4() {
   }
 
   const getScoreColor = () => {
-    if (score >= 5) return 'text-green-600'
-    if (score >= 4) return 'text-yellow-600'
+    if (score >= 3) return 'text-green-600'
+    if (score >= 2) return 'text-yellow-600'
     return 'text-red-600'
   }
 
@@ -392,7 +392,7 @@ export default function TrainingDay4() {
                     </div>
                   </div>
 
-                  {score >= 5 ? (
+                  {score >= 3 ? (
                     <div className="p-6 bg-green-50 border border-green-200 rounded-xl text-center">
                       <p className="text-lg font-semibold text-green-800 mb-2">
                         🎉 Test Passed!
@@ -401,7 +401,7 @@ export default function TrainingDay4() {
                         You've demonstrated a strong understanding of the material. Your responses will be reviewed by our team.
                       </p>
                     </div>
-                  ) : score >= 4 ? (
+                  ) : score >= 2 ? (
                     <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
                       <p className="text-lg font-semibold text-yellow-800 mb-2">
                         ⚠️ One More Chance
