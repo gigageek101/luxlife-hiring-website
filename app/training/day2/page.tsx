@@ -139,10 +139,13 @@ export default function TrainingDay2() {
   }
 
   const getScoreColor = () => {
-    const percentage = (score / questions.length) * 100
-    if (percentage >= 80) return 'text-green-600'
-    if (percentage >= 60) return 'text-yellow-600'
+    if (score >= 7) return 'text-green-600'
+    if (score >= 5) return 'text-yellow-600'
     return 'text-red-600'
+  }
+
+  const handleRetakeTest = () => {
+    window.location.reload()
   }
 
   return (
@@ -317,31 +320,37 @@ export default function TrainingDay2() {
                     </div>
                   </div>
 
-                  {score >= questions.length * 0.8 ? (
+                  {score >= 7 ? (
                     <div className="p-6 bg-green-50 border border-green-200 rounded-xl text-center">
                       <p className="text-lg font-semibold text-green-800 mb-2">
-                        🎉 Excellent Work!
+                        🎉 Test Passed!
                       </p>
                       <p className="text-green-700">
                         You've demonstrated a strong understanding of the material. Your responses will be reviewed by our team.
                       </p>
                     </div>
-                  ) : score >= questions.length * 0.6 ? (
+                  ) : score >= 5 ? (
                     <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
                       <p className="text-lg font-semibold text-yellow-800 mb-2">
-                        📚 Good Effort!
+                        ⚠️ One More Chance
                       </p>
-                      <p className="text-yellow-700">
-                        You're on the right track, but please review the feedback above to strengthen your understanding.
+                      <p className="text-yellow-700 mb-4">
+                        You have one more chance to redo the training.
                       </p>
+                      <button
+                        onClick={handleRetakeTest}
+                        className="btn-primary hover-lift px-8 py-3"
+                      >
+                        🔄 Retake Training
+                      </button>
                     </div>
                   ) : (
                     <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-center">
                       <p className="text-lg font-semibold text-red-800 mb-2">
-                        📖 Additional Study Needed
+                        ❌ Training Not Passed
                       </p>
                       <p className="text-red-700">
-                        Please review the training materials again and carefully read the feedback provided for each question.
+                        You likely didn't pay full attention to the training! This training is unfortunately over for now. Maybe next time. Thanks for applying.
                       </p>
                     </div>
                   )}
