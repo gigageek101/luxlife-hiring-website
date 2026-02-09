@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, XCircle, Loader2, Send } from 'lucide-react'
+import { CheckCircle, XCircle, Loader2, Send, Clock } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import Reveal from '@/components/Reveal'
 
@@ -68,13 +68,67 @@ export default function TrainingDay2() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSummary, setShowSummary] = useState(false)
   const [score, setScore] = useState(0)
+  const [timerStarted, setTimerStarted] = useState(false)
+  const [timeRemaining, setTimeRemaining] = useState(20 * 60) // 20 minutes in seconds
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const autoSubmitRef = useRef(false)
 
   const handleAnswerChange = (questionId: number, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }))
+    
+    // Start timer on first character typed in first question
+    if (!timerStarted && telegram && email && value.length === 1) {
+      setTimerStarted(true)
+    }
+  }
+
+  // Timer effect
+  useEffect(() => {
+    if (timerStarted && !showSummary) {
+      timerIntervalRef.current = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            // Time's up - auto submit
+            if (!autoSubmitRef.current) {
+              autoSubmitRef.current = true
+              handleAutoSubmit()
+            }
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+
+      return () => {
+        if (timerIntervalRef.current) {
+          clearInterval(timerIntervalRef.current)
+        }
+      }
+    }
+  }, [timerStarted, showSummary])
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const handleAutoSubmit = async () => {
+    const form = document.querySelector('form') as HTMLFormElement
+    if (form) {
+      const event = new Event('submit', { bubbles: true, cancelable: true })
+      form.dispatchEvent(event)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Stop timer
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current)
+    }
     
     // Validate all fields
     if (!telegram || !email) {
@@ -83,14 +137,14 @@ export default function TrainingDay2() {
     }
 
     const unanswered = questions.filter(q => !answers[q.id] || answers[q.id].trim() === '')
-    if (unanswered.length > 0) {
+    if (unanswered.length > 0 && !autoSubmitRef.current) {
       alert(`Please answer all questions. Missing: ${unanswered.length} question(s)`)
       return
     }
 
     setIsSubmitting(true)
 
-    try {
+      try {
       const response = await fetch('/api/training/evaluate', {
         method: 'POST',
         headers: {
@@ -102,7 +156,7 @@ export default function TrainingDay2() {
           answers: questions.map(q => ({
             question: q.question,
             correctAnswer: q.correctAnswer,
-            userAnswer: answers[q.id]
+            userAnswer: answers[q.id] || '' // Send empty string for unanswered questions
           }))
         })
       })
@@ -171,6 +225,39 @@ export default function TrainingDay2() {
             transition={{ duration: 0.6 }}
             className="card glass-card"
           >
+            {/* Timer Display */}
+            {timerStarted && !showSummary && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`mb-6 p-4 rounded-xl border-2 ${
+                  timeRemaining <= 300 ? 'bg-red-50 border-red-500' : 
+                  timeRemaining <= 600 ? 'bg-yellow-50 border-yellow-500' : 
+                  'bg-blue-50 border-blue-500'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <Clock className={`w-6 h-6 ${
+                    timeRemaining <= 300 ? 'text-red-600' : 
+                    timeRemaining <= 600 ? 'text-yellow-600' : 
+                    'text-blue-600'
+                  }`} />
+                  <div>
+                    <div className={`text-2xl font-bold ${
+                      timeRemaining <= 300 ? 'text-red-600' : 
+                      timeRemaining <= 600 ? 'text-yellow-600' : 
+                      'text-blue-600'
+                    }`}>
+                      {formatTime(timeRemaining)}
+                    </div>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>
+                      You have to finish this in the next 20 minutes. It will auto submit all your answers if not completed on time and you will likely not pass, so please hurry up!
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Contact Information */}
               <div className="space-y-4 pb-6 border-b border-gray-200">
