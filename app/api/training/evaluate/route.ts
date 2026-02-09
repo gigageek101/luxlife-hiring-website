@@ -101,22 +101,26 @@ async function sendTelegramNotification(submission: any) {
     const totalQuestions = submission.results.length
     const percentage = ((correctCount / totalQuestions) * 100).toFixed(0)
     
-    // Determine pass/fail status
+    // Determine pass/fail status based on total questions
     let status = ''
-    let passRequirement = 7 // Day 2 requires 7+ correct
+    let passRequirement = 7 // Default: Day 2 requires 7+ correct
+    let dayNumber = '2'
+    
     if (totalQuestions === 10) {
       passRequirement = 8 // Day 3 requires 8+ correct
+      dayNumber = '3'
+    } else if (totalQuestions === 6) {
+      passRequirement = 5 // Day 4 requires 5+ correct
+      dayNumber = '4'
     }
     
     if (correctCount >= passRequirement) {
       status = '✅ *PASSED*'
-    } else if (correctCount >= passRequirement - 2) {
+    } else if (correctCount >= passRequirement - 1) {
       status = '⚠️ *ONE MORE CHANCE*'
     } else {
       status = '❌ *FAILED*'
     }
-
-    const dayNumber = totalQuestions === 9 ? '2' : '3'
 
     const message = `
 🎓 *NEW TRAINING DAY ${dayNumber} SUBMISSION* 🎓
