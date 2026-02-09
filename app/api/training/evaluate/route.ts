@@ -103,11 +103,11 @@ async function sendTelegramNotification(submission: any) {
     
     // Determine pass/fail status based on total questions
     let status = ''
-    let passRequirement = 7 // Default: Day 2 requires 7+ correct
+    let passRequirement = 5 // Default: Day 2 requires 5+ correct
     let dayNumber = '2'
     
     if (totalQuestions === 10) {
-      passRequirement = 8 // Day 3 requires 8+ correct
+      passRequirement = 6 // Day 3 requires 6+ correct
       dayNumber = '3'
     } else if (totalQuestions === 6) {
       passRequirement = 3 // Day 4 requires 3+ correct (50%)
