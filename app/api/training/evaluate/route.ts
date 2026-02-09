@@ -100,14 +100,32 @@ async function sendTelegramNotification(submission: any) {
     const correctCount = submission.results.filter((r: any) => r.isCorrect).length
     const totalQuestions = submission.results.length
     const percentage = ((correctCount / totalQuestions) * 100).toFixed(0)
+    
+    // Determine pass/fail status
+    let status = ''
+    let passRequirement = 7 // Day 2 requires 7+ correct
+    if (totalQuestions === 10) {
+      passRequirement = 8 // Day 3 requires 8+ correct
+    }
+    
+    if (correctCount >= passRequirement) {
+      status = '✅ *PASSED*'
+    } else if (correctCount >= passRequirement - 2) {
+      status = '⚠️ *ONE MORE CHANCE*'
+    } else {
+      status = '❌ *FAILED*'
+    }
+
+    const dayNumber = totalQuestions === 9 ? '2' : '3'
 
     const message = `
-🎓 *NEW TRAINING DAY 2 SUBMISSION* 🎓
+🎓 *NEW TRAINING DAY ${dayNumber} SUBMISSION* 🎓
+
+${status}
+📊 *Score:* ${correctCount}/${totalQuestions} (${percentage}%)
 
 👤 *Telegram:* ${submission.telegram}
 📧 *Email:* ${submission.email}
-
-📊 *Score:* ${correctCount}/${totalQuestions} (${percentage}%)
 
 ${submission.results.map((result: any, index: number) => `
 *Q${index + 1}:* ${result.isCorrect ? '✅ Correct' : '❌ Incorrect'}
