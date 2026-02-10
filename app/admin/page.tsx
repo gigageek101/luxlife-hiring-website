@@ -38,11 +38,16 @@ export default function AdminPanel() {
     try {
       const response = await fetch('/api/admin/users')
       const data = await response.json()
+      console.log('Admin API response:', data)
       if (data.success) {
         setUsers(data.users)
+      } else {
+        console.error('API returned error:', data)
+        alert('Error loading users: ' + (data.error || 'Unknown error'))
       }
     } catch (error) {
       console.error('Error fetching users:', error)
+      alert('Failed to load users. Check console for details.')
     } finally {
       setIsLoading(false)
     }
