@@ -7,33 +7,43 @@ export const revalidate = 0
 
 export async function GET(request: NextRequest) {
   try {
-    // Get all users with their assessment results
-    const users = await sql`
+    // First get all users
+    const usersResult = await sql`
       SELECT 
-        u.id,
-        u.telegram_username,
-        u.email,
-        u.created_at,
-        COALESCE(
-          JSON_AGG(
-            JSON_BUILD_OBJECT(
-              'day', ar.day,
-              'score', ar.score,
-              'total_questions', ar.total_questions,
-              'percentage', ar.percentage,
-              'passed', ar.passed,
-              'attempt_number', ar.attempt_number,
-              'completed_at', ar.completed_at
-            ) ORDER BY ar.day, ar.attempt_number
-          ) FILTER (WHERE ar.id IS NOT NULL),
-          '[]'
-        ) as assessments
-      FROM users u
-      LEFT JOIN assessment_results ar ON u.telegram_username = ar.telegram_username 
-        AND u.email = ar.email
-      GROUP BY u.id, u.telegram_username, u.email, u.created_at
-      ORDER BY u.created_at DESC
+        id,
+        telegram_username,
+        email,
+        created_at
+      FROM users
+      ORDER BY created_at DESC
     `
+
+    // Then get assessments for each user
+    const usersWithAssessments = await Promise.all(
+      usersResult.map(async (user: any) => {
+        const assessments = await sql`
+          SELECT 
+            day,
+            score,
+            total_questions,
+            percentage,
+            passed,
+            attempt_number,
+            completed_at
+          FROM assessment_results
+          WHERE telegram_username = ${user.telegram_username}
+          AND email = ${user.email}
+          ORDER BY day, attempt_number
+        `
+
+        return {
+          ...user,
+          assessments: assessments || []
+        }
+      })
+    )
+
+    const users = usersWithAssessments
 
     // Process the results to organize by day
     const processedUsers = users.map((user: any) => {
