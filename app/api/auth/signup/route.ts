@@ -3,6 +3,10 @@ import { sql } from '@/lib/db'
 import { hashPassword, verifyMasterPassword, generateToken } from '@/lib/auth'
 import { initDatabase } from '@/lib/db'
 
+// Disable caching for this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function POST(request: NextRequest) {
   try {
     // Auto-initialize database if not already done

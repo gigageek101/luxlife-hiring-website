@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { verifyPassword, generateToken } from '@/lib/auth'
 
+// Disable caching for this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function POST(request: NextRequest) {
   try {
     const { telegramUsername, email, masterPassword } = await request.json()
