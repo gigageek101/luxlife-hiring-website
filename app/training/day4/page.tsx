@@ -78,17 +78,16 @@ export default function TrainingDay4() {
               </Link>
             </div>
 
-            {/* Next Steps */}
+            {/* Back to Dashboard */}
             <div className="text-center pt-6 border-t border-gray-200">
               <p className="text-lg mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
-                After passing Day 4, continue to:
+                After passing Day 4, check Telegram for admin approval to continue
               </p>
               <Link
-                href="/training/day5"
+                href="/training"
                 className="btn-secondary hover-lift px-8 py-3 inline-flex items-center gap-2"
               >
-                Day 5 Training
-                <ExternalLink className="w-4 h-4" />
+                Back to Training Dashboard
               </Link>
             </div>
           </motion.div>

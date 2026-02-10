@@ -79,11 +79,24 @@ export default function TrainingDay5() {
             </div>
 
             {/* Completion Notice */}
-            <div className="p-6 bg-green-50 border-2 border-green-500 rounded-xl text-center">
+            <div className="p-6 bg-green-50 border-2 border-green-500 rounded-xl text-center mb-6">
               <h3 className="text-lg font-bold text-green-900 mb-2">🎉 Final Day!</h3>
               <p className="text-green-800">
                 After completing Day 5 and passing the assessment, you will have finished all training modules. Check Telegram for next steps!
               </p>
+            </div>
+
+            {/* Back to Dashboard */}
+            <div className="text-center pt-6 border-t border-gray-200">
+              <p className="text-lg mb-4" style={{ color: 'var(--text-secondary-on-white)' }}>
+                Return to dashboard and await admin instructions
+              </p>
+              <Link
+                href="/training"
+                className="btn-secondary hover-lift px-8 py-3 inline-flex items-center gap-2"
+              >
+                Back to Training Dashboard
+              </Link>
             </div>
           </motion.div>
         </div>
