@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, TrendingUp } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2 } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 
 interface Assessment {
@@ -32,30 +32,69 @@ export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [autoRefresh, setAutoRefresh] = useState(true)
 
-  const fetchUsers = async () => {
-    setIsLoading(true)
+  const fetchUsers = async (showLoading = true) => {
+    if (showLoading) setIsLoading(true)
     try {
-      const response = await fetch('/api/admin/users')
+      const response = await fetch('/api/admin/users', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
       const data = await response.json()
       console.log('Admin API response:', data)
       if (data.success) {
         setUsers(data.users)
       } else {
         console.error('API returned error:', data)
-        alert('Error loading users: ' + (data.error || 'Unknown error'))
       }
     } catch (error) {
       console.error('Error fetching users:', error)
-      alert('Failed to load users. Check console for details.')
     } finally {
-      setIsLoading(false)
+      if (showLoading) setIsLoading(false)
+    }
+  }
+
+  const deleteUser = async (userId: number, telegramUsername: string) => {
+    if (!confirm(`Are you sure you want to delete user ${telegramUsername}? This will also delete all their assessment results.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE'
+      })
+      const data = await response.json()
+      
+      if (data.success) {
+        // Remove user from state immediately
+        setUsers(prev => prev.filter(u => u.id !== userId))
+        alert(`User ${telegramUsername} deleted successfully`)
+      } else {
+        alert('Failed to delete user: ' + (data.error || 'Unknown error'))
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      alert('Failed to delete user')
     }
   }
 
   useEffect(() => {
     fetchUsers()
   }, [])
+
+  // Auto-refresh every 5 seconds
+  useEffect(() => {
+    if (!autoRefresh) return
+
+    const interval = setInterval(() => {
+      fetchUsers(false) // Don't show loading on auto-refresh
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [autoRefresh])
 
   const filteredUsers = users.filter(user =>
     user.telegramUsername.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,8 +189,19 @@ export default function AdminPanel() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  />
+                  Auto-refresh (5s)
+                </label>
+              </div>
               <button
-                onClick={fetchUsers}
+                onClick={() => fetchUsers()}
                 disabled={isLoading}
                 className="btn-primary px-6 py-3 inline-flex items-center gap-2"
               >
@@ -194,6 +244,13 @@ export default function AdminPanel() {
                         Registered: {new Date(user.createdAt).toLocaleDateString()}
                       </p>
                     </div>
+                    <button
+                      onClick={() => deleteUser(user.id, user.telegramUsername)}
+                      className="mt-4 md:mt-0 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors inline-flex items-center gap-2"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete User
+                    </button>
                   </div>
 
                   {/* Assessments Grid */}
