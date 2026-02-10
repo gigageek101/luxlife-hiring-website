@@ -112,6 +112,9 @@ async function sendTelegramNotification(submission: any) {
     } else if (totalQuestions === 6) {
       passRequirement = 3 // Day 4 requires 3+ correct (50%)
       dayNumber = '4'
+    } else if (totalQuestions === 12) {
+      passRequirement = 7 // Day 5 requires 7+ correct (58%)
+      dayNumber = '5'
     }
     
     if (correctCount >= passRequirement) {
