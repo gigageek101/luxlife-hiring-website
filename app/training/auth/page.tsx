@@ -13,6 +13,7 @@ export default function TrainingAuth() {
   const [telegramUsername, setTelegramUsername] = useState('')
   const [email, setEmail] = useState('')
   const [masterPassword, setMasterPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -41,9 +42,14 @@ export default function TrainingAuth() {
         throw new Error(data.error || 'Authentication failed')
       }
 
-      // Store token in localStorage
+      // Store token with expiry
+      const expiryTime = rememberMe 
+        ? Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+        : Date.now() + (2 * 60 * 60 * 1000)  // 2 hours if not remembered
+      
       localStorage.setItem('training_token', data.token)
       localStorage.setItem('training_user', JSON.stringify(data.user))
+      localStorage.setItem('training_token_expiry', expiryTime.toString())
 
       // Redirect to training dashboard
       router.push('/training')
@@ -164,6 +170,22 @@ export default function TrainingAuth() {
                   {isLogin ? 'Use: MasterChatter123' : 'Master Password: MasterChatter123'}
                 </p>
               </div>
+
+              {/* Remember Me Checkbox */}
+              {isLogin && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  />
+                  <label htmlFor="rememberMe" className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                    Remember me for 24 hours
+                  </label>
+                </div>
+              )}
 
               <button
                 type="submit"

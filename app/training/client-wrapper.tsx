@@ -10,11 +10,27 @@ export default function TrainingClientWrapper({ children }: { children: React.Re
 
   useEffect(() => {
     const token = localStorage.getItem('training_token')
-    if (!token) {
+    const expiry = localStorage.getItem('training_token_expiry')
+    
+    if (!token || !expiry) {
       router.push('/training/auth')
-    } else {
-      setIsAuthenticated(true)
+      setIsChecking(false)
+      return
     }
+
+    // Check if token has expired
+    const expiryTime = parseInt(expiry)
+    if (Date.now() > expiryTime) {
+      // Token expired, clear and redirect
+      localStorage.removeItem('training_token')
+      localStorage.removeItem('training_user')
+      localStorage.removeItem('training_token_expiry')
+      router.push('/training/auth')
+      setIsChecking(false)
+      return
+    }
+
+    setIsAuthenticated(true)
     setIsChecking(false)
   }, [router])
 
