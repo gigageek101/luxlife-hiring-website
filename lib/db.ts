@@ -23,11 +23,10 @@ export async function initDatabase() {
       )
     `
 
-    // Create assessment_results table
+    // Create assessment_results table (without foreign key constraint for flexibility)
     await sql`
       CREATE TABLE IF NOT EXISTS assessment_results (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
         telegram_username VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
         day INTEGER NOT NULL,
@@ -37,25 +36,34 @@ export async function initDatabase() {
         passed BOOLEAN NOT NULL,
         attempt_number INTEGER DEFAULT 1,
         answers JSONB,
-        completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT unique_user_day_attempt UNIQUE (telegram_username, email, day, attempt_number)
+        completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `
 
-    // Create index for faster lookups
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_assessment_user 
-      ON assessment_results(telegram_username, email)
-    `
+    // Create indexes for faster lookups
+    try {
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_assessment_user 
+        ON assessment_results(telegram_username, email)
+      `
+    } catch (e) {
+      // Index might already exist
+    }
 
-    await sql`
-      CREATE INDEX IF NOT EXISTS idx_assessment_day 
-      ON assessment_results(day)
-    `
+    try {
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_assessment_day 
+        ON assessment_results(day)
+      `
+    } catch (e) {
+      // Index might already exist
+    }
 
     console.log('Database initialized successfully')
+    return true
   } catch (error) {
     console.error('Error initializing database:', error)
-    throw error
+    // Don't throw error if tables already exist
+    return false
   }
 }

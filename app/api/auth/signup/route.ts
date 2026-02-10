@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { hashPassword, verifyMasterPassword, generateToken } from '@/lib/auth'
+import { initDatabase } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
+    // Auto-initialize database if not already done
+    try {
+      await initDatabase()
+    } catch (dbInitError) {
+      console.log('Database already initialized or error:', dbInitError)
+    }
+
     const { telegramUsername, email, masterPassword } = await request.json()
 
     // Validate inputs
