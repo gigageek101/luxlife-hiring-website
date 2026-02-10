@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
 
 // Claude API Configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
@@ -192,14 +193,63 @@ export async function POST(request: NextRequest) {
       total: evaluations.length
     }
 
+    // Determine day number and if passed
+    const dayNumber = submission.total === 9 ? 2 : submission.total === 10 ? 3 : submission.total === 6 ? 4 : submission.total === 12 ? 5 : 2
+    const passRequirement = submission.total === 9 ? 5 : submission.total === 10 ? 6 : submission.total === 6 ? 3 : submission.total === 12 ? 7 : 5
+    const passed = submission.score >= passRequirement
+
+    // Get attempt number (how many times user took this day's test)
+    try {
+      const previousAttempts = await sql`
+        SELECT COALESCE(MAX(attempt_number), 0) as max_attempt
+        FROM assessment_results
+        WHERE telegram_username = ${telegram}
+        AND email = ${email}
+        AND day = ${dayNumber}
+      `
+      const attemptNumber = (previousAttempts[0]?.max_attempt || 0) + 1
+
+      // Save to database
+      await sql`
+        INSERT INTO assessment_results (
+          telegram_username,
+          email,
+          day,
+          score,
+          total_questions,
+          percentage,
+          passed,
+          attempt_number,
+          answers
+        ) VALUES (
+          ${telegram},
+          ${email},
+          ${dayNumber},
+          ${submission.score},
+          ${submission.total},
+          ${(submission.score / submission.total) * 100},
+          ${passed},
+          ${attemptNumber},
+          ${JSON.stringify(evaluations)}
+        )
+      `
+
+      console.log(`Saved Day ${dayNumber} assessment for ${telegram} (attempt #${attemptNumber})`)
+    } catch (dbError) {
+      console.error('Error saving to database:', dbError)
+      // Continue even if database save fails
+    }
+
     // Send Telegram notification
     await sendTelegramNotification(submission)
 
     // Log for monitoring
-    console.log('=== NEW TRAINING DAY 2 SUBMISSION ===')
+    console.log('=== NEW TRAINING SUBMISSION ===')
+    console.log('Day:', dayNumber)
     console.log('Telegram:', telegram)
     console.log('Email:', email)
     console.log('Score:', submission.score, '/', submission.total)
+    console.log('Passed:', passed)
     console.log('Timestamp:', submission.timestamp)
     console.log('=====================================')
 

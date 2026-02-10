@@ -1,10 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, LogOut } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import Reveal from '@/components/Reveal'
 import Link from 'next/link'
+import TrainingClientWrapper from './client-wrapper'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 const trainingDays = [
   {
@@ -49,10 +52,45 @@ const trainingDays = [
   }
 ]
 
-export default function TrainingDashboard() {
+function TrainingDashboardContent() {
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const userData = localStorage.getItem('training_user')
+    if (userData) {
+      setUser(JSON.parse(userData))
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('training_token')
+    localStorage.removeItem('training_user')
+    router.push('/training/auth')
+  }
+
   return (
     <div className="min-h-screen relative">
       <DynamicBackground />
+
+      {/* User info and logout */}
+      {user && (
+        <div className="fixed top-20 right-4 z-50">
+          <div className="card bg-white shadow-lg p-3 flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-sm font-semibold">{user.telegramUsername}</p>
+              <p className="text-xs" style={{ color: 'var(--text-secondary-on-white)' }}>{user.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
       
       <section className="section pt-32 md:pt-40 relative z-10">
         <div className="container max-w-6xl">
@@ -145,5 +183,13 @@ export default function TrainingDashboard() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function TrainingDashboard() {
+  return (
+    <TrainingClientWrapper>
+      <TrainingDashboardContent />
+    </TrainingClientWrapper>
   )
 }
