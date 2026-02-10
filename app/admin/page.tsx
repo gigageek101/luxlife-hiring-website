@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2 } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
+import AdminWrapper from './admin-wrapper'
+import { useRouter } from 'next/navigation'
 
 interface Assessment {
   day: number
@@ -28,11 +30,18 @@ interface User {
   }
 }
 
-export default function AdminPanel() {
+function AdminPanelContent() {
+  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [autoRefresh, setAutoRefresh] = useState(true)
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token')
+    localStorage.removeItem('admin_expiry')
+    router.push('/admin/auth')
+  }
 
   const fetchUsers = async (showLoading = true) => {
     if (showLoading) setIsLoading(true)
@@ -132,6 +141,17 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen relative">
       <DynamicBackground />
+
+      {/* Logout Button */}
+      <div className="fixed top-20 right-4 z-50">
+        <button
+          onClick={handleLogout}
+          className="card bg-white shadow-lg p-3 flex items-center gap-2 hover:bg-red-50 transition-colors"
+        >
+          <LogOut className="w-5 h-5 text-red-600" />
+          <span className="text-sm font-semibold text-red-600">Logout</span>
+        </button>
+      </div>
       
       <section className="section pt-32 md:pt-40 relative z-10">
         <div className="container max-w-7xl">
@@ -329,5 +349,13 @@ export default function AdminPanel() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function AdminPanel() {
+  return (
+    <AdminWrapper>
+      <AdminPanelContent />
+    </AdminWrapper>
   )
 }

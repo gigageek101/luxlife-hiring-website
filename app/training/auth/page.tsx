@@ -166,9 +166,6 @@ export default function TrainingAuth() {
                   placeholder="Enter master password"
                   required
                 />
-                <p className="text-xs mt-1 text-gray-500">
-                  {isLogin ? 'Use: MasterChatter123' : 'Master Password: MasterChatter123'}
-                </p>
               </div>
 
               {/* Remember Me Checkbox */}
