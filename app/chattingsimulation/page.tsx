@@ -22,10 +22,18 @@ interface CategoryResult {
   advice: string
 }
 
+interface OverallFeedback {
+  strengths: string[]
+  weaknesses: string[]
+  missedOpportunities: string[]
+  practiceScenarios: string[]
+  summary: string
+}
+
 interface EvaluationResult {
   overallScore: number
   categories: CategoryResult[]
-  overallFeedback: string
+  overallFeedback: OverallFeedback | string
 }
 
 interface SimUser {
@@ -88,6 +96,9 @@ export default function ChattingSimulationPage() {
   const [notes, setNotes] = useState('')
   const [showNotesMobile, setShowNotesMobile] = useState(false)
   const [waitingForIdle, setWaitingForIdle] = useState(false)
+  const [pasteCount, setPasteCount] = useState(0)
+  const [typedCount, setTypedCount] = useState(0)
+  const lastInputWasPaste = useRef(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const endConversationRef = useRef<(() => Promise<void>) | null>(null)
@@ -260,6 +271,9 @@ export default function ChattingSimulationPage() {
     setMessageCount(0)
     setError(null)
     setNotes('')
+    setPasteCount(0)
+    setTypedCount(0)
+    lastInputWasPaste.current = false
     if (selectedDuration > 0) {
       setTimeLeft(selectedDuration * 60)
       setTimerActive(true)
@@ -308,6 +322,12 @@ export default function ChattingSimulationPage() {
   const sendMessage = () => {
     if (!inputValue.trim() || isTyping) return
 
+    if (lastInputWasPaste.current) {
+      setPasteCount(prev => prev + 1)
+    } else {
+      setTypedCount(prev => prev + 1)
+    }
+
     const userMessage: ChatMessage = {
       id: `creator-${Date.now()}`,
       role: 'creator',
@@ -319,6 +339,7 @@ export default function ChattingSimulationPage() {
     setMessageCount(prev => prev + 1)
     setInputValue('')
     setError(null)
+    lastInputWasPaste.current = false
     scheduleReply()
     setTimeout(() => inputRef.current?.focus(), 50)
   }
@@ -379,6 +400,8 @@ export default function ChattingSimulationPage() {
               conversation: messages.map(m => ({ role: m.role, content: m.content })),
               durationMode: selectedDuration === 0 ? 'free' : `${selectedDuration}min`,
               messageCount,
+              typedCount,
+              pasteCount,
             })
           })
         } catch {
@@ -390,7 +413,7 @@ export default function ChattingSimulationPage() {
       setError(errorMessage)
       setPhase('chatting')
     }
-  }, [messages, resetReplyTimer, simUser, notes, selectedDuration, messageCount])
+  }, [messages, resetReplyTimer, simUser, notes, selectedDuration, messageCount, typedCount, pasteCount])
 
   useEffect(() => {
     endConversationRef.current = endConversation
@@ -419,6 +442,9 @@ export default function ChattingSimulationPage() {
     setNotes('')
     setShowNotesMobile(false)
     setWaitingForIdle(false)
+    setPasteCount(0)
+    setTypedCount(0)
+    lastInputWasPaste.current = false
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -764,6 +790,7 @@ export default function ChattingSimulationPage() {
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    onPaste={() => { lastInputWasPaste.current = true }}
                     placeholder="Type your message as the creator..."
                     disabled={isTyping}
                     className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"
@@ -992,9 +1019,86 @@ export default function ChattingSimulationPage() {
             </div>
 
             {/* Overall Feedback */}
-            <div className="rounded-2xl p-8 mb-8" style={{ background: 'var(--color-black)', color: 'var(--text-on-black)' }}>
-              <h3 className="text-xl font-bold mb-4 text-white">Overall Assessment</h3>
-              <p className="leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary-on-black)' }}>{evaluation.overallFeedback}</p>
+            <div className="rounded-2xl p-8 mb-8 space-y-6" style={{ background: '#ffffff', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}>
+              <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Overall Assessment</h3>
+
+              {typeof evaluation.overallFeedback === 'object' && evaluation.overallFeedback !== null ? (
+                <>
+                  {evaluation.overallFeedback.summary && (
+                    <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      {evaluation.overallFeedback.summary}
+                    </p>
+                  )}
+
+                  {evaluation.overallFeedback.strengths?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#10b981' }}>
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> What You Did Well
+                      </h4>
+                      <div className="space-y-2">
+                        {evaluation.overallFeedback.strengths.map((s, i) => (
+                          <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(16, 185, 129, 0.06)', border: '1px solid rgba(16, 185, 129, 0.15)', color: '#065f46' }}>
+                            <span className="text-green-500 font-bold mt-0.5 flex-shrink-0">+</span>
+                            <span>{s}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {evaluation.overallFeedback.weaknesses?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ef4444' }}>
+                        <span className="w-2 h-2 rounded-full bg-red-500" /> What Needs Work
+                      </h4>
+                      <div className="space-y-2">
+                        {evaluation.overallFeedback.weaknesses.map((w, i) => (
+                          <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.15)', color: '#991b1b' }}>
+                            <span className="text-red-500 font-bold mt-0.5 flex-shrink-0">−</span>
+                            <span>{w}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {evaluation.overallFeedback.missedOpportunities?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                        <span className="w-2 h-2 rounded-full bg-amber-500" /> Missed Opportunities
+                      </h4>
+                      <div className="space-y-2">
+                        {evaluation.overallFeedback.missedOpportunities.map((m, i) => (
+                          <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(245, 158, 11, 0.06)', border: '1px solid rgba(245, 158, 11, 0.15)', color: '#92400e' }}>
+                            <span className="text-amber-500 font-bold mt-0.5 flex-shrink-0">!</span>
+                            <span>{m}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {evaluation.overallFeedback.practiceScenarios?.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: 'var(--accent)' }}>
+                        <Sparkles className="w-4 h-4" /> Practice These Scenarios
+                      </h4>
+                      <div className="space-y-2">
+                        {evaluation.overallFeedback.practiceScenarios.map((p, i) => (
+                          <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(255, 107, 53, 0.06)', border: '1px solid rgba(255, 107, 53, 0.15)', color: '#7c2d12' }}>
+                            <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: 'var(--accent)' }}>{i + 1}.</span>
+                            <span>{p}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>
+                  {typeof evaluation.overallFeedback === 'string' ? evaluation.overallFeedback : ''}
+                </p>
+              )}
             </div>
 
             {/* Your Notes */}

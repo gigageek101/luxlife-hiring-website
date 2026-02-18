@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -38,17 +38,27 @@ interface SimCategory {
   advice: string
 }
 
+interface OverallFeedback {
+  strengths: string[]
+  weaknesses: string[]
+  missedOpportunities: string[]
+  practiceScenarios: string[]
+  summary: string
+}
+
 interface SimReport {
   id: number
   telegramUsername: string
   email: string
   overallScore: number
   categories: SimCategory[]
-  overallFeedback: string
+  overallFeedback: OverallFeedback | string
   notes: string
   conversation: { role: string; content: string }[]
   durationMode: string
   messageCount: number
+  typedCount: number
+  pasteCount: number
   completedAt: string
 }
 
@@ -556,13 +566,25 @@ function AdminPanelContent() {
                               <div>
                                 <h3 className="text-lg font-bold">{report.telegramUsername}</h3>
                                 <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>{report.email}</p>
-                                <div className="flex items-center gap-3 mt-1">
+                                <div className="flex flex-wrap items-center gap-2 mt-1">
                                   <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                                     {report.durationMode}
                                   </span>
                                   <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>
-                                    {report.messageCount} messages
+                                    {report.messageCount} msgs
                                   </span>
+                                  <span className="text-xs inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                                    <Keyboard className="w-3 h-3" /> {report.typedCount}
+                                  </span>
+                                  {report.pasteCount > 0 ? (
+                                    <span className="text-xs inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">
+                                      <ClipboardPaste className="w-3 h-3" /> {report.pasteCount} pasted
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-700">
+                                      <Keyboard className="w-3 h-3" /> all typed
+                                    </span>
+                                  )}
                                   <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>
                                     {new Date(report.completedAt).toLocaleString()}
                                   </span>
@@ -654,14 +676,130 @@ function AdminPanelContent() {
                                 )
                               ))}
 
+                              {/* Copy/Paste Detection */}
+                              {(report.typedCount > 0 || report.pasteCount > 0) && (
+                                <div>
+                                  <h4 className="text-sm font-bold mb-3 uppercase tracking-wider" style={{ color: 'var(--text-muted-on-white)' }}>
+                                    Input Method Detection
+                                  </h4>
+                                  <div className="rounded-xl p-4 flex items-center gap-6" style={{ background: report.pasteCount > 0 ? '#fef2f2' : '#f0fdf4', border: `1px solid ${report.pasteCount > 0 ? '#fecaca' : '#bbf7d0'}` }}>
+                                    <div className="flex items-center gap-2">
+                                      <Keyboard className="w-5 h-5 text-blue-600" />
+                                      <div>
+                                        <span className="text-lg font-black text-blue-700">{report.typedCount}</span>
+                                        <span className="text-xs text-blue-600 ml-1">typed</span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <ClipboardPaste className={`w-5 h-5 ${report.pasteCount > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                                      <div>
+                                        <span className={`text-lg font-black ${report.pasteCount > 0 ? 'text-red-700' : 'text-green-700'}`}>{report.pasteCount}</span>
+                                        <span className={`text-xs ml-1 ${report.pasteCount > 0 ? 'text-red-600' : 'text-green-600'}`}>pasted</span>
+                                      </div>
+                                    </div>
+                                    {report.pasteCount > 0 && (
+                                      <div className="flex items-center gap-1.5 ml-auto px-3 py-1.5 rounded-lg bg-red-100 text-red-800 text-xs font-bold">
+                                        <AlertTriangle className="w-3.5 h-3.5" />
+                                        {Math.round((report.pasteCount / (report.typedCount + report.pasteCount)) * 100)}% copy-pasted
+                                      </div>
+                                    )}
+                                    {report.pasteCount === 0 && (
+                                      <div className="flex items-center gap-1.5 ml-auto px-3 py-1.5 rounded-lg bg-green-100 text-green-800 text-xs font-bold">
+                                        <CheckCircle className="w-3.5 h-3.5" />
+                                        100% typed by hand
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
                               {/* Overall Feedback */}
                               <div>
                                 <h4 className="text-sm font-bold mb-3 uppercase tracking-wider" style={{ color: 'var(--text-muted-on-white)' }}>
-                                  Overall Feedback
+                                  Overall Assessment
                                 </h4>
-                                <div className="rounded-xl p-5" style={{ background: '#1a1a2e', color: '#e2e8f0' }}>
-                                  <p className="text-sm leading-relaxed whitespace-pre-line">{report.overallFeedback}</p>
-                                </div>
+
+                                {typeof report.overallFeedback === 'object' && report.overallFeedback !== null ? (
+                                  <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
+                                    {(report.overallFeedback as OverallFeedback).summary && (
+                                      <div className="px-5 py-4" style={{ background: '#f8fafc', borderBottom: '1px solid #e5e7eb' }}>
+                                        <p className="text-sm leading-relaxed font-medium" style={{ color: '#1e293b' }}>
+                                          {(report.overallFeedback as OverallFeedback).summary}
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {(report.overallFeedback as OverallFeedback).strengths?.length > 0 && (
+                                      <div className="px-5 py-4" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                        <h5 className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#10b981' }}>
+                                          <span className="w-2 h-2 rounded-full bg-green-500" /> Strengths
+                                        </h5>
+                                        <div className="space-y-2">
+                                          {(report.overallFeedback as OverallFeedback).strengths.map((s, i) => (
+                                            <div key={i} className="flex gap-2.5 text-sm leading-relaxed" style={{ color: '#065f46' }}>
+                                              <span className="text-green-500 font-bold flex-shrink-0">+</span>
+                                              <span>{s}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {(report.overallFeedback as OverallFeedback).weaknesses?.length > 0 && (
+                                      <div className="px-5 py-4" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                        <h5 className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#ef4444' }}>
+                                          <span className="w-2 h-2 rounded-full bg-red-500" /> Weaknesses
+                                        </h5>
+                                        <div className="space-y-2">
+                                          {(report.overallFeedback as OverallFeedback).weaknesses.map((w, i) => (
+                                            <div key={i} className="flex gap-2.5 text-sm leading-relaxed" style={{ color: '#991b1b' }}>
+                                              <span className="text-red-500 font-bold flex-shrink-0">−</span>
+                                              <span>{w}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {(report.overallFeedback as OverallFeedback).missedOpportunities?.length > 0 && (
+                                      <div className="px-5 py-4" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                                        <h5 className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                                          <span className="w-2 h-2 rounded-full bg-amber-500" /> Missed Opportunities
+                                        </h5>
+                                        <div className="space-y-2">
+                                          {(report.overallFeedback as OverallFeedback).missedOpportunities.map((m, i) => (
+                                            <div key={i} className="flex gap-2.5 text-sm leading-relaxed" style={{ color: '#92400e' }}>
+                                              <span className="text-amber-500 font-bold flex-shrink-0">!</span>
+                                              <span>{m}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {(report.overallFeedback as OverallFeedback).practiceScenarios?.length > 0 && (
+                                      <div className="px-5 py-4" style={{ background: '#fffbf5' }}>
+                                        <h5 className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#ea580c' }}>
+                                          <Sparkles className="w-3.5 h-3.5" /> Practice Scenarios
+                                        </h5>
+                                        <div className="space-y-2">
+                                          {(report.overallFeedback as OverallFeedback).practiceScenarios.map((p, i) => (
+                                            <div key={i} className="flex gap-2.5 text-sm leading-relaxed" style={{ color: '#7c2d12' }}>
+                                              <span className="font-bold flex-shrink-0" style={{ color: '#ea580c' }}>{i + 1}.</span>
+                                              <span>{p}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div className="rounded-xl p-5" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
+                                    <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: '#1e293b' }}>
+                                      {typeof report.overallFeedback === 'string' ? report.overallFeedback : ''}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
 
                               {/* Notes */}

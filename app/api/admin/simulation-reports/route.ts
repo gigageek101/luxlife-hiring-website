@@ -18,24 +18,34 @@ export async function GET(request: NextRequest) {
         conversation,
         duration_mode,
         message_count,
+        typed_count,
+        paste_count,
         completed_at
       FROM simulation_reports
       ORDER BY completed_at DESC
     `
 
-    const processed = reports.map((r: any) => ({
-      id: r.id,
-      telegramUsername: r.telegram_username,
-      email: r.email,
-      overallScore: r.overall_score,
-      categories: typeof r.categories === 'string' ? JSON.parse(r.categories) : r.categories,
-      overallFeedback: r.overall_feedback,
-      notes: r.notes,
-      conversation: typeof r.conversation === 'string' ? JSON.parse(r.conversation) : r.conversation,
-      durationMode: r.duration_mode,
-      messageCount: r.message_count,
-      completedAt: r.completed_at,
-    }))
+    const processed = reports.map((r: any) => {
+      let feedback = r.overall_feedback
+      if (typeof feedback === 'string') {
+        try { feedback = JSON.parse(feedback) } catch { /* keep as string */ }
+      }
+      return {
+        id: r.id,
+        telegramUsername: r.telegram_username,
+        email: r.email,
+        overallScore: r.overall_score,
+        categories: typeof r.categories === 'string' ? JSON.parse(r.categories) : r.categories,
+        overallFeedback: feedback,
+        notes: r.notes,
+        conversation: typeof r.conversation === 'string' ? JSON.parse(r.conversation) : r.conversation,
+        durationMode: r.duration_mode,
+        messageCount: r.message_count,
+        typedCount: r.typed_count || 0,
+        pasteCount: r.paste_count || 0,
+        completedAt: r.completed_at,
+      }
+    })
 
     return NextResponse.json({ success: true, reports: processed })
   } catch (error) {

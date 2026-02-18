@@ -163,8 +163,28 @@ You MUST respond with valid JSON in this exact structure (no markdown, no code f
       "advice": "<specific advice with examples>"
     }
   ],
-  "overallFeedback": "<A comprehensive 3-4 paragraph summary of their performance, highlighting strengths and key areas for improvement. Be encouraging but honest. Include 2-3 specific practice scenarios they should work on.>"
-}`
+  "overallFeedback": {
+    "strengths": [
+      "<Specific strength #1 with a direct quote from the chat. Example format: 'Great name stretching — you wrote \"mikeyyyy\" which creates instant intimacy'>",
+      "<Strength #2 with quote>"
+    ],
+    "weaknesses": [
+      "<Specific weakness #1 with a direct quote showing the problem AND a rewritten version. Example format: 'You wrote \"What is your job?\" — this is too formal. Better: \"sooo what do u do for work babe\"'>",
+      "<Weakness #2 with quote and fix>"
+    ],
+    "missedOpportunities": [
+      "<Specific moment in the chat where they missed an opportunity, with the subscriber's exact message quoted and what they SHOULD have said. Example: 'When he said \"im an electrician\" you just said \"cool\". You should have said something like \"wait so u literally keep the lights on for everyone?? thats so hot honestly\"'>",
+      "<Missed opportunity #2>"
+    ],
+    "practiceScenarios": [
+      "<A specific practice scenario they should work on, with example messages. Example: 'Practice job validation: If a subscriber says he is a plumber, respond with \"omgggg so u fix things with ur hands all day?? i find that so attractive honestly... most guys cant even change a tire lol\"'>",
+      "<Practice scenario #2>"
+    ],
+    "summary": "<2-3 sentence overall summary of their performance level>"
+  }
+}
+
+IMPORTANT: Each bullet point in strengths/weaknesses/missedOpportunities/practiceScenarios must include REAL quotes from the actual conversation. Every weakness must include both the bad example AND a corrected version. Every missed opportunity must quote what the subscriber said and what the creator SHOULD have replied. Be very specific and detailed — no generic advice.`
 
 export async function POST(request: NextRequest) {
   try {

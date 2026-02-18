@@ -53,6 +53,8 @@ export async function initDatabase() {
         conversation JSONB NOT NULL,
         duration_mode VARCHAR(20) NOT NULL,
         message_count INTEGER NOT NULL,
+        typed_count INTEGER DEFAULT 0,
+        paste_count INTEGER DEFAULT 0,
         completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `

@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
       conversation,
       durationMode,
       messageCount,
+      typedCount,
+      pasteCount,
     } = await request.json()
 
     if (!telegramUsername || !email) {
@@ -27,6 +29,10 @@ export async function POST(request: NextRequest) {
 
     await initDatabase()
 
+    const feedbackStr = typeof overallFeedback === 'object'
+      ? JSON.stringify(overallFeedback)
+      : (overallFeedback || '')
+
     await sql`
       INSERT INTO simulation_reports (
         telegram_username,
@@ -37,17 +43,21 @@ export async function POST(request: NextRequest) {
         notes,
         conversation,
         duration_mode,
-        message_count
+        message_count,
+        typed_count,
+        paste_count
       ) VALUES (
         ${telegramUsername},
         ${email},
         ${overallScore || 0},
         ${JSON.stringify(categories || {})},
-        ${overallFeedback || ''},
+        ${feedbackStr},
         ${notes || ''},
         ${JSON.stringify(conversation || [])},
         ${durationMode || 'unknown'},
-        ${messageCount || 0}
+        ${messageCount || 0},
+        ${typedCount || 0},
+        ${pasteCount || 0}
       )
     `
 
