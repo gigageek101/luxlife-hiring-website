@@ -29,6 +29,14 @@ export async function POST(request: NextRequest) {
 
     await initDatabase()
 
+    // Ensure new columns exist on already-created tables
+    try {
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS typed_count INTEGER DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
+    } catch {
+      // columns may already exist
+    }
+
     const feedbackStr = typeof overallFeedback === 'object'
       ? JSON.stringify(overallFeedback)
       : (overallFeedback || '')

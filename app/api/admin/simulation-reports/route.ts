@@ -6,6 +6,14 @@ export const revalidate = 0
 
 export async function GET(request: NextRequest) {
   try {
+    // Ensure new columns exist on already-created tables
+    try {
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS typed_count INTEGER DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
+    } catch {
+      // columns may already exist
+    }
+
     const reports = await sql`
       SELECT 
         id,
