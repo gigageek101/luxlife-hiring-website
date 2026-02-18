@@ -59,8 +59,18 @@ export async function POST(request: NextRequest) {
       systemPrompt += `\n\nFor this session, your specific profile is: ${subscriberProfile}. Stay consistent with these details throughout.`
     }
 
+    const openerStyles = [
+      'Send your first message as "hey" or "sup" — just 1 word.',
+      'Send your first message as just your age and state, like "42 texas" or "38 ohio".',
+      'Send your first message with a casual compliment like "hey gorgeous" or "damn ur beautiful".',
+      'Send your first message with your name and a short greeting like "hey im mike" or "names brandon".',
+      'Send your first message with just "hi" — nothing else.',
+      'Send your first message as your name, age, and location like "mike 42 texas".',
+    ]
+    const randomOpener = openerStyles[Math.floor(Math.random() * openerStyles.length)]
+
     const claudeMessages = messages.length === 0
-      ? [{ role: 'user' as const, content: 'The creator has opened the chat. Send your first message as a new subscriber. Keep it short — just 1-2 words like "hey" or "sup" or maybe your age and state.' }]
+      ? [{ role: 'user' as const, content: `The creator has opened the chat. ${randomOpener} Keep it ultra short — Level 1 energy.` }]
       : messages.map((m: { role: string; content: string }) => ({
           role: m.role === 'creator' ? 'user' as const : 'assistant' as const,
           content: m.content,

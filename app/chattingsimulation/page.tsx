@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer } from 'lucide-react'
+import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -74,16 +74,21 @@ export default function ChattingSimulationPage() {
   const [selectedDuration, setSelectedDuration] = useState(0)
   const [timeLeft, setTimeLeft] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
-  const chatEndRef = useRef<HTMLDivElement>(null)
+  const [notes, setNotes] = useState('')
+  const [showNotesMobile, setShowNotesMobile] = useState(false)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const endConversationRef = useRef<(() => Promise<void>) | null>(null)
 
   const scrollToBottom = useCallback(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const container = chatContainerRef.current
+    if (container) {
+      container.scrollTop = container.scrollHeight
+    }
   }, [])
 
   useEffect(() => {
-    scrollToBottom()
+    requestAnimationFrame(() => scrollToBottom())
   }, [messages, isTyping, scrollToBottom])
 
   useEffect(() => {
@@ -111,6 +116,7 @@ export default function ChattingSimulationPage() {
     setMessages([])
     setMessageCount(0)
     setError(null)
+    setNotes('')
     if (selectedDuration > 0) {
       setTimeLeft(selectedDuration * 60)
       setTimerActive(true)
@@ -274,6 +280,8 @@ export default function ChattingSimulationPage() {
     setMessageCount(0)
     setTimeLeft(0)
     setTimerActive(false)
+    setNotes('')
+    setShowNotesMobile(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -285,7 +293,7 @@ export default function ChattingSimulationPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-4xl mx-auto px-4">
+      <div className={phase === 'chatting' ? 'max-w-7xl mx-auto px-4' : 'max-w-4xl mx-auto px-4'}>
 
         {/* INTRO PHASE */}
         {phase === 'intro' && (
@@ -318,47 +326,29 @@ export default function ChattingSimulationPage() {
               <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>How It Works</h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                    style={{ background: 'var(--accent)' }}
-                  >1</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>1</div>
                   <div>
                     <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Subscriber Messages First</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      A random blue-collar subscriber will open the conversation. Respond as the creator.
-                    </p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>A random blue-collar subscriber will open the conversation. Respond as the creator.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                    style={{ background: 'var(--accent)' }}
-                  >2</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>2</div>
                   <div>
                     <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Chat Naturally</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      Follow the conversation flow: get his name, learn about his job, validate his work, mirror his hobbies, and build a genuine connection.
-                    </p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Follow the conversation flow: get his name, learn about his job, validate his work, mirror his hobbies, and build a genuine connection.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div
-                    className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                    style={{ background: 'var(--accent)' }}
-                  >3</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>3</div>
                   <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Get Your Score</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      When you&apos;re ready, end the conversation to receive a detailed evaluation with scores and personalized improvement tips.
-                    </p>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Take Notes & Get Scored</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Use the notes panel to track subscriber info. End the conversation to get a detailed evaluation.</p>
                   </div>
                 </div>
               </div>
 
-              <div
-                className="mt-6 p-4 rounded-xl"
-                style={{ background: 'rgba(255, 107, 53, 0.08)', border: '1px solid rgba(255, 107, 53, 0.2)' }}
-              >
+              <div className="mt-6 p-4 rounded-xl" style={{ background: 'rgba(255, 107, 53, 0.08)', border: '1px solid rgba(255, 107, 53, 0.2)' }}>
                 <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
                   You&apos;ll be rated on: American accent, grammar, caring about the subscriber, asking the right questions, making him feel special, and giving him what he wants to hear.
                 </p>
@@ -380,24 +370,13 @@ export default function ChattingSimulationPage() {
                     style={{
                       background: selectedDuration === opt.minutes ? 'var(--accent)' : 'var(--bg-primary)',
                       color: selectedDuration === opt.minutes ? '#ffffff' : 'var(--text-primary)',
-                      border: selectedDuration === opt.minutes
-                        ? '2px solid var(--accent)'
-                        : '2px solid var(--border)',
-                      boxShadow: selectedDuration === opt.minutes
-                        ? '0 4px 20px rgba(255, 107, 53, 0.3)'
-                        : 'var(--shadow-sm)',
+                      border: selectedDuration === opt.minutes ? '2px solid var(--accent)' : '2px solid var(--border)',
+                      boxShadow: selectedDuration === opt.minutes ? '0 4px 20px rgba(255, 107, 53, 0.3)' : 'var(--shadow-sm)',
                     }}
                   >
                     <div className="text-3xl font-black mb-1">{opt.icon}</div>
-                    <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
-                      {opt.label}
-                    </div>
-                    <div
-                      className="text-xs mt-2"
-                      style={{
-                        color: selectedDuration === opt.minutes ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)',
-                      }}
-                    >
+                    <div className="text-xs font-semibold uppercase tracking-wider opacity-80">{opt.label}</div>
+                    <div className="text-xs mt-2" style={{ color: selectedDuration === opt.minutes ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>
                       {opt.description}
                     </div>
                   </button>
@@ -405,10 +384,7 @@ export default function ChattingSimulationPage() {
               </div>
             </div>
 
-            <button
-              onClick={startSimulation}
-              className="btn-primary text-lg px-10 py-4"
-            >
+            <button onClick={startSimulation} className="btn-primary text-lg px-10 py-4">
               <Sparkles className="w-5 h-5" />
               {selectedDuration === 0 ? 'Start Free Simulation' : `Start ${selectedDuration}-Minute Simulation`}
             </button>
@@ -421,86 +397,85 @@ export default function ChattingSimulationPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col"
+            className="flex gap-4"
             style={{ height: 'calc(100vh - 140px)' }}
           >
-            {/* Chat Header */}
-            <div
-              className="flex items-center justify-between px-6 py-4 rounded-t-2xl"
-              style={{ background: 'var(--color-black)', color: 'var(--text-on-black)' }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ background: 'var(--accent)' }}>
-                  👤
-                </div>
-                <div>
-                  <p className="font-semibold text-white">New Subscriber</p>
-                  <p className="text-xs" style={{ color: 'var(--text-muted-on-black)' }}>
-                    {messageCount > 0 ? `${messageCount} messages sent` : 'Just subscribed'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {selectedDuration > 0 ? (
-                  <div
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl font-mono text-sm font-bold"
-                    style={{
-                      background: timeLeft <= 30 ? 'rgba(239, 68, 68, 0.2)' : timeLeft <= 60 ? 'rgba(249, 115, 22, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-                      color: timeLeft <= 30 ? '#fca5a5' : timeLeft <= 60 ? '#fdba74' : '#ffffff',
-                      border: `1px solid ${timeLeft <= 30 ? 'rgba(239, 68, 68, 0.4)' : timeLeft <= 60 ? 'rgba(249, 115, 22, 0.4)' : 'rgba(255, 255, 255, 0.2)'}`,
-                    }}
-                  >
-                    <Timer className="w-4 h-4" />
-                    {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+            {/* Chat Column */}
+            <div className="flex-1 flex flex-col min-w-0">
+              {/* Chat Header */}
+              <div
+                className="flex items-center justify-between px-4 md:px-6 py-3 rounded-t-2xl flex-shrink-0"
+                style={{ background: 'var(--color-black)', color: 'var(--text-on-black)' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-base" style={{ background: 'var(--accent)' }}>👤</div>
+                  <div>
+                    <p className="font-semibold text-white text-sm">New Subscriber</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted-on-black)' }}>
+                      {messageCount > 0 ? `${messageCount} messages sent` : 'Just subscribed'}
+                    </p>
                   </div>
-                ) : (
-                  <div
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold"
+                </div>
+                <div className="flex items-center gap-2">
+                  {selectedDuration > 0 ? (
+                    <div
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-mono text-xs font-bold"
+                      style={{
+                        background: timeLeft <= 30 ? 'rgba(239, 68, 68, 0.2)' : timeLeft <= 60 ? 'rgba(249, 115, 22, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                        color: timeLeft <= 30 ? '#fca5a5' : timeLeft <= 60 ? '#fdba74' : '#ffffff',
+                        border: `1px solid ${timeLeft <= 30 ? 'rgba(239, 68, 68, 0.4)' : timeLeft <= 60 ? 'rgba(249, 115, 22, 0.4)' : 'rgba(255, 255, 255, 0.2)'}`,
+                      }}
+                    >
+                      <Timer className="w-3.5 h-3.5" />
+                      {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                    </div>
+                  ) : (
+                    <div
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                      style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.2)' }}
+                    >
+                      <Timer className="w-3.5 h-3.5" />
+                      Free
+                    </div>
+                  )}
+                  {/* Mobile notes toggle */}
+                  <button
+                    onClick={() => setShowNotesMobile(!showNotesMobile)}
+                    className="lg:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
                     style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.2)' }}
                   >
-                    <Timer className="w-4 h-4" />
-                    Free Mode
-                  </div>
-                )}
-              <button
-                onClick={endConversation}
-                className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
-                  color: 'white',
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4" />
-                  End & Get Score
+                    <StickyNote className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={endConversation}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105"
+                    style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', color: 'white' }}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">End & Get Score</span>
+                      <span className="sm:hidden">End</span>
+                    </div>
+                  </button>
                 </div>
-              </button>
               </div>
-            </div>
 
-            {/* Chat Messages Area */}
-            <div
-              className="flex-1 overflow-y-auto px-4 py-6 space-y-1"
-              style={{ background: '#f0f0f0' }}
-            >
-              <AnimatePresence>
+              {/* Chat Messages — stable, no layout-shifting animations */}
+              <div
+                ref={chatContainerRef}
+                className="flex-1 overflow-y-auto px-4 py-4"
+                style={{ background: '#f0f0f0', overflowAnchor: 'none' }}
+              >
                 {messages.map((message) => (
-                  <motion.div
+                  <div
                     key={message.id}
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.2 }}
-                    className={`flex ${message.role === 'creator' ? 'justify-end' : 'justify-start'} mb-1`}
+                    className={`flex ${message.role === 'creator' ? 'justify-end' : 'justify-start'} mb-1.5`}
                   >
                     <div
                       className="max-w-[75%] px-4 py-2.5 rounded-2xl"
                       style={{
-                        background: message.role === 'creator'
-                          ? 'var(--accent)'
-                          : '#ffffff',
-                        color: message.role === 'creator'
-                          ? '#ffffff'
-                          : '#000000',
+                        background: message.role === 'creator' ? 'var(--accent)' : '#ffffff',
+                        color: message.role === 'creator' ? '#ffffff' : '#000000',
                         borderBottomRightRadius: message.role === 'creator' ? '4px' : '18px',
                         borderBottomLeftRadius: message.role === 'subscriber' ? '4px' : '18px',
                         boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
@@ -508,86 +483,118 @@ export default function ChattingSimulationPage() {
                     >
                       <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
-              </AnimatePresence>
 
-              {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start mb-1"
-                >
-                  <div
-                    className="px-4 py-3 rounded-2xl"
-                    style={{ background: '#ffffff', borderBottomLeftRadius: '4px', boxShadow: '0 1px 2px rgba(0,0,0,0.08)' }}
-                  >
-                    <div className="flex gap-1.5">
-                      <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#999', animationDelay: '0ms' }} />
-                      <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#999', animationDelay: '150ms' }} />
-                      <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#999', animationDelay: '300ms' }} />
+                {isTyping && (
+                  <div className="flex justify-start mb-1.5">
+                    <div
+                      className="px-4 py-3 rounded-2xl"
+                      style={{ background: '#ffffff', borderBottomLeftRadius: '4px', boxShadow: '0 1px 2px rgba(0,0,0,0.08)' }}
+                    >
+                      <div className="flex gap-1.5">
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#999', animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#999', animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#999', animationDelay: '300ms' }} />
+                      </div>
                     </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Error Display */}
+              {error && (
+                <div className="px-4 py-2 flex-shrink-0" style={{ background: '#fef2f2' }}>
+                  <p className="text-sm text-red-600 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              {/* Input Area */}
+              <div className="px-4 py-3 rounded-b-2xl flex-shrink-0" style={{ background: '#ffffff', borderTop: '1px solid #e5e5e5' }}>
+                <div className="flex items-center gap-3">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Type your message as the creator..."
+                    disabled={isTyping}
+                    className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"
+                    style={{ background: '#f0f0f0', color: '#000000', border: '1px solid transparent' }}
+                    onFocus={(e) => { e.currentTarget.style.border = '1px solid var(--accent)'; e.currentTarget.style.background = '#ffffff' }}
+                    onBlur={(e) => { e.currentTarget.style.border = '1px solid transparent'; e.currentTarget.style.background = '#f0f0f0' }}
+                  />
+                  <button
+                    onClick={sendMessage}
+                    disabled={!inputValue.trim() || isTyping}
+                    className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-40"
+                    style={{ background: inputValue.trim() ? 'var(--accent)' : '#d1d5db' }}
+                  >
+                    <Send className="w-5 h-5 text-white" style={{ transform: 'rotate(-45deg)', marginLeft: '2px' }} />
+                  </button>
+                </div>
+                <p className="text-center text-xs mt-2" style={{ color: '#999' }}>
+                  one sentence per message &bull; use &quot;u&quot; not &quot;you&quot; &bull; lowercase everything &bull; react first then ask
+                </p>
+              </div>
+            </div>
+
+            {/* Notes Panel — Desktop (always visible) */}
+            <div className="hidden lg:flex flex-col w-80 flex-shrink-0">
+              <div
+                className="flex items-center gap-2 px-4 py-3 rounded-t-2xl flex-shrink-0"
+                style={{ background: 'var(--color-black)', color: 'white' }}
+              >
+                <StickyNote className="w-4 h-4" />
+                <span className="font-semibold text-sm">Subscriber Notes</span>
+              </div>
+              <div className="flex-1 flex flex-col" style={{ background: '#fffef0', border: '1px solid #e8e4c9', borderTop: 'none', borderRadius: '0 0 16px 16px' }}>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder={"Track subscriber info here...\n\nExample:\n• Name: \n• Age: \n• Location: \n• Job: \n• Hobbies: \n• Kids/Pets: \n• Height: \n• Key details: "}
+                  className="flex-1 w-full p-4 text-sm resize-none outline-none"
+                  style={{ background: 'transparent', color: '#4a4520', lineHeight: '1.7', fontFamily: 'inherit' }}
+                />
+              </div>
+            </div>
+
+            {/* Notes Panel — Mobile (overlay) */}
+            <AnimatePresence>
+              {showNotesMobile && (
+                <motion.div
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 100 }}
+                  transition={{ duration: 0.2 }}
+                  className="lg:hidden fixed inset-y-0 right-0 w-80 z-50 flex flex-col shadow-2xl"
+                  style={{ top: '80px' }}
+                >
+                  <div className="flex items-center justify-between px-4 py-3" style={{ background: 'var(--color-black)', color: 'white' }}>
+                    <div className="flex items-center gap-2">
+                      <StickyNote className="w-4 h-4" />
+                      <span className="font-semibold text-sm">Subscriber Notes</span>
+                    </div>
+                    <button onClick={() => setShowNotesMobile(false)} className="p-1 rounded-lg hover:bg-white/10">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex-1 flex flex-col" style={{ background: '#fffef0', border: '1px solid #e8e4c9', borderTop: 'none' }}>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder={"Track subscriber info here...\n\nExample:\n• Name: \n• Age: \n• Location: \n• Job: \n• Hobbies: "}
+                      className="flex-1 w-full p-4 text-sm resize-none outline-none"
+                      style={{ background: 'transparent', color: '#4a4520', lineHeight: '1.7', fontFamily: 'inherit' }}
+                    />
                   </div>
                 </motion.div>
               )}
-
-              <div ref={chatEndRef} />
-            </div>
-
-            {/* Error Display */}
-            {error && (
-              <div className="px-4 py-2" style={{ background: '#fef2f2' }}>
-                <p className="text-sm text-red-600 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" />
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {/* Input Area */}
-            <div
-              className="px-4 py-3 rounded-b-2xl"
-              style={{ background: '#ffffff', borderTop: '1px solid #e5e5e5' }}
-            >
-              <div className="flex items-center gap-3">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type your message as the creator..."
-                  disabled={isTyping}
-                  className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"
-                  style={{
-                    background: '#f0f0f0',
-                    color: '#000000',
-                    border: '1px solid transparent',
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.border = '1px solid var(--accent)'
-                    e.currentTarget.style.background = '#ffffff'
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.border = '1px solid transparent'
-                    e.currentTarget.style.background = '#f0f0f0'
-                  }}
-                />
-                <button
-                  onClick={sendMessage}
-                  disabled={!inputValue.trim() || isTyping}
-                  className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 disabled:opacity-40"
-                  style={{
-                    background: inputValue.trim() ? 'var(--accent)' : '#d1d5db',
-                  }}
-                >
-                  <Send className="w-5 h-5 text-white" style={{ transform: 'rotate(-45deg)', marginLeft: '2px' }} />
-                </button>
-              </div>
-              <p className="text-center text-xs mt-2" style={{ color: '#999' }}>
-                Remember: one sentence per message, use &quot;u&quot; not &quot;you&quot;, lowercase everything, react first then ask
-              </p>
-            </div>
+            </AnimatePresence>
           </motion.div>
         )}
 
@@ -612,23 +619,12 @@ export default function ChattingSimulationPage() {
             </p>
             <div className="mt-8 flex gap-2">
               {[0, 1, 2, 3, 4].map(i => (
-                <div
-                  key={i}
-                  className="w-3 h-3 rounded-full animate-bounce"
-                  style={{
-                    background: 'var(--accent)',
-                    animationDelay: `${i * 150}ms`,
-                  }}
-                />
+                <div key={i} className="w-3 h-3 rounded-full animate-bounce" style={{ background: 'var(--accent)', animationDelay: `${i * 150}ms` }} />
               ))}
             </div>
-
             {error && (
               <div className="mt-6 p-4 rounded-xl" style={{ background: '#fef2f2' }}>
-                <p className="text-red-600 flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5" />
-                  {error}
-                </p>
+                <p className="text-red-600 flex items-center gap-2"><AlertCircle className="w-5 h-5" />{error}</p>
               </div>
             )}
           </motion.div>
@@ -648,26 +644,15 @@ export default function ChattingSimulationPage() {
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
                 className="inline-flex items-center justify-center w-32 h-32 rounded-full mb-6 relative"
-                style={{
-                  background: `conic-gradient(${getScoreColor(evaluation.overallScore)} ${evaluation.overallScore * 10}%, #e5e7eb ${evaluation.overallScore * 10}%)`,
-                }}
+                style={{ background: `conic-gradient(${getScoreColor(evaluation.overallScore)} ${evaluation.overallScore * 10}%, #e5e7eb ${evaluation.overallScore * 10}%)` }}
               >
-                <div
-                  className="w-24 h-24 rounded-full flex flex-col items-center justify-center"
-                  style={{ background: 'var(--bg-primary)' }}
-                >
-                  <span className="text-4xl font-black" style={{ color: getScoreColor(evaluation.overallScore) }}>
-                    {evaluation.overallScore}
-                  </span>
+                <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+                  <span className="text-4xl font-black" style={{ color: getScoreColor(evaluation.overallScore) }}>{evaluation.overallScore}</span>
                   <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>/10</span>
                 </div>
               </motion.div>
-              <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                Your Score: {evaluation.overallScore}/10
-              </h2>
-              <p className="text-lg" style={{ color: getScoreColor(evaluation.overallScore) }}>
-                {getScoreLabel(evaluation.overallScore)}
-              </p>
+              <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Your Score: {evaluation.overallScore}/10</h2>
+              <p className="text-lg" style={{ color: getScoreColor(evaluation.overallScore) }}>{getScoreLabel(evaluation.overallScore)}</p>
             </div>
 
             {/* Category Scores Overview */}
@@ -687,22 +672,12 @@ export default function ChattingSimulationPage() {
                   onClick={() => toggleCategory(idx)}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-3xl font-black" style={{ color: getScoreColor(cat.score) }}>
-                      {cat.score}
-                    </span>
+                    <span className="text-3xl font-black" style={{ color: getScoreColor(cat.score) }}>{cat.score}</span>
                     <span className="text-xs" style={{ color: 'var(--text-muted)' }}>/10</span>
                   </div>
-                  <p className="text-sm font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>
-                    {cat.name}
-                  </p>
+                  <p className="text-sm font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
                   <div className="mt-2 w-full rounded-full h-1.5" style={{ background: '#e5e7eb' }}>
-                    <div
-                      className="h-1.5 rounded-full transition-all duration-500"
-                      style={{
-                        width: `${cat.score * 10}%`,
-                        background: getScoreColor(cat.score),
-                      }}
-                    />
+                    <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${cat.score * 10}%`, background: getScoreColor(cat.score) }} />
                   </div>
                 </motion.div>
               ))}
@@ -718,11 +693,7 @@ export default function ChattingSimulationPage() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.05 * idx }}
                   className="rounded-2xl overflow-hidden"
-                  style={{
-                    background: 'var(--bg-primary)',
-                    border: '1px solid var(--border)',
-                    boxShadow: 'var(--shadow-sm)',
-                  }}
+                  style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}
                 >
                   <button
                     onClick={() => toggleCategory(idx)}
@@ -730,13 +701,7 @@ export default function ChattingSimulationPage() {
                     style={{ background: expandedCategories.has(idx) ? 'var(--bg-secondary)' : 'transparent' }}
                   >
                     <div className="flex items-center gap-4">
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg"
-                        style={{
-                          background: `${getScoreColor(cat.score)}15`,
-                          color: getScoreColor(cat.score),
-                        }}
-                      >
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getScoreColor(cat.score)}15`, color: getScoreColor(cat.score) }}>
                         {cat.score}
                       </div>
                       <div>
@@ -744,82 +709,36 @@ export default function ChattingSimulationPage() {
                         <p className="text-sm" style={{ color: getScoreColor(cat.score) }}>{getScoreLabel(cat.score)}</p>
                       </div>
                     </div>
-                    {expandedCategories.has(idx) ? (
-                      <ChevronUp className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
-                    ) : (
-                      <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
-                    )}
+                    {expandedCategories.has(idx) ? <ChevronUp className="w-5 h-5" style={{ color: 'var(--text-muted)' }} /> : <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />}
                   </button>
-
                   <AnimatePresence>
                     {expandedCategories.has(idx) && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
                         <div className="px-6 pb-6 space-y-4">
-                          {/* Feedback */}
-                          <div>
-                            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                              {cat.feedback}
-                            </p>
-                          </div>
-
-                          {/* Good Examples */}
+                          <div><p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{cat.feedback}</p></div>
                           {cat.examples.good.length > 0 && (
                             <div>
-                              <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#10b981' }}>
-                                What you did well:
-                              </p>
+                              <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#10b981' }}>What you did well:</p>
                               <div className="space-y-2">
                                 {cat.examples.good.map((ex, i) => (
-                                  <div
-                                    key={i}
-                                    className="px-4 py-2.5 rounded-xl text-sm"
-                                    style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#065f46', border: '1px solid rgba(16, 185, 129, 0.2)' }}
-                                  >
-                                    &ldquo;{ex}&rdquo;
-                                  </div>
+                                  <div key={i} className="px-4 py-2.5 rounded-xl text-sm" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#065f46', border: '1px solid rgba(16, 185, 129, 0.2)' }}>&ldquo;{ex}&rdquo;</div>
                                 ))}
                               </div>
                             </div>
                           )}
-
-                          {/* Needs Work Examples */}
                           {cat.examples.needsWork.length > 0 && (
                             <div>
-                              <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#f97316' }}>
-                                Areas to improve:
-                              </p>
+                              <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#f97316' }}>Areas to improve:</p>
                               <div className="space-y-2">
                                 {cat.examples.needsWork.map((ex, i) => (
-                                  <div
-                                    key={i}
-                                    className="px-4 py-2.5 rounded-xl text-sm"
-                                    style={{ background: 'rgba(249, 115, 22, 0.08)', color: '#9a3412', border: '1px solid rgba(249, 115, 22, 0.2)' }}
-                                  >
-                                    &ldquo;{ex}&rdquo;
-                                  </div>
+                                  <div key={i} className="px-4 py-2.5 rounded-xl text-sm" style={{ background: 'rgba(249, 115, 22, 0.08)', color: '#9a3412', border: '1px solid rgba(249, 115, 22, 0.2)' }}>&ldquo;{ex}&rdquo;</div>
                                 ))}
                               </div>
                             </div>
                           )}
-
-                          {/* Advice */}
-                          <div
-                            className="p-4 rounded-xl"
-                            style={{ background: 'rgba(255, 107, 53, 0.06)', border: '1px solid rgba(255, 107, 53, 0.15)' }}
-                          >
-                            <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: 'var(--accent)' }}>
-                              <Sparkles className="w-4 h-4" />
-                              Practice Advice
-                            </p>
-                            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>
-                              {cat.advice}
-                            </p>
+                          <div className="p-4 rounded-xl" style={{ background: 'rgba(255, 107, 53, 0.06)', border: '1px solid rgba(255, 107, 53, 0.15)' }}>
+                            <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: 'var(--accent)' }}><Sparkles className="w-4 h-4" />Practice Advice</p>
+                            <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>{cat.advice}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -830,24 +749,24 @@ export default function ChattingSimulationPage() {
             </div>
 
             {/* Overall Feedback */}
-            <div
-              className="rounded-2xl p-8 mb-8"
-              style={{
-                background: 'var(--color-black)',
-                color: 'var(--text-on-black)',
-              }}
-            >
+            <div className="rounded-2xl p-8 mb-8" style={{ background: 'var(--color-black)', color: 'var(--text-on-black)' }}>
               <h3 className="text-xl font-bold mb-4 text-white">Overall Assessment</h3>
-              <p className="leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary-on-black)' }}>
-                {evaluation.overallFeedback}
-              </p>
+              <p className="leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary-on-black)' }}>{evaluation.overallFeedback}</p>
             </div>
 
+            {/* Your Notes */}
+            {notes.trim() && (
+              <div className="rounded-2xl p-6 mb-8" style={{ background: '#fffef0', border: '1px solid #e8e4c9' }}>
+                <h3 className="text-lg font-bold mb-3 flex items-center gap-2" style={{ color: '#4a4520' }}>
+                  <StickyNote className="w-5 h-5" />
+                  Your Notes
+                </h3>
+                <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: '#5a5530' }}>{notes}</p>
+              </div>
+            )}
+
             {/* Conversation Review */}
-            <div
-              className="rounded-2xl p-6 mb-8"
-              style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-            >
+            <div className="rounded-2xl p-6 mb-8" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Your Conversation</h3>
               <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
                 {messages.map((msg) => (
@@ -870,10 +789,7 @@ export default function ChattingSimulationPage() {
 
             {/* Try Again Button */}
             <div className="text-center">
-              <button
-                onClick={resetSimulation}
-                className="btn-primary text-lg px-10 py-4"
-              >
+              <button onClick={resetSimulation} className="btn-primary text-lg px-10 py-4">
                 <RotateCcw className="w-5 h-5" />
                 Try Again
               </button>
