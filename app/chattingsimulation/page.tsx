@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2 } from 'lucide-react'
+import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2, Download, FileText, ExternalLink } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -125,6 +125,7 @@ export default function ChattingSimulationPage() {
   const [waitingForIdle, setWaitingForIdle] = useState(false)
   const [pasteCount, setPasteCount] = useState(0)
   const [typedCount, setTypedCount] = useState(0)
+  const [exportingPdf, setExportingPdf] = useState(false)
   const lastInputWasPaste = useRef(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -132,6 +133,7 @@ export default function ChattingSimulationPage() {
   const replyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messagesRef = useRef<ChatMessage[]>([])
   const profileRef = useRef('')
+  const resultsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('sim_user')
@@ -479,6 +481,51 @@ export default function ChattingSimulationPage() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
+    }
+  }
+
+  const exportResultsAsPdf = async () => {
+    if (!resultsRef.current || !evaluation) return
+    setExportingPdf(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      const { jsPDF } = await import('jspdf')
+
+      const el = resultsRef.current
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        scrollY: -window.scrollY,
+        windowWidth: el.scrollWidth,
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const imgWidth = 210
+      const pageHeight = 297
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      const pdf = new jsPDF('p', 'mm', 'a4')
+
+      let heightLeft = imgHeight
+      let position = 0
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+
+      while (heightLeft > 0) {
+        position -= pageHeight
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
+      }
+
+      const name = simUser?.telegramUsername || 'simulation'
+      const date = new Date().toISOString().slice(0, 10)
+      pdf.save(`chatting-simulation-results_${name}_${date}.pdf`)
+    } catch (err) {
+      console.error('PDF export failed:', err)
+    } finally {
+      setExportingPdf(false)
     }
   }
 
@@ -937,6 +984,7 @@ export default function ChattingSimulationPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+            <div ref={resultsRef} style={{ background: '#ffffff', padding: '2rem', borderRadius: '1rem' }}>
             {/* Overall Weighted Score */}
             <div className="text-center mb-10">
               <motion.div
@@ -1216,6 +1264,82 @@ export default function ChattingSimulationPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            </div>{/* close resultsRef */}
+
+            {/* Export PDF Button */}
+            <div className="flex justify-center gap-4 mt-8 mb-8">
+              <button
+                onClick={exportResultsAsPdf}
+                disabled={exportingPdf}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02]"
+                style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+              >
+                {exportingPdf ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                {exportingPdf ? 'Generating PDF...' : 'Export Results as PDF'}
+              </button>
+            </div>
+
+            {/* Ways to Get Better */}
+            <div className="rounded-2xl p-8 mb-8" style={{ background: 'linear-gradient(135deg, #eff6ff, #f0f9ff)', border: '1px solid #bfdbfe' }}>
+              <h3 className="text-xl font-bold mb-5 flex items-center gap-2" style={{ color: '#1e3a5f' }}>
+                <Sparkles className="w-5 h-5" style={{ color: '#2563eb' }} />
+                Ways to Get Better
+              </h3>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#2563eb', color: '#ffffff' }}>1</div>
+                  <div>
+                    <p className="font-semibold" style={{ color: '#1e3a5f' }}>Export your test results as a PDF</p>
+                    <p className="text-sm mt-1" style={{ color: '#475569' }}>Click the blue &quot;Export Results as PDF&quot; button above to save your full evaluation report.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#2563eb', color: '#ffffff' }}>2</div>
+                  <div>
+                    <p className="font-semibold" style={{ color: '#1e3a5f' }}>Download the learning guide PDF</p>
+                    <p className="text-sm mt-1" style={{ color: '#475569' }}>
+                      This guide covers everything you need to know about subscriber relationship building.
+                    </p>
+                    <a
+                      href="/learning-guide.pdf"
+                      download
+                      className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
+                      style={{ background: '#2563eb', color: '#ffffff' }}
+                    >
+                      <FileText className="w-4 h-4" />
+                      Download Learning Guide PDF
+                    </a>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#2563eb', color: '#ffffff' }}>3</div>
+                  <div>
+                    <p className="font-semibold" style={{ color: '#1e3a5f' }}>Upload both files to Claude AI for personalized practice</p>
+                    <p className="text-sm mt-1" style={{ color: '#475569' }}>
+                      Go to{' '}
+                      <a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" className="font-semibold underline" style={{ color: '#2563eb' }}>
+                        claude.ai/new
+                        <ExternalLink className="w-3 h-3 inline ml-0.5 mb-0.5" />
+                      </a>
+                      {' '}and upload both PDFs as attachments. Then enter this prompt:
+                    </p>
+                    <div className="mt-2 p-3 rounded-lg text-sm font-mono" style={{ background: '#1e293b', color: '#e2e8f0' }}>
+                      the first pdf is my test results and the second pdf is my learning pdf. please give me practical examples based on the documents to help me improve my weakpoints.
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#2563eb', color: '#ffffff' }}>4</div>
+                  <div>
+                    <p className="font-semibold" style={{ color: '#1e3a5f' }}>Practice, come back, repeat</p>
+                    <p className="text-sm mt-1" style={{ color: '#475569' }}>
+                      Claude will give you clear practice examples tailored to your weak areas. After you&apos;ve practiced, come back to the chatting simulation and try again. <strong>Repeat this process until you&apos;ve mastered it.</strong>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
