@@ -76,9 +76,13 @@ export default function ChattingSimulationPage() {
   const [timerActive, setTimerActive] = useState(false)
   const [notes, setNotes] = useState('')
   const [showNotesMobile, setShowNotesMobile] = useState(false)
+  const [waitingForIdle, setWaitingForIdle] = useState(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const endConversationRef = useRef<(() => Promise<void>) | null>(null)
+  const replyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const messagesRef = useRef<ChatMessage[]>([])
+  const profileRef = useRef('')
 
   const scrollToBottom = useCallback(() => {
     const container = chatContainerRef.current
@@ -90,6 +94,84 @@ export default function ChattingSimulationPage() {
   useEffect(() => {
     requestAnimationFrame(() => scrollToBottom())
   }, [messages, isTyping, scrollToBottom])
+
+  useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
+
+  useEffect(() => {
+    profileRef.current = subscriberProfile
+  }, [subscriberProfile])
+
+  const resetReplyTimer = useCallback(() => {
+    if (replyTimeoutRef.current) {
+      clearTimeout(replyTimeoutRef.current)
+    }
+  }, [])
+
+  const fetchAIReply = useCallback(async () => {
+    const currentMessages = messagesRef.current
+    const lastMsg = currentMessages[currentMessages.length - 1]
+    if (!lastMsg || lastMsg.role !== 'creator') return
+
+    setWaitingForIdle(false)
+    setIsTyping(true)
+    setError(null)
+
+    try {
+      const allMessages = currentMessages.map(m => ({
+        role: m.role,
+        content: m.content,
+      }))
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: allMessages,
+          subscriberProfile: profileRef.current,
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to get response')
+      }
+
+      const data = await response.json()
+      const subscriberLines = data.reply.split('\n').filter((l: string) => l.trim())
+
+      for (let i = 0; i < subscriberLines.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, i * 600))
+        setMessages(prev => [...prev, {
+          id: `sub-${Date.now()}-${i}`,
+          role: 'subscriber',
+          content: subscriberLines[i].trim(),
+          timestamp: new Date(),
+        }])
+      }
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
+      setError(errorMessage)
+    } finally {
+      setIsTyping(false)
+      setTimeout(() => inputRef.current?.focus(), 100)
+    }
+  }, [])
+
+  const scheduleReply = useCallback(() => {
+    resetReplyTimer()
+    setWaitingForIdle(true)
+    replyTimeoutRef.current = setTimeout(() => {
+      fetchAIReply()
+    }, 5000)
+  }, [resetReplyTimer, fetchAIReply])
+
+  useEffect(() => {
+    return () => {
+      if (replyTimeoutRef.current) clearTimeout(replyTimeoutRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     if (!timerActive || timeLeft <= 0) return
@@ -162,7 +244,7 @@ export default function ChattingSimulationPage() {
     }
   }
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (!inputValue.trim() || isTyping) return
 
     const userMessage: ChatMessage = {
@@ -175,52 +257,22 @@ export default function ChattingSimulationPage() {
     setMessages(prev => [...prev, userMessage])
     setMessageCount(prev => prev + 1)
     setInputValue('')
-    setIsTyping(true)
     setError(null)
+    scheduleReply()
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }
 
-    try {
-      const allMessages = [...messages, userMessage].map(m => ({
-        role: m.role,
-        content: m.content,
-      }))
-
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: allMessages,
-          subscriberProfile,
-        }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to get response')
-      }
-
-      const data = await response.json()
-      const subscriberLines = data.reply.split('\n').filter((l: string) => l.trim())
-
-      for (let i = 0; i < subscriberLines.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, i * 600))
-        setMessages(prev => [...prev, {
-          id: `sub-${Date.now()}-${i}`,
-          role: 'subscriber',
-          content: subscriberLines[i].trim(),
-          timestamp: new Date(),
-        }])
-      }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
-      setError(errorMessage)
-    } finally {
-      setIsTyping(false)
-      setTimeout(() => inputRef.current?.focus(), 100)
+  const handleInputChange = (value: string) => {
+    setInputValue(value)
+    if (waitingForIdle && value.length > 0) {
+      scheduleReply()
     }
   }
 
   const endConversation = useCallback(async () => {
     setTimerActive(false)
+    resetReplyTimer()
+    setWaitingForIdle(false)
 
     if (messages.length < 4) {
       setError('Please exchange at least a few more messages before ending the conversation.')
@@ -255,7 +307,7 @@ export default function ChattingSimulationPage() {
       setError(errorMessage)
       setPhase('chatting')
     }
-  }, [messages])
+  }, [messages, resetReplyTimer])
 
   useEffect(() => {
     endConversationRef.current = endConversation
@@ -271,6 +323,7 @@ export default function ChattingSimulationPage() {
   }
 
   const resetSimulation = () => {
+    resetReplyTimer()
     setPhase('intro')
     setMessages([])
     setInputValue('')
@@ -282,6 +335,7 @@ export default function ChattingSimulationPage() {
     setTimerActive(false)
     setNotes('')
     setShowNotesMobile(false)
+    setWaitingForIdle(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -519,7 +573,7 @@ export default function ChattingSimulationPage() {
                     ref={inputRef}
                     type="text"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Type your message as the creator..."
                     disabled={isTyping}
