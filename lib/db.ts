@@ -40,6 +40,23 @@ export async function initDatabase() {
       )
     `
 
+    // Create simulation_reports table
+    await sql`
+      CREATE TABLE IF NOT EXISTS simulation_reports (
+        id SERIAL PRIMARY KEY,
+        telegram_username VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        overall_score INTEGER NOT NULL,
+        categories JSONB NOT NULL,
+        overall_feedback TEXT NOT NULL,
+        notes TEXT,
+        conversation JSONB NOT NULL,
+        duration_mode VARCHAR(20) NOT NULL,
+        message_count INTEGER NOT NULL,
+        completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `
+
     // Create indexes for faster lookups
     try {
       await sql`
@@ -54,6 +71,15 @@ export async function initDatabase() {
       await sql`
         CREATE INDEX IF NOT EXISTS idx_assessment_day 
         ON assessment_results(day)
+      `
+    } catch (e) {
+      // Index might already exist
+    }
+
+    try {
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_simulation_user
+        ON simulation_reports(telegram_username, email)
       `
     } catch (e) {
       // Index might already exist

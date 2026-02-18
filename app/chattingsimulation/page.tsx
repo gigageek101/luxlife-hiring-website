@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X } from 'lucide-react'
+import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2 } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -26,6 +26,12 @@ interface EvaluationResult {
   overallScore: number
   categories: CategoryResult[]
   overallFeedback: string
+}
+
+interface SimUser {
+  id: number
+  telegramUsername: string
+  email: string
 }
 
 const DURATION_OPTIONS = [
@@ -62,7 +68,12 @@ function getScoreLabel(score: number): string {
 }
 
 export default function ChattingSimulationPage() {
-  const [phase, setPhase] = useState<'intro' | 'chatting' | 'evaluating' | 'results'>('intro')
+  const [phase, setPhase] = useState<'login' | 'intro' | 'chatting' | 'evaluating' | 'results'>('login')
+  const [simUser, setSimUser] = useState<SimUser | null>(null)
+  const [loginTelegram, setLoginTelegram] = useState('')
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -83,6 +94,56 @@ export default function ChattingSimulationPage() {
   const replyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messagesRef = useRef<ChatMessage[]>([])
   const profileRef = useRef('')
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sim_user')
+    if (stored) {
+      try {
+        const user = JSON.parse(stored) as SimUser
+        setSimUser(user)
+        setPhase('intro')
+      } catch { /* ignore */ }
+    }
+  }, [])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+    setLoginLoading(true)
+
+    try {
+      const response = await fetch('/api/auth/simulation-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegramUsername: loginTelegram,
+          email: loginEmail,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed')
+      }
+
+      const user = data.user as SimUser
+      setSimUser(user)
+      localStorage.setItem('sim_user', JSON.stringify(user))
+      setPhase('intro')
+    } catch (err) {
+      setLoginError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoginLoading(false)
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('sim_user')
+    setSimUser(null)
+    setPhase('login')
+    resetSimulation()
+  }
 
   const scrollToBottom = useCallback(() => {
     const container = chatContainerRef.current
@@ -302,12 +363,34 @@ export default function ChattingSimulationPage() {
       const data = await response.json()
       setEvaluation(data.evaluation)
       setPhase('results')
+
+      if (simUser && data.evaluation) {
+        try {
+          await fetch('/api/simulation/save-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              telegramUsername: simUser.telegramUsername,
+              email: simUser.email,
+              overallScore: data.evaluation.overallScore,
+              categories: data.evaluation.categories,
+              overallFeedback: data.evaluation.overallFeedback,
+              notes,
+              conversation: messages.map(m => ({ role: m.role, content: m.content })),
+              durationMode: selectedDuration === 0 ? 'free' : `${selectedDuration}min`,
+              messageCount,
+            })
+          })
+        } catch {
+          console.error('Failed to save simulation report')
+        }
+      }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
       setError(errorMessage)
       setPhase('chatting')
     }
-  }, [messages, resetReplyTimer])
+  }, [messages, resetReplyTimer, simUser, notes, selectedDuration, messageCount])
 
   useEffect(() => {
     endConversationRef.current = endConversation
@@ -349,6 +432,102 @@ export default function ChattingSimulationPage() {
     <div className="min-h-screen pt-24 pb-16" style={{ background: 'var(--bg-primary)' }}>
       <div className={phase === 'chatting' ? 'max-w-7xl mx-auto px-4' : 'max-w-4xl mx-auto px-4'}>
 
+        {/* LOGIN PHASE */}
+        {phase === 'login' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-md mx-auto"
+          >
+            <div className="text-center mb-8">
+              <div
+                className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+                style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
+              >
+                <MessageCircle className="w-10 h-10 text-white" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+                Chatting Simulation
+              </h1>
+              <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+                Sign in with your training account to continue
+              </p>
+            </div>
+
+            <div className="rounded-2xl p-8" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}>
+              <form onSubmit={handleLogin} className="space-y-5">
+                {loginError && (
+                  <div className="p-4 rounded-xl text-sm" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626' }}>
+                    {loginError}
+                  </div>
+                )}
+
+                <div>
+                  <label htmlFor="sim-telegram" className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                    Telegram Username
+                  </label>
+                  <input
+                    type="text"
+                    id="sim-telegram"
+                    value={loginTelegram}
+                    onChange={(e) => setLoginTelegram(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl text-[15px] outline-none transition-all duration-200"
+                    style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '2px solid var(--border)' }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                    placeholder="@username"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="sim-email" className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="sim-email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl text-[15px] outline-none transition-all duration-200"
+                    style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '2px solid var(--border)' }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)' }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border)' }}
+                    placeholder="your.email@example.com"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loginLoading}
+                  className="w-full py-4 rounded-xl font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', opacity: loginLoading ? 0.7 : 1 }}
+                >
+                  {loginLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-5 h-5" />
+                      Continue to Simulation
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-5 p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.06)', border: '1px solid rgba(59, 130, 246, 0.15)' }}>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  Use the same Telegram username and email you registered with in the training portal. No password needed.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* INTRO PHASE */}
         {phase === 'intro' && (
           <motion.div
@@ -367,10 +546,20 @@ export default function ChattingSimulationPage() {
               <h1 className="text-3xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                 Chatting Simulation
               </h1>
-              <p className="text-lg md:text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-lg md:text-xl max-w-2xl mx-auto mb-3" style={{ color: 'var(--text-secondary)' }}>
                 Practice your subscriber relationship building skills in a realistic simulation. 
                 An AI subscriber will message you first — handle the conversation like a pro.
               </p>
+              {simUser && (
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-sm font-medium px-3 py-1 rounded-full" style={{ background: 'var(--bg-secondary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
+                    Signed in as {simUser.telegramUsername}
+                  </span>
+                  <button onClick={handleLogout} className="text-sm font-medium underline" style={{ color: 'var(--text-muted)' }}>
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
 
             <div
