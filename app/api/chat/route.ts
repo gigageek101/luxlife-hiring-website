@@ -66,6 +66,9 @@ export async function POST(request: NextRequest) {
       'Send your first message with your name and a short greeting like "hey im mike" or "names brandon".',
       'Send your first message with just "hi" — nothing else.',
       'Send your first message as your name, age, and location like "mike 42 texas".',
+      'Send your first message as JUST your name — nothing else. Like "mike" or "brandon" or "tommy". One word only.',
+      'Send your first message as JUST your name — nothing else. Like "mike" or "brandon". One word only.',
+      'Send your first message as JUST your name — one word. Like "austin" or "scott".',
     ]
     const randomOpener = openerStyles[Math.floor(Math.random() * openerStyles.length)]
 

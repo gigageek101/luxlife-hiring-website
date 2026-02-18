@@ -487,11 +487,18 @@ export default function ChattingSimulationPage() {
   const exportResultsAsPdf = async () => {
     if (!resultsRef.current || !evaluation) return
     setExportingPdf(true)
+
+    const previousExpanded = new Set(expandedCategories)
+    const allIndices = new Set(evaluation.categories.map((_, i) => i))
+    setExpandedCategories(allIndices)
+
+    await new Promise(r => setTimeout(r, 600))
+
     try {
       const html2canvas = (await import('html2canvas')).default
       const { jsPDF } = await import('jspdf')
 
-      const el = resultsRef.current
+      const el = resultsRef.current!
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
@@ -525,6 +532,7 @@ export default function ChattingSimulationPage() {
     } catch (err) {
       console.error('PDF export failed:', err)
     } finally {
+      setExpandedCategories(previousExpanded)
       setExportingPdf(false)
     }
   }
@@ -691,6 +699,20 @@ export default function ChattingSimulationPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="flex items-start gap-4 mt-4">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>4</div>
+                  <div>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Don&apos;t Forget the Framework!</p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Follow this conversation flow — it&apos;s not a job interview, so always write one appreciating sentence about what they said before asking the next thing:</p>
+                    <ol className="text-sm mt-2 space-y-1.5 list-none" style={{ color: 'var(--text-secondary)' }}>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: 'var(--accent)' }}>1.</span> Gather their <strong>name</strong></li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: 'var(--accent)' }}>2.</span> Gather their <strong>age</strong> and <strong>location</strong></li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: 'var(--accent)' }}>3.</span> Ask what they like to <strong>do for fun</strong></li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: 'var(--accent)' }}>4.</span> Ask how life is where they live and what they <strong>like to do there</strong></li>
+                    </ol>
+                  </div>
+                </div>
 
               <div className="mt-6 p-4 rounded-xl" style={{ background: 'rgba(255, 107, 53, 0.08)', border: '1px solid rgba(255, 107, 53, 0.2)' }}>
                 <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>
