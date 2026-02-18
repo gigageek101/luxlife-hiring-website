@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle } from 'lucide-react'
+import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -27,6 +27,13 @@ interface EvaluationResult {
   categories: CategoryResult[]
   overallFeedback: string
 }
+
+const DURATION_OPTIONS = [
+  { label: 'Free Mode', minutes: 0, description: 'End when you want', icon: '∞' },
+  { label: 'Quick', minutes: 1, description: 'Fast opener practice', icon: '1' },
+  { label: 'Standard', minutes: 3, description: 'Full conversation flow', icon: '3' },
+  { label: 'Extended', minutes: 5, description: 'Deep relationship building', icon: '5' },
+] as const
 
 const SUBSCRIBER_PROFILES = [
   "Name: Mike, Age: 42, Job: Electrician/Lineman, Location: Texas, Hobbies: Fishing and watching football, Has a dog named Duke, Drives a lifted F-250, Height: 5'9\"",
@@ -64,8 +71,12 @@ export default function ChattingSimulationPage() {
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set())
   const [error, setError] = useState<string | null>(null)
   const [messageCount, setMessageCount] = useState(0)
+  const [selectedDuration, setSelectedDuration] = useState(0)
+  const [timeLeft, setTimeLeft] = useState(0)
+  const [timerActive, setTimerActive] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const endConversationRef = useRef<(() => Promise<void>) | null>(null)
 
   const scrollToBottom = useCallback(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -75,6 +86,24 @@ export default function ChattingSimulationPage() {
     scrollToBottom()
   }, [messages, isTyping, scrollToBottom])
 
+  useEffect(() => {
+    if (!timerActive || timeLeft <= 0) return
+
+    const interval = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          setTimerActive(false)
+          endConversationRef.current?.()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [timerActive, timeLeft])
+
   const startSimulation = async () => {
     const profile = SUBSCRIBER_PROFILES[Math.floor(Math.random() * SUBSCRIBER_PROFILES.length)]
     setSubscriberProfile(profile)
@@ -82,6 +111,13 @@ export default function ChattingSimulationPage() {
     setMessages([])
     setMessageCount(0)
     setError(null)
+    if (selectedDuration > 0) {
+      setTimeLeft(selectedDuration * 60)
+      setTimerActive(true)
+    } else {
+      setTimeLeft(0)
+      setTimerActive(false)
+    }
 
     setIsTyping(true)
     try {
@@ -177,8 +213,10 @@ export default function ChattingSimulationPage() {
     }
   }
 
-  const endConversation = async () => {
-    if (messages.length < 6) {
+  const endConversation = useCallback(async () => {
+    setTimerActive(false)
+
+    if (messages.length < 4) {
       setError('Please exchange at least a few more messages before ending the conversation.')
       return
     }
@@ -211,7 +249,11 @@ export default function ChattingSimulationPage() {
       setError(errorMessage)
       setPhase('chatting')
     }
-  }
+  }, [messages])
+
+  useEffect(() => {
+    endConversationRef.current = endConversation
+  }, [endConversation])
 
   const toggleCategory = (index: number) => {
     setExpandedCategories(prev => {
@@ -230,6 +272,8 @@ export default function ChattingSimulationPage() {
     setExpandedCategories(new Set())
     setError(null)
     setMessageCount(0)
+    setTimeLeft(0)
+    setTimerActive(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -321,12 +365,52 @@ export default function ChattingSimulationPage() {
               </div>
             </div>
 
+            {/* Duration Selector */}
+            <div className="max-w-2xl mx-auto mb-8">
+              <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                <Clock className="w-5 h-5 inline-block mr-2 mb-0.5" />
+                Choose Duration
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {DURATION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.minutes}
+                    onClick={() => setSelectedDuration(opt.minutes)}
+                    className="rounded-2xl p-5 text-center transition-all duration-200 hover:scale-[1.03]"
+                    style={{
+                      background: selectedDuration === opt.minutes ? 'var(--accent)' : 'var(--bg-primary)',
+                      color: selectedDuration === opt.minutes ? '#ffffff' : 'var(--text-primary)',
+                      border: selectedDuration === opt.minutes
+                        ? '2px solid var(--accent)'
+                        : '2px solid var(--border)',
+                      boxShadow: selectedDuration === opt.minutes
+                        ? '0 4px 20px rgba(255, 107, 53, 0.3)'
+                        : 'var(--shadow-sm)',
+                    }}
+                  >
+                    <div className="text-3xl font-black mb-1">{opt.icon}</div>
+                    <div className="text-xs font-semibold uppercase tracking-wider opacity-80">
+                      {opt.label}
+                    </div>
+                    <div
+                      className="text-xs mt-2"
+                      style={{
+                        color: selectedDuration === opt.minutes ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)',
+                      }}
+                    >
+                      {opt.description}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <button
               onClick={startSimulation}
               className="btn-primary text-lg px-10 py-4"
             >
               <Sparkles className="w-5 h-5" />
-              Start Simulation
+              {selectedDuration === 0 ? 'Start Free Simulation' : `Start ${selectedDuration}-Minute Simulation`}
             </button>
           </motion.div>
         )}
@@ -356,6 +440,28 @@ export default function ChattingSimulationPage() {
                   </p>
                 </div>
               </div>
+              <div className="flex items-center gap-3">
+                {selectedDuration > 0 ? (
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl font-mono text-sm font-bold"
+                    style={{
+                      background: timeLeft <= 30 ? 'rgba(239, 68, 68, 0.2)' : timeLeft <= 60 ? 'rgba(249, 115, 22, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                      color: timeLeft <= 30 ? '#fca5a5' : timeLeft <= 60 ? '#fdba74' : '#ffffff',
+                      border: `1px solid ${timeLeft <= 30 ? 'rgba(239, 68, 68, 0.4)' : timeLeft <= 60 ? 'rgba(249, 115, 22, 0.4)' : 'rgba(255, 255, 255, 0.2)'}`,
+                    }}
+                  >
+                    <Timer className="w-4 h-4" />
+                    {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                  </div>
+                ) : (
+                  <div
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold"
+                    style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.2)' }}
+                  >
+                    <Timer className="w-4 h-4" />
+                    Free Mode
+                  </div>
+                )}
               <button
                 onClick={endConversation}
                 className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105"
@@ -369,6 +475,7 @@ export default function ChattingSimulationPage() {
                   End & Get Score
                 </div>
               </button>
+              </div>
             </div>
 
             {/* Chat Messages Area */}
