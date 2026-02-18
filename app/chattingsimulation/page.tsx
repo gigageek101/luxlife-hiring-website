@@ -164,7 +164,7 @@ export default function ChattingSimulationPage() {
     setWaitingForIdle(true)
     replyTimeoutRef.current = setTimeout(() => {
       fetchAIReply()
-    }, 5000)
+    }, 1000)
   }, [resetReplyTimer, fetchAIReply])
 
   useEffect(() => {
