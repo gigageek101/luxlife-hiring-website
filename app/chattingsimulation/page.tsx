@@ -373,7 +373,7 @@ export default function ChattingSimulationPage() {
       const response = await fetch('/api/evaluate-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: allMessages }),
+        body: JSON.stringify({ messages: allMessages, notes }),
       })
 
       if (!response.ok) {
@@ -885,7 +885,7 @@ export default function ChattingSimulationPage() {
               Analyzing Your Conversation...
             </h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              Our AI is reviewing your chatting skills across 6 categories
+              Our AI is reviewing your chatting skills across 7 categories
             </p>
             <div className="mt-8 flex gap-2">
               {[0, 1, 2, 3, 4].map(i => (

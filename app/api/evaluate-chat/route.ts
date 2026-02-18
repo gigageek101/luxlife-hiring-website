@@ -4,7 +4,7 @@ const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
 const EVALUATION_SYSTEM_PROMPT = `You are an expert evaluator for OnlyFans chatting agents. You are evaluating a training conversation where a person (the "Creator") is practicing chatting with a simulated subscriber (a blue-collar American man).
 
-Your job is to analyze the ENTIRE conversation and rate the Creator on the following 6 criteria. Each criterion is rated from 1-10.
+Your job is to analyze the ENTIRE conversation AND the creator's notes, and rate the Creator on the following 7 criteria. Each criterion is rated from 1-10.
 
 KNOWLEDGE REFERENCE — This is the gold standard for how creators should chat:
 
@@ -112,6 +112,21 @@ RATING CRITERIA:
    10 = Perfectly addresses his unspoken needs and insecurities
    1 = Misses all opportunities to validate and reassure
 
+7. NOTE-TAKING & INFORMATION TRACKING (1-10):
+   Did the creator take proper notes during the conversation? The creator's notes will be provided separately. Look for:
+   - Did they write down his NAME?
+   - Did they note his AGE?
+   - Did they note his LOCATION/STATE?
+   - Did they note his JOB?
+   - Did they note his HOBBIES?
+   - Did they note PETS, KIDS, HEIGHT, VEHICLE, or other personal details he shared?
+   - Are the notes organized and easy to reference?
+   - Did they capture ALL key info the subscriber shared, or did they miss things?
+   - If no notes were taken at all, this is a 1/10 — note-taking is CRITICAL for real chatting because you need to reference details in future conversations
+   10 = Every single detail the subscriber shared is noted down, organized, and easy to reference
+   5 = Some key info noted but missed several important details
+   1 = No notes taken or barely anything written down
+
 RESPONSE FORMAT:
 You MUST respond with valid JSON in this exact structure (no markdown, no code fences, just raw JSON):
 {
@@ -161,6 +176,16 @@ You MUST respond with valid JSON in this exact structure (no markdown, no code f
       "feedback": "<2-3 sentences>",
       "examples": { "good": [], "needsWork": [] },
       "advice": "<specific advice with examples>"
+    },
+    {
+      "name": "Note-Taking & Information Tracking",
+      "score": <number 1-10>,
+      "feedback": "<2-3 sentences evaluating the quality and completeness of their notes. List what they captured AND what they missed.>",
+      "examples": {
+        "good": ["<specific detail from their notes that was correctly captured, e.g. 'Noted his name: Mike'>"],
+        "needsWork": ["<specific detail the subscriber shared in the conversation that was NOT in the notes, e.g. 'Subscriber mentioned he has a dog named Duke but this was not noted'>"]
+      },
+      "advice": "<advice on note-taking habits, what to always write down, and how to organize notes for future reference>"
     }
   ],
   "overallFeedback": {
@@ -195,12 +220,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { messages } = await request.json()
+    const { messages, notes } = await request.json()
 
     const conversationText = messages.map((m: { role: string; content: string }) => {
       const label = m.role === 'creator' ? 'CREATOR' : 'SUBSCRIBER'
       return `${label}: ${m.content}`
     }).join('\n')
+
+    const notesSection = notes && notes.trim()
+      ? `\n\n--- CREATOR'S NOTES (taken during the conversation) ---\n${notes.trim()}\n--- END OF NOTES ---`
+      : '\n\n--- CREATOR\'S NOTES ---\n(No notes were taken during this conversation)\n--- END OF NOTES ---'
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -211,12 +240,12 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+        max_tokens: 5000,
         system: EVALUATION_SYSTEM_PROMPT,
         messages: [
           {
             role: 'user',
-            content: `Please evaluate the following conversation between a Creator and a Subscriber:\n\n${conversationText}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`,
+            content: `Please evaluate the following conversation between a Creator and a Subscriber:\n\n${conversationText}${notesSection}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`,
           },
         ],
         temperature: 0.3,
