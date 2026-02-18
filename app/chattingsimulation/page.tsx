@@ -236,7 +236,7 @@ export default function ChattingSimulationPage() {
     setWaitingForIdle(true)
     replyTimeoutRef.current = setTimeout(() => {
       fetchAIReply()
-    }, 1000)
+    }, 2000)
   }, [resetReplyTimer, fetchAIReply])
 
   useEffect(() => {
@@ -604,8 +604,8 @@ export default function ChattingSimulationPage() {
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>2</div>
                   <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Chat Naturally</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Follow the conversation flow: get his name, learn about his job, validate his work, mirror his hobbies, and build a genuine connection.</p>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Chat Naturally — Send Quick, Short Messages</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>The AI subscriber will respond 2 seconds after you stop typing. Keep your messages short (one sentence each) and send them quickly one after another — just like real texting. Follow the flow: get his name, learn about his job, validate his work, and build a genuine connection.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -808,7 +808,7 @@ export default function ChattingSimulationPage() {
                   </button>
                 </div>
                 <p className="text-center text-xs mt-2" style={{ color: '#999' }}>
-                  one sentence per message &bull; use &quot;u&quot; not &quot;you&quot; &bull; lowercase everything &bull; react first then ask
+                  AI responds after 2s of no typing &bull; send short messages quickly &bull; use &quot;u&quot; not &quot;you&quot; &bull; lowercase everything
                 </p>
               </div>
             </div>
