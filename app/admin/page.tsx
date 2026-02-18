@@ -156,6 +156,23 @@ function AdminPanelContent() {
     })
   }
 
+  const deleteSimReport = async (id: number) => {
+    if (!confirm('Delete this simulation report? This cannot be undone.')) return
+    try {
+      const res = await fetch('/api/admin/simulation-reports', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      if (res.ok) {
+        setSimReports(prev => prev.filter(r => r.id !== id))
+        if (expandedReport === id) setExpandedReport(null)
+      }
+    } catch (error) {
+      console.error('Error deleting simulation report:', error)
+    }
+  }
+
   const CATEGORY_WEIGHTS: Record<string, number> = {
     'Giving Him What He Wants to Hear': 25,
     'Making the Subscriber Feel Special': 20,
@@ -509,7 +526,7 @@ function AdminPanelContent() {
                 <div className="card bg-green-50 border-2 border-green-200">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-900">
-                      {simReports.length > 0 ? (simReports.reduce((s, r) => s + (r.overallScore > 10 ? r.overallScore : calculateWeightedScore(r.categories)), 0) / simReports.length).toFixed(1) : '—'}
+                      {simReports.length > 0 ? (simReports.reduce((s, r) => s + calculateWeightedScore(r.categories), 0) / simReports.length).toFixed(1) : '—'}
                     </div>
                     <div className="text-sm text-green-700">Avg Score /100</div>
                   </div>
@@ -525,7 +542,7 @@ function AdminPanelContent() {
                 <div className="card bg-orange-50 border-2 border-orange-200">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-orange-900">
-                      {simReports.filter(r => (r.overallScore > 10 ? r.overallScore : calculateWeightedScore(r.categories)) >= 70).length}
+                      {simReports.filter(r => calculateWeightedScore(r.categories) >= 70).length}
                     </div>
                     <div className="text-sm text-orange-700">Score 70+</div>
                   </div>
@@ -577,7 +594,7 @@ function AdminPanelContent() {
                     )
                     .map((report, index) => {
                       const isExpanded = expandedReport === report.id
-                      const weightedScore = report.overallScore > 10 ? report.overallScore : calculateWeightedScore(report.categories)
+                      const weightedScore = calculateWeightedScore(report.categories)
 
                       return (
                         <motion.div
@@ -636,6 +653,13 @@ function AdminPanelContent() {
                                   {getScoreLabel(weightedScore)}
                                 </div>
                               </div>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteSimReport(report.id) }}
+                                className="p-2 rounded-lg hover:bg-red-50 transition-colors group flex-shrink-0"
+                                title="Delete report"
+                              >
+                                <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
+                              </button>
                               {isExpanded ? (
                                 <ChevronUp className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
                               ) : (

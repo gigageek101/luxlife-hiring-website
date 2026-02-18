@@ -4,6 +4,20 @@ import { sql } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+export async function DELETE(request: NextRequest) {
+  try {
+    const { id } = await request.json()
+    if (!id) {
+      return NextResponse.json({ error: 'Report ID is required' }, { status: 400 })
+    }
+    await sql`DELETE FROM simulation_reports WHERE id = ${id}`
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting simulation report:', error)
+    return NextResponse.json({ error: 'Failed to delete report' }, { status: 500 })
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Ensure new columns exist on already-created tables
