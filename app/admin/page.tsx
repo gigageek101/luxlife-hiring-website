@@ -156,19 +156,46 @@ function AdminPanelContent() {
     })
   }
 
-  const getScoreColor = (score: number): string => {
+  const CATEGORY_WEIGHTS: Record<string, number> = {
+    'Giving Him What He Wants to Hear': 25,
+    'Making the Subscriber Feel Special': 20,
+    'Caring About the Subscriber': 15,
+    'Asking the Right Questions': 15,
+    'American Accent & Texting Style': 10,
+    'Grammar & Natural Flow': 10,
+    'Note-Taking & Information Tracking': 5,
+  }
+
+  const calculateWeightedScore = (categories: SimCategory[]): number => {
+    let total = 0
+    for (const cat of categories) {
+      const weight = CATEGORY_WEIGHTS[cat.name] || 0
+      total += (cat.score / 10) * weight
+    }
+    return Math.round(total * 10) / 10
+  }
+
+  const getCategoryScoreColor = (score: number): string => {
     if (score >= 8) return '#10b981'
     if (score >= 6) return '#f59e0b'
     if (score >= 4) return '#f97316'
     return '#ef4444'
   }
 
+  const getScoreColor = (score: number): string => {
+    if (score >= 85) return '#10b981'
+    if (score >= 70) return '#f59e0b'
+    if (score >= 55) return '#f97316'
+    if (score >= 40) return '#ef4444'
+    return '#dc2626'
+  }
+
   const getScoreLabel = (score: number): string => {
-    if (score >= 9) return 'Excellent'
-    if (score >= 7) return 'Good'
-    if (score >= 5) return 'Average'
-    if (score >= 3) return 'Below Average'
-    return 'Needs Work'
+    if (score >= 85) return 'Elite'
+    if (score >= 70) return 'Strong'
+    if (score >= 55) return 'Developing'
+    if (score >= 40) return 'Below Average'
+    return 'Needs Immediate Coaching'
   }
 
   useEffect(() => {
@@ -482,9 +509,9 @@ function AdminPanelContent() {
                 <div className="card bg-green-50 border-2 border-green-200">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-900">
-                      {simReports.length > 0 ? (simReports.reduce((s, r) => s + r.overallScore, 0) / simReports.length).toFixed(1) : '—'}
+                      {simReports.length > 0 ? (simReports.reduce((s, r) => s + (r.overallScore > 10 ? r.overallScore : calculateWeightedScore(r.categories)), 0) / simReports.length).toFixed(1) : '—'}
                     </div>
-                    <div className="text-sm text-green-700">Avg Score</div>
+                    <div className="text-sm text-green-700">Avg Score /100</div>
                   </div>
                 </div>
                 <div className="card bg-purple-50 border-2 border-purple-200">
@@ -498,9 +525,9 @@ function AdminPanelContent() {
                 <div className="card bg-orange-50 border-2 border-orange-200">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-orange-900">
-                      {simReports.filter(r => r.overallScore >= 7).length}
+                      {simReports.filter(r => (r.overallScore > 10 ? r.overallScore : calculateWeightedScore(r.categories)) >= 70).length}
                     </div>
-                    <div className="text-sm text-orange-700">Score 7+</div>
+                    <div className="text-sm text-orange-700">Score 70+</div>
                   </div>
                 </div>
               </div>
@@ -550,6 +577,7 @@ function AdminPanelContent() {
                     )
                     .map((report, index) => {
                       const isExpanded = expandedReport === report.id
+                      const weightedScore = report.overallScore > 10 ? report.overallScore : calculateWeightedScore(report.categories)
 
                       return (
                         <motion.div
@@ -566,10 +594,10 @@ function AdminPanelContent() {
                           >
                             <div className="flex items-center gap-4">
                               <div
-                                className="w-14 h-14 rounded-xl flex items-center justify-center font-black text-xl flex-shrink-0"
-                                style={{ background: `${getScoreColor(report.overallScore)}15`, color: getScoreColor(report.overallScore) }}
+                                className="w-14 h-14 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
+                                style={{ background: `${getScoreColor(weightedScore)}15`, color: getScoreColor(weightedScore) }}
                               >
-                                {report.overallScore}
+                                {weightedScore}
                               </div>
                               <div>
                                 <h3 className="text-lg font-bold">{report.telegramUsername}</h3>
@@ -601,8 +629,11 @@ function AdminPanelContent() {
                             </div>
                             <div className="flex items-center gap-3 mt-3 md:mt-0">
                               <div className="text-right hidden md:block">
-                                <div className="text-2xl font-black" style={{ color: getScoreColor(report.overallScore) }}>
-                                  {report.overallScore}/10
+                                <div className="text-2xl font-black" style={{ color: getScoreColor(weightedScore) }}>
+                                  {weightedScore}/100
+                                </div>
+                                <div className="text-xs font-semibold" style={{ color: getScoreColor(weightedScore) }}>
+                                  {getScoreLabel(weightedScore)}
                                 </div>
                               </div>
                               {isExpanded ? (
@@ -616,19 +647,26 @@ function AdminPanelContent() {
                           {/* Expanded Report Content — mirrors /chattingsimulation results exactly */}
                           {isExpanded && (
                             <div className="mt-6 pt-6 border-t border-gray-200">
-                              {/* Overall Score Circle */}
+                              {/* Overall Weighted Score Circle */}
                               <div className="text-center mb-10">
                                 <div
-                                  className="inline-flex items-center justify-center w-32 h-32 rounded-full mb-6 relative"
-                                  style={{ background: `conic-gradient(${getScoreColor(report.overallScore)} ${report.overallScore * 10}%, #e5e7eb ${report.overallScore * 10}%)` }}
+                                  className="inline-flex items-center justify-center w-36 h-36 rounded-full mb-6 relative"
+                                  style={{ background: `conic-gradient(${getScoreColor(weightedScore)} ${weightedScore}%, #e5e7eb ${weightedScore}%)` }}
                                 >
-                                  <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center bg-white">
-                                    <span className="text-4xl font-black" style={{ color: getScoreColor(report.overallScore) }}>{report.overallScore}</span>
-                                    <span className="text-xs font-semibold text-gray-400">/10</span>
+                                  <div className="w-28 h-28 rounded-full flex flex-col items-center justify-center bg-white">
+                                    <span className="text-4xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}</span>
+                                    <span className="text-xs font-semibold text-gray-400">/100</span>
                                   </div>
                                 </div>
-                                <h2 className="text-3xl font-bold mb-2">Score: {report.overallScore}/10</h2>
-                                <p className="text-lg font-semibold" style={{ color: getScoreColor(report.overallScore) }}>{getScoreLabel(report.overallScore)}</p>
+                                <h2 className="text-3xl font-bold mb-2">Score: {weightedScore}/100</h2>
+                                <p className="text-lg font-semibold mb-4" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</p>
+                                <div className="inline-flex flex-wrap gap-3 justify-center text-xs font-medium">
+                                  <span className="px-2.5 py-1 rounded-full" style={{ background: '#10b98115', color: '#10b981' }}>85-100 Elite</span>
+                                  <span className="px-2.5 py-1 rounded-full" style={{ background: '#f59e0b15', color: '#f59e0b' }}>70-84 Strong</span>
+                                  <span className="px-2.5 py-1 rounded-full" style={{ background: '#f9731615', color: '#f97316' }}>55-69 Developing</span>
+                                  <span className="px-2.5 py-1 rounded-full" style={{ background: '#ef444415', color: '#ef4444' }}>40-54 Below Avg</span>
+                                  <span className="px-2.5 py-1 rounded-full" style={{ background: '#dc262615', color: '#dc2626' }}>0-39 Needs Coaching</span>
+                                </div>
                               </div>
 
                               {/* Copy/Paste Detection Banner */}
@@ -665,29 +703,73 @@ function AdminPanelContent() {
                                 </div>
                               )}
 
-                              {/* Category Scores Overview — same grid as user sees */}
+                              {/* Weighted Score Table */}
+                              <div className="rounded-2xl overflow-hidden mb-10" style={{ border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                                <table className="w-full text-sm">
+                                  <thead>
+                                    <tr style={{ background: '#f8fafc' }}>
+                                      <th className="text-left px-4 py-3 font-semibold text-gray-900">#</th>
+                                      <th className="text-left px-4 py-3 font-semibold text-gray-900">Category</th>
+                                      <th className="text-center px-4 py-3 font-semibold text-gray-900">Weight</th>
+                                      <th className="text-center px-4 py-3 font-semibold text-gray-900">Raw</th>
+                                      <th className="text-center px-4 py-3 font-semibold text-gray-900">Points</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {report.categories.map((cat, catIdx) => {
+                                      const tw = CATEGORY_WEIGHTS[cat.name] || 0
+                                      const te = Math.round(((cat.score / 10) * tw) * 10) / 10
+                                      return (
+                                        <tr key={catIdx} style={{ borderTop: '1px solid #e5e7eb' }}>
+                                          <td className="px-4 py-3 font-semibold text-gray-400">{catIdx + 1}</td>
+                                          <td className="px-4 py-3 font-medium text-gray-900">{cat.name}</td>
+                                          <td className="px-4 py-3 text-center text-gray-500">{tw} pts</td>
+                                          <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}/10</td>
+                                          <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{te}</td>
+                                        </tr>
+                                      )
+                                    })}
+                                    <tr style={{ borderTop: '2px solid #e5e7eb', background: '#f8fafc' }}>
+                                      <td colSpan={2} className="px-4 py-3 font-bold text-gray-900">TOTAL</td>
+                                      <td className="px-4 py-3 text-center font-bold text-gray-500">100 pts</td>
+                                      <td className="px-4 py-3 text-center"></td>
+                                      <td className="px-4 py-3 text-center font-black text-lg" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+
+                              {/* Category Scores Overview — weighted grid */}
                               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-                                {report.categories.map((cat, catIdx) => (
+                                {report.categories.map((cat, catIdx) => {
+                                  const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                                  const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                                  return (
                                   <div
                                     key={catIdx}
                                     className="rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:scale-[1.02]"
                                     style={{
                                       background: '#ffffff',
-                                      border: `2px solid ${expandedSimCategories.has(`${report.id}-${catIdx}`) ? getScoreColor(cat.score) : '#e5e7eb'}`,
-                                      boxShadow: expandedSimCategories.has(`${report.id}-${catIdx}`) ? `0 4px 20px ${getScoreColor(cat.score)}20` : '0 1px 3px rgba(0,0,0,0.06)',
+                                      border: `2px solid ${expandedSimCategories.has(`${report.id}-${catIdx}`) ? getCategoryScoreColor(cat.score) : '#e5e7eb'}`,
+                                      boxShadow: expandedSimCategories.has(`${report.id}-${catIdx}`) ? `0 4px 20px ${getCategoryScoreColor(cat.score)}20` : '0 1px 3px rgba(0,0,0,0.06)',
                                     }}
                                     onClick={(e) => { e.stopPropagation(); toggleSimCategory(report.id, catIdx) }}
                                   >
-                                    <div className="flex items-center justify-between mb-2">
-                                      <span className="text-3xl font-black" style={{ color: getScoreColor(cat.score) }}>{cat.score}</span>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-3xl font-black" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}</span>
                                       <span className="text-xs text-gray-400">/10</span>
                                     </div>
-                                    <p className="text-sm font-semibold leading-tight">{cat.name}</p>
-                                    <div className="mt-2 w-full rounded-full h-1.5" style={{ background: '#e5e7eb' }}>
-                                      <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${cat.score * 10}%`, background: getScoreColor(cat.score) }} />
+                                    <p className="text-sm font-semibold leading-tight mb-1">{cat.name}</p>
+                                    <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                                      <span>{earned}/{weight} pts</span>
+                                      <span className="font-semibold" style={{ color: getCategoryScoreColor(cat.score) }}>&times;{weight}</span>
+                                    </div>
+                                    <div className="w-full rounded-full h-1.5" style={{ background: '#e5e7eb' }}>
+                                      <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${cat.score * 10}%`, background: getCategoryScoreColor(cat.score) }} />
                                     </div>
                                   </div>
-                                ))}
+                                  )
+                                })}
                               </div>
 
                               {/* Detailed Category Breakdowns — accordion like user sees */}
@@ -696,6 +778,8 @@ function AdminPanelContent() {
                                 {report.categories.map((cat, catIdx) => {
                                   const catKey = `${report.id}-${catIdx}`
                                   const isCatExpanded = expandedSimCategories.has(catKey)
+                                  const catWeight = CATEGORY_WEIGHTS[cat.name] || 0
+                                  const catEarned = Math.round(((cat.score / 10) * catWeight) * 10) / 10
 
                                   return (
                                     <div
@@ -709,12 +793,12 @@ function AdminPanelContent() {
                                         style={{ background: isCatExpanded ? '#f8fafc' : 'transparent' }}
                                       >
                                         <div className="flex items-center gap-4">
-                                          <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getScoreColor(cat.score)}15`, color: getScoreColor(cat.score) }}>
+                                          <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getCategoryScoreColor(cat.score)}15`, color: getCategoryScoreColor(cat.score) }}>
                                             {cat.score}
                                           </div>
                                           <div>
                                             <p className="font-semibold">{cat.name}</p>
-                                            <p className="text-sm" style={{ color: getScoreColor(cat.score) }}>{getScoreLabel(cat.score)}</p>
+                                            <p className="text-sm" style={{ color: getCategoryScoreColor(cat.score) }}>{catEarned}/{catWeight} pts (weight &times;{catWeight})</p>
                                           </div>
                                         </div>
                                         {isCatExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}

@@ -60,19 +60,46 @@ const SUBSCRIBER_PROFILES = [
   "Name: Travis, Age: 50, Job: Farmer/Rancher, Location: Oklahoma, Hobbies: Hunting and horseback riding, Has 3 kids, Owns 200 acres, Height: 5'9\"",
 ]
 
-function getScoreColor(score: number): string {
+const CATEGORY_WEIGHTS: Record<string, number> = {
+  'Giving Him What He Wants to Hear': 25,
+  'Making the Subscriber Feel Special': 20,
+  'Caring About the Subscriber': 15,
+  'Asking the Right Questions': 15,
+  'American Accent & Texting Style': 10,
+  'Grammar & Natural Flow': 10,
+  'Note-Taking & Information Tracking': 5,
+}
+
+function calculateWeightedScore(categories: CategoryResult[]): number {
+  let total = 0
+  for (const cat of categories) {
+    const weight = CATEGORY_WEIGHTS[cat.name] || 0
+    total += (cat.score / 10) * weight
+  }
+  return Math.round(total * 10) / 10
+}
+
+function getCategoryScoreColor(score: number): string {
   if (score >= 8) return '#10b981'
   if (score >= 6) return '#f59e0b'
   if (score >= 4) return '#f97316'
   return '#ef4444'
 }
 
+function getScoreColor(score: number): string {
+  if (score >= 85) return '#10b981'
+  if (score >= 70) return '#f59e0b'
+  if (score >= 55) return '#f97316'
+  if (score >= 40) return '#ef4444'
+  return '#dc2626'
+}
+
 function getScoreLabel(score: number): string {
-  if (score >= 9) return 'Excellent'
-  if (score >= 7) return 'Good'
-  if (score >= 5) return 'Average'
-  if (score >= 3) return 'Below Average'
-  return 'Needs Work'
+  if (score >= 85) return 'Elite'
+  if (score >= 70) return 'Strong'
+  if (score >= 55) return 'Developing'
+  if (score >= 40) return 'Below Average'
+  return 'Needs Immediate Coaching'
 }
 
 export default function ChattingSimulationPage() {
@@ -386,6 +413,7 @@ export default function ChattingSimulationPage() {
       setPhase('results')
 
       if (simUser && data.evaluation) {
+        const weighted = calculateWeightedScore(data.evaluation.categories || [])
         try {
           await fetch('/api/simulation/save-report', {
             method: 'POST',
@@ -393,7 +421,7 @@ export default function ChattingSimulationPage() {
             body: JSON.stringify({
               telegramUsername: simUser.telegramUsername,
               email: simUser.email,
-              overallScore: data.evaluation.overallScore,
+              overallScore: weighted,
               categories: data.evaluation.categories,
               overallFeedback: data.evaluation.overallFeedback,
               notes,
@@ -901,33 +929,81 @@ export default function ChattingSimulationPage() {
         )}
 
         {/* RESULTS PHASE */}
-        {phase === 'results' && evaluation && (
+        {phase === 'results' && evaluation && (() => {
+          const weightedScore = calculateWeightedScore(evaluation.categories)
+          return (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Overall Score Card */}
+            {/* Overall Weighted Score */}
             <div className="text-center mb-10">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
-                className="inline-flex items-center justify-center w-32 h-32 rounded-full mb-6 relative"
-                style={{ background: `conic-gradient(${getScoreColor(evaluation.overallScore)} ${evaluation.overallScore * 10}%, #e5e7eb ${evaluation.overallScore * 10}%)` }}
+                className="inline-flex items-center justify-center w-36 h-36 rounded-full mb-6 relative"
+                style={{ background: `conic-gradient(${getScoreColor(weightedScore)} ${weightedScore}%, #e5e7eb ${weightedScore}%)` }}
               >
-                <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
-                  <span className="text-4xl font-black" style={{ color: getScoreColor(evaluation.overallScore) }}>{evaluation.overallScore}</span>
-                  <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>/10</span>
+                <div className="w-28 h-28 rounded-full flex flex-col items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+                  <span className="text-4xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>/100</span>
                 </div>
               </motion.div>
-              <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Your Score: {evaluation.overallScore}/10</h2>
-              <p className="text-lg" style={{ color: getScoreColor(evaluation.overallScore) }}>{getScoreLabel(evaluation.overallScore)}</p>
+              <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Your Score: {weightedScore}/100</h2>
+              <p className="text-lg font-semibold mb-4" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</p>
+              <div className="inline-flex flex-wrap gap-3 justify-center text-xs font-medium">
+                <span className="px-2.5 py-1 rounded-full" style={{ background: '#10b98115', color: '#10b981' }}>85-100 Elite</span>
+                <span className="px-2.5 py-1 rounded-full" style={{ background: '#f59e0b15', color: '#f59e0b' }}>70-84 Strong</span>
+                <span className="px-2.5 py-1 rounded-full" style={{ background: '#f9731615', color: '#f97316' }}>55-69 Developing</span>
+                <span className="px-2.5 py-1 rounded-full" style={{ background: '#ef444415', color: '#ef4444' }}>40-54 Below Avg</span>
+                <span className="px-2.5 py-1 rounded-full" style={{ background: '#dc262615', color: '#dc2626' }}>0-39 Needs Coaching</span>
+              </div>
             </div>
 
-            {/* Category Scores Overview */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-              {evaluation.categories.map((cat, idx) => (
+            {/* Weighted Score Table */}
+            <div className="rounded-2xl overflow-hidden mb-10" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ background: 'var(--bg-secondary)' }}>
+                    <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>#</th>
+                    <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Category</th>
+                    <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Weight</th>
+                    <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Raw</th>
+                    <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {evaluation.categories.map((cat, idx) => {
+                    const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                    const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                    return (
+                      <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
+                        <td className="px-4 py-3 font-semibold" style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                        <td className="px-4 py-3 font-medium" style={{ color: 'var(--text-primary)' }}>{cat.name}</td>
+                        <td className="px-4 py-3 text-center" style={{ color: 'var(--text-muted)' }}>{weight} pts</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}/10</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{earned}</td>
+                      </tr>
+                    )
+                  })}
+                  <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                    <td colSpan={2} className="px-4 py-3 font-bold" style={{ color: 'var(--text-primary)' }}>TOTAL</td>
+                    <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text-muted)' }}>100 pts</td>
+                    <td className="px-4 py-3 text-center"></td>
+                    <td className="px-4 py-3 text-center font-black text-lg" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Category Scores with Weights */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+              {evaluation.categories.map((cat, idx) => {
+                const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                return (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
@@ -936,27 +1012,35 @@ export default function ChattingSimulationPage() {
                   className="rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:scale-[1.02]"
                   style={{
                     background: 'var(--bg-primary)',
-                    border: `2px solid ${expandedCategories.has(idx) ? getScoreColor(cat.score) : 'var(--border)'}`,
-                    boxShadow: expandedCategories.has(idx) ? `0 4px 20px ${getScoreColor(cat.score)}20` : 'var(--shadow-sm)',
+                    border: `2px solid ${expandedCategories.has(idx) ? getCategoryScoreColor(cat.score) : 'var(--border)'}`,
+                    boxShadow: expandedCategories.has(idx) ? `0 4px 20px ${getCategoryScoreColor(cat.score)}20` : 'var(--shadow-sm)',
                   }}
                   onClick={() => toggleCategory(idx)}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-3xl font-black" style={{ color: getScoreColor(cat.score) }}>{cat.score}</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-3xl font-black" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}</span>
                     <span className="text-xs" style={{ color: 'var(--text-muted)' }}>/10</span>
                   </div>
-                  <p className="text-sm font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
-                  <div className="mt-2 w-full rounded-full h-1.5" style={{ background: '#e5e7eb' }}>
-                    <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${cat.score * 10}%`, background: getScoreColor(cat.score) }} />
+                  <p className="text-sm font-semibold leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
+                  <div className="flex items-center justify-between text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+                    <span>{earned}/{weight} pts</span>
+                    <span className="font-semibold" style={{ color: getCategoryScoreColor(cat.score) }}>×{weight}</span>
+                  </div>
+                  <div className="w-full rounded-full h-1.5" style={{ background: '#e5e7eb' }}>
+                    <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${cat.score * 10}%`, background: getCategoryScoreColor(cat.score) }} />
                   </div>
                 </motion.div>
-              ))}
+                )
+              })}
             </div>
 
             {/* Detailed Category Breakdowns */}
             <div className="space-y-4 mb-10">
               <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Detailed Breakdown</h3>
-              {evaluation.categories.map((cat, idx) => (
+              {evaluation.categories.map((cat, idx) => {
+                const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                return (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0 }}
@@ -971,12 +1055,12 @@ export default function ChattingSimulationPage() {
                     style={{ background: expandedCategories.has(idx) ? 'var(--bg-secondary)' : 'transparent' }}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getScoreColor(cat.score)}15`, color: getScoreColor(cat.score) }}>
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getCategoryScoreColor(cat.score)}15`, color: getCategoryScoreColor(cat.score) }}>
                         {cat.score}
                       </div>
                       <div>
                         <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
-                        <p className="text-sm" style={{ color: getScoreColor(cat.score) }}>{getScoreLabel(cat.score)}</p>
+                        <p className="text-sm" style={{ color: getCategoryScoreColor(cat.score) }}>{earned}/{weight} pts (weight ×{weight})</p>
                       </div>
                     </div>
                     {expandedCategories.has(idx) ? <ChevronUp className="w-5 h-5" style={{ color: 'var(--text-muted)' }} /> : <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />}
@@ -1015,7 +1099,8 @@ export default function ChattingSimulationPage() {
                     )}
                   </AnimatePresence>
                 </motion.div>
-              ))}
+                )
+              })}
             </div>
 
             {/* Overall Feedback */}
@@ -1142,7 +1227,8 @@ export default function ChattingSimulationPage() {
               </button>
             </div>
           </motion.div>
-        )}
+          )
+        })()}
       </div>
     </div>
   )

@@ -56,61 +56,9 @@ HOBBY RESPONSES (what good responses look like):
 - Hunting: "a man who hunts is literally my type honestly"
 - Cars: "ok so u r literally the definition of a handyman, i find that so attractive honestly"
 
-RATING CRITERIA:
+RATING CRITERIA (ordered by importance — weight shown):
 
-1. AMERICAN ACCENT & TEXTING STYLE (1-10):
-   Does the person write like a casual American girl texting? Look for:
-   - "u" instead of "you", "ur" instead of "your"
-   - Stretched words: soooo, heyyy, omgggg, noooo
-   - Lowercase everything
-   - Short punchy messages (not walls of text)
-   - Natural contractions and slang
-   - Emojis used sparingly and naturally
-   10 = Perfectly mimics casual American girl texting
-   1 = Formal, robotic, or clearly non-native texting style
-
-2. GRAMMAR & NATURAL FLOW (1-10):
-   Is the English natural and fluid? Look for:
-   - Natural sentence construction
-   - Proper use of casual grammar (intentional informality vs actual mistakes)
-   - Flow of conversation feels real, not scripted
-   - No awkward phrasing that breaks immersion
-   10 = Reads like a native English speaker texting casually
-   1 = Full of errors that break immersion, clearly non-native
-
-3. CARING ABOUT THE SUBSCRIBER (1-10):
-   Does the creator show genuine interest in the subscriber as a person? Look for:
-   - Asking about his life, work, hobbies
-   - Remembering and referencing details he shared
-   - Emotional reactions to what he says (not just moving to next question)
-   - Making him feel heard and valued
-   - Using his name throughout the conversation
-   10 = Subscriber clearly feels deeply cared about and valued
-   1 = Creator seems disinterested or just going through motions
-
-4. ASKING THE RIGHT QUESTIONS (1-10):
-   Does the creator follow the proper conversation flow? Look for:
-   - Getting his name first
-   - Age → Location → Job progression
-   - Asking about hobbies/free time after work talk
-   - One question at a time (not stacking)
-   - Questions that invite him to share more
-   - Following the natural flow: Name → Age → Location → Job → Hobbies → Physical → Domestic
-   10 = Perfect conversation flow, asks all the right questions in the right order
-   1 = Random, disorganized questions that don't follow any strategy
-
-5. MAKING THE SUBSCRIBER FEEL SPECIAL (1-10):
-   Does the creator make him feel unique and desired? Look for:
-   - Job validation that frames his work as masculine/attractive
-   - Physical validation (height, strength, rough hands)
-   - Expressing personal preference for HIS type of man
-   - "I love a man who..." statements specific to his life
-   - Making him feel like he's not "just average"
-   - The specificity principle: not generic compliments but tied to HIS details
-   10 = Subscriber feels like the most desired man on the platform
-   1 = Generic responses that could apply to anyone
-
-6. GIVING HIM WHAT HE WANTS TO HEAR (1-10):
+1. GIVING HIM WHAT HE WANTS TO HEAR — 25 pts weight (1-10):
    Does the creator address his hidden insecurities and desires? Look for:
    - Validating his job when society tells him it's "just labor"
    - Making him feel tall/strong even if average
@@ -121,7 +69,59 @@ RATING CRITERIA:
    10 = Perfectly addresses his unspoken needs and insecurities
    1 = Misses all opportunities to validate and reassure
 
-7. NOTE-TAKING & INFORMATION TRACKING (1-10):
+2. MAKING THE SUBSCRIBER FEEL SPECIAL — 20 pts weight (1-10):
+   Does the creator make him feel unique and desired? Look for:
+   - Job validation that frames his work as masculine/attractive
+   - Physical validation (height, strength, rough hands)
+   - Expressing personal preference for HIS type of man
+   - "I love a man who..." statements specific to his life
+   - Making him feel like he's not "just average"
+   - The specificity principle: not generic compliments but tied to HIS details
+   10 = Subscriber feels like the most desired man on the platform
+   1 = Generic responses that could apply to anyone
+
+3. CARING ABOUT THE SUBSCRIBER — 15 pts weight (1-10):
+   Does the creator show genuine interest in the subscriber as a person? Look for:
+   - Asking about his life, work, hobbies
+   - Remembering and referencing details he shared
+   - Emotional reactions to what he says (not just moving to next question)
+   - Making him feel heard and valued
+   - Using his name throughout the conversation
+   10 = Subscriber clearly feels deeply cared about and valued
+   1 = Creator seems disinterested or just going through motions
+
+4. ASKING THE RIGHT QUESTIONS — 15 pts weight (1-10):
+   Does the creator follow the proper conversation flow? Look for:
+   - Getting his name first
+   - Age → Location → Job progression
+   - Asking about hobbies/free time after work talk
+   - One question at a time (not stacking)
+   - Questions that invite him to share more
+   - Following the natural flow: Name → Age → Location → Job → Hobbies → Physical → Domestic
+   10 = Perfect conversation flow, asks all the right questions in the right order
+   1 = Random, disorganized questions that don't follow any strategy
+
+5. AMERICAN ACCENT & TEXTING STYLE — 10 pts weight (1-10):
+   Does the person write like a casual American girl texting? Look for:
+   - "u" instead of "you", "ur" instead of "your"
+   - Stretched words: soooo, heyyy, omgggg, noooo
+   - Lowercase everything
+   - Short punchy messages (not walls of text)
+   - Natural contractions and slang
+   - Emojis used sparingly and naturally
+   10 = Perfectly mimics casual American girl texting
+   1 = Formal, robotic, or clearly non-native texting style
+
+6. GRAMMAR & NATURAL FLOW — 10 pts weight (1-10):
+   Is the English natural and fluid? Look for:
+   - Natural sentence construction
+   - Proper use of casual grammar (intentional informality vs actual mistakes)
+   - Flow of conversation feels real, not scripted
+   - No awkward phrasing that breaks immersion
+   10 = Reads like a native English speaker texting casually
+   1 = Full of errors that break immersion, clearly non-native
+
+7. NOTE-TAKING & INFORMATION TRACKING — 5 pts weight (1-10):
    Did the creator take proper notes during the conversation? The creator's notes will be provided separately. Look for:
    - Did they write down his NAME?
    - Did they note his AGE?
@@ -137,12 +137,12 @@ RATING CRITERIA:
    1 = No notes taken or barely anything written down
 
 RESPONSE FORMAT:
-You MUST respond with valid JSON in this exact structure (no markdown, no code fences, just raw JSON):
+You MUST respond with valid JSON in this exact structure (no markdown, no code fences, just raw JSON).
+IMPORTANT: The categories array MUST be in this EXACT order (by weight, highest first):
 {
-  "overallScore": <number 1-10>,
   "categories": [
     {
-      "name": "American Accent & Texting Style",
+      "name": "Giving Him What He Wants to Hear",
       "score": <number 1-10>,
       "feedback": "<2-3 sentences explaining the rating>",
       "examples": {
@@ -152,7 +152,7 @@ You MUST respond with valid JSON in this exact structure (no markdown, no code f
       "advice": "<1-2 paragraphs of specific, actionable advice with example messages they should practice>"
     },
     {
-      "name": "Grammar & Natural Flow",
+      "name": "Making the Subscriber Feel Special",
       "score": <number 1-10>,
       "feedback": "<2-3 sentences>",
       "examples": { "good": [], "needsWork": [] },
@@ -173,14 +173,14 @@ You MUST respond with valid JSON in this exact structure (no markdown, no code f
       "advice": "<specific advice with examples>"
     },
     {
-      "name": "Making the Subscriber Feel Special",
+      "name": "American Accent & Texting Style",
       "score": <number 1-10>,
       "feedback": "<2-3 sentences>",
       "examples": { "good": [], "needsWork": [] },
       "advice": "<specific advice with examples>"
     },
     {
-      "name": "Giving Him What He Wants to Hear",
+      "name": "Grammar & Natural Flow",
       "score": <number 1-10>,
       "feedback": "<2-3 sentences>",
       "examples": { "good": [], "needsWork": [] },
