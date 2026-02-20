@@ -1122,7 +1122,7 @@ function AdminPanelContent() {
                               {/* Full Conversation */}
                               <div className="rounded-2xl p-6 mb-4" style={{ background: '#f8fafc', border: '1px solid #e5e7eb' }}>
                                 <h3 className="text-lg font-bold mb-4">Full Conversation</h3>
-                                <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+                                <div className={`space-y-2 pr-2 ${exportingReportId === report.id ? '' : 'max-h-96 overflow-y-auto'}`}>
                                   {report.conversation.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
                                       <div

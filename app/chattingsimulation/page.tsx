@@ -48,6 +48,7 @@ const DURATION_OPTIONS = [
   { label: 'Standard', minutes: 3, description: 'Full conversation flow', icon: '3' },
   { label: 'Extended', minutes: 5, description: 'Deep relationship building', icon: '5' },
   { label: 'Marathon', minutes: 10, description: 'Full session practice', icon: '10' },
+  { label: 'Pro', minutes: 15, description: 'Advanced long session', icon: '15' },
 ] as const
 
 const SUBSCRIBER_PROFILES = [
@@ -424,7 +425,7 @@ export default function ChattingSimulationPage() {
             body: JSON.stringify({
               telegramUsername: simUser.telegramUsername,
               email: simUser.email,
-              overallScore: weighted,
+              overallScore: Math.round(weighted),
               categories: data.evaluation.categories,
               overallFeedback: data.evaluation.overallFeedback,
               notes,
@@ -728,7 +729,7 @@ export default function ChattingSimulationPage() {
                 <Clock className="w-5 h-5 inline-block mr-2 mb-0.5" />
                 Choose Duration
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {DURATION_OPTIONS.map((opt) => (
                   <button
                     key={opt.minutes}
@@ -1271,7 +1272,7 @@ export default function ChattingSimulationPage() {
             {/* Conversation Review */}
             <div className="rounded-2xl p-6 mb-8" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Your Conversation</h3>
-              <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+              <div className={`space-y-2 pr-2 ${exportingPdf ? '' : 'max-h-96 overflow-y-auto'}`}>
                 {messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
                     <div

@@ -48,24 +48,56 @@ export async function GET(request: NextRequest) {
     `
 
     const processed = reports.map((r: any) => {
-      let feedback = r.overall_feedback
-      if (typeof feedback === 'string') {
-        try { feedback = JSON.parse(feedback) } catch { /* keep as string */ }
-      }
-      return {
-        id: r.id,
-        telegramUsername: r.telegram_username,
-        email: r.email,
-        overallScore: r.overall_score,
-        categories: typeof r.categories === 'string' ? JSON.parse(r.categories) : r.categories,
-        overallFeedback: feedback,
-        notes: r.notes,
-        conversation: typeof r.conversation === 'string' ? JSON.parse(r.conversation) : r.conversation,
-        durationMode: r.duration_mode,
-        messageCount: r.message_count,
-        typedCount: r.typed_count || 0,
-        pasteCount: r.paste_count || 0,
-        completedAt: r.completed_at,
+      try {
+        let feedback = r.overall_feedback
+        if (typeof feedback === 'string') {
+          try { feedback = JSON.parse(feedback) } catch { /* keep as string */ }
+        }
+
+        let cats = r.categories
+        if (typeof cats === 'string') {
+          try { cats = JSON.parse(cats) } catch { cats = [] }
+        }
+        if (!Array.isArray(cats)) cats = []
+
+        let convo = r.conversation
+        if (typeof convo === 'string') {
+          try { convo = JSON.parse(convo) } catch { convo = [] }
+        }
+        if (!Array.isArray(convo)) convo = []
+
+        return {
+          id: r.id,
+          telegramUsername: r.telegram_username,
+          email: r.email,
+          overallScore: r.overall_score,
+          categories: cats,
+          overallFeedback: feedback,
+          notes: r.notes,
+          conversation: convo,
+          durationMode: r.duration_mode,
+          messageCount: r.message_count,
+          typedCount: r.typed_count || 0,
+          pasteCount: r.paste_count || 0,
+          completedAt: r.completed_at,
+        }
+      } catch (err) {
+        console.error('Error processing report row:', r.id, err)
+        return {
+          id: r.id,
+          telegramUsername: r.telegram_username || 'unknown',
+          email: r.email || '',
+          overallScore: r.overall_score || 0,
+          categories: [],
+          overallFeedback: '',
+          notes: '',
+          conversation: [],
+          durationMode: r.duration_mode || 'unknown',
+          messageCount: r.message_count || 0,
+          typedCount: r.typed_count || 0,
+          pasteCount: r.paste_count || 0,
+          completedAt: r.completed_at,
+        }
       }
     })
 

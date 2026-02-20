@@ -41,6 +41,9 @@ export async function POST(request: NextRequest) {
       ? JSON.stringify(overallFeedback)
       : (overallFeedback || '')
 
+    const safeScore = Math.round(Number(overallScore) || 0)
+    const safeCats = Array.isArray(categories) ? categories : []
+
     await sql`
       INSERT INTO simulation_reports (
         telegram_username,
@@ -57,8 +60,8 @@ export async function POST(request: NextRequest) {
       ) VALUES (
         ${telegramUsername},
         ${email},
-        ${overallScore || 0},
-        ${JSON.stringify(categories || {})},
+        ${safeScore},
+        ${JSON.stringify(safeCats)},
         ${feedbackStr},
         ${notes || ''},
         ${JSON.stringify(conversation || [])},
