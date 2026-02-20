@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
             percentage,
             passed,
             attempt_number,
+            answers,
             completed_at
           FROM assessment_results
           WHERE telegram_username = ${user.telegram_username}
@@ -58,7 +59,11 @@ export async function GET(request: NextRequest) {
         user.assessments.forEach((assessment: any) => {
           const dayKey = `day${assessment.day}` as keyof typeof assessmentsByDay
           if (assessmentsByDay[dayKey]) {
-            assessmentsByDay[dayKey].push(assessment)
+            let parsedAnswers = assessment.answers
+            if (typeof parsedAnswers === 'string') {
+              try { parsedAnswers = JSON.parse(parsedAnswers) } catch { /* keep as-is */ }
+            }
+            assessmentsByDay[dayKey].push({ ...assessment, answers: parsedAnswers || [] })
           }
         })
       }

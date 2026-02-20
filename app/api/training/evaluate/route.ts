@@ -213,7 +213,14 @@ export async function POST(request: NextRequest) {
       `
       const attemptNumber = (previousAttempts[0]?.max_attempt || 0) + 1
 
-      // Save to database
+      const fullAnswers = answers.map((a: Answer, i: number) => ({
+        question: a.question,
+        correctAnswer: a.correctAnswer,
+        userAnswer: a.userAnswer,
+        isCorrect: evaluations[i].isCorrect,
+        feedback: evaluations[i].feedback,
+      }))
+
       await sql`
         INSERT INTO assessment_results (
           telegram_username,
@@ -234,7 +241,7 @@ export async function POST(request: NextRequest) {
           ${(submission.score / submission.total) * 100},
           ${passed},
           ${attemptNumber},
-          ${JSON.stringify(evaluations)}
+          ${JSON.stringify(fullAnswers)}
         )
       `
 

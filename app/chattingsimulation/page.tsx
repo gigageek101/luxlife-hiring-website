@@ -47,6 +47,7 @@ const DURATION_OPTIONS = [
   { label: 'Quick', minutes: 1, description: 'Fast opener practice', icon: '1' },
   { label: 'Standard', minutes: 3, description: 'Full conversation flow', icon: '3' },
   { label: 'Extended', minutes: 5, description: 'Deep relationship building', icon: '5' },
+  { label: 'Marathon', minutes: 10, description: 'Full session practice', icon: '10' },
 ] as const
 
 const SUBSCRIBER_PROFILES = [
@@ -727,7 +728,7 @@ export default function ChattingSimulationPage() {
                 <Clock className="w-5 h-5 inline-block mr-2 mb-0.5" />
                 Choose Duration
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {DURATION_OPTIONS.map((opt) => (
                   <button
                     key={opt.minutes}

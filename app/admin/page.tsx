@@ -1,11 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2 } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
+
+interface AssessmentAnswer {
+  question: string
+  correctAnswer: string
+  userAnswer: string
+  isCorrect: boolean
+  feedback: string
+}
 
 interface Assessment {
   day: number
@@ -14,6 +22,7 @@ interface Assessment {
   percentage: number
   passed: boolean
   attempt_number: number
+  answers: AssessmentAnswer[]
   completed_at: string
 }
 
@@ -74,6 +83,70 @@ function AdminPanelContent() {
   const [simSearch, setSimSearch] = useState('')
   const [expandedReport, setExpandedReport] = useState<number | null>(null)
   const [expandedSimCategories, setExpandedSimCategories] = useState<Set<string>>(new Set())
+  const [exportingReportId, setExportingReportId] = useState<number | null>(null)
+  const [expandedUserAssessment, setExpandedUserAssessment] = useState<string | null>(null)
+  const reportContentRefs = useRef<Record<number, HTMLDivElement | null>>({})
+
+  const exportSimReportAsPdf = useCallback(async (report: SimReport) => {
+    setExportingReportId(report.id)
+
+    const wasExpanded = expandedReport === report.id
+    if (!wasExpanded) setExpandedReport(report.id)
+
+    const prevCategories = new Set(expandedSimCategories)
+    const allCatKeys = new Set(report.categories.map((_, i) => `${report.id}-${i}`))
+    setExpandedSimCategories(prev => {
+      const next = new Set(prev)
+      allCatKeys.forEach(k => next.add(k))
+      return next
+    })
+
+    await new Promise(r => setTimeout(r, 800))
+
+    try {
+      const el = reportContentRefs.current[report.id]
+      if (!el) throw new Error('Report element not found')
+
+      const html2canvas = (await import('html2canvas')).default
+      const { jsPDF } = await import('jspdf')
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        scrollY: -window.scrollY,
+        windowWidth: el.scrollWidth,
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const imgWidth = 210
+      const pageHeight = 297
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      const pdf = new jsPDF('p', 'mm', 'a4')
+
+      let heightLeft = imgHeight
+      let position = 0
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+
+      while (heightLeft > 0) {
+        position -= pageHeight
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
+      }
+
+      const date = new Date(report.completedAt).toISOString().slice(0, 10)
+      pdf.save(`simulation-report_${report.telegramUsername}_${date}.pdf`)
+    } catch (err) {
+      console.error('PDF export failed:', err)
+    } finally {
+      setExpandedSimCategories(prevCategories)
+      if (!wasExpanded) setExpandedReport(null)
+      setExportingReportId(null)
+    }
+  }, [expandedReport, expandedSimCategories])
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
@@ -469,38 +542,96 @@ function AdminPanelContent() {
                     })}
                   </div>
 
-                  {/* All Attempts */}
+                  {/* All Attempts & Detailed Answers */}
                   {(['day2', 'day3', 'day4', 'day5'] as const).some(
-                    dayKey => user.assessments[dayKey].length > 1
+                    dayKey => user.assessments[dayKey].length > 0
                   ) && (
-                    <details className="mt-4">
-                      <summary className="cursor-pointer text-sm font-medium text-orange-600 hover:text-orange-700">
-                        View All Attempts
-                      </summary>
-                      <div className="mt-3 space-y-2">
-                        {(['day2', 'day3', 'day4', 'day5'] as const).map((dayKey) => {
-                          const dayNum = dayKey.replace('day', '')
-                          const assessments = user.assessments[dayKey]
-                          
-                          if (assessments.length === 0) return null
+                    <div className="mt-4">
+                      <button
+                        onClick={() => setExpandedUserAssessment(expandedUserAssessment === `user-${user.id}` ? null : `user-${user.id}`)}
+                        className="cursor-pointer text-sm font-medium text-orange-600 hover:text-orange-700 flex items-center gap-1"
+                      >
+                        {expandedUserAssessment === `user-${user.id}` ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        View All Attempts & Answers
+                      </button>
 
-                          return (
-                            <div key={dayKey} className="text-sm">
-                              <strong>Day {dayNum}:</strong>
-                              <ul className="ml-4 mt-1 space-y-1">
-                                {assessments.map((attempt, idx) => (
-                                  <li key={idx} className="text-xs" style={{ color: 'var(--text-secondary-on-white)' }}>
-                                    Attempt #{attempt.attempt_number}: {attempt.score}/{attempt.total_questions} ({Math.round(attempt.percentage)}%) - 
-                                    {attempt.passed ? ' ✅ Passed' : ' ❌ Failed'} - 
-                                    {new Date(attempt.completed_at).toLocaleString()}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </details>
+                      {expandedUserAssessment === `user-${user.id}` && (
+                        <div className="mt-4 space-y-6">
+                          {(['day2', 'day3', 'day4', 'day5'] as const).map((dayKey) => {
+                            const dayNum = dayKey.replace('day', '')
+                            const assessments = user.assessments[dayKey]
+                            
+                            if (assessments.length === 0) return null
+
+                            return (
+                              <div key={dayKey} className="rounded-xl border border-gray-200 overflow-hidden">
+                                <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                                  <h4 className="font-bold text-sm">Day {dayNum} — {assessments.length} attempt{assessments.length !== 1 ? 's' : ''}</h4>
+                                </div>
+                                <div className="divide-y divide-gray-100">
+                                  {assessments.map((attempt, idx) => (
+                                    <div key={idx} className="p-4">
+                                      <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-3">
+                                          <span className={`text-xs font-bold px-2 py-1 rounded-full ${attempt.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                            {attempt.passed ? '✅ Passed' : '❌ Failed'}
+                                          </span>
+                                          <span className="text-sm font-semibold">
+                                            Attempt #{attempt.attempt_number}: {attempt.score}/{attempt.total_questions} ({Math.round(attempt.percentage)}%)
+                                          </span>
+                                        </div>
+                                        <span className="text-xs text-gray-400">
+                                          {new Date(attempt.completed_at).toLocaleString()}
+                                        </span>
+                                      </div>
+
+                                      {attempt.answers && attempt.answers.length > 0 ? (
+                                        <div className="space-y-3">
+                                          {attempt.answers.map((ans: AssessmentAnswer, ansIdx: number) => (
+                                            <div
+                                              key={ansIdx}
+                                              className="rounded-lg p-3 text-sm"
+                                              style={{
+                                                background: ans.isCorrect ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)',
+                                                border: `1px solid ${ans.isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                                              }}
+                                            >
+                                              <div className="flex items-start gap-2 mb-2">
+                                                <span className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white ${ans.isCorrect ? 'bg-green-500' : 'bg-red-500'}`}>
+                                                  {ans.isCorrect ? '✓' : '✗'}
+                                                </span>
+                                                <p className="font-semibold text-gray-900">{ans.question}</p>
+                                              </div>
+                                              <div className="ml-7 space-y-1.5">
+                                                <p className="text-xs">
+                                                  <span className="font-semibold text-gray-500">Their answer: </span>
+                                                  <span className={ans.isCorrect ? 'text-green-700' : 'text-red-700'}>{ans.userAnswer || '(no answer)'}</span>
+                                                </p>
+                                                {!ans.isCorrect && (
+                                                  <p className="text-xs">
+                                                    <span className="font-semibold text-gray-500">Correct answer: </span>
+                                                    <span className="text-green-700">{ans.correctAnswer}</span>
+                                                  </p>
+                                                )}
+                                                {ans.feedback && (
+                                                  <p className="text-xs text-gray-500 italic mt-1">{ans.feedback}</p>
+                                                )}
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <p className="text-xs text-gray-400 italic">No detailed answer data available for this attempt</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </motion.div>
               ))}
@@ -654,6 +785,18 @@ function AdminPanelContent() {
                                 </div>
                               </div>
                               <button
+                                onClick={(e) => { e.stopPropagation(); exportSimReportAsPdf(report) }}
+                                disabled={exportingReportId === report.id}
+                                className="p-2 rounded-lg hover:bg-blue-50 transition-colors group flex-shrink-0"
+                                title="Export as PDF"
+                              >
+                                {exportingReportId === report.id ? (
+                                  <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+                                ) : (
+                                  <Download className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                )}
+                              </button>
+                              <button
                                 onClick={(e) => { e.stopPropagation(); deleteSimReport(report.id) }}
                                 className="p-2 rounded-lg hover:bg-red-50 transition-colors group flex-shrink-0"
                                 title="Delete report"
@@ -670,7 +813,7 @@ function AdminPanelContent() {
 
                           {/* Expanded Report Content — mirrors /chattingsimulation results exactly */}
                           {isExpanded && (
-                            <div className="mt-6 pt-6 border-t border-gray-200">
+                            <div className="mt-6 pt-6 border-t border-gray-200" ref={(el) => { reportContentRefs.current[report.id] = el }}>
                               {/* Overall Weighted Score Circle */}
                               <div className="text-center mb-10">
                                 <div
@@ -962,6 +1105,19 @@ function AdminPanelContent() {
                                   <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: '#5a5530' }}>{report.notes}</p>
                                 </div>
                               )}
+
+                              {/* Export PDF Button */}
+                              <div className="flex justify-center mb-8">
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); exportSimReportAsPdf(report) }}
+                                  disabled={exportingReportId === report.id}
+                                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02]"
+                                  style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)' }}
+                                >
+                                  {exportingReportId === report.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                                  {exportingReportId === report.id ? 'Generating PDF...' : 'Export Report as PDF'}
+                                </button>
+                              </div>
 
                               {/* Full Conversation */}
                               <div className="rounded-2xl p-6 mb-4" style={{ background: '#f8fafc', border: '1px solid #e5e7eb' }}>
