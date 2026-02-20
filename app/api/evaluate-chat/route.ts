@@ -220,6 +220,59 @@ IMPORTANT: The categories array MUST be in this EXACT order (by weight, highest 
 
 IMPORTANT: Each bullet point in strengths/weaknesses/missedOpportunities/practiceScenarios must include REAL quotes from the actual conversation. Every weakness must include both the bad example AND a corrected version. Every missed opportunity must quote what the subscriber said and what the creator SHOULD have replied. Be very specific and detailed — no generic advice.`
 
+function extractJSON(text: string): object | null {
+  let cleaned = text.trim()
+
+  cleaned = cleaned.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
+
+  const firstBrace = cleaned.indexOf('{')
+  const lastBrace = cleaned.lastIndexOf('}')
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1)
+  }
+
+  try {
+    return JSON.parse(cleaned)
+  } catch {
+    // Try fixing common issues: trailing commas, unescaped newlines in strings
+    try {
+      const fixed = cleaned
+        .replace(/,\s*}/g, '}')
+        .replace(/,\s*]/g, ']')
+      return JSON.parse(fixed)
+    } catch {
+      return null
+    }
+  }
+}
+
+async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Response> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': CLAUDE_API_KEY!,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+
+    if (response.ok) return response
+
+    const status = response.status
+    if ((status === 429 || status === 529 || status >= 500) && attempt < maxRetries - 1) {
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
+      console.warn(`Claude API ${status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
+      await new Promise(r => setTimeout(r, delay))
+      continue
+    }
+
+    return response
+  }
+  throw new Error('Max retries exceeded')
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!CLAUDE_API_KEY) {
@@ -240,54 +293,58 @@ export async function POST(request: NextRequest) {
       ? `\n\n--- CREATOR'S NOTES (taken during the conversation) ---\n${notes.trim()}\n--- END OF NOTES ---`
       : '\n\n--- CREATOR\'S NOTES ---\n(No notes were taken during this conversation)\n--- END OF NOTES ---'
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 5000,
-        system: EVALUATION_SYSTEM_PROMPT,
-        messages: [
-          {
-            role: 'user',
-            content: `Please evaluate the following conversation between a Creator and a Subscriber:\n\n${conversationText}${notesSection}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`,
-          },
-        ],
-        temperature: 0.3,
-      }),
-    })
+    const userContent = `Please evaluate the following conversation between a Creator and a Subscriber:\n\n${conversationText}${notesSection}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Claude API error:', errorText)
-      return NextResponse.json(
-        { error: 'Failed to evaluate conversation' },
-        { status: 500 }
-      )
+    const requestBody = {
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8000,
+      system: EVALUATION_SYSTEM_PROMPT,
+      messages: [{ role: 'user' as const, content: userContent }],
+      temperature: 0.3,
     }
 
-    const data = await response.json()
-    const evaluationText = data.content?.[0]?.text || '{}'
+    // Try up to 2 full evaluation attempts (API call + parse)
+    for (let evalAttempt = 0; evalAttempt < 2; evalAttempt++) {
+      const response = await callClaudeWithRetry(requestBody)
 
-    try {
-      const cleaned = evaluationText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      const evaluation = JSON.parse(cleaned)
-      return NextResponse.json({ evaluation })
-    } catch {
-      console.error('Failed to parse evaluation JSON:', evaluationText)
-      return NextResponse.json(
-        { error: 'Failed to parse evaluation results' },
-        { status: 500 }
-      )
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Claude API error after retries:', errorText)
+        if (evalAttempt === 0) continue
+        return NextResponse.json(
+          { error: 'AI is temporarily busy. Please wait a moment and try ending the conversation again.' },
+          { status: 500 }
+        )
+      }
+
+      const data = await response.json()
+      const evaluationText = data.content?.[0]?.text || ''
+
+      if (!evaluationText.trim()) {
+        console.error('Empty evaluation response from Claude')
+        if (evalAttempt === 0) continue
+        return NextResponse.json(
+          { error: 'AI returned an empty response. Please try again.' },
+          { status: 500 }
+        )
+      }
+
+      const evaluation = extractJSON(evaluationText)
+      if (evaluation && typeof evaluation === 'object' && 'categories' in evaluation) {
+        return NextResponse.json({ evaluation })
+      }
+
+      console.error(`Parse attempt ${evalAttempt + 1} failed. Raw text:`, evaluationText.slice(0, 500))
     }
+
+    return NextResponse.json(
+      { error: 'Failed to evaluate conversation. Please try ending the conversation again.' },
+      { status: 500 }
+    )
   } catch (error) {
     console.error('Evaluate chat API error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'AI is temporarily unavailable. Please try again in a few seconds.' },
       { status: 500 }
     )
   }
