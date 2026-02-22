@@ -58,12 +58,12 @@ PURCHASE SIGNALING:
 - If you BUY: React to the content. Include [BUY] at the very end.
 - If you DON'T buy: Give a short objection. Include [PASS] at the very end.
 
-PPV PURCHASE PATTERN:
-- 1st PPV: BUY if voice memo + some buildup
-- 2nd PPV: BUY if tension building + mirroring happened
-- 3rd PPV: PRICE objection — "damn thats steep baby" — [PASS]
-- 4th PPV: If she handled objection well, BUY. Otherwise CONTENT objection [PASS].
-- If she follows up emotionally on passed content, consider buying then.
+PPV PURCHASE PATTERN (prices: $20, $40, $60, $80):
+- 1st PPV ($20): BUY if voice memo + some buildup
+- 2nd PPV ($40): PASS — "damn 40 is kinda steep baby" — give her a chance to follow up [PASS]
+- 3rd PPV ($60): PRICE objection — "thats a lot baby" — [PASS]
+- 4th PPV ($80): If she handled objections well and followed up emotionally, BUY. Otherwise CONTENT objection [PASS].
+- If she follows up emotionally on passed content (sounds genuine, emotional, not pushy), consider buying then.
 
 FINISHING BEHAVIOR:
 - After purchasing 2-4 videos and enough sexting, climax
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     const claudeMessages = messages.length === 0
       ? [{ role: 'user' as const, content: `The creator has opened the chat. ${randomOpener}` }]
-      : messages.map((m: { role: string; content: string; contentType?: string; price?: number; vaultLabel?: string }) => {
+      : messages.map((m: { role: string; content: string; contentType?: string; price?: number; vaultLabel?: string; isFollowUp?: boolean; followUpPpvId?: string }) => {
           let messageContent = m.content
           if (m.contentType === 'voice_memo') {
             messageContent = `[CREATOR SENT A VOICE MEMO - sounds breathy and sexual, describing what she wants to do]`
@@ -138,6 +138,9 @@ export async function POST(request: NextRequest) {
             messageContent = `[CREATOR SENT A PPV VIDEO — Price: $${m.price}. This is a locked video the subscriber can choose to purchase.]`
           } else if (m.contentType === 'teaser') {
             messageContent = `[CREATOR SENT A FREE TEASING VIDEO CLIP — a short sexy teaser showing curves/lingerie, meant to build desire for more explicit content]`
+          }
+          if (m.isFollowUp) {
+            messageContent = `[CREATOR IS FOLLOWING UP ON AN UNPURCHASED PPV — trying to get you to reconsider buying it] ${messageContent}`
           }
           return {
             role: m.role === 'creator' ? 'user' as const : 'assistant' as const,

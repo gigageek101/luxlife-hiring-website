@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles,
   AlertCircle, Clock, Timer, X, LogIn, Loader2, Download, FileText,
-  ExternalLink, Mic, Play, Lock, Unlock, Package, Flame,
+  ExternalLink, Mic, Play, Lock, Unlock, Package, Flame, Reply,
 } from 'lucide-react'
 
 interface ChatMessage {
@@ -17,6 +17,8 @@ interface ChatMessage {
   vaultItemId?: string
   price?: number
   unlocked?: boolean
+  isFollowUp?: boolean
+  followUpPpvId?: string
 }
 
 interface VaultItem {
@@ -79,13 +81,13 @@ function createVaultItems(): VaultItem[] {
   return [
     { id: 'teaser-1', type: 'teaser', label: 'Teasing Video 1', description: 'Short teasing clip — lingerie, curves, suggestive but not explicit', sent: false, unlocked: false, followedUp: false },
     { id: 'vm-1', type: 'voice_memo', label: 'Voice Memo 1', description: 'Breathy voice describing anticipation, what she wants to do to him', sent: false, unlocked: false, followedUp: false },
-    { id: 'video-1', type: 'video', label: 'Video 1', price: 15, description: 'Lingerie strip tease — slow and sensual', sent: false, unlocked: false, followedUp: false },
+    { id: 'video-1', type: 'video', label: 'Video 1', price: 20, description: 'Lingerie strip tease — slow and sensual', sent: false, unlocked: false, followedUp: false },
     { id: 'vm-2', type: 'voice_memo', label: 'Voice Memo 2', description: 'Moaning, describing how turned on she is, touching herself thinking of him', sent: false, unlocked: false, followedUp: false },
-    { id: 'video-2', type: 'video', label: 'Video 2', price: 25, description: 'Solo play — more explicit, using fingers', sent: false, unlocked: false, followedUp: false },
+    { id: 'video-2', type: 'video', label: 'Video 2', price: 40, description: 'Solo play — more explicit, using fingers', sent: false, unlocked: false, followedUp: false },
     { id: 'vm-3', type: 'voice_memo', label: 'Voice Memo 3', description: 'Intense moaning — wants him inside her, filling her up until it leaks', sent: false, unlocked: false, followedUp: false },
-    { id: 'video-3', type: 'video', label: 'Video 3', price: 35, description: 'Solo play with toy — very explicit', sent: false, unlocked: false, followedUp: false },
+    { id: 'video-3', type: 'video', label: 'Video 3', price: 60, description: 'Solo play with toy — very explicit', sent: false, unlocked: false, followedUp: false },
     { id: 'vm-4', type: 'voice_memo', label: 'Voice Memo 4', description: 'Begging for him, saying she is about to cum, intense', sent: false, unlocked: false, followedUp: false },
-    { id: 'video-4', type: 'video', label: 'Video 4', price: 45, description: 'Full explicit solo climax — premium content', sent: false, unlocked: false, followedUp: false },
+    { id: 'video-4', type: 'video', label: 'Video 4', price: 80, description: 'Full explicit solo climax — premium content', sent: false, unlocked: false, followedUp: false },
   ]
 }
 
@@ -158,6 +160,7 @@ export default function SextingSimulationPage() {
   const [vaultItems, setVaultItems] = useState<VaultItem[]>(createVaultItems())
   const [showVault, setShowVault] = useState(false)
   const [pendingPpvId, setPendingPpvId] = useState<string | null>(null)
+  const [replyingToPpv, setReplyingToPpv] = useState<string | null>(null)
 
   const lastInputWasPaste = useRef(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -246,6 +249,8 @@ export default function SextingSimulationPage() {
         contentType: m.contentType,
         price: m.price,
         vaultLabel: m.vaultItemId,
+        isFollowUp: m.isFollowUp,
+        followUpPpvId: m.followUpPpvId,
       }))
 
       const response = await fetch('/api/sexting-chat', {
@@ -307,7 +312,7 @@ export default function SextingSimulationPage() {
     setWaitingForIdle(true)
     replyTimeoutRef.current = setTimeout(() => {
       fetchAIReply()
-    }, 15000)
+    }, 10000)
   }, [resetReplyTimer, fetchAIReply])
 
   useEffect(() => {
@@ -405,7 +410,15 @@ export default function SextingSimulationPage() {
       content: inputValue.trim(),
       timestamp: new Date(),
       contentType: 'text',
+      isFollowUp: replyingToPpv !== null,
+      followUpPpvId: replyingToPpv || undefined,
     }
+
+    if (replyingToPpv) {
+      setVaultItems(prev => prev.map(v => v.id === replyingToPpv ? { ...v, followedUp: true } : v))
+      setReplyingToPpv(null)
+    }
+
     setMessages(prev => [...prev, userMessage])
     setMessageCount(prev => prev + 1)
     setInputValue('')
@@ -473,12 +486,18 @@ export default function SextingSimulationPage() {
         contentType: m.contentType,
         price: m.price,
         unlocked: m.unlocked,
+        isFollowUp: m.isFollowUp,
+        followUpPpvId: m.followUpPpvId,
       }))
+
+      const followUpData = vaultItems
+        .filter(v => v.type === 'video' && v.id !== 'video-1')
+        .map(v => ({ id: v.id, label: v.label, sent: v.sent, unlocked: v.unlocked, followedUp: v.followedUp }))
 
       const response = await fetch('/api/evaluate-sexting', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: allMessages }),
+        body: JSON.stringify({ messages: allMessages, followUpData }),
       })
 
       if (!response.ok) {
@@ -554,6 +573,7 @@ export default function SextingSimulationPage() {
     setShowVault(false)
     setSubscriberFinished(false)
     setPendingPpvId(null)
+    setReplyingToPpv(null)
     lastInputWasPaste.current = false
   }
 
@@ -628,7 +648,22 @@ export default function SextingSimulationPage() {
     </div>
   )
 
-  const renderVideoBubble = (msg: ChatMessage) => (
+  const isFirstPpv = (ppvId?: string) => ppvId === 'video-1'
+
+  const getVaultItem = (ppvId?: string) => vaultItems.find(v => v.id === ppvId)
+
+  const handleReplyToPpv = (ppvId: string) => {
+    setReplyingToPpv(ppvId)
+    setTimeout(() => inputRef.current?.focus(), 50)
+  }
+
+  const renderVideoBubble = (msg: ChatMessage) => {
+    const vault = msg.vaultItemId ? getVaultItem(msg.vaultItemId) : null
+    const isFirst = isFirstPpv(msg.vaultItemId)
+    const alreadyFollowedUp = vault?.followedUp ?? false
+    const showReplyBtn = msg.unlocked === false && !isFirst && !alreadyFollowedUp
+
+    return (
     <div className="max-w-[75%] rounded-2xl overflow-hidden" style={{ borderBottomRightRadius: '4px' }}>
       <div className="relative flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)', minHeight: '140px', minWidth: '200px' }}>
         <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
@@ -661,13 +696,30 @@ export default function SextingSimulationPage() {
         )}
       </div>
       {msg.unlocked === false && (
-        <div className="px-3 py-2 flex items-center gap-2" style={{ background: '#fef3c7', borderTop: '1px solid #fbbf24' }}>
-          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#d97706' }} />
-          <p className="text-xs font-medium" style={{ color: '#92400e' }}>Subscriber didn&apos;t purchase — follow up!</p>
+        <div className="px-3 py-2 flex items-center justify-between" style={{ background: '#fef3c7', borderTop: '1px solid #fbbf24' }}>
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#d97706' }} />
+            <p className="text-xs font-medium" style={{ color: '#92400e' }}>
+              {alreadyFollowedUp ? 'Followed up' : 'Not purchased'}
+            </p>
+          </div>
+          {showReplyBtn && (
+            <button
+              onClick={(e) => { e.stopPropagation(); handleReplyToPpv(msg.vaultItemId!) }}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all hover:scale-[1.05]"
+              style={{ background: '#e11d48', color: 'white' }}
+            >
+              <Reply className="w-3 h-3" /> Reply
+            </button>
+          )}
+          {alreadyFollowedUp && (
+            <span className="text-xs font-semibold" style={{ color: '#059669' }}>Replied</span>
+          )}
         </div>
       )}
     </div>
-  )
+    )
+  }
 
   const renderTeaserBubble = () => (
     <div className="max-w-[75%] rounded-2xl overflow-hidden" style={{ borderBottomRightRadius: '4px' }}>
@@ -926,15 +978,26 @@ export default function SextingSimulationPage() {
                   {message.role === 'creator' && message.contentType === 'video' && renderVideoBubble(message)}
                   {message.role === 'creator' && message.contentType === 'teaser' && renderTeaserBubble()}
                   {message.contentType === 'text' && (
-                    <div className="max-w-[75%] px-4 py-2.5 rounded-2xl"
-                      style={{
-                        background: message.role === 'creator' ? '#e11d48' : '#ffffff',
-                        color: message.role === 'creator' ? '#ffffff' : '#000000',
-                        borderBottomRightRadius: message.role === 'creator' ? '4px' : '18px',
-                        borderBottomLeftRadius: message.role === 'subscriber' ? '4px' : '18px',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
-                      }}>
-                      <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    <div className="max-w-[75%]">
+                      {message.isFollowUp && message.role === 'creator' && (
+                        <div className="flex items-center gap-1 mb-0.5 justify-end">
+                          <Reply className="w-3 h-3" style={{ color: '#999' }} />
+                          <span className="text-[10px] font-medium" style={{ color: '#999' }}>
+                            Replying to {vaultItems.find(v => v.id === message.followUpPpvId)?.label || 'PPV'}
+                          </span>
+                        </div>
+                      )}
+                      <div className="px-4 py-2.5 rounded-2xl"
+                        style={{
+                          background: message.role === 'creator' ? (message.isFollowUp ? '#be123c' : '#e11d48') : '#ffffff',
+                          color: message.role === 'creator' ? '#ffffff' : '#000000',
+                          borderBottomRightRadius: message.role === 'creator' ? '4px' : '18px',
+                          borderBottomLeftRadius: message.role === 'subscriber' ? '4px' : '18px',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+                          border: message.isFollowUp ? '1px solid rgba(225, 29, 72, 0.4)' : 'none',
+                        }}>
+                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1039,12 +1102,25 @@ export default function SextingSimulationPage() {
                   {vaultItems.filter(v => v.sent).length}/{vaultItems.length} sent · {unlockedCount} unlocked
                 </span>
               </div>
+              {replyingToPpv && (
+                <div className="flex items-center justify-between mb-2 px-3 py-2 rounded-lg" style={{ background: 'rgba(225, 29, 72, 0.08)', border: '1px solid rgba(225, 29, 72, 0.2)' }}>
+                  <div className="flex items-center gap-2">
+                    <Reply className="w-3.5 h-3.5" style={{ color: '#e11d48' }} />
+                    <p className="text-xs font-semibold" style={{ color: '#e11d48' }}>
+                      Replying to {vaultItems.find(v => v.id === replyingToPpv)?.label || 'PPV'} — follow up to get them to unlock!
+                    </p>
+                  </div>
+                  <button onClick={() => setReplyingToPpv(null)} className="p-0.5 rounded hover:bg-red-100 transition-colors">
+                    <X className="w-3.5 h-3.5" style={{ color: '#e11d48' }} />
+                  </button>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <input ref={inputRef} type="text" value={inputValue}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
                   onPaste={() => { lastInputWasPaste.current = true }}
-                  placeholder={subscriberFinished ? 'Session complete — end to get your score' : 'Type your message...'}
+                  placeholder={replyingToPpv ? `Follow up on ${vaultItems.find(v => v.id === replyingToPpv)?.label || 'PPV'}...` : subscriberFinished ? 'Session complete — end to get your score' : 'Type your message...'}
                   disabled={isTyping || subscriberFinished}
                   className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"
                   style={{ background: '#f0f0f0', color: '#000000', border: '1px solid transparent' }}
@@ -1057,7 +1133,7 @@ export default function SextingSimulationPage() {
                 </button>
               </div>
               <p className="text-center text-xs mt-2" style={{ color: '#999' }}>
-                Sub responds after 15s of no typing &bull; send voice memo + PPV + descriptive text, then wait &bull; mirror his exact words
+                Sub responds after 10s of no typing &bull; send voice memo + PPV + descriptive text, then wait &bull; mirror his exact words
               </p>
             </div>
           </motion.div>

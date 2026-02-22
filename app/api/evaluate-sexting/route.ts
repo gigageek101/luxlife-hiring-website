@@ -18,7 +18,7 @@ Between PPVs, the chatter MUST BUILD TENSION — NOT immediately spam the next v
 - Use casual texting style (lowercase, "u" not "you", etc.)
 
 The full vault content order should be:
-Teasing Video 1 → Voice Memo 1 → Video 1 ($15) → Voice Memo 2 → Video 2 ($25) → Voice Memo 3 → Video 3 ($35) → Voice Memo 4 → Video 4 ($45)
+Teasing Video 1 → Voice Memo 1 → Video 1 ($20) → Voice Memo 2 → Video 2 ($40) → Voice Memo 3 → Video 3 ($60) → Voice Memo 4 → Video 4 ($80)
 
 CONTENT TYPE MARKERS IN THE CONVERSATION:
 - [VOICE MEMO] = creator sent a voice memo from vault
@@ -64,15 +64,18 @@ RATING CRITERIA (ordered by weight):
    1 = Spam-sends PPVs back-to-back with zero tension building
 
 4. FOLLOW-UP ON NON-PURCHASED CONTENT — 15 pts weight (1-10):
-   When the subscriber did NOT buy a PPV, did the chatter follow up properly?
+   IMPORTANT: Follow-up is ONLY expected on the 2nd, 3rd, and 4th PPVs — NEVER on the 1st PPV. The teaser does NOT count as a PPV.
+   Messages marked with [FOLLOW-UP ON ...] indicate the creator explicitly used the reply button on that unpurchased PPV.
+   The FOLLOW-UP DATA section below shows which PPVs were sent, not purchased, and whether the creator followed up.
    - Emotional follow-up like "don't u wanna see what i sent for u there?" or "babe i made that just for u"
    - Redirecting energy to alternative content that shows even more
    - Making logical conclusions like "i just want u to spoil me like i spoil u"
    - Handling price objections by creating curiosity and increasing perceived value
    - Handling content-type objections by redirecting ("i want it to be just u and me")
    - NOT just ignoring non-purchases and moving on
-   - If ALL content was purchased, evaluate the chatter's general tone and whether they WOULD handle objections well
-   10 = Expert objection handling — emotional, curious, turns every "no" into a "yes"
+   - If ALL 2nd+ PPVs were purchased, evaluate the chatter's general tone and whether they WOULD handle objections well
+   - Only count follow-ups that were done via the reply button (marked in conversation)
+   10 = Expert objection handling — emotional, curious, turns every "no" into a "yes" using the reply button
    5 = Some follow-up attempts but weak or too pushy
    1 = Completely ignores non-purchases, no follow-up at all
 
@@ -213,11 +216,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { messages } = await request.json()
+    const { messages, followUpData } = await request.json()
 
-    const conversationText = messages.map((m: { role: string; content: string; contentType?: string; price?: number; unlocked?: boolean }) => {
+    const conversationText = messages.map((m: { role: string; content: string; contentType?: string; price?: number; unlocked?: boolean; isFollowUp?: boolean; followUpPpvId?: string }) => {
       const label = m.role === 'creator' ? 'CREATOR' : 'SUBSCRIBER'
       let line = `${label}: `
+
+      if (m.isFollowUp && m.followUpPpvId) {
+        line += `[FOLLOW-UP ON ${m.followUpPpvId}] `
+      }
 
       if (m.contentType === 'voice_memo') {
         line += '[VOICE MEMO]'
@@ -234,7 +241,17 @@ export async function POST(request: NextRequest) {
       return line
     }).join('\n')
 
-    const userContent = `Please evaluate the following sexting/PPV selling conversation between a Creator (chatter) and a Subscriber:\n\n${conversationText}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
+    let followUpSummary = ''
+    if (followUpData && Array.isArray(followUpData)) {
+      const entries = followUpData.map((v: { id: string; label: string; sent: boolean; unlocked: boolean; followedUp: boolean }) => {
+        if (!v.sent) return `${v.label}: Not sent`
+        if (v.unlocked) return `${v.label}: Purchased`
+        return `${v.label}: NOT purchased — ${v.followedUp ? 'Creator followed up (used reply button)' : 'Creator did NOT follow up'}`
+      })
+      followUpSummary = `\n\nFOLLOW-UP DATA (2nd-4th PPVs only — 1st PPV follow-up NOT expected):\n${entries.join('\n')}`
+    }
+
+    const userContent = `Please evaluate the following sexting/PPV selling conversation between a Creator (chatter) and a Subscriber:\n\n${conversationText}${followUpSummary}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
 
     const requestBody = {
       model: 'claude-sonnet-4-20250514',
