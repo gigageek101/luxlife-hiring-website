@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS typed_count INTEGER DEFAULT 0`
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS simulation_type VARCHAR(20) DEFAULT 'chatting'`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS wpm DECIMAL(5,1) DEFAULT 0`
     } catch {
       // columns may already exist
     }
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
         typed_count,
         paste_count,
         simulation_type,
+        wpm,
         completed_at
       FROM simulation_reports
       ORDER BY completed_at DESC
@@ -81,6 +83,7 @@ export async function GET(request: NextRequest) {
           typedCount: r.typed_count || 0,
           pasteCount: r.paste_count || 0,
           simulationType: r.simulation_type || 'chatting',
+          wpm: parseFloat(r.wpm) || 0,
           completedAt: r.completed_at,
         }
       } catch (err) {
@@ -99,6 +102,7 @@ export async function GET(request: NextRequest) {
           typedCount: r.typed_count || 0,
           pasteCount: r.paste_count || 0,
           simulationType: r.simulation_type || 'chatting',
+          wpm: parseFloat(r.wpm) || 0,
           completedAt: r.completed_at,
         }
       }

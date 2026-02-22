@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -69,6 +69,7 @@ interface SimReport {
   typedCount: number
   pasteCount: number
   simulationType: 'chatting' | 'sexting'
+  wpm: number
   completedAt: string
 }
 
@@ -855,6 +856,11 @@ function AdminPanelContent() {
                                       <Keyboard className="w-3 h-3" /> all typed
                                     </span>
                                   )}
+                                  {report.wpm > 0 && (
+                                    <span className="text-xs inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 font-semibold">
+                                      <Zap className="w-3 h-3" /> {report.wpm} WPM
+                                    </span>
+                                  )}
                                   <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>
                                     {new Date(report.completedAt).toLocaleString()}
                                   </span>
@@ -1582,6 +1588,11 @@ function AdminPanelContent() {
                                                   {report.pasteCount > 0 && (
                                                     <span className="text-xs inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">
                                                       <ClipboardPaste className="w-3 h-3" /> {report.pasteCount} pasted
+                                                    </span>
+                                                  )}
+                                                  {report.wpm > 0 && (
+                                                    <span className="text-xs inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 font-semibold">
+                                                      <Zap className="w-3 h-3" /> {report.wpm} WPM
                                                     </span>
                                                   )}
                                                 </div>

@@ -152,6 +152,8 @@ export default function SextingSimulationPage() {
   const [typedCount, setTypedCount] = useState(0)
   const [exportingPdf, setExportingPdf] = useState(false)
   const [subscriberFinished, setSubscriberFinished] = useState(false)
+  const [totalWordsTyped, setTotalWordsTyped] = useState(0)
+  const [totalTypingTimeMs, setTotalTypingTimeMs] = useState(0)
 
   const [vaultItems, setVaultItems] = useState<VaultItem[]>(createVaultItems())
   const [showVault, setShowVault] = useState(false)
@@ -165,6 +167,7 @@ export default function SextingSimulationPage() {
   const messagesRef = useRef<ChatMessage[]>([])
   const profileRef = useRef('')
   const resultsRef = useRef<HTMLDivElement>(null)
+  const typingStartRef = useRef<number>(0)
   const vaultRef = useRef<VaultItem[]>([])
   const pendingPpvRef = useRef<string | null>(null)
 
@@ -294,6 +297,7 @@ export default function SextingSimulationPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsTyping(false)
+      typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }, [])
@@ -336,6 +340,9 @@ export default function SextingSimulationPage() {
     setVaultItems(createVaultItems())
     setPasteCount(0)
     setTypedCount(0)
+    setTotalWordsTyped(0)
+    setTotalTypingTimeMs(0)
+    typingStartRef.current = 0
     setSubscriberFinished(false)
     setPendingPpvId(null)
     lastInputWasPaste.current = false
@@ -375,6 +382,7 @@ export default function SextingSimulationPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsTyping(false)
+      typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }
@@ -383,6 +391,13 @@ export default function SextingSimulationPage() {
     if (!inputValue.trim() || isTyping) return
     if (lastInputWasPaste.current) setPasteCount(prev => prev + 1)
     else setTypedCount(prev => prev + 1)
+
+    const now = Date.now()
+    if (typingStartRef.current > 0) {
+      setTotalTypingTimeMs(prev => prev + (now - typingStartRef.current))
+    }
+    const words = inputValue.trim().split(/\s+/).filter(w => w.length > 0).length
+    setTotalWordsTyped(prev => prev + words)
 
     const userMessage: ChatMessage = {
       id: `creator-${Date.now()}`,
@@ -494,6 +509,7 @@ export default function SextingSimulationPage() {
               typedCount,
               pasteCount,
               simulationType: 'sexting',
+              wpm: totalTypingTimeMs > 0 ? Math.round((totalWordsTyped / (totalTypingTimeMs / 60000)) * 10) / 10 : 0,
             }),
           })
         } catch {
@@ -504,7 +520,7 @@ export default function SextingSimulationPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setPhase('chatting')
     }
-  }, [messages, resetReplyTimer, simUser, vaultItems, selectedDuration, messageCount, typedCount, pasteCount])
+  }, [messages, resetReplyTimer, simUser, vaultItems, selectedDuration, messageCount, typedCount, pasteCount, totalWordsTyped, totalTypingTimeMs])
 
   useEffect(() => { endConversationRef.current = endConversation }, [endConversation])
 
@@ -531,6 +547,9 @@ export default function SextingSimulationPage() {
     setWaitingForIdle(false)
     setPasteCount(0)
     setTypedCount(0)
+    setTotalWordsTyped(0)
+    setTotalTypingTimeMs(0)
+    typingStartRef.current = 0
     setVaultItems(createVaultItems())
     setShowVault(false)
     setSubscriberFinished(false)
@@ -1084,6 +1103,26 @@ export default function SextingSimulationPage() {
                   </motion.div>
                   <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Your Score: {weightedScore}/100</h2>
                   <p className="text-lg font-semibold mb-4" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</p>
+
+                  {totalTypingTimeMs > 0 && (
+                    <div className="inline-flex items-center gap-6 px-6 py-3 rounded-2xl mb-6" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                      <div className="text-center">
+                        <div className="text-2xl font-black" style={{ color: '#e11d48' }}>{Math.round((totalWordsTyped / (totalTypingTimeMs / 60000)) * 10) / 10}</div>
+                        <div className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>Words/Min</div>
+                      </div>
+                      <div className="w-px h-8" style={{ background: 'var(--border)' }} />
+                      <div className="text-center">
+                        <div className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{totalWordsTyped}</div>
+                        <div className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>Words</div>
+                      </div>
+                      <div className="w-px h-8" style={{ background: 'var(--border)' }} />
+                      <div className="text-center">
+                        <div className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{Math.round(totalTypingTimeMs / 1000)}s</div>
+                        <div className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>Typing Time</div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="inline-flex flex-wrap gap-3 justify-center text-xs font-medium">
                     <span className="px-2.5 py-1 rounded-full" style={{ background: '#10b98115', color: '#10b981' }}>85-100 Elite</span>
                     <span className="px-2.5 py-1 rounded-full" style={{ background: '#f59e0b15', color: '#f59e0b' }}>70-84 Strong</span>
