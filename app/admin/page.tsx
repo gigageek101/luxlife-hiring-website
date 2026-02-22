@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2 } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -63,11 +63,12 @@ interface SimReport {
   categories: SimCategory[]
   overallFeedback: OverallFeedback | string
   notes: string
-  conversation: { role: string; content: string }[]
+  conversation: { role: string; content: string; contentType?: string; price?: number; unlocked?: boolean }[]
   durationMode: string
   messageCount: number
   typedCount: number
   pasteCount: number
+  simulationType: 'chatting' | 'sexting'
   completedAt: string
 }
 
@@ -81,6 +82,7 @@ function AdminPanelContent() {
   const [simReports, setSimReports] = useState<SimReport[]>([])
   const [simLoading, setSimLoading] = useState(true)
   const [simSearch, setSimSearch] = useState('')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting'>('all')
   const [expandedReport, setExpandedReport] = useState<number | null>(null)
   const [expandedSimCategories, setExpandedSimCategories] = useState<Set<string>>(new Set())
   const [exportingReportId, setExportingReportId] = useState<number | null>(null)
@@ -246,7 +248,7 @@ function AdminPanelContent() {
     }
   }
 
-  const CATEGORY_WEIGHTS: Record<string, number> = {
+  const CHATTING_CATEGORY_WEIGHTS: Record<string, number> = {
     'Giving Him What He Wants to Hear': 25,
     'Making the Subscriber Feel Special': 20,
     'Caring About the Subscriber': 15,
@@ -256,10 +258,23 @@ function AdminPanelContent() {
     'Note-Taking & Information Tracking': 5,
   }
 
-  const calculateWeightedScore = (categories: SimCategory[]): number => {
+  const SEXTING_CATEGORY_WEIGHTS: Record<string, number> = {
+    'Correct Framework Order': 30,
+    'Language Mirroring': 25,
+    'Tension Building Between PPVs': 20,
+    'Follow-up on Non-Purchased Content': 15,
+    'Response Speed & Engagement': 10,
+  }
+
+  const getWeightsForReport = (report: SimReport): Record<string, number> => {
+    return report.simulationType === 'sexting' ? SEXTING_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+  }
+
+  const calculateWeightedScore = (categories: SimCategory[], simType?: 'chatting' | 'sexting'): number => {
+    const weights = simType === 'sexting' ? SEXTING_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
     let total = 0
     for (const cat of categories) {
-      const weight = CATEGORY_WEIGHTS[cat.name] || 0
+      const weight = weights[cat.name] || 0
       total += (cat.score / 10) * weight
     }
     return Math.round(total * 10) / 10
@@ -643,42 +658,72 @@ function AdminPanelContent() {
           {/* SIMULATIONS TAB */}
           {activeTab === 'simulations' && (
             <>
-              {/* Sim Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="card bg-blue-50 border-2 border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <MessageCircle className="w-8 h-8 text-blue-600" />
-                    <div>
-                      <div className="text-2xl font-bold text-blue-900">{simReports.length}</div>
-                      <div className="text-sm text-blue-700">Total Sessions</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="card bg-green-50 border-2 border-green-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-900">
-                      {simReports.length > 0 ? (simReports.reduce((s, r) => s + calculateWeightedScore(r.categories), 0) / simReports.length).toFixed(1) : '—'}
-                    </div>
-                    <div className="text-sm text-green-700">Avg Score /100</div>
-                  </div>
-                </div>
-                <div className="card bg-purple-50 border-2 border-purple-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-900">
-                      {new Set(simReports.map(r => r.telegramUsername)).size}
-                    </div>
-                    <div className="text-sm text-purple-700">Unique Users</div>
-                  </div>
-                </div>
-                <div className="card bg-orange-50 border-2 border-orange-200">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-900">
-                      {simReports.filter(r => calculateWeightedScore(r.categories) >= 70).length}
-                    </div>
-                    <div className="text-sm text-orange-700">Score 70+</div>
-                  </div>
-                </div>
+              {/* Sim Type Filter */}
+              <div className="flex gap-2 mb-6 max-w-lg mx-auto">
+                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame]] as const).map(([key, label, Icon]) => {
+                  const count = key === 'all' ? simReports.length : simReports.filter(r => r.simulationType === key).length
+                  return (
+                    <button key={key} onClick={() => setSimTypeFilter(key as 'all' | 'chatting' | 'sexting')}
+                      className={`flex-1 py-2.5 px-3 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-1.5 ${
+                        simTypeFilter === key
+                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}>
+                      {Icon && <Icon className="w-4 h-4" />}
+                      {label}
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${simTypeFilter === key ? 'bg-white/20' : 'bg-gray-200'}`}>{count}</span>
+                    </button>
+                  )
+                })}
               </div>
+
+              {/* Sim Stats */}
+              {(() => {
+                const filtered = simTypeFilter === 'all' ? simReports : simReports.filter(r => r.simulationType === simTypeFilter)
+                const chattingCount = simReports.filter(r => r.simulationType === 'chatting').length
+                const sextingCount = simReports.filter(r => r.simulationType === 'sexting').length
+                return (
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                  <div className="card bg-blue-50 border-2 border-blue-200">
+                    <div className="flex items-center gap-3">
+                      <MessageCircle className="w-8 h-8 text-blue-600" />
+                      <div>
+                        <div className="text-2xl font-bold text-blue-900">{filtered.length}</div>
+                        <div className="text-sm text-blue-700">Total Sessions</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card bg-green-50 border-2 border-green-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-900">
+                        {filtered.length > 0 ? (filtered.reduce((s, r) => s + calculateWeightedScore(r.categories, r.simulationType), 0) / filtered.length).toFixed(1) : '—'}
+                      </div>
+                      <div className="text-sm text-green-700">Avg Score /100</div>
+                    </div>
+                  </div>
+                  <div className="card bg-purple-50 border-2 border-purple-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-900">
+                        {new Set(filtered.map(r => r.telegramUsername)).size}
+                      </div>
+                      <div className="text-sm text-purple-700">Unique Users</div>
+                    </div>
+                  </div>
+                  <div className="card bg-orange-50 border-2 border-orange-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-900">{chattingCount}</div>
+                      <div className="text-sm text-orange-700">Chatting</div>
+                    </div>
+                  </div>
+                  <div className="card bg-rose-50 border-2 border-rose-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-rose-900">{sextingCount}</div>
+                      <div className="text-sm text-rose-700">Sexting</div>
+                    </div>
+                  </div>
+                </div>
+                )
+              })()}
 
               {/* Search and Refresh */}
               <div className="card glass-card mb-6">
@@ -707,25 +752,29 @@ function AdminPanelContent() {
                   <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                   <p style={{ color: 'var(--text-secondary-on-white)' }}>Loading simulation reports...</p>
                 </div>
-              ) : simReports.filter(r =>
-                r.telegramUsername.toLowerCase().includes(simSearch.toLowerCase()) ||
-                r.email.toLowerCase().includes(simSearch.toLowerCase())
-              ).length === 0 ? (
+              ) : simReports
+                .filter(r => simTypeFilter === 'all' || r.simulationType === simTypeFilter)
+                .filter(r =>
+                  r.telegramUsername.toLowerCase().includes(simSearch.toLowerCase()) ||
+                  r.email.toLowerCase().includes(simSearch.toLowerCase())
+                ).length === 0 ? (
                 <div className="card glass-card text-center py-12">
                   <p className="text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
-                    No simulation reports found
+                    No {simTypeFilter !== 'all' ? simTypeFilter + ' ' : ''}simulation reports found
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {simReports
+                    .filter(r => simTypeFilter === 'all' || r.simulationType === simTypeFilter)
                     .filter(r =>
                       r.telegramUsername.toLowerCase().includes(simSearch.toLowerCase()) ||
                       r.email.toLowerCase().includes(simSearch.toLowerCase())
                     )
                     .map((report, index) => {
                       const isExpanded = expandedReport === report.id
-                      const weightedScore = calculateWeightedScore(report.categories)
+                      const weightedScore = calculateWeightedScore(report.categories, report.simulationType)
+                      const reportWeights = getWeightsForReport(report)
 
                       return (
                         <motion.div
@@ -751,6 +800,9 @@ function AdminPanelContent() {
                                 <h3 className="text-lg font-bold">{report.telegramUsername}</h3>
                                 <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>{report.email}</p>
                                 <div className="flex flex-wrap items-center gap-2 mt-1">
+                                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    {report.simulationType === 'sexting' ? '🔥 Sexting' : '💬 Chatting'}
+                                  </span>
                                   <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                                     {report.durationMode}
                                   </span>
@@ -884,7 +936,7 @@ function AdminPanelContent() {
                                   </thead>
                                   <tbody>
                                     {report.categories.map((cat, catIdx) => {
-                                      const tw = CATEGORY_WEIGHTS[cat.name] || 0
+                                      const tw = reportWeights[cat.name] || 0
                                       const te = Math.round(((cat.score / 10) * tw) * 10) / 10
                                       return (
                                         <tr key={catIdx} style={{ borderTop: '1px solid #e5e7eb' }}>
@@ -909,7 +961,7 @@ function AdminPanelContent() {
                               {/* Category Scores Overview — weighted grid */}
                               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
                                 {report.categories.map((cat, catIdx) => {
-                                  const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                                  const weight = reportWeights[cat.name] || 0
                                   const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
                                   return (
                                   <div
@@ -945,7 +997,7 @@ function AdminPanelContent() {
                                 {report.categories.map((cat, catIdx) => {
                                   const catKey = `${report.id}-${catIdx}`
                                   const isCatExpanded = expandedSimCategories.has(catKey)
-                                  const catWeight = CATEGORY_WEIGHTS[cat.name] || 0
+                                  const catWeight = reportWeights[cat.name] || 0
                                   const catEarned = Math.round(((cat.score / 10) * catWeight) * 10) / 10
 
                                   return (
@@ -1125,18 +1177,30 @@ function AdminPanelContent() {
                                 <div className={`space-y-2 pr-2 ${exportingReportId === report.id ? '' : 'max-h-96 overflow-y-auto'}`}>
                                   {report.conversation.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
-                                      <div
-                                        className="max-w-[75%] px-4 py-2 rounded-2xl text-sm"
-                                        style={{
-                                          background: msg.role === 'creator' ? '#ff6b35' : '#ffffff',
-                                          color: msg.role === 'creator' ? '#ffffff' : '#000000',
-                                          borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
-                                          borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
-                                          boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
-                                        }}
-                                      >
-                                        {msg.content}
-                                      </div>
+                                      {msg.contentType === 'voice_memo' && msg.role === 'creator' ? (
+                                        <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#7c3aed', color: 'white' }}>🎤 Voice Memo</div>
+                                      ) : msg.contentType === 'video' && msg.role === 'creator' ? (
+                                        <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2" style={{ background: '#1a1a2e', color: 'white' }}>
+                                          📹 PPV ${msg.price}
+                                          {msg.unlocked === true && <span style={{ color: '#10b981' }}>✓ Bought</span>}
+                                          {msg.unlocked === false && <span style={{ color: '#ef4444' }}>✗ Passed</span>}
+                                        </div>
+                                      ) : msg.contentType === 'teaser' && msg.role === 'creator' ? (
+                                        <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#e11d48', color: 'white' }}>🎬 Free Teaser</div>
+                                      ) : (
+                                        <div
+                                          className="max-w-[75%] px-4 py-2 rounded-2xl text-sm"
+                                          style={{
+                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting' ? '#e11d48' : '#ff6b35') : '#ffffff',
+                                            color: msg.role === 'creator' ? '#ffffff' : '#000000',
+                                            borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
+                                            borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
+                                            boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+                                          }}
+                                        >
+                                          {msg.content}
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>

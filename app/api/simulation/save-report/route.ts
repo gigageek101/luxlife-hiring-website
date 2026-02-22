@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       messageCount,
       typedCount,
       pasteCount,
+      simulationType,
     } = await request.json()
 
     if (!telegramUsername || !email) {
@@ -29,10 +30,10 @@ export async function POST(request: NextRequest) {
 
     await initDatabase()
 
-    // Ensure new columns exist on already-created tables
     try {
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS typed_count INTEGER DEFAULT 0`
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS simulation_type VARCHAR(20) DEFAULT 'chatting'`
     } catch {
       // columns may already exist
     }
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
         duration_mode,
         message_count,
         typed_count,
-        paste_count
+        paste_count,
+        simulation_type
       ) VALUES (
         ${telegramUsername},
         ${email},
@@ -68,7 +70,8 @@ export async function POST(request: NextRequest) {
         ${durationMode || 'unknown'},
         ${messageCount || 0},
         ${typedCount || 0},
-        ${pasteCount || 0}
+        ${pasteCount || 0},
+        ${simulationType || 'chatting'}
       )
     `
 

@@ -40,7 +40,6 @@ export async function initDatabase() {
       )
     `
 
-    // Create simulation_reports table
     await sql`
       CREATE TABLE IF NOT EXISTS simulation_reports (
         id SERIAL PRIMARY KEY,
@@ -55,6 +54,7 @@ export async function initDatabase() {
         message_count INTEGER NOT NULL,
         typed_count INTEGER DEFAULT 0,
         paste_count INTEGER DEFAULT 0,
+        simulation_type VARCHAR(20) DEFAULT 'chatting',
         completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `

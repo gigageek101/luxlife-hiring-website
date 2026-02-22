@@ -20,10 +20,10 @@ export async function DELETE(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Ensure new columns exist on already-created tables
     try {
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS typed_count INTEGER DEFAULT 0`
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS simulation_type VARCHAR(20) DEFAULT 'chatting'`
     } catch {
       // columns may already exist
     }
@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
         message_count,
         typed_count,
         paste_count,
+        simulation_type,
         completed_at
       FROM simulation_reports
       ORDER BY completed_at DESC
@@ -79,6 +80,7 @@ export async function GET(request: NextRequest) {
           messageCount: r.message_count,
           typedCount: r.typed_count || 0,
           pasteCount: r.paste_count || 0,
+          simulationType: r.simulation_type || 'chatting',
           completedAt: r.completed_at,
         }
       } catch (err) {
@@ -96,6 +98,7 @@ export async function GET(request: NextRequest) {
           messageCount: r.message_count || 0,
           typedCount: r.typed_count || 0,
           pasteCount: r.paste_count || 0,
+          simulationType: r.simulation_type || 'chatting',
           completedAt: r.completed_at,
         }
       }
