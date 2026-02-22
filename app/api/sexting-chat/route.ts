@@ -120,19 +120,46 @@ export async function POST(request: NextRequest) {
       systemPrompt += `\n\nYour specific profile for this session: ${subscriberProfile}. Stay consistent with these traits throughout.`
     }
 
-    const openerStyles = [
-      'Initiate with 1 short sentence containing a vivid phrase. Example: "fuck i wanna bend you over and pull your hair rn". Keep it to ONE sentence only.',
-      'Initiate with 1 short sentence about what you want to do. Example: "damn baby i wanna eat that pussy till u shake". ONE sentence only.',
-      'Initiate with 1 short sentence. Example: "god damn i cant stop thinking about pinning you against the wall". ONE sentence max.',
+    const subtleOpeners = [
+      "i really wanna see more of you",
+      "those tits look so good baby",
+      "what are u into in bed?",
+      "i love your ass so much",
+      "damn you looked so good in that last post",
+      "i cant stop thinking about you today",
+      "you're so fucking sexy baby",
+      "what would u do if i was there rn",
+      "i keep coming back to look at your pics",
+      "you got me so distracted at work today",
+      "that body is insane baby",
+      "i wanna know what turns you on",
+      "you looked so hot in that story",
+      "tell me what you like baby",
+      "i been thinking about you all day",
+      "god damn those curves are perfect",
+      "you're literally my type",
+      "what do u like a guy to do to u",
+      "i wanna spoil you so bad",
+      "those lips are driving me crazy",
+      "do u like it rough or slow?",
+      "i cant get over how sexy you are",
+      "that last pic got me feeling some type of way",
+      "you make it hard to focus baby",
+      "i wanna know all your fantasies",
+      "you got the most perfect body ive ever seen",
+      "whats the freakiest thing youve done",
+      "damn baby those thighs tho",
+      "i love a girl that knows what she wants",
+      "you look like trouble in the best way",
     ]
-    const randomOpener = openerStyles[Math.floor(Math.random() * openerStyles.length)]
+    const randomOpener = subtleOpeners[Math.floor(Math.random() * subtleOpeners.length)]
 
     const veniceMessages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
       { role: 'system', content: systemPrompt },
     ]
 
     if (messages.length === 0) {
-      veniceMessages.push({ role: 'user', content: `The creator has opened the chat. ${randomOpener}` })
+      veniceMessages.push({ role: 'user', content: `The creator has opened the chat. Start with this EXACT message as your opener (do not change it, do not add anything): "${randomOpener}"` })
     } else {
       for (const m of messages as { role: string; content: string; contentType?: string; price?: number; vaultLabel?: string; isFollowUp?: boolean; followUpPpvId?: string }[]) {
         let messageContent = m.content
