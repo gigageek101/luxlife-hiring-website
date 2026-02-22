@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
+const VENICE_API_KEY = process.env.VENICE_API_KEY
 
 const SUBSCRIBER_SEXTING_PROMPT = `You are simulating a real OnlyFans subscriber in the SEXTING phase of a conversation. This is a training exercise for chatters learning the PPV selling framework.
 
@@ -78,13 +78,12 @@ CRITICAL RULES:
 - Every message must contain at least one vivid sexual phrase the creator can mirror
 - React differently to content types (excited for explicit, teasing for teasers)`
 
-async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Response> {
+async function callVeniceWithRetry(body: object, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.venice.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': CLAUDE_API_KEY!,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${VENICE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
@@ -93,9 +92,9 @@ async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Respon
     if (response.ok) return response
 
     const status = response.status
-    if ((status === 429 || status === 529 || status >= 500) && attempt < maxRetries - 1) {
+    if ((status === 429 || status >= 500) && attempt < maxRetries - 1) {
       const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
-      console.warn(`Claude API ${status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
+      console.warn(`Venice API ${status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
       await new Promise(r => setTimeout(r, delay))
       continue
     }
@@ -107,9 +106,9 @@ async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Respon
 
 export async function POST(request: NextRequest) {
   try {
-    if (!CLAUDE_API_KEY) {
+    if (!VENICE_API_KEY) {
       return NextResponse.json(
-        { error: 'Claude API key not configured. Add CLAUDE_API_KEY to your .env.local file.' },
+        { error: 'Venice API key not configured. Add VENICE_API_KEY to your .env.local file.' },
         { status: 500 }
       )
     }
@@ -128,37 +127,42 @@ export async function POST(request: NextRequest) {
     ]
     const randomOpener = openerStyles[Math.floor(Math.random() * openerStyles.length)]
 
-    const claudeMessages = messages.length === 0
-      ? [{ role: 'user' as const, content: `The creator has opened the chat. ${randomOpener}` }]
-      : messages.map((m: { role: string; content: string; contentType?: string; price?: number; vaultLabel?: string; isFollowUp?: boolean; followUpPpvId?: string }) => {
-          let messageContent = m.content
-          if (m.contentType === 'voice_memo') {
-            messageContent = `[CREATOR SENT A VOICE MEMO - sounds breathy and sexual, describing what she wants to do]`
-          } else if (m.contentType === 'video') {
-            messageContent = `[CREATOR SENT A PPV VIDEO — Price: $${m.price}. This is a locked video the subscriber can choose to purchase.]`
-          } else if (m.contentType === 'teaser') {
-            messageContent = `[CREATOR SENT A FREE TEASING VIDEO CLIP — a short sexy teaser showing curves/lingerie, meant to build desire for more explicit content]`
-          }
-          if (m.isFollowUp) {
-            messageContent = `[CREATOR IS FOLLOWING UP ON AN UNPURCHASED PPV — trying to get you to reconsider buying it] ${messageContent}`
-          }
-          return {
-            role: m.role === 'creator' ? 'user' as const : 'assistant' as const,
-            content: messageContent,
-          }
-        })
+    const veniceMessages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+      { role: 'system', content: systemPrompt },
+    ]
 
-    const response = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 100,
-      system: systemPrompt,
-      messages: claudeMessages,
+    if (messages.length === 0) {
+      veniceMessages.push({ role: 'user', content: `The creator has opened the chat. ${randomOpener}` })
+    } else {
+      for (const m of messages as { role: string; content: string; contentType?: string; price?: number; vaultLabel?: string; isFollowUp?: boolean; followUpPpvId?: string }[]) {
+        let messageContent = m.content
+        if (m.contentType === 'voice_memo') {
+          messageContent = `[CREATOR SENT A VOICE MEMO - sounds breathy and sexual, describing what she wants to do]`
+        } else if (m.contentType === 'video') {
+          messageContent = `[CREATOR SENT A PPV VIDEO — Price: $${m.price}. This is a locked video the subscriber can choose to purchase.]`
+        } else if (m.contentType === 'teaser') {
+          messageContent = `[CREATOR SENT A FREE TEASING VIDEO CLIP — a short sexy teaser showing curves/lingerie, meant to build desire for more explicit content]`
+        }
+        if (m.isFollowUp) {
+          messageContent = `[CREATOR IS FOLLOWING UP ON AN UNPURCHASED PPV — trying to get you to reconsider buying it] ${messageContent}`
+        }
+        veniceMessages.push({
+          role: m.role === 'creator' ? 'user' : 'assistant',
+          content: messageContent,
+        })
+      }
+    }
+
+    const response = await callVeniceWithRetry({
+      model: 'venice-uncensored',
+      max_tokens: 150,
+      messages: veniceMessages,
       temperature: 0.85,
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Claude API error after retries:', errorText)
+      console.error('Venice API error after retries:', errorText)
       return NextResponse.json(
         { error: 'AI is temporarily busy. Please wait a moment and try again.' },
         { status: 500 }
@@ -166,7 +170,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
-    let reply = data.content?.[0]?.text || ''
+    let reply = data.choices?.[0]?.message?.content || ''
 
     const purchased = reply.includes('[BUY]')
     const passed = reply.includes('[PASS]')
