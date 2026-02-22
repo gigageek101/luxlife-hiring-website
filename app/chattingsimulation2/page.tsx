@@ -67,12 +67,12 @@ const DURATION_OPTIONS = [
 ] as const
 
 const SUBSCRIBER_SEXTING_PROFILES = [
-  "Name: Mike, Age: 42, Electrician from Texas. Dominant type. Uses phrases like 'god damn that ass', 'I'd spank that all night', 'test your gag reflex'. Descriptive about what he wants to do. Talks about his 'hard cock' a lot.",
-  "Name: Brandon, Age: 38, Mechanic from Ohio. Romantic-dirty mix. Uses phrases like 'kissing my way down your stomach', 'crush my head with those beautiful thighs', 'eat that pussy and ass'. Paints detailed scenarios.",
-  "Name: Tommy, Age: 47, Truck driver from Kentucky. Emotional and connected. Uses phrases like 'rub that dildo on that pussy', 'thinking about my hard cock going deep', 'cum inside you'. Likes feeling in control.",
-  "Name: Austin, Age: 35, Construction worker from Florida. Aggressive energy. Uses phrases like 'thrust my cock deep', 'slapping my balls against your pussy', 'beg for more harder and deeper'. Very explicit.",
-  "Name: Scott, Age: 44, Plumber from Indiana. Daddy energy. Uses phrases like 'cum for daddy', 'is it mine baby', 'you're gonna cum for daddy'. Possessive and dominant.",
-  "Name: Jake, Age: 40, Carpenter from Montana. Affectionate and explicit. Uses phrases like 'you're so fuckin beautiful', 'I want my hands rubbing all over your body', 'kiss you all over from head to toe'. Mix of tender and raw.",
+  "Name: Mike, Age: 42, Electrician from Texas. Dominant. Naturally uses phrases like 'bend you over the counter', 'spank that ass till its red', 'pull your hair while i hit it from the back', 'make you gag on this cock'. Always graphic and specific.",
+  "Name: Brandon, Age: 38, Mechanic from Ohio. Romantic-dirty mix. Naturally uses phrases like 'eat that pussy till u shake', 'wrap those thighs around my head', 'kiss my way down your stomach then bury my face between your legs'. Paints vivid scenarios.",
+  "Name: Tommy, Age: 47, Truck driver from Kentucky. Intense and possessive. Naturally uses phrases like 'slide deep inside you slow', 'fill you up till it drips out', 'pin you down and fuck you till you scream'. Likes control.",
+  "Name: Austin, Age: 35, Construction worker from Florida. Aggressive energy. Naturally uses phrases like 'pound that pussy from behind', 'grab those hips and pull you back onto me', 'choke you while i fuck you hard'. Very explicit and direct.",
+  "Name: Scott, Age: 44, Plumber from Indiana. Daddy energy. Naturally uses phrases like 'spread those legs for daddy', 'ride my face till you cum', 'cum all over daddy's cock'. Possessive and commanding.",
+  "Name: Jake, Age: 40, Carpenter from Montana. Tender and raw mix. Naturally uses phrases like 'taste every inch of you', 'pin you against the wall and kiss your neck', 'slide my hands all over that body then fuck you slow'. Vivid and physical.",
 ]
 
 function createVaultItems(): VaultItem[] {
@@ -307,7 +307,7 @@ export default function SextingSimulationPage() {
     setWaitingForIdle(true)
     replyTimeoutRef.current = setTimeout(() => {
       fetchAIReply()
-    }, 2000)
+    }, 15000)
   }, [resetReplyTimer, fetchAIReply])
 
   useEffect(() => {
@@ -1057,7 +1057,7 @@ export default function SextingSimulationPage() {
                 </button>
               </div>
               <p className="text-center text-xs mt-2" style={{ color: '#999' }}>
-                AI responds after 2s of no typing &bull; use the Vault to send content in order &bull; mirror subscriber&apos;s words
+                Sub responds after 15s of no typing &bull; send voice memo + PPV + descriptive text, then wait &bull; mirror his exact words
               </p>
             </div>
           </motion.div>
