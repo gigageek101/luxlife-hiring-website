@@ -1498,41 +1498,28 @@ export default function SextingSimulationPage() {
                     <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e11d48', color: '#ffffff' }}>1</div>
                     <div>
                       <p className="font-semibold" style={{ color: '#9f1239' }}>Export your results as a PDF</p>
-                      <p className="text-sm mt-1" style={{ color: '#6b7280' }}>Click the blue button above to save your evaluation.</p>
+                      <p className="text-sm mt-1" style={{ color: '#6b7280' }}>Click the blue button above to save your evaluation so you can review it anytime.</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e11d48', color: '#ffffff' }}>2</div>
                     <div>
-                      <p className="font-semibold" style={{ color: '#9f1239' }}>Download the learning guide PDF</p>
-                      <a href="/learning-guide.pdf" download
-                        className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
-                        style={{ background: '#e11d48', color: '#ffffff' }}>
-                        <FileText className="w-4 h-4" /> Download Learning Guide PDF
-                      </a>
+                      <p className="font-semibold" style={{ color: '#9f1239' }}>Write down all the improvements the PDF tells you</p>
+                      <p className="text-sm mt-1" style={{ color: '#6b7280' }}>Take a pen and paper and write out each improvement point by hand. You will remember it a lot more easily when you physically write it down.</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e11d48', color: '#ffffff' }}>3</div>
                     <div>
-                      <p className="font-semibold" style={{ color: '#9f1239' }}>Upload both to Claude AI for personalized practice</p>
-                      <p className="text-sm mt-1" style={{ color: '#6b7280' }}>
-                        Go to{' '}
-                        <a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" className="font-semibold underline" style={{ color: '#e11d48' }}>
-                          claude.ai/new<ExternalLink className="w-3 h-3 inline ml-0.5 mb-0.5" />
-                        </a>
-                        {' '}and upload both PDFs. Then use this prompt:
+                      <p className="font-semibold" style={{ color: '#9f1239' }}>Go over the Sexting Guide</p>
+                      <p className="text-sm mt-1 mb-2" style={{ color: '#6b7280' }}>
+                        Review the full sexting framework, examples, and best practices in our detailed guide:
                       </p>
-                      <div className="mt-2 p-3 rounded-lg text-sm font-mono" style={{ background: '#1e293b', color: '#e2e8f0' }}>
-                        the first pdf is my sexting simulation test results and the second pdf is my learning pdf. please give me practical examples to improve my PPV framework execution, mirroring, and objection handling.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e11d48', color: '#ffffff' }}>4</div>
-                    <div>
-                      <p className="font-semibold" style={{ color: '#9f1239' }}>Practice, come back, repeat</p>
-                      <p className="text-sm mt-1" style={{ color: '#6b7280' }}>Keep practicing until you master the framework. <strong>Repeat until elite.</strong></p>
+                      <a href="https://pentagonal-thief-156.notion.site/Sexting-Guide-303b6586b06d803183aede58dec11e4f?source=copy_link" target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
+                        style={{ background: '#e11d48', color: '#ffffff' }}>
+                        <FileText className="w-4 h-4" /> Open Sexting Guide <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   </div>
                 </div>
