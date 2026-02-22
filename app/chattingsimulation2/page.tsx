@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles,
   AlertCircle, Clock, Timer, X, LogIn, Loader2, Download, FileText,
-  ExternalLink, Mic, Play, Lock, Unlock, Package, Flame, Reply,
+  ExternalLink, Mic, Play, Lock, Unlock, Package, Flame, Reply, Zap,
 } from 'lucide-react'
 
 interface ChatMessage {
@@ -313,6 +313,11 @@ export default function SextingSimulationPage() {
     replyTimeoutRef.current = setTimeout(() => {
       fetchAIReply()
     }, 10000)
+  }, [resetReplyTimer, fetchAIReply])
+
+  const triggerQuickReply = useCallback(() => {
+    resetReplyTimer()
+    fetchAIReply()
   }, [resetReplyTimer, fetchAIReply])
 
   useEffect(() => {
@@ -1101,6 +1106,14 @@ export default function SextingSimulationPage() {
                 <span className="text-xs" style={{ color: '#999' }}>
                   {vaultItems.filter(v => v.sent).length}/{vaultItems.length} sent · {unlockedCount} unlocked
                 </span>
+                {waitingForIdle && !isTyping && (
+                  <button onClick={triggerQuickReply}
+                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:scale-[1.05] animate-pulse"
+                    style={{ background: '#f59e0b', color: 'white' }}>
+                    <Zap className="w-3.5 h-3.5" />
+                    Quick Reply
+                  </button>
+                )}
               </div>
               {replyingToPpv && (
                 <div className="flex items-center justify-between mb-2 px-3 py-2 rounded-lg" style={{ background: 'rgba(225, 29, 72, 0.08)', border: '1px solid rgba(225, 29, 72, 0.2)' }}>
