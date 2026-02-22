@@ -421,6 +421,7 @@ export default function SextingSimulationPage() {
 
     if (replyingToPpv) {
       setVaultItems(prev => prev.map(v => v.id === replyingToPpv ? { ...v, followedUp: true } : v))
+      setPendingPpvId(replyingToPpv)
       setReplyingToPpv(null)
     }
 
