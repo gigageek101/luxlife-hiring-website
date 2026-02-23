@@ -171,8 +171,19 @@ export default function SextingSimulationPage() {
   const profileRef = useRef('')
   const resultsRef = useRef<HTMLDivElement>(null)
   const typingStartRef = useRef<number>(0)
+  const recordingRef = useRef<{t:number;e:string;d:string}[]>([])
+  const sessionStartRef = useRef<number>(0)
   const vaultRef = useRef<VaultItem[]>([])
   const pendingPpvRef = useRef<string | null>(null)
+
+  const recordEvent = useCallback((eventType: string, data: string = '') => {
+    if (sessionStartRef.current === 0) return
+    recordingRef.current.push({
+      t: Date.now() - sessionStartRef.current,
+      e: eventType,
+      d: data,
+    })
+  }, [])
 
   useEffect(() => { vaultRef.current = vaultItems }, [vaultItems])
   useEffect(() => { pendingPpvRef.current = pendingPpvId }, [pendingPpvId])
@@ -240,6 +251,7 @@ export default function SextingSimulationPage() {
 
     setWaitingForIdle(false)
     setIsTyping(true)
+    recordEvent('y')
     setError(null)
 
     try {
@@ -286,10 +298,12 @@ export default function SextingSimulationPage() {
       const subscriberLines = reply.split('\n').filter((l: string) => l.trim())
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))
+        const line = subscriberLines[i].trim()
+        recordEvent('r', line)
         setMessages(prev => [...prev, {
           id: `sub-${Date.now()}-${i}`,
           role: 'subscriber',
-          content: subscriberLines[i].trim(),
+          content: line,
           timestamp: new Date(),
           contentType: 'text',
         }])
@@ -302,10 +316,11 @@ export default function SextingSimulationPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsTyping(false)
+      recordEvent('z')
       typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
-  }, [])
+  }, [recordEvent])
 
   const scheduleReply = useCallback(() => {
     resetReplyTimer()
@@ -343,6 +358,10 @@ export default function SextingSimulationPage() {
   const startSimulation = async () => {
     const profile = SUBSCRIBER_SEXTING_PROFILES[Math.floor(Math.random() * SUBSCRIBER_SEXTING_PROFILES.length)]
     setSubscriberProfile(profile)
+
+    sessionStartRef.current = Date.now()
+    recordingRef.current = []
+
     setPhase('chatting')
     setMessages([])
     setMessageCount(0)
@@ -366,6 +385,7 @@ export default function SextingSimulationPage() {
     }
 
     setIsTyping(true)
+    recordEvent('y')
     try {
       const response = await fetch('/api/sexting-chat', {
         method: 'POST',
@@ -380,10 +400,12 @@ export default function SextingSimulationPage() {
       const subscriberLines = data.reply.split('\n').filter((l: string) => l.trim())
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))
+        const line = subscriberLines[i].trim()
+        recordEvent('r', line)
         setMessages(prev => [...prev, {
           id: `sub-init-${i}`,
           role: 'subscriber',
-          content: subscriberLines[i].trim(),
+          content: line,
           timestamp: new Date(),
           contentType: 'text',
         }])
@@ -392,6 +414,7 @@ export default function SextingSimulationPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsTyping(false)
+      recordEvent('z')
       typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
@@ -428,6 +451,8 @@ export default function SextingSimulationPage() {
     setMessages(prev => [...prev, userMessage])
     setMessageCount(prev => prev + 1)
     setInputValue('')
+    recordEvent('s', inputValue.trim())
+    recordEvent('i', '')
     setError(null)
     lastInputWasPaste.current = false
     scheduleReply()
@@ -456,6 +481,7 @@ export default function SextingSimulationPage() {
 
     setMessages(prev => [...prev, message])
     setMessageCount(prev => prev + 1)
+    recordEvent('s', `[${item.type.toUpperCase()}] ${item.label}${item.price ? ` $${item.price}` : ''}`)
 
     if (item.type === 'video') {
       setPendingPpvId(item.id)
@@ -467,6 +493,7 @@ export default function SextingSimulationPage() {
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
+    recordEvent('i', value)
     if (waitingForIdle && value.length > 0) {
       scheduleReply()
     }
@@ -535,6 +562,7 @@ export default function SextingSimulationPage() {
               pasteCount,
               simulationType: 'sexting',
               wpm: totalTypingTimeMs > 0 ? Math.round((totalWordsTyped / (totalTypingTimeMs / 60000)) * 10) / 10 : 0,
+              sessionRecording: recordingRef.current,
             }),
           })
         } catch {
@@ -581,6 +609,8 @@ export default function SextingSimulationPage() {
     setPendingPpvId(null)
     setReplyingToPpv(null)
     lastInputWasPaste.current = false
+    recordingRef.current = []
+    sessionStartRef.current = 0
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -1159,7 +1189,7 @@ export default function SextingSimulationPage() {
                 <input ref={inputRef} type="text" value={inputValue}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  onPaste={() => { lastInputWasPaste.current = true }}
+                  onPaste={() => { lastInputWasPaste.current = true; recordEvent('p') }}
                   placeholder={replyingToPpv ? `Follow up on ${vaultItems.find(v => v.id === replyingToPpv)?.label || 'PPV'}...` : subscriberFinished ? 'Session complete — end to get your score' : 'Type your message...'}
                   disabled={isTyping || subscriberFinished}
                   className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"

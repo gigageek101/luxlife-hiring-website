@@ -139,6 +139,17 @@ export default function ChattingSimulationPage() {
   const profileRef = useRef('')
   const resultsRef = useRef<HTMLDivElement>(null)
   const typingStartRef = useRef<number>(0)
+  const recordingRef = useRef<{t:number;e:string;d:string}[]>([])
+  const sessionStartRef = useRef<number>(0)
+
+  const recordEvent = useCallback((eventType: string, data: string = '') => {
+    if (sessionStartRef.current === 0) return
+    recordingRef.current.push({
+      t: Date.now() - sessionStartRef.current,
+      e: eventType,
+      d: data,
+    })
+  }, [])
 
   useEffect(() => {
     const stored = localStorage.getItem('sim_user')
@@ -222,6 +233,7 @@ export default function ChattingSimulationPage() {
 
     setWaitingForIdle(false)
     setIsTyping(true)
+    recordEvent('y')
     setError(null)
 
     try {
@@ -249,10 +261,12 @@ export default function ChattingSimulationPage() {
 
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))
+        const line = subscriberLines[i].trim()
+        recordEvent('r', line)
         setMessages(prev => [...prev, {
           id: `sub-${Date.now()}-${i}`,
           role: 'subscriber',
-          content: subscriberLines[i].trim(),
+          content: line,
           timestamp: new Date(),
         }])
       }
@@ -261,10 +275,11 @@ export default function ChattingSimulationPage() {
       setError(errorMessage)
     } finally {
       setIsTyping(false)
+      recordEvent('z')
       typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
-  }, [])
+  }, [recordEvent])
 
   const scheduleReply = useCallback(() => {
     resetReplyTimer()
@@ -301,6 +316,10 @@ export default function ChattingSimulationPage() {
   const startSimulation = async () => {
     const profile = SUBSCRIBER_PROFILES[Math.floor(Math.random() * SUBSCRIBER_PROFILES.length)]
     setSubscriberProfile(profile)
+
+    sessionStartRef.current = Date.now()
+    recordingRef.current = []
+
     setPhase('chatting')
     setMessages([])
     setMessageCount(0)
@@ -321,6 +340,7 @@ export default function ChattingSimulationPage() {
     }
 
     setIsTyping(true)
+    recordEvent('y')
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -341,10 +361,12 @@ export default function ChattingSimulationPage() {
 
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))
+        const line = subscriberLines[i].trim()
+        recordEvent('r', line)
         setMessages(prev => [...prev, {
           id: `sub-init-${i}`,
           role: 'subscriber',
-          content: subscriberLines[i].trim(),
+          content: line,
           timestamp: new Date(),
         }])
       }
@@ -353,6 +375,7 @@ export default function ChattingSimulationPage() {
       setError(errorMessage)
     } finally {
       setIsTyping(false)
+      recordEvent('z')
       typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
@@ -385,6 +408,8 @@ export default function ChattingSimulationPage() {
     setMessages(prev => [...prev, userMessage])
     setMessageCount(prev => prev + 1)
     setInputValue('')
+    recordEvent('s', inputValue.trim())
+    recordEvent('i', '')
     setError(null)
     lastInputWasPaste.current = false
     scheduleReply()
@@ -393,6 +418,7 @@ export default function ChattingSimulationPage() {
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
+    recordEvent('i', value)
     if (waitingForIdle && value.length > 0) {
       scheduleReply()
     }
@@ -451,6 +477,7 @@ export default function ChattingSimulationPage() {
               typedCount,
               pasteCount,
               wpm: totalTypingTimeMs > 0 ? Math.round((totalWordsTyped / (totalTypingTimeMs / 60000)) * 10) / 10 : 0,
+              sessionRecording: recordingRef.current,
             })
           })
         } catch {
@@ -497,6 +524,8 @@ export default function ChattingSimulationPage() {
     setTotalTypingTimeMs(0)
     typingStartRef.current = 0
     lastInputWasPaste.current = false
+    recordingRef.current = []
+    sessionStartRef.current = 0
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -935,7 +964,7 @@ export default function ChattingSimulationPage() {
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    onPaste={() => { lastInputWasPaste.current = true }}
+                    onPaste={() => { lastInputWasPaste.current = true; recordEvent('p') }}
                     placeholder="Type your message as the creator..."
                     disabled={isTyping}
                     className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"
