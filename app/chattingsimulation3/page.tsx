@@ -393,13 +393,14 @@ export default function AfterCareSimulationPage() {
   }, [timerActive, timeLeft])
 
   const startSimulation = async () => {
-    if (!selectedScenario) return
+    const scenario = AFTERCARE_SCENARIOS[Math.floor(Math.random() * AFTERCARE_SCENARIOS.length)]
+    setSelectedScenario(scenario)
 
     setPhase('chatting')
     setMessages([])
     setMessageCount(0)
     setError(null)
-    setNotes(selectedScenario.prePopulatedNotes)
+    setNotes(scenario.prePopulatedNotes)
     setPasteCount(0)
     setTypedCount(0)
     setTotalWordsTyped(0)
@@ -415,10 +416,10 @@ export default function AfterCareSimulationPage() {
       setTimerActive(false)
     }
 
-    if (selectedScenario.chatterGoesFirst) {
-      const contextLabel = selectedScenario.id === 'goes-quiet'
+    if (scenario.chatterGoesFirst) {
+      const contextLabel = scenario.id === 'goes-quiet'
         ? '*goes quiet after purchasing PPV*'
-        : `*${selectedScenario.label.toLowerCase()}*`
+        : `*${scenario.label.toLowerCase()}*`
 
       setMessages([{
         id: 'system-context-0',
@@ -436,9 +437,9 @@ export default function AfterCareSimulationPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messages: [],
-            subscriberProfile: selectedScenario.subscriberProfile,
-            scenarioContext: selectedScenario.scenarioContext,
-            scenarioOpener: selectedScenario.subscriberOpener,
+          subscriberProfile: scenario.subscriberProfile,
+          scenarioContext: scenario.scenarioContext,
+          scenarioOpener: scenario.subscriberOpener,
           }),
         })
 
@@ -859,38 +860,6 @@ export default function AfterCareSimulationPage() {
               </div>
             </div>
 
-            {/* Scenario Selector */}
-            <div className="max-w-3xl mx-auto mb-8">
-              <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                Choose a Scenario
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {AFTERCARE_SCENARIOS.map((scenario) => (
-                  <button
-                    key={scenario.id}
-                    onClick={() => setSelectedScenario(scenario)}
-                    className="rounded-2xl p-5 text-left transition-all duration-200 hover:scale-[1.02]"
-                    style={{
-                      background: selectedScenario?.id === scenario.id ? '#e84393' : 'var(--bg-primary)',
-                      color: selectedScenario?.id === scenario.id ? '#ffffff' : 'var(--text-primary)',
-                      border: selectedScenario?.id === scenario.id ? '2px solid #e84393' : '2px solid var(--border)',
-                      boxShadow: selectedScenario?.id === scenario.id ? '0 4px 20px rgba(232, 67, 147, 0.3)' : 'var(--shadow-sm)',
-                    }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0">{scenario.icon}</span>
-                      <div>
-                        <div className="font-semibold text-sm">{scenario.label}</div>
-                        <div className="text-xs mt-1" style={{ color: selectedScenario?.id === scenario.id ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)' }}>
-                          {scenario.description}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Duration Selector */}
             <div className="max-w-2xl mx-auto mb-8">
               <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
@@ -922,12 +891,11 @@ export default function AfterCareSimulationPage() {
 
             <button
               onClick={startSimulation}
-              disabled={!selectedScenario}
-              className="text-lg px-10 py-4 rounded-xl font-semibold text-white transition-all duration-200 inline-flex items-center gap-2 disabled:opacity-40"
-              style={{ background: selectedScenario ? 'linear-gradient(135deg, #e84393, #fd79a8)' : '#d1d5db' }}
+              className="text-lg px-10 py-4 rounded-xl font-semibold text-white transition-all duration-200 inline-flex items-center gap-2 hover:scale-[1.02]"
+              style={{ background: 'linear-gradient(135deg, #e84393, #fd79a8)' }}
             >
               <Sparkles className="w-5 h-5" />
-              {!selectedScenario ? 'Select a Scenario First' : selectedDuration === 0 ? 'Start Aftercare Simulation' : `Start ${selectedDuration}-Minute Simulation`}
+              {selectedDuration === 0 ? 'Start Aftercare Simulation' : `Start ${selectedDuration}-Minute Simulation`}
             </button>
           </motion.div>
         )}
