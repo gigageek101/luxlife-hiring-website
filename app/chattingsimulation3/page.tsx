@@ -817,6 +817,37 @@ export default function AfterCareSimulationPage() {
               )}
             </div>
 
+            {/* MANDATORY GUIDE WARNING */}
+            <div
+              className="max-w-2xl mx-auto rounded-2xl p-8 mb-8 text-left"
+              style={{ background: '#fef2f2', border: '2px solid #fca5a5', boxShadow: '0 4px 20px rgba(239, 68, 68, 0.15)' }}
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: '#fee2e2' }}>
+                  ⚠️
+                </div>
+                <div>
+                  <h3 className="text-xl font-black mb-2" style={{ color: '#dc2626' }}>
+                    DO NOT start this simulation before reading the guide
+                  </h3>
+                  <p className="text-sm mb-4 leading-relaxed" style={{ color: '#991b1b' }}>
+                    You <strong>must</strong> read the full Aftercare Guide <strong>MULTIPLE times</strong> and take notes before attempting this simulation. You won&apos;t remember the stages, the message variations, or the correct tone if you don&apos;t study first. This simulation will score you on all 5 stages — if you haven&apos;t read the guide, you will fail.
+                  </p>
+                  <a
+                    href="https://pentagonal-thief-156.notion.site/AFTERCARE-THE-FULL-GUIDE-310b6586b06d80238d3fc74454ca73fe?source=copy_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
+                    style={{ background: '#dc2626', color: '#ffffff' }}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Read the Full Aftercare Guide
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div
               className="max-w-2xl mx-auto rounded-2xl p-8 mb-8 text-left"
               style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
@@ -826,29 +857,36 @@ export default function AfterCareSimulationPage() {
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: '#e84393' }}>1</div>
                   <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Pick a Scenario</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Each scenario starts with a different post-PPV situation — he goes quiet, compliments you, feels guilty, etc.</p>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Random Scenario Assigned</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>You&apos;ll be dropped into a random post-PPV situation — he might go quiet, compliment you, feel guilty, open up, deflect with humor, or need to leave. You must handle it.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: '#e84393' }}>2</div>
                   <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Use the Pre-Populated Notes</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>The notes panel already has his info from earlier phases — name, job, hobbies, personal details. Use these to personalize your aftercare.</p>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Notes Are Pre-Populated</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>The notes panel already has his info from earlier phases — name, job, hobbies, personal details. Use these to personalize your aftercare through all 5 stages.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: '#e84393' }}>3</div>
                   <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Deliver the Aftercare</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Follow the aftercare flow: Breath Moment → Vulnerability Drop → Personal Callback → Gratitude Close → Re-entry Seed.</p>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Follow the 5-Stage Aftercare Flow</p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Every aftercare session follows these stages in order:</p>
+                    <ol className="text-sm mt-2 space-y-1.5 list-none" style={{ color: 'var(--text-secondary)' }}>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: '#e84393' }}>A.</span> <strong>Breath Moment</strong> — breathless, like it got to you too</li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: '#e84393' }}>B.</span> <strong>Vulnerability Drop</strong> — soft, honest, hesitant</li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: '#e84393' }}>C.</span> <strong>Personal Callback</strong> — reference his job, hobbies, details from notes</li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: '#e84393' }}>D.</span> <strong>Gratitude Close</strong> — warm close, plant the re-entry seed</li>
+                      <li className="flex items-center gap-2"><span className="font-bold" style={{ color: '#e84393' }}>E.</span> <strong>Next Day Re-Entry</strong> — seed for tomorrow (planted in D)</li>
+                    </ol>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: '#e84393' }}>4</div>
                   <div>
                     <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Get Scored on 7 Categories</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Emotional authenticity, personalization, name usage, re-engagement seeds, texting style, pacing, and no hard-sell.</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Emotional authenticity, personalization using notes, name usage, re-engagement seeds, texting style, pacing, and no hard-sell.</p>
                   </div>
                 </div>
               </div>
