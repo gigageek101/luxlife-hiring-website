@@ -1106,7 +1106,7 @@ export default function AfterCareSimulationPage() {
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    onPaste={() => { lastInputWasPaste.current = true }}
+                    onPaste={() => { lastInputWasPaste.current = true; recordEvent('p') }}
                     placeholder="Type your aftercare message..."
                     disabled={isTyping}
                     className="flex-1 px-4 py-3 rounded-full text-[15px] outline-none transition-all duration-200"

@@ -1275,6 +1275,11 @@ function AdminPanelContent() {
                                 <h3 className="text-lg font-bold mb-4">Full Conversation</h3>
                                 <div className={`space-y-2 pr-2 ${exportingReportId === report.id ? '' : 'max-h-96 overflow-y-auto'}`}>
                                   {report.conversation.map((msg, i) => (
+                                    msg.role === 'system' ? (
+                                      <div key={i} className="flex justify-center">
+                                        <span className="text-xs italic px-3 py-1 rounded-full bg-gray-200 text-gray-600">{msg.content}</span>
+                                      </div>
+                                    ) : (
                                     <div key={i} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
                                       {msg.contentType === 'voice_memo' && msg.role === 'creator' ? (
                                         <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#7c3aed', color: 'white' }}>🎤 Voice Memo</div>
@@ -1301,6 +1306,7 @@ function AdminPanelContent() {
                                         </div>
                                       )}
                                     </div>
+                                    )
                                   ))}
                                 </div>
                               </div>
@@ -1318,7 +1324,7 @@ function AdminPanelContent() {
           {activeTab === 'peruser' && (
             <>
               {/* Per User Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                 <div className="card bg-violet-50 border-2 border-violet-200">
                   <div className="flex items-center gap-3">
                     <Users className="w-8 h-8 text-violet-600" />
@@ -1978,6 +1984,11 @@ function AdminPanelContent() {
                                                 <h4 className="text-sm font-bold mb-3">Full Conversation</h4>
                                                 <div className="space-y-2 max-h-80 overflow-y-auto pr-2">
                                                   {report.conversation.map((msg, i) => (
+                                                    msg.role === 'system' ? (
+                                                      <div key={i} className="flex justify-center">
+                                                        <span className="text-xs italic px-3 py-1 rounded-full bg-gray-200 text-gray-600">{msg.content}</span>
+                                                      </div>
+                                                    ) : (
                                                     <div key={i} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
                                                       {msg.contentType === 'voice_memo' && msg.role === 'creator' ? (
                                                         <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#7c3aed', color: 'white' }}>Voice Memo</div>
@@ -2002,6 +2013,7 @@ function AdminPanelContent() {
                                                         </div>
                                                       )}
                                                     </div>
+                                                    )
                                                   ))}
                                                 </div>
                                               </div>

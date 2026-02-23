@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
           simulationType: r.simulation_type || 'chatting',
           wpm: parseFloat(r.wpm) || 0,
           completedAt: r.completed_at,
-          hasRecording: r.has_recording === true || r.has_recording === 't',
+          hasRecording: !!(r.has_recording === true || r.has_recording === 't' || r.has_recording === 'true'),
         }
       } catch (err) {
         console.error('Error processing report row:', r.id, err)
