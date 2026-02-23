@@ -317,7 +317,7 @@ export default function SextingSimulationPage() {
     } finally {
       setIsTyping(false)
       recordEvent('z')
-      typingStartRef.current = Date.now()
+      typingStartRef.current = 0
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }, [recordEvent])
@@ -415,7 +415,7 @@ export default function SextingSimulationPage() {
     } finally {
       setIsTyping(false)
       recordEvent('z')
-      typingStartRef.current = Date.now()
+      typingStartRef.current = 0
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }
@@ -429,6 +429,7 @@ export default function SextingSimulationPage() {
     if (typingStartRef.current > 0) {
       setTotalTypingTimeMs(prev => prev + (now - typingStartRef.current))
     }
+    typingStartRef.current = 0
     const words = inputValue.trim().split(/\s+/).filter(w => w.length > 0).length
     setTotalWordsTyped(prev => prev + words)
 
@@ -492,6 +493,9 @@ export default function SextingSimulationPage() {
   }
 
   const handleInputChange = (value: string) => {
+    if (typingStartRef.current === 0 && value.length > 0) {
+      typingStartRef.current = Date.now()
+    }
     setInputValue(value)
     recordEvent('i', value)
     if (waitingForIdle && value.length > 0) {
