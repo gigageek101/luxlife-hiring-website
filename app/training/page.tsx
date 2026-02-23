@@ -49,6 +49,15 @@ const trainingDays = [
     description: 'Conversation handling and emotional connection mastery',
     path: '/training/day5',
     hasAssessment: true
+  },
+  {
+    day: 6,
+    emoji: '🎮',
+    title: 'Simulation Portal',
+    description: 'Practice your skills with AI-powered chatting simulations',
+    path: '/simulations',
+    hasAssessment: false,
+    isSimulation: true
   }
 ]
 
@@ -136,15 +145,20 @@ function TrainingDashboardContent() {
                       {training.description}
                     </p>
 
-                    {/* Assessment Badge */}
-                    {training.hasAssessment && (
+                    {/* Badge */}
+                    {'isSimulation' in training && training.isSimulation ? (
+                      <div className="text-center">
+                        <span className="inline-block px-3 py-1 text-xs font-medium rounded-full" style={{ background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
+                          🎯 Practice Simulations
+                        </span>
+                      </div>
+                    ) : training.hasAssessment ? (
                       <div className="text-center">
                         <span className="inline-block px-3 py-1 text-xs font-medium rounded-full" style={{ background: 'rgba(255, 107, 53, 0.1)', color: 'var(--accent)' }}>
                           ✓ Includes Assessment
                         </span>
                       </div>
-                    )}
-                    {!training.hasAssessment && (
+                    ) : (
                       <div className="text-center">
                         <span className="inline-block px-3 py-1 text-xs font-medium rounded-full" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
                           ℹ No Assessment
@@ -155,7 +169,7 @@ function TrainingDashboardContent() {
                     {/* Arrow */}
                     <div className="flex justify-center mt-4">
                       <div className="flex items-center gap-2 text-sm font-medium group-hover:gap-3 transition-all duration-300" style={{ color: 'var(--accent)' }}>
-                        Start Training
+                        {'isSimulation' in training && training.isSimulation ? 'Enter Portal' : 'Start Training'}
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>

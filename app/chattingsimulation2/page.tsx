@@ -814,6 +814,32 @@ export default function SextingSimulationPage() {
               )}
             </div>
 
+            <div
+              className="max-w-2xl mx-auto rounded-2xl p-6 mb-6 text-left"
+              style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', border: '2px solid #f59e0b' }}
+            >
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#d97706' }} />
+                <div>
+                  <h3 className="text-lg font-bold mb-2" style={{ color: '#92400e' }}>Read the Guide First!</h3>
+                  <p className="text-sm mb-3" style={{ color: '#78350f' }}>
+                    Do <strong>not</strong> start this simulation before reading the complete Sexting guide multiple times and taking notes. You won&apos;t remember the material without notes.
+                  </p>
+                  <a
+                    href="https://pentagonal-thief-156.notion.site/Sexting-Guide-303b6586b06d803183aede58dec11e4f?source=copy_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
+                    style={{ background: '#d97706', color: '#ffffff' }}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Read the Sexting Guide
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div className="max-w-2xl mx-auto rounded-2xl p-8 mb-8 text-left" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>The PPV Framework</h3>
               <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
