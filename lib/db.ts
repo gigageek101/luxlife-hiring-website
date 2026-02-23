@@ -56,6 +56,7 @@ export async function initDatabase() {
         paste_count INTEGER DEFAULT 0,
         simulation_type VARCHAR(20) DEFAULT 'chatting',
         wpm DECIMAL(5,1) DEFAULT 0,
+        session_recording JSONB,
         completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `

@@ -230,6 +230,17 @@ export default function AfterCareSimulationPage() {
   const scenarioRef = useRef<AfterCareScenario | null>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
   const typingStartRef = useRef<number>(0)
+  const recordingRef = useRef<{t:number;e:string;d:string}[]>([])
+  const sessionStartRef = useRef<number>(0)
+
+  const recordEvent = useCallback((eventType: string, data: string = '') => {
+    if (sessionStartRef.current === 0) return
+    recordingRef.current.push({
+      t: Date.now() - sessionStartRef.current,
+      e: eventType,
+      d: data,
+    })
+  }, [])
 
   useEffect(() => {
     const stored = localStorage.getItem('sim_user')
@@ -313,6 +324,7 @@ export default function AfterCareSimulationPage() {
 
     setWaitingForIdle(false)
     setIsTyping(true)
+    recordEvent('y')
     setError(null)
 
     try {
@@ -343,10 +355,12 @@ export default function AfterCareSimulationPage() {
 
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))
+        const line = subscriberLines[i].trim()
+        recordEvent('r', line)
         setMessages(prev => [...prev, {
           id: `sub-${Date.now()}-${i}`,
           role: 'subscriber',
-          content: subscriberLines[i].trim(),
+          content: line,
           timestamp: new Date(),
         }])
       }
@@ -355,10 +369,11 @@ export default function AfterCareSimulationPage() {
       setError(errorMessage)
     } finally {
       setIsTyping(false)
+      recordEvent('z')
       typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     }
-  }, [])
+  }, [recordEvent])
 
   const scheduleReply = useCallback(() => {
     resetReplyTimer()
@@ -396,6 +411,9 @@ export default function AfterCareSimulationPage() {
     const scenario = AFTERCARE_SCENARIOS[Math.floor(Math.random() * AFTERCARE_SCENARIOS.length)]
     setSelectedScenario(scenario)
 
+    sessionStartRef.current = Date.now()
+    recordingRef.current = []
+
     setPhase('chatting')
     setMessages([])
     setMessageCount(0)
@@ -427,19 +445,21 @@ export default function AfterCareSimulationPage() {
         content: contextLabel,
         timestamp: new Date(),
       }])
+      recordEvent('x', contextLabel)
       typingStartRef.current = Date.now()
       setTimeout(() => inputRef.current?.focus(), 100)
     } else {
       setIsTyping(true)
+      recordEvent('y')
       try {
         const response = await fetch('/api/chat-aftercare', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             messages: [],
-          subscriberProfile: scenario.subscriberProfile,
-          scenarioContext: scenario.scenarioContext,
-          scenarioOpener: scenario.subscriberOpener,
+            subscriberProfile: scenario.subscriberProfile,
+            scenarioContext: scenario.scenarioContext,
+            scenarioOpener: scenario.subscriberOpener,
           }),
         })
 
@@ -453,10 +473,12 @@ export default function AfterCareSimulationPage() {
 
         for (let i = 0; i < subscriberLines.length; i++) {
           await new Promise(resolve => setTimeout(resolve, i * 600))
+          const line = subscriberLines[i].trim()
+          recordEvent('r', line)
           setMessages(prev => [...prev, {
             id: `sub-init-${i}`,
             role: 'subscriber',
-            content: subscriberLines[i].trim(),
+            content: line,
             timestamp: new Date(),
           }])
         }
@@ -465,6 +487,7 @@ export default function AfterCareSimulationPage() {
         setError(errorMessage)
       } finally {
         setIsTyping(false)
+        recordEvent('z')
         typingStartRef.current = Date.now()
         setTimeout(() => inputRef.current?.focus(), 100)
       }
@@ -498,6 +521,8 @@ export default function AfterCareSimulationPage() {
     setMessages(prev => [...prev, userMessage])
     setMessageCount(prev => prev + 1)
     setInputValue('')
+    recordEvent('s', inputValue.trim())
+    recordEvent('i', '')
     setError(null)
     lastInputWasPaste.current = false
     scheduleReply()
@@ -506,6 +531,7 @@ export default function AfterCareSimulationPage() {
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
+    recordEvent('i', value)
     if (waitingForIdle && value.length > 0) {
       scheduleReply()
     }
@@ -570,6 +596,7 @@ export default function AfterCareSimulationPage() {
               pasteCount,
               simulationType: 'aftercare',
               wpm: totalTypingTimeMs > 0 ? Math.round((totalWordsTyped / (totalTypingTimeMs / 60000)) * 10) / 10 : 0,
+              sessionRecording: recordingRef.current,
             })
           })
         } catch {
@@ -617,6 +644,8 @@ export default function AfterCareSimulationPage() {
     typingStartRef.current = 0
     lastInputWasPaste.current = false
     setSelectedScenario(null)
+    recordingRef.current = []
+    sessionStartRef.current = 0
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -1541,57 +1570,51 @@ export default function AfterCareSimulationPage() {
             <div className="rounded-2xl p-8 mb-8" style={{ background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)', border: '1px solid #f9a8d4' }}>
               <h3 className="text-xl font-bold mb-5 flex items-center gap-2" style={{ color: '#831843' }}>
                 <Sparkles className="w-5 h-5" style={{ color: '#e84393' }} />
-                Ways to Get Better
+                How to Improve
               </h3>
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e84393', color: '#ffffff' }}>1</div>
                   <div>
-                    <p className="font-semibold" style={{ color: '#831843' }}>Export your aftercare test results as a PDF</p>
-                    <p className="text-sm mt-1" style={{ color: '#9d174d' }}>Click the &quot;Export Results as PDF&quot; button above to save your full evaluation report.</p>
+                    <p className="font-semibold" style={{ color: '#831843' }}>Read your report carefully</p>
+                    <p className="text-sm mt-1" style={{ color: '#9d174d' }}>Scroll through the detailed breakdown above. Pay close attention to the &quot;Areas to improve&quot; and &quot;Practice Advice&quot; for each category.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e84393', color: '#ffffff' }}>2</div>
                   <div>
-                    <p className="font-semibold" style={{ color: '#831843' }}>Download the aftercare learning guide PDF</p>
+                    <p className="font-semibold" style={{ color: '#831843' }}>Write down what you need to improve</p>
                     <p className="text-sm mt-1" style={{ color: '#9d174d' }}>
-                      This guide covers the complete aftercare flow — from Breath Moment to Next Day Re-Entry.
+                      Grab a piece of paper or open a notes app and write down your specific weak points. You won&apos;t remember them otherwise. Be specific — note the exact category, your score, and what the feedback said.
                     </p>
-                    <a
-                      href="/aftercare-guide.pdf"
-                      download
-                      className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
-                      style={{ background: '#e84393', color: '#ffffff' }}
-                    >
-                      <FileText className="w-4 h-4" />
-                      Download Aftercare Guide PDF
-                    </a>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e84393', color: '#ffffff' }}>3</div>
                   <div>
-                    <p className="font-semibold" style={{ color: '#831843' }}>Upload both files to Claude AI for personalized practice</p>
+                    <p className="font-semibold" style={{ color: '#831843' }}>Re-read the Aftercare Guide</p>
                     <p className="text-sm mt-1" style={{ color: '#9d174d' }}>
-                      Go to{' '}
-                      <a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" className="font-semibold underline" style={{ color: '#e84393' }}>
-                        claude.ai/new
-                        <ExternalLink className="w-3 h-3 inline ml-0.5 mb-0.5" />
-                      </a>
-                      {' '}and upload both PDFs as attachments. Then enter this prompt:
+                      Go back to the full aftercare guide and re-read the stages where you scored lowest. Focus on the specific message variations for each stage.
                     </p>
-                    <div className="mt-2 p-3 rounded-lg text-sm font-mono" style={{ background: '#1e293b', color: '#e2e8f0' }}>
-                      the first pdf is my aftercare test results and the second pdf is my aftercare learning guide. please give me practical examples based on the documents to help me improve my weakpoints in aftercare specifically.
-                    </div>
+                    <a
+                      href="https://pentagonal-thief-156.notion.site/AFTERCARE-THE-FULL-GUIDE-310b6586b06d80238d3fc74454ca73fe?source=copy_link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
+                      style={{ background: '#e84393', color: '#ffffff' }}
+                    >
+                      <FileText className="w-4 h-4" />
+                      Re-read the Aftercare Guide
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: '#e84393', color: '#ffffff' }}>4</div>
                   <div>
-                    <p className="font-semibold" style={{ color: '#831843' }}>Practice, come back, repeat</p>
+                    <p className="font-semibold" style={{ color: '#831843' }}>Come back and try again</p>
                     <p className="text-sm mt-1" style={{ color: '#9d174d' }}>
-                      Try different scenarios each time. Master the &quot;He Goes Quiet&quot; scenario first — it&apos;s the most common (7 out of 10 cases). <strong>Then work through all 8 scenarios until you&apos;re Elite in each one.</strong>
+                      Once you&apos;ve studied your weak points and re-read the guide, come back and run the simulation again. <strong>Repeat until you&apos;re scoring Elite consistently.</strong>
                     </p>
                   </div>
                 </div>

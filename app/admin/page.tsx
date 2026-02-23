@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -68,7 +68,8 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting'
+  simulationType: 'chatting' | 'sexting' | 'aftercare'
+  hasRecording?: boolean
   wpm: number
   completedAt: string
 }
@@ -83,7 +84,10 @@ function AdminPanelContent() {
   const [simReports, setSimReports] = useState<SimReport[]>([])
   const [simLoading, setSimLoading] = useState(true)
   const [simSearch, setSimSearch] = useState('')
-  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting'>('all')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare'>('all')
+  const [replayReport, setReplayReport] = useState<SimReport | null>(null)
+  const [replayRecording, setReplayRecording] = useState<{t:number;e:string;d:string}[] | null>(null)
+  const [replayLoading, setReplayLoading] = useState(false)
   const [expandedReport, setExpandedReport] = useState<number | null>(null)
   const [expandedSimCategories, setExpandedSimCategories] = useState<Set<string>>(new Set())
   const [exportingReportId, setExportingReportId] = useState<number | null>(null)
@@ -267,6 +271,23 @@ function AdminPanelContent() {
     }
   }
 
+  const openReplay = async (report: SimReport) => {
+    setReplayReport(report)
+    setReplayLoading(true)
+    setReplayRecording(null)
+    try {
+      const res = await fetch(`/api/admin/simulation-reports/${report.id}/recording`)
+      const data = await res.json()
+      if (data.success && data.recording) {
+        setReplayRecording(data.recording)
+      }
+    } catch (err) {
+      console.error('Failed to fetch recording:', err)
+    } finally {
+      setReplayLoading(false)
+    }
+  }
+
   const CHATTING_CATEGORY_WEIGHTS: Record<string, number> = {
     'Giving Him What He Wants to Hear': 25,
     'Making the Subscriber Feel Special': 20,
@@ -285,12 +306,24 @@ function AdminPanelContent() {
     'Response Speed & Engagement': 10,
   }
 
-  const getWeightsForReport = (report: SimReport): Record<string, number> => {
-    return report.simulationType === 'sexting' ? SEXTING_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+  const AFTERCARE_CATEGORY_WEIGHTS: Record<string, number> = {
+    'Emotional Authenticity & Vulnerability': 25,
+    'Personalization Using His Notes': 22,
+    'Name Usage & Intimacy Anchoring': 18,
+    'Re-engagement Seed Planting': 15,
+    'Texting Style & Casual American Flow': 10,
+    'Pacing & Message Timing': 7,
+    'No Hard-Sell / No Desperation': 3,
   }
 
-  const calculateWeightedScore = (categories: SimCategory[], simType?: 'chatting' | 'sexting'): number => {
-    const weights = simType === 'sexting' ? SEXTING_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+  const getWeightsForReport = (report: SimReport): Record<string, number> => {
+    if (report.simulationType === 'sexting') return SEXTING_CATEGORY_WEIGHTS
+    if (report.simulationType === 'aftercare') return AFTERCARE_CATEGORY_WEIGHTS
+    return CHATTING_CATEGORY_WEIGHTS
+  }
+
+  const calculateWeightedScore = (categories: SimCategory[], simType?: 'chatting' | 'sexting' | 'aftercare'): number => {
+    const weights = simType === 'sexting' ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
     let total = 0
     for (const cat of categories) {
       const weight = weights[cat.name] || 0
@@ -694,14 +727,14 @@ function AdminPanelContent() {
           {activeTab === 'simulations' && (
             <>
               {/* Sim Type Filter */}
-              <div className="flex gap-2 mb-6 max-w-lg mx-auto">
-                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame]] as const).map(([key, label, Icon]) => {
+              <div className="flex gap-2 mb-6 max-w-2xl mx-auto">
+                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap]] as const).map(([key, label, Icon]) => {
                   const count = key === 'all' ? simReports.length : simReports.filter(r => r.simulationType === key).length
                   return (
-                    <button key={key} onClick={() => setSimTypeFilter(key as 'all' | 'chatting' | 'sexting')}
+                    <button key={key} onClick={() => setSimTypeFilter(key as 'all' | 'chatting' | 'sexting' | 'aftercare')}
                       className={`flex-1 py-2.5 px-3 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-1.5 ${
                         simTypeFilter === key
-                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}>
                       {Icon && <Icon className="w-4 h-4" />}
@@ -717,8 +750,9 @@ function AdminPanelContent() {
                 const filtered = simTypeFilter === 'all' ? simReports : simReports.filter(r => r.simulationType === simTypeFilter)
                 const chattingCount = simReports.filter(r => r.simulationType === 'chatting').length
                 const sextingCount = simReports.filter(r => r.simulationType === 'sexting').length
+                const aftercareCount = simReports.filter(r => r.simulationType === 'aftercare').length
                 return (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
                   <div className="card bg-blue-50 border-2 border-blue-200">
                     <div className="flex items-center gap-3">
                       <MessageCircle className="w-8 h-8 text-blue-600" />
@@ -754,6 +788,12 @@ function AdminPanelContent() {
                     <div className="text-center">
                       <div className="text-2xl font-bold text-rose-900">{sextingCount}</div>
                       <div className="text-sm text-rose-700">Sexting</div>
+                    </div>
+                  </div>
+                  <div className="card bg-pink-50 border-2 border-pink-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-pink-900">{aftercareCount}</div>
+                      <div className="text-sm text-pink-700">Aftercare</div>
                     </div>
                   </div>
                 </div>
@@ -835,8 +875,8 @@ function AdminPanelContent() {
                                 <h3 className="text-lg font-bold">{report.telegramUsername}</h3>
                                 <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>{report.email}</p>
                                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : 'bg-orange-100 text-orange-700'}`}>
-                                    {report.simulationType === 'sexting' ? '🔥 Sexting' : '💬 Chatting'}
+                                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    {report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
                                   </span>
                                   <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                                     {report.durationMode}
@@ -876,6 +916,15 @@ function AdminPanelContent() {
                                   {getScoreLabel(weightedScore)}
                                 </div>
                               </div>
+                              {report.hasRecording && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); openReplay(report) }}
+                                  className="p-2 rounded-lg hover:bg-purple-50 transition-colors group flex-shrink-0"
+                                  title="Watch session replay"
+                                >
+                                  <Video className="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                                </button>
+                              )}
                               <button
                                 onClick={(e) => { e.stopPropagation(); exportSimReportAsPdf(report) }}
                                 disabled={exportingReportId === report.id}
@@ -1198,8 +1247,8 @@ function AdminPanelContent() {
                                 </div>
                               )}
 
-                              {/* Export PDF Button */}
-                              <div className="flex justify-center mb-8">
+                              {/* Action Buttons */}
+                              <div className="flex justify-center gap-3 mb-8">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); exportSimReportAsPdf(report) }}
                                   disabled={exportingReportId === report.id}
@@ -1209,6 +1258,16 @@ function AdminPanelContent() {
                                   {exportingReportId === report.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
                                   {exportingReportId === report.id ? 'Generating PDF...' : 'Export Report as PDF'}
                                 </button>
+                                {report.hasRecording && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); openReplay(report) }}
+                                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02]"
+                                    style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
+                                  >
+                                    <Video className="w-5 h-5" />
+                                    Watch Session Replay
+                                  </button>
+                                )}
                               </div>
 
                               {/* Full Conversation */}
@@ -1231,7 +1290,7 @@ function AdminPanelContent() {
                                         <div
                                           className="max-w-[75%] px-4 py-2 rounded-2xl text-sm"
                                           style={{
-                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting' ? '#e11d48' : '#ff6b35') : '#ffffff',
+                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting' ? '#e11d48' : report.simulationType === 'aftercare' ? '#e84393' : '#ff6b35') : '#ffffff',
                                             color: msg.role === 'creator' ? '#ffffff' : '#000000',
                                             borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
                                             borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
@@ -1285,6 +1344,12 @@ function AdminPanelContent() {
                   <div className="text-center">
                     <div className="text-2xl font-bold text-rose-900">{simReports.filter(r => r.simulationType === 'sexting').length}</div>
                     <div className="text-sm text-rose-700">Sexting Sims</div>
+                  </div>
+                </div>
+                <div className="card bg-pink-50 border-2 border-pink-200">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-pink-900">{simReports.filter(r => r.simulationType === 'aftercare').length}</div>
+                    <div className="text-sm text-pink-700">Aftercare Sims</div>
                   </div>
                 </div>
               </div>
@@ -1366,6 +1431,7 @@ function AdminPanelContent() {
                       const isOpen = expandedPerUser === index
                       const chattingSims = mu.simulations.filter(s => s.simulationType === 'chatting')
                       const sextingSims = mu.simulations.filter(s => s.simulationType === 'sexting')
+                      const aftercareSims = mu.simulations.filter(s => s.simulationType === 'aftercare')
                       const avgScore = mu.simulations.length > 0
                         ? Math.round(mu.simulations.reduce((s, r) => s + calculateWeightedScore(r.categories, r.simulationType), 0) / mu.simulations.length * 10) / 10
                         : null
@@ -1414,6 +1480,11 @@ function AdminPanelContent() {
                                   {sextingSims.length > 0 && (
                                     <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
                                       {sextingSims.length} Sexting
+                                    </span>
+                                  )}
+                                  {aftercareSims.length > 0 && (
+                                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-pink-100 text-pink-700">
+                                      {aftercareSims.length} Aftercare
                                     </span>
                                   )}
                                 </div>
@@ -1577,8 +1648,8 @@ function AdminPanelContent() {
                                               </div>
                                               <div>
                                                 <div className="flex flex-wrap items-center gap-2">
-                                                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : 'bg-orange-100 text-orange-700'}`}>
-                                                    {report.simulationType === 'sexting' ? 'Sexting' : 'Chatting'}
+                                                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                                    {report.simulationType === 'sexting' ? 'Sexting' : report.simulationType === 'aftercare' ? 'Aftercare' : 'Chatting'}
                                                   </span>
                                                   <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{report.durationMode}</span>
                                                   <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>{report.messageCount} msgs</span>
@@ -1606,6 +1677,15 @@ function AdminPanelContent() {
                                                 <div className="text-xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</div>
                                                 <div className="text-xs font-semibold" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</div>
                                               </div>
+                                              {report.hasRecording && (
+                                                <button
+                                                  onClick={(e) => { e.stopPropagation(); openReplay(report) }}
+                                                  className="p-2 rounded-lg hover:bg-purple-50 transition-colors group flex-shrink-0"
+                                                  title="Watch session replay"
+                                                >
+                                                  <Video className="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                                                </button>
+                                              )}
                                               <button
                                                 onClick={(e) => { e.stopPropagation(); exportSimReportAsPdf(report) }}
                                                 disabled={exportingReportId === report.id}
@@ -1912,7 +1992,7 @@ function AdminPanelContent() {
                                                       ) : (
                                                         <div className="max-w-[75%] px-3 py-2 rounded-2xl text-xs"
                                                           style={{
-                                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting' ? '#e11d48' : '#ff6b35') : '#ffffff',
+                                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting' ? '#e11d48' : report.simulationType === 'aftercare' ? '#e84393' : '#ff6b35') : '#ffffff',
                                                             color: msg.role === 'creator' ? '#ffffff' : '#000000',
                                                             borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
                                                             borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
@@ -1950,6 +2030,306 @@ function AdminPanelContent() {
           )}
         </div>
       </section>
+
+      {/* Session Replay Modal */}
+      {replayReport && (
+        <SessionReplayModal
+          report={replayReport}
+          recording={replayRecording}
+          loading={replayLoading}
+          onClose={() => { setReplayReport(null); setReplayRecording(null) }}
+        />
+      )}
+    </div>
+  )
+}
+
+function SessionReplayModal({ report, recording, loading, onClose }: {
+  report: SimReport
+  recording: {t:number;e:string;d:string}[] | null
+  loading: boolean
+  onClose: () => void
+}) {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [speed, setSpeed] = useState(1)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [replayMessages, setReplayMessages] = useState<{role: string; content: string}[]>([])
+  const [currentInput, setCurrentInput] = useState('')
+  const [showTypingIndicator, setShowTypingIndicator] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const eventIndexRef = useRef(0)
+  const startTimeRef = useRef(0)
+  const pausedAtRef = useRef(0)
+  const chatEndRef = useRef<HTMLDivElement>(null)
+
+  const totalDuration = recording && recording.length > 0 ? recording[recording.length - 1].t : 0
+
+  const formatTime = (ms: number) => {
+    const totalSec = Math.floor(ms / 1000)
+    const min = Math.floor(totalSec / 60)
+    const sec = totalSec % 60
+    return `${min}:${sec.toString().padStart(2, '0')}`
+  }
+
+  const resetReplay = useCallback(() => {
+    setReplayMessages([])
+    setCurrentInput('')
+    setShowTypingIndicator(false)
+    setCurrentTime(0)
+    eventIndexRef.current = 0
+    pausedAtRef.current = 0
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = null
+  }, [])
+
+  const stopPlayback = useCallback(() => {
+    setIsPlaying(false)
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = null
+    pausedAtRef.current = currentTime
+  }, [currentTime])
+
+  const processEventsUpTo = useCallback((targetTime: number) => {
+    if (!recording) return
+    const msgs: {role: string; content: string}[] = []
+    let input = ''
+    let typing = false
+    for (let i = 0; i < recording.length; i++) {
+      const ev = recording[i]
+      if (ev.t > targetTime) break
+      switch (ev.e) {
+        case 'i': input = ev.d; break
+        case 's': msgs.push({ role: 'creator', content: ev.d }); input = ''; break
+        case 'r': msgs.push({ role: 'subscriber', content: ev.d }); break
+        case 'x': msgs.push({ role: 'system', content: ev.d }); break
+        case 'y': typing = true; break
+        case 'z': typing = false; break
+      }
+      eventIndexRef.current = i + 1
+    }
+    setReplayMessages(msgs)
+    setCurrentInput(input)
+    setShowTypingIndicator(typing)
+  }, [recording])
+
+  const startPlayback = useCallback(() => {
+    if (!recording || recording.length === 0) return
+    setIsPlaying(true)
+    const baseTime = pausedAtRef.current
+    startTimeRef.current = Date.now()
+
+    processEventsUpTo(baseTime)
+
+    timerRef.current = setInterval(() => {
+      const elapsed = (Date.now() - startTimeRef.current) * speed
+      const newTime = baseTime + elapsed
+      if (newTime >= totalDuration) {
+        processEventsUpTo(totalDuration)
+        setCurrentTime(totalDuration)
+        setIsPlaying(false)
+        if (timerRef.current) clearInterval(timerRef.current)
+        timerRef.current = null
+        return
+      }
+      processEventsUpTo(newTime)
+      setCurrentTime(newTime)
+    }, 50)
+  }, [recording, speed, totalDuration, processEventsUpTo])
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [replayMessages])
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isPlaying) {
+      pausedAtRef.current = currentTime
+      if (timerRef.current) clearInterval(timerRef.current)
+      startTimeRef.current = Date.now()
+      timerRef.current = setInterval(() => {
+        const elapsed = (Date.now() - startTimeRef.current) * speed
+        const newTime = pausedAtRef.current + elapsed
+        if (newTime >= totalDuration) {
+          processEventsUpTo(totalDuration)
+          setCurrentTime(totalDuration)
+          setIsPlaying(false)
+          if (timerRef.current) clearInterval(timerRef.current)
+          timerRef.current = null
+          return
+        }
+        processEventsUpTo(newTime)
+        setCurrentTime(newTime)
+      }, 50)
+    }
+  // Only re-run when speed changes while playing
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [speed])
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = parseFloat(e.target.value)
+    const wasPlaying = isPlaying
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = null
+    setIsPlaying(false)
+
+    eventIndexRef.current = 0
+    processEventsUpTo(newTime)
+    setCurrentTime(newTime)
+    pausedAtRef.current = newTime
+
+    if (wasPlaying) {
+      setTimeout(() => startPlayback(), 50)
+    }
+  }
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      stopPlayback()
+    } else {
+      if (currentTime >= totalDuration) {
+        resetReplay()
+        setTimeout(() => startPlayback(), 50)
+      } else {
+        startPlayback()
+      }
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+      <div className="bg-white rounded-2xl w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <div>
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <Video className="w-5 h-5 text-purple-500" />
+              Session Replay
+            </h3>
+            <p className="text-sm text-gray-500">{report.telegramUsername} — {report.simulationType}</p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center p-12">
+            <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+          </div>
+        ) : !recording || recording.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center p-12 text-gray-400">
+            No recording data available
+          </div>
+        ) : (
+          <>
+            {/* Chat replay area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2" style={{ background: '#f1f5f9', minHeight: '300px', maxHeight: '50vh' }}>
+              {replayMessages.map((msg, i) => (
+                msg.role === 'system' ? (
+                  <div key={i} className="text-center">
+                    <span className="text-xs italic px-3 py-1 rounded-full bg-gray-200 text-gray-600">{msg.content}</span>
+                  </div>
+                ) : (
+                  <div key={i} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
+                    <div
+                      className="max-w-[75%] rounded-2xl px-4 py-2 text-sm"
+                      style={{
+                        background: msg.role === 'creator'
+                          ? (report.simulationType === 'sexting' ? '#e11d48' : report.simulationType === 'aftercare' ? '#e84393' : '#ff6b35')
+                          : '#ffffff',
+                        color: msg.role === 'creator' ? '#ffffff' : '#1e293b',
+                        border: msg.role === 'subscriber' ? '1px solid #e2e8f0' : 'none',
+                      }}
+                    >
+                      {msg.content}
+                    </div>
+                  </div>
+                )
+              ))}
+              {showTypingIndicator && (
+                <div className="flex justify-start">
+                  <div className="bg-white rounded-2xl px-4 py-2 text-sm border border-gray-200">
+                    <span className="flex gap-1">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* Live input preview */}
+            <div className="px-4 py-2 border-t bg-white">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 flex-shrink-0">Input:</span>
+                <div className="flex-1 rounded-lg bg-gray-50 px-3 py-2 text-sm min-h-[36px] border border-gray-200 font-mono">
+                  {currentInput}
+                  {isPlaying && <span className="inline-block w-0.5 h-4 bg-purple-500 ml-0.5 animate-pulse align-middle" />}
+                </div>
+              </div>
+            </div>
+
+            {/* Playback controls */}
+            <div className="p-4 border-t bg-gray-50 space-y-3">
+              {/* Progress bar */}
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-mono text-gray-500 w-12 text-right">{formatTime(currentTime)}</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={totalDuration}
+                  value={currentTime}
+                  onChange={handleSeek}
+                  className="flex-1 h-2 rounded-full accent-purple-500 cursor-pointer"
+                />
+                <span className="text-xs font-mono text-gray-500 w-12">{formatTime(totalDuration)}</span>
+              </div>
+
+              {/* Controls row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={togglePlayPause}
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white transition-colors"
+                  >
+                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
+                  </button>
+                  <button
+                    onClick={() => { resetReplay(); setIsPlaying(false) }}
+                    className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded transition-colors"
+                  >
+                    Reset
+                  </button>
+                </div>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 5].map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setSpeed(s)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        speed === s
+                          ? 'bg-purple-500 text-white'
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                      }`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

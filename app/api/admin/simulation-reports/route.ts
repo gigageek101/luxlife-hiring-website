@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS simulation_type VARCHAR(20) DEFAULT 'chatting'`
       await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS wpm DECIMAL(5,1) DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS session_recording JSONB`
     } catch {
       // columns may already exist
     }
@@ -45,7 +46,8 @@ export async function GET(request: NextRequest) {
         paste_count,
         simulation_type,
         wpm,
-        completed_at
+        completed_at,
+        (session_recording IS NOT NULL) as has_recording
       FROM simulation_reports
       ORDER BY completed_at DESC
     `
@@ -85,6 +87,7 @@ export async function GET(request: NextRequest) {
           simulationType: r.simulation_type || 'chatting',
           wpm: parseFloat(r.wpm) || 0,
           completedAt: r.completed_at,
+          hasRecording: r.has_recording === true || r.has_recording === 't',
         }
       } catch (err) {
         console.error('Error processing report row:', r.id, err)
@@ -104,6 +107,7 @@ export async function GET(request: NextRequest) {
           simulationType: r.simulation_type || 'chatting',
           wpm: parseFloat(r.wpm) || 0,
           completedAt: r.completed_at,
+          hasRecording: false,
         }
       }
     })
