@@ -1,0 +1,113 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export async function GET(request: NextRequest) {
+  try {
+    const username = request.nextUrl.searchParams.get('username')
+    const email = request.nextUrl.searchParams.get('email')
+
+    if (!username || !email) {
+      return NextResponse.json({ error: 'Username and email are required' }, { status: 400 })
+    }
+
+    try {
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS typed_count INTEGER DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS paste_count INTEGER DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS simulation_type VARCHAR(20) DEFAULT 'chatting'`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS wpm DECIMAL(5,1) DEFAULT 0`
+      await sql`ALTER TABLE simulation_reports ADD COLUMN IF NOT EXISTS session_recording JSONB`
+    } catch {
+      // columns may already exist
+    }
+
+    const reports = await sql`
+      SELECT 
+        id,
+        telegram_username,
+        email,
+        overall_score,
+        categories,
+        overall_feedback,
+        notes,
+        conversation,
+        duration_mode,
+        message_count,
+        typed_count,
+        paste_count,
+        simulation_type,
+        wpm,
+        completed_at,
+        (session_recording IS NOT NULL) as has_recording
+      FROM simulation_reports
+      WHERE telegram_username = ${username} AND email = ${email}
+      ORDER BY completed_at DESC
+    `
+
+    const processed = reports.map((r: any) => {
+      try {
+        let feedback = r.overall_feedback
+        if (typeof feedback === 'string') {
+          try { feedback = JSON.parse(feedback) } catch { /* keep as string */ }
+        }
+
+        let cats = r.categories
+        if (typeof cats === 'string') {
+          try { cats = JSON.parse(cats) } catch { cats = [] }
+        }
+        if (!Array.isArray(cats)) cats = []
+
+        let convo = r.conversation
+        if (typeof convo === 'string') {
+          try { convo = JSON.parse(convo) } catch { convo = [] }
+        }
+        if (!Array.isArray(convo)) convo = []
+
+        return {
+          id: r.id,
+          telegramUsername: r.telegram_username,
+          email: r.email,
+          overallScore: r.overall_score,
+          categories: cats,
+          overallFeedback: feedback,
+          notes: r.notes,
+          conversation: convo,
+          durationMode: r.duration_mode,
+          messageCount: r.message_count,
+          typedCount: r.typed_count || 0,
+          pasteCount: r.paste_count || 0,
+          simulationType: r.simulation_type || 'chatting',
+          wpm: parseFloat(r.wpm) || 0,
+          completedAt: r.completed_at,
+          hasRecording: !!(r.has_recording === true || r.has_recording === 't' || r.has_recording === 'true'),
+        }
+      } catch {
+        return {
+          id: r.id,
+          telegramUsername: r.telegram_username || 'unknown',
+          email: r.email || '',
+          overallScore: r.overall_score || 0,
+          categories: [],
+          overallFeedback: '',
+          notes: '',
+          conversation: [],
+          durationMode: r.duration_mode || 'unknown',
+          messageCount: r.message_count || 0,
+          typedCount: r.typed_count || 0,
+          pasteCount: r.paste_count || 0,
+          simulationType: r.simulation_type || 'chatting',
+          wpm: parseFloat(r.wpm) || 0,
+          completedAt: r.completed_at,
+          hasRecording: false,
+        }
+      }
+    })
+
+    return NextResponse.json({ success: true, reports: processed })
+  } catch (error) {
+    console.error('Error fetching user results:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

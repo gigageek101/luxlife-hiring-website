@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, LogOut } from 'lucide-react'
+import { ArrowRight, LogOut, BarChart3 } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import Reveal from '@/components/Reveal'
 import Link from 'next/link'
@@ -85,11 +85,18 @@ function TrainingDashboardContent() {
       {/* User info and logout */}
       {user && (
         <div className="fixed top-20 right-4 z-50">
-          <div className="card bg-white shadow-lg p-3 flex items-center gap-3">
-            <div className="text-right">
+          <div className="card bg-white shadow-lg p-2 md:p-3 flex items-center gap-2 md:gap-3">
+            <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold">{user.telegramUsername}</p>
               <p className="text-xs" style={{ color: 'var(--text-secondary-on-white)' }}>{user.email}</p>
             </div>
+            <Link
+              href="/my-results"
+              className="p-2 rounded-lg hover:bg-purple-50 text-purple-600 transition-colors"
+              title="My Results"
+            >
+              <BarChart3 className="w-5 h-5" />
+            </Link>
             <button
               onClick={handleLogout}
               className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
@@ -179,12 +186,37 @@ function TrainingDashboardContent() {
             ))}
           </div>
 
+          {/* My Results Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+            className="mt-8"
+          >
+            <Link href="/my-results" className="block card hover-lift group" style={{ background: 'linear-gradient(135deg, #7c3aed08, #6d28d908)', border: '2px solid #7c3aed20' }}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                    📊
+                  </div>
+                  <div>
+                    <h3 className="text-lg md:text-xl font-bold group-hover:text-purple-600 transition-colors">My Simulation Results</h3>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>
+                      View all your simulation scores, reports, and session recordings
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+              </div>
+            </Link>
+          </motion.div>
+
           {/* Progress Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-16 card glass-card text-center"
+            className="mt-8 card glass-card text-center"
           >
             <h3 className="text-xl font-semibold mb-3">📋 Training Requirements</h3>
             <div className="space-y-2" style={{ color: 'var(--text-secondary-on-white)' }}>
