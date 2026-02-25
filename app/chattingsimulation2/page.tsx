@@ -6,6 +6,7 @@ import {
   Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles,
   AlertCircle, Clock, Timer, X, LogIn, Loader2, Download, FileText,
   ExternalLink, Mic, Play, Lock, Unlock, Package, Flame, Reply, Zap,
+  GraduationCap, Eye, Brain, Pause, SkipForward,
 } from 'lucide-react'
 
 interface ChatMessage {
@@ -58,6 +59,16 @@ interface SimUser {
   id: number
   telegramUsername: string
   email: string
+}
+
+interface TeacherMessage {
+  role: 'creator' | 'subscriber'
+  content: string
+  contentType: 'text' | 'voice_memo' | 'video' | 'teaser'
+  price?: number
+  unlocked?: boolean
+  isFollowUp?: boolean
+  annotation?: string
 }
 
 const DURATION_OPTIONS = [
@@ -132,7 +143,7 @@ function getScoreLabel(score: number): string {
 }
 
 export default function SextingSimulationPage() {
-  const [phase, setPhase] = useState<'login' | 'intro' | 'chatting' | 'evaluating' | 'results'>('login')
+  const [phase, setPhase] = useState<'login' | 'intro' | 'chatting' | 'evaluating' | 'results' | 'teacher-loading' | 'teacher-watching' | 'teacher-evaluating' | 'teacher-results'>('login')
   const [simUser, setSimUser] = useState<SimUser | null>(null)
   const [loginTelegram, setLoginTelegram] = useState('')
   const [loginEmail, setLoginEmail] = useState('')
@@ -162,6 +173,15 @@ export default function SextingSimulationPage() {
   const [pendingPpvId, setPendingPpvId] = useState<string | null>(null)
   const [replyingToPpv, setReplyingToPpv] = useState<string | null>(null)
 
+  const [teacherConversation, setTeacherConversation] = useState<TeacherMessage[]>([])
+  const [teacherAnnotations, setTeacherAnnotations] = useState<string[]>([])
+  const [teacherDisplayIndex, setTeacherDisplayIndex] = useState(0)
+  const [teacherPlaying, setTeacherPlaying] = useState(false)
+  const [teacherEvaluation, setTeacherEvaluation] = useState<EvaluationResult | null>(null)
+  const [teacherError, setTeacherError] = useState<string | null>(null)
+  const [teacherVaultUsed, setTeacherVaultUsed] = useState(0)
+  const [teacherExpandedCategories, setTeacherExpandedCategories] = useState<Set<number>>(new Set())
+
   const lastInputWasPaste = useRef(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -175,6 +195,10 @@ export default function SextingSimulationPage() {
   const sessionStartRef = useRef<number>(0)
   const vaultRef = useRef<VaultItem[]>([])
   const pendingPpvRef = useRef<string | null>(null)
+
+  const teacherChatRef = useRef<HTMLDivElement>(null)
+  const teacherResultsRef = useRef<HTMLDivElement>(null)
+  const teacherPlayIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const recordEvent = useCallback((eventType: string, data: string = '') => {
     if (sessionStartRef.current === 0) return
@@ -662,6 +686,156 @@ export default function SextingSimulationPage() {
     }
   }
 
+  const startTeacherMode = async () => {
+    setTeacherError(null)
+    setTeacherConversation([])
+    setTeacherAnnotations([])
+    setTeacherDisplayIndex(0)
+    setTeacherPlaying(false)
+    setTeacherEvaluation(null)
+    setTeacherExpandedCategories(new Set())
+    setPhase('teacher-loading')
+
+    try {
+      const profile = SUBSCRIBER_SEXTING_PROFILES[Math.floor(Math.random() * SUBSCRIBER_SEXTING_PROFILES.length)]
+      const response = await fetch('/api/teacher-sexting-orchestrator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriberProfile: profile }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to run teacher simulation')
+      }
+
+      const data = await response.json()
+      setTeacherConversation(data.conversation)
+      setTeacherAnnotations(data.annotations)
+      setTeacherVaultUsed(data.vaultItemsUsed)
+      setTeacherDisplayIndex(0)
+      setTeacherPlaying(true)
+      setPhase('teacher-watching')
+    } catch (err) {
+      setTeacherError(err instanceof Error ? err.message : 'Something went wrong')
+      setPhase('intro')
+    }
+  }
+
+  useEffect(() => {
+    if (phase === 'teacher-watching' && teacherPlaying && teacherDisplayIndex < teacherConversation.length) {
+      const msg = teacherConversation[teacherDisplayIndex]
+      const delay = msg.contentType === 'text' ? 2500 : 1800
+      teacherPlayIntervalRef.current = setTimeout(() => {
+        setTeacherDisplayIndex(prev => prev + 1)
+        if (teacherChatRef.current) {
+          teacherChatRef.current.scrollTop = teacherChatRef.current.scrollHeight
+        }
+      }, delay)
+      return () => { if (teacherPlayIntervalRef.current) clearTimeout(teacherPlayIntervalRef.current) }
+    }
+    if (phase === 'teacher-watching' && teacherDisplayIndex >= teacherConversation.length && teacherConversation.length > 0) {
+      setTeacherPlaying(false)
+      const autoEvalTimer = setTimeout(() => {
+        evaluateTeacherConversation()
+      }, 2000)
+      return () => clearTimeout(autoEvalTimer)
+    }
+  }, [phase, teacherPlaying, teacherDisplayIndex, teacherConversation]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (teacherChatRef.current) {
+      teacherChatRef.current.scrollTop = teacherChatRef.current.scrollHeight
+    }
+  }, [teacherDisplayIndex])
+
+  const toggleTeacherPause = () => {
+    setTeacherPlaying(prev => !prev)
+  }
+
+  const skipToEnd = () => {
+    if (teacherPlayIntervalRef.current) clearTimeout(teacherPlayIntervalRef.current)
+    setTeacherDisplayIndex(teacherConversation.length)
+    setTeacherPlaying(false)
+  }
+
+  const evaluateTeacherConversation = async () => {
+    setPhase('teacher-evaluating')
+    setTeacherError(null)
+
+    try {
+      const allMessages = teacherConversation.map(m => ({
+        role: m.role,
+        content: m.content,
+        contentType: m.contentType,
+        price: m.price,
+        unlocked: m.unlocked,
+        isFollowUp: m.isFollowUp,
+      }))
+
+      const followUpData = [
+        { id: 'video-2', label: 'Video 2', sent: teacherVaultUsed >= 5, unlocked: teacherConversation.some(m => m.contentType === 'video' && m.price === 40 && m.unlocked === true), followedUp: teacherConversation.some(m => m.isFollowUp && m.role === 'creator') },
+        { id: 'video-3', label: 'Video 3', sent: teacherVaultUsed >= 7, unlocked: teacherConversation.some(m => m.contentType === 'video' && m.price === 60 && m.unlocked === true), followedUp: teacherConversation.some(m => m.isFollowUp && m.role === 'creator') },
+        { id: 'video-4', label: 'Video 4', sent: teacherVaultUsed >= 9, unlocked: teacherConversation.some(m => m.contentType === 'video' && m.price === 80 && m.unlocked === true), followedUp: false },
+      ]
+
+      const response = await fetch('/api/evaluate-sexting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: allMessages, followUpData }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to evaluate')
+      }
+
+      const data = await response.json()
+      setTeacherEvaluation(data.evaluation)
+      setPhase('teacher-results')
+
+      if (simUser && data.evaluation) {
+        const weighted = calculateWeightedScore(data.evaluation.categories || [])
+        try {
+          await fetch('/api/simulation/save-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              telegramUsername: simUser.telegramUsername,
+              email: simUser.email,
+              overallScore: Math.round(weighted),
+              categories: data.evaluation.categories,
+              overallFeedback: data.evaluation.overallFeedback,
+              notes: `[TEACHER DEMO - SEXTING] AI vs AI perfect simulation demo. Vault items used: ${teacherVaultUsed}`,
+              conversation: teacherConversation.map(m => ({ role: m.role, content: m.content, contentType: m.contentType })),
+              durationMode: 'teacher',
+              messageCount: teacherConversation.length,
+              typedCount: 0,
+              pasteCount: 0,
+              simulationType: 'sexting-teacher',
+              wpm: 0,
+              sessionRecording: null,
+            }),
+          })
+        } catch {
+          console.error('Failed to save teacher report')
+        }
+      }
+    } catch (err) {
+      setTeacherError(err instanceof Error ? err.message : 'Evaluation failed')
+      setPhase('teacher-watching')
+    }
+  }
+
+  const toggleTeacherCategory = (index: number) => {
+    setTeacherExpandedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(index)) next.delete(index)
+      else next.add(index)
+      return next
+    })
+  }
+
   const nextVaultItem = vaultItems.find(v => !v.sent)
   const unlockedCount = vaultItems.filter(v => v.type === 'video' && v.unlocked).length
   const sentVideos = vaultItems.filter(v => v.type === 'video' && v.sent)
@@ -963,11 +1137,33 @@ export default function SextingSimulationPage() {
               </div>
             </div>
 
-            <button onClick={startSimulation} className="text-lg px-10 py-4 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02] inline-flex items-center gap-2"
-              style={{ background: 'linear-gradient(135deg, #e11d48, #be123c)' }}>
-              <Flame className="w-5 h-5" />
-              {selectedDuration === 0 ? 'Start Free Simulation' : `Start ${selectedDuration}-Minute Simulation`}
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button onClick={startSimulation} className="text-lg px-10 py-4 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02] inline-flex items-center gap-2"
+                style={{ background: 'linear-gradient(135deg, #e11d48, #be123c)' }}>
+                <Flame className="w-5 h-5" />
+                {selectedDuration === 0 ? 'Start Free Simulation' : `Start ${selectedDuration}-Minute Simulation`}
+              </button>
+
+              <button onClick={startTeacherMode} className="text-lg px-10 py-4 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02] inline-flex items-center gap-2"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                <GraduationCap className="w-5 h-5" />
+                Watch Teacher Demo
+              </button>
+            </div>
+
+            <div className="max-w-2xl mx-auto mt-6 rounded-2xl p-6 text-left"
+              style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(109, 40, 217, 0.04))', border: '1px solid rgba(124, 58, 237, 0.2)' }}>
+              <div className="flex items-start gap-3">
+                <GraduationCap className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: '#7c3aed' }} />
+                <div>
+                  <h3 className="text-lg font-bold mb-2" style={{ color: '#5b21b6' }}>Teacher Demo Mode</h3>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    Watch two AIs demonstrate the <strong>perfect sexting conversation</strong>. One AI plays the subscriber, the other plays the creator using the framework flawlessly.
+                    Each message is annotated to explain what&apos;s happening and why. The conversation is then evaluated and saved to your results as &quot;Teacher&apos;s Results&quot; so you can study it.
+                  </p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
 
@@ -1235,6 +1431,522 @@ export default function SextingSimulationPage() {
         )}
 
         {/* RESULTS PHASE */}
+        {/* TEACHER LOADING PHASE */}
+        {phase === 'teacher-loading' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+              <Brain className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Generating Perfect Conversation...</h2>
+            <p className="text-center max-w-md" style={{ color: 'var(--text-secondary)' }}>Two AIs are having the perfect sexting conversation using the PPV framework. This may take 30-60 seconds.</p>
+            <div className="mt-8 flex gap-2">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="w-3 h-3 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: `${i * 150}ms` }} />
+              ))}
+            </div>
+            {teacherError && (
+              <div className="mt-6 p-4 rounded-xl" style={{ background: '#fef2f2' }}>
+                <p className="text-red-600 flex items-center gap-2"><AlertCircle className="w-5 h-5" />{teacherError}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* TEACHER WATCHING PHASE */}
+        {phase === 'teacher-watching' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+            className="flex flex-col" style={{ height: 'calc(100vh - 140px)' }}>
+
+            <div className="flex items-center justify-between px-4 md:px-6 py-3 rounded-t-2xl flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #5b21b6, #4c1d95)', color: 'white' }}>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white text-sm">Teacher Demo — AI vs AI</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                    {teacherDisplayIndex}/{teacherConversation.length} messages
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={toggleTeacherPause}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:scale-105"
+                  style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                  {teacherPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                </button>
+                <button onClick={skipToEnd}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:scale-105"
+                  style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                  <SkipForward className="w-3.5 h-3.5" />
+                </button>
+                {teacherDisplayIndex >= teacherConversation.length && (
+                  <button onClick={evaluateTeacherConversation}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:scale-105"
+                    style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white' }}>
+                    <div className="flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5" />
+                      <span>Evaluate &amp; Save</span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-1 overflow-hidden">
+              <div ref={teacherChatRef} className="flex-1 overflow-y-auto px-4 py-4" style={{ background: '#f0f0f0' }}>
+                {teacherConversation.slice(0, teacherDisplayIndex).map((msg, idx) => (
+                  <div key={idx} className="mb-3">
+                    {msg.annotation && (
+                      <div className="flex justify-center mb-1.5">
+                        <div className="px-3 py-1.5 rounded-full text-[11px] font-medium max-w-[85%] text-center"
+                          style={{ background: 'rgba(124, 58, 237, 0.1)', color: '#6d28d9', border: '1px solid rgba(124, 58, 237, 0.2)' }}>
+                          {msg.annotation}
+                        </div>
+                      </div>
+                    )}
+                    <div className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
+                      {msg.contentType === 'voice_memo' && msg.role === 'creator' ? (
+                        <div className="max-w-[75%] px-4 py-3 rounded-2xl" style={{ background: '#7c3aed', borderBottomRightRadius: '4px' }}>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                              <Mic className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-0.5">
+                                {[3, 5, 7, 9, 7, 5, 8, 6, 4, 7, 9, 6].map((h, i) => (
+                                  <div key={i} className="w-[3px] rounded-full" style={{ height: `${h * 2}px`, background: 'rgba(255,255,255,0.6)' }} />
+                                ))}
+                              </div>
+                              <p className="text-[10px] mt-1 text-white/50">Voice Memo</p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : msg.contentType === 'video' && msg.role === 'creator' ? (
+                        <div className="max-w-[75%] rounded-2xl overflow-hidden" style={{ borderBottomRightRadius: '4px' }}>
+                          <div className="relative flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)', minHeight: '100px', minWidth: '160px' }}>
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                              <Play className="w-5 h-5 text-white/70 ml-0.5" />
+                            </div>
+                            <div className="absolute top-2 right-2">
+                              {msg.unlocked === true ? (
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold" style={{ background: '#10b981', color: 'white' }}>
+                                  <Unlock className="w-2.5 h-2.5" /> Bought
+                                </span>
+                              ) : msg.unlocked === false ? (
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold" style={{ background: '#ef4444', color: 'white' }}>
+                                  <Lock className="w-2.5 h-2.5" /> Passed
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold" style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                                  <Lock className="w-2.5 h-2.5" /> Pending
+                                </span>
+                              )}
+                            </div>
+                            <div className="absolute bottom-2 left-2">
+                              <span className="px-2 py-0.5 rounded text-xs font-black" style={{ background: 'rgba(0,0,0,0.6)', color: '#10b981' }}>
+                                ${msg.price}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : msg.contentType === 'teaser' && msg.role === 'creator' ? (
+                        <div className="max-w-[75%] rounded-2xl overflow-hidden" style={{ borderBottomRightRadius: '4px' }}>
+                          <div className="relative flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #ff6b35, #ff4757)', minHeight: '80px', minWidth: '160px' }}>
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                              <Play className="w-5 h-5 text-white/80 ml-0.5" />
+                            </div>
+                            <div className="absolute top-2 left-2">
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{ background: 'rgba(0,0,0,0.4)', color: 'white' }}>FREE TEASER</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="max-w-[75%]">
+                          <div className="px-4 py-2.5 rounded-2xl"
+                            style={{
+                              background: msg.role === 'creator' ? (msg.isFollowUp ? '#6d28d9' : '#7c3aed') : '#ffffff',
+                              color: msg.role === 'creator' ? '#ffffff' : '#000000',
+                              borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
+                              borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+                            }}>
+                            <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                          </div>
+                          {msg.role === 'creator' && (
+                            <div className="flex justify-end mt-0.5">
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ color: '#7c3aed' }}>
+                                AI Creator
+                              </span>
+                            </div>
+                          )}
+                          {msg.role === 'subscriber' && (
+                            <div className="flex justify-start mt-0.5">
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ color: '#666' }}>
+                                AI Subscriber
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {teacherPlaying && teacherDisplayIndex < teacherConversation.length && (
+                  <div className="flex justify-center mb-2">
+                    <div className="px-3 py-2 rounded-2xl" style={{ background: '#ffffff', boxShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>
+                      <div className="flex gap-1.5">
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="px-4 py-3 rounded-b-2xl flex-shrink-0" style={{ background: 'linear-gradient(135deg, #5b21b6, #4c1d95)' }}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Eye className="w-4 h-4 text-white/60" />
+                  <span className="text-sm text-white/80">Watch mode — the AI demonstrates perfect framework execution</span>
+                </div>
+                <div className="w-48 h-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <div className="h-1.5 rounded-full transition-all duration-300" style={{
+                    width: `${teacherConversation.length > 0 ? (teacherDisplayIndex / teacherConversation.length) * 100 : 0}%`,
+                    background: '#a78bfa',
+                  }} />
+                </div>
+              </div>
+              {teacherDisplayIndex >= teacherConversation.length && (
+                <div className="mt-3 flex items-center justify-center gap-3">
+                  <button onClick={evaluateTeacherConversation}
+                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-all hover:scale-[1.02] inline-flex items-center gap-2"
+                    style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                    <Award className="w-4 h-4" />
+                    Evaluate Conversation &amp; Save as Teacher&apos;s Results
+                  </button>
+                  <button onClick={() => { setPhase('intro') }}
+                    className="px-4 py-2.5 rounded-xl font-semibold text-white/80 transition-all hover:scale-[1.02] hover:text-white"
+                    style={{ background: 'rgba(255,255,255,0.1)' }}>
+                    Back
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* TEACHER EVALUATING PHASE */}
+        {phase === 'teacher-evaluating' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+              <Brain className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Evaluating Teacher&apos;s Conversation...</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Scoring the AI&apos;s framework execution to show you what a perfect score looks like</p>
+            <div className="mt-8 flex gap-2">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="w-3 h-3 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: `${i * 150}ms` }} />
+              ))}
+            </div>
+            {teacherError && (
+              <div className="mt-6 p-4 rounded-xl" style={{ background: '#fef2f2' }}>
+                <p className="text-red-600 flex items-center gap-2"><AlertCircle className="w-5 h-5" />{teacherError}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* TEACHER RESULTS PHASE */}
+        {phase === 'teacher-results' && teacherEvaluation && (() => {
+          const weightedScore = calculateWeightedScore(teacherEvaluation.categories)
+          return (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: 'white' }}>
+                  <GraduationCap className="w-5 h-5" />
+                  <span className="font-bold text-sm">TEACHER&apos;S RESULTS — AI DEMO</span>
+                </div>
+                <p className="text-sm max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
+                  This is what a near-perfect conversation looks like. Study the scores, feedback, and conversation below. Your goal is to match or beat this in your own simulations.
+                </p>
+              </div>
+
+              <div ref={teacherResultsRef} style={{ background: '#ffffff', padding: '2rem', borderRadius: '1rem', border: '2px solid #7c3aed' }}>
+
+                <div className="text-center mb-10">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
+                    className="inline-flex items-center justify-center w-36 h-36 rounded-full mb-6 relative"
+                    style={{ background: `conic-gradient(${getScoreColor(weightedScore)} ${weightedScore}%, #e5e7eb ${weightedScore}%)` }}>
+                    <div className="w-28 h-28 rounded-full flex flex-col items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+                      <span className="text-4xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}</span>
+                      <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>/100</span>
+                    </div>
+                  </motion.div>
+                  <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Teacher&apos;s Score: {weightedScore}/100</h2>
+                  <p className="text-lg font-semibold mb-2" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</p>
+                  <p className="text-sm px-4 py-2 rounded-full inline-flex items-center gap-2" style={{ background: 'rgba(124, 58, 237, 0.1)', color: '#7c3aed' }}>
+                    <GraduationCap className="w-4 h-4" /> This is the benchmark — aim for this score!
+                  </p>
+                </div>
+
+                <div className="rounded-2xl overflow-hidden mb-10" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ background: 'var(--bg-secondary)' }}>
+                        <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>#</th>
+                        <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Category</th>
+                        <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Weight</th>
+                        <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Raw</th>
+                        <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Points</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {teacherEvaluation.categories.map((cat, idx) => {
+                        const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                        const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                        return (
+                          <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
+                            <td className="px-4 py-3 font-semibold" style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                            <td className="px-4 py-3 font-medium" style={{ color: 'var(--text-primary)' }}>{cat.name}</td>
+                            <td className="px-4 py-3 text-center" style={{ color: 'var(--text-muted)' }}>{weight} pts</td>
+                            <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}/10</td>
+                            <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{earned}</td>
+                          </tr>
+                        )
+                      })}
+                      <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                        <td colSpan={2} className="px-4 py-3 font-bold" style={{ color: 'var(--text-primary)' }}>TOTAL</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text-muted)' }}>100 pts</td>
+                        <td className="px-4 py-3 text-center"></td>
+                        <td className="px-4 py-3 text-center font-black text-lg" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                  {teacherEvaluation.categories.map((cat, idx) => {
+                    const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                    const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                    return (
+                      <motion.div key={idx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * idx }}
+                        className="rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+                        style={{
+                          background: 'var(--bg-primary)',
+                          border: `2px solid ${teacherExpandedCategories.has(idx) ? getCategoryScoreColor(cat.score) : 'var(--border)'}`,
+                          boxShadow: teacherExpandedCategories.has(idx) ? `0 4px 20px ${getCategoryScoreColor(cat.score)}20` : 'var(--shadow-sm)',
+                        }}
+                        onClick={() => toggleTeacherCategory(idx)}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-3xl font-black" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}</span>
+                          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>/10</span>
+                        </div>
+                        <p className="text-sm font-semibold leading-tight mb-1" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
+                        <div className="flex items-center justify-between text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+                          <span>{earned}/{weight} pts</span>
+                          <span className="font-semibold" style={{ color: getCategoryScoreColor(cat.score) }}>x{weight}</span>
+                        </div>
+                        <div className="w-full rounded-full h-1.5" style={{ background: '#e5e7eb' }}>
+                          <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${cat.score * 10}%`, background: getCategoryScoreColor(cat.score) }} />
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+
+                <div className="space-y-4 mb-10">
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Detailed Breakdown</h3>
+                  {teacherEvaluation.categories.map((cat, idx) => {
+                    const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                    const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                    return (
+                      <motion.div key={idx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 * idx }}
+                        className="rounded-2xl overflow-hidden"
+                        style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                        <button onClick={() => toggleTeacherCategory(idx)}
+                          className="w-full px-6 py-4 flex items-center justify-between text-left transition-colors duration-200"
+                          style={{ background: teacherExpandedCategories.has(idx) ? 'var(--bg-secondary)' : 'transparent' }}>
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getCategoryScoreColor(cat.score)}15`, color: getCategoryScoreColor(cat.score) }}>
+                              {cat.score}
+                            </div>
+                            <div>
+                              <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
+                              <p className="text-sm" style={{ color: getCategoryScoreColor(cat.score) }}>{earned}/{weight} pts (weight x{weight})</p>
+                            </div>
+                          </div>
+                          {teacherExpandedCategories.has(idx) ? <ChevronUp className="w-5 h-5" style={{ color: 'var(--text-muted)' }} /> : <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />}
+                        </button>
+                        <AnimatePresence>
+                          {teacherExpandedCategories.has(idx) && (
+                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden">
+                              <div className="px-6 pb-6 space-y-4">
+                                <div><p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{cat.feedback}</p></div>
+                                {cat.examples.good.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-semibold mb-2" style={{ color: '#10b981' }}>What the AI did well:</p>
+                                    <div className="space-y-2">
+                                      {cat.examples.good.map((ex, i) => (
+                                        <div key={i} className="px-4 py-2.5 rounded-xl text-sm" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#065f46', border: '1px solid rgba(16, 185, 129, 0.2)' }}>&ldquo;{ex}&rdquo;</div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {cat.examples.needsWork.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-semibold mb-2" style={{ color: '#f97316' }}>Even the AI could improve here:</p>
+                                    <div className="space-y-2">
+                                      {cat.examples.needsWork.map((ex, i) => (
+                                        <div key={i} className="px-4 py-2.5 rounded-xl text-sm" style={{ background: 'rgba(249, 115, 22, 0.08)', color: '#9a3412', border: '1px solid rgba(249, 115, 22, 0.2)' }}>&ldquo;{ex}&rdquo;</div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="p-4 rounded-xl" style={{ background: 'rgba(124, 58, 237, 0.06)', border: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                                  <p className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: '#7c3aed' }}><Sparkles className="w-4 h-4" />Key Takeaway</p>
+                                  <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>{cat.advice}</p>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+
+                <div className="rounded-2xl p-8 mb-8 space-y-6" style={{ background: '#ffffff', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}>
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Overall Assessment</h3>
+                  {typeof teacherEvaluation.overallFeedback === 'object' && teacherEvaluation.overallFeedback !== null ? (
+                    <>
+                      {teacherEvaluation.overallFeedback.summary && (
+                        <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{teacherEvaluation.overallFeedback.summary}</p>
+                      )}
+                      {teacherEvaluation.overallFeedback.strengths?.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#10b981' }}>
+                            <span className="w-2 h-2 rounded-full bg-green-500" /> Framework Strengths
+                          </h4>
+                          <div className="space-y-2">
+                            {teacherEvaluation.overallFeedback.strengths.map((s, i) => (
+                              <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(16, 185, 129, 0.06)', border: '1px solid rgba(16, 185, 129, 0.15)', color: '#065f46' }}>
+                                <span className="text-green-500 font-bold mt-0.5 flex-shrink-0">+</span><span>{s}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {teacherEvaluation.overallFeedback.weaknesses?.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ef4444' }}>
+                            <span className="w-2 h-2 rounded-full bg-red-500" /> Areas Where Even AI Struggles
+                          </h4>
+                          <div className="space-y-2">
+                            {teacherEvaluation.overallFeedback.weaknesses.map((w, i) => (
+                              <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.15)', color: '#991b1b' }}>
+                                <span className="text-red-500 font-bold mt-0.5 flex-shrink-0">-</span><span>{w}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {teacherEvaluation.overallFeedback.missedOpportunities?.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                            <span className="w-2 h-2 rounded-full bg-amber-500" /> Missed Opportunities
+                          </h4>
+                          <div className="space-y-2">
+                            {teacherEvaluation.overallFeedback.missedOpportunities.map((m, i) => (
+                              <div key={i} className="flex gap-3 px-4 py-3 rounded-xl text-sm leading-relaxed" style={{ background: 'rgba(245, 158, 11, 0.06)', border: '1px solid rgba(245, 158, 11, 0.15)', color: '#92400e' }}>
+                                <span className="text-amber-500 font-bold mt-0.5 flex-shrink-0">!</span><span>{m}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p className="leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>
+                      {typeof teacherEvaluation.overallFeedback === 'string' ? teacherEvaluation.overallFeedback : ''}
+                    </p>
+                  )}
+                </div>
+
+                <div className="rounded-2xl p-6 mb-8" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                    <GraduationCap className="w-5 h-5" style={{ color: '#7c3aed' }} /> Full Teacher Conversation
+                  </h3>
+                  <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                    {teacherConversation.map((msg, idx) => (
+                      <div key={idx}>
+                        {msg.annotation && (
+                          <div className="flex justify-center mb-1">
+                            <div className="px-3 py-1 rounded-full text-[10px] font-medium max-w-[90%] text-center"
+                              style={{ background: 'rgba(124, 58, 237, 0.08)', color: '#7c3aed' }}>
+                              {msg.annotation}
+                            </div>
+                          </div>
+                        )}
+                        <div className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
+                          {msg.contentType === 'voice_memo' && msg.role === 'creator' ? (
+                            <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#7c3aed', color: 'white' }}>🎤 Voice Memo</div>
+                          ) : msg.contentType === 'video' && msg.role === 'creator' ? (
+                            <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2"
+                              style={{ background: '#1a1a2e', color: 'white' }}>
+                              📹 PPV ${msg.price}
+                              {msg.unlocked === true && <span style={{ color: '#10b981' }}>✓ Bought</span>}
+                              {msg.unlocked === false && <span style={{ color: '#ef4444' }}>✗ Passed</span>}
+                            </div>
+                          ) : msg.contentType === 'teaser' && msg.role === 'creator' ? (
+                            <div className="max-w-[75%] px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#7c3aed', color: 'white' }}>🎬 Free Teaser</div>
+                          ) : (
+                            <div className="max-w-[75%] px-4 py-2 rounded-2xl text-sm"
+                              style={{
+                                background: msg.role === 'creator' ? '#7c3aed' : '#ffffff',
+                                color: msg.role === 'creator' ? '#ffffff' : '#000000',
+                                borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
+                                borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
+                              }}>
+                              {msg.content}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mb-8">
+                <button onClick={() => { setPhase('intro') }}
+                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02]"
+                  style={{ background: 'linear-gradient(135deg, #e11d48, #be123c)' }}>
+                  <Flame className="w-5 h-5" />
+                  Now Try It Yourself
+                </button>
+                <button onClick={startTeacherMode}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-[1.02]"
+                  style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                  <RotateCcw className="w-5 h-5" />
+                  Watch Another Demo
+                </button>
+              </div>
+
+              <div className="rounded-2xl p-6 mb-8 text-center" style={{ background: 'rgba(124, 58, 237, 0.06)', border: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                <p className="text-sm font-semibold mb-1" style={{ color: '#7c3aed' }}>Results saved as Teacher&apos;s Results</p>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  This demo evaluation has been saved to your results so you can compare it with your own simulation scores.
+                </p>
+              </div>
+            </motion.div>
+          )
+        })()}
+
         {phase === 'results' && evaluation && (() => {
           const weightedScore = calculateWeightedScore(evaluation.categories)
           return (

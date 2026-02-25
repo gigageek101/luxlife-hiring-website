@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -68,7 +68,7 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting' | 'aftercare'
+  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher'
   hasRecording?: boolean
   wpm: number
   completedAt: string
@@ -84,7 +84,7 @@ function AdminPanelContent() {
   const [simReports, setSimReports] = useState<SimReport[]>([])
   const [simLoading, setSimLoading] = useState(true)
   const [simSearch, setSimSearch] = useState('')
-  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare'>('all')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher'>('all')
   const [replayReport, setReplayReport] = useState<SimReport | null>(null)
   const [replayRecording, setReplayRecording] = useState<{t:number;e:string;d:string}[] | null>(null)
   const [replayLoading, setReplayLoading] = useState(false)
@@ -317,13 +317,13 @@ function AdminPanelContent() {
   }
 
   const getWeightsForReport = (report: SimReport): Record<string, number> => {
-    if (report.simulationType === 'sexting') return SEXTING_CATEGORY_WEIGHTS
+    if (report.simulationType === 'sexting' || report.simulationType === 'sexting-teacher') return SEXTING_CATEGORY_WEIGHTS
     if (report.simulationType === 'aftercare') return AFTERCARE_CATEGORY_WEIGHTS
     return CHATTING_CATEGORY_WEIGHTS
   }
 
-  const calculateWeightedScore = (categories: SimCategory[], simType?: 'chatting' | 'sexting' | 'aftercare'): number => {
-    const weights = simType === 'sexting' ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+  const calculateWeightedScore = (categories: SimCategory[], simType?: string): number => {
+    const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
     let total = 0
     for (const cat of categories) {
       const weight = weights[cat.name] || 0
@@ -730,19 +730,19 @@ function AdminPanelContent() {
           {activeTab === 'simulations' && (
             <>
               {/* Sim Type Filter */}
-              <div className="flex gap-1.5 md:gap-2 mb-6 max-w-2xl mx-auto overflow-x-auto pb-1">
-                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap]] as const).map(([key, label, Icon]) => {
+              <div className="flex gap-1.5 md:gap-2 mb-6 max-w-3xl mx-auto overflow-x-auto pb-1">
+                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
                   const count = key === 'all' ? simReports.length : simReports.filter(r => r.simulationType === key).length
                   return (
-                    <button key={key} onClick={() => setSimTypeFilter(key as 'all' | 'chatting' | 'sexting' | 'aftercare')}
+                    <button key={key} onClick={() => setSimTypeFilter(key as typeof simTypeFilter)}
                       className={`flex-1 min-w-0 py-2 md:py-2.5 px-2 md:px-3 rounded-lg font-semibold text-xs md:text-sm transition-all flex items-center justify-center gap-1 md:gap-1.5 ${
                         simTypeFilter === key
-                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}>
                       {Icon && <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0" />}
                       <span className="hidden sm:inline">{label}</span>
-                      <span className="sm:hidden">{key === 'all' ? 'All' : label.slice(0, 4)}</span>
+                      <span className="sm:hidden">{key === 'all' ? 'All' : label.slice(0, 5)}</span>
                       <span className={`text-xs px-1 md:px-1.5 py-0.5 rounded-full ${simTypeFilter === key ? 'bg-white/20' : 'bg-gray-200'}`}>{count}</span>
                     </button>
                   )
@@ -879,8 +879,8 @@ function AdminPanelContent() {
                                 <h3 className="text-base md:text-lg font-bold truncate">{report.telegramUsername}</h3>
                                 <p className="text-xs md:text-sm truncate" style={{ color: 'var(--text-secondary-on-white)' }}>{report.email}</p>
                                 <div className="flex flex-wrap items-center gap-1 md:gap-2 mt-1">
-                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                                    {report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
+                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    {report.simulationType === 'sexting-teacher' ? '🎓 Teacher Demo' : report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
                                   </span>
                                   <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                                     {report.durationMode}
@@ -1666,8 +1666,8 @@ function AdminPanelContent() {
                                               </div>
                                               <div className="min-w-0">
                                                 <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                                                    {report.simulationType === 'sexting' ? 'Sexting' : report.simulationType === 'aftercare' ? 'Aftercare' : 'Chatting'}
+                                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                                    {report.simulationType === 'sexting-teacher' ? '🎓 Teacher' : report.simulationType === 'sexting' ? 'Sexting' : report.simulationType === 'aftercare' ? 'Aftercare' : 'Chatting'}
                                                   </span>
                                                   <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{report.durationMode}</span>
                                                   <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>{report.messageCount} msgs</span>
