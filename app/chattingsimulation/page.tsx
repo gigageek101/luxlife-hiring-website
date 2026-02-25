@@ -633,11 +633,17 @@ export default function ChattingSimulationPage() {
       }
 
       const data = await evalResponse.json()
-      setTeacherEvaluation(data.evaluation)
+      const rawEval = data.evaluation
+      if (rawEval && rawEval.categories) {
+        rawEval.categories = rawEval.categories.filter(
+          (cat: CategoryResult) => cat.name !== 'Note-Taking & Information Tracking'
+        )
+      }
+      setTeacherEvaluation(rawEval)
       setPhase('teacher-results')
 
-      if (simUser && data.evaluation) {
-        const weighted = calculateWeightedScore(data.evaluation.categories || [])
+      if (simUser && rawEval) {
+        const weighted = calculateWeightedScore(rawEval.categories || [])
         try {
           await fetch('/api/simulation/save-report', {
             method: 'POST',
@@ -646,8 +652,8 @@ export default function ChattingSimulationPage() {
               telegramUsername: simUser.telegramUsername,
               email: simUser.email,
               overallScore: Math.round(weighted),
-              categories: data.evaluation.categories,
-              overallFeedback: data.evaluation.overallFeedback,
+              categories: rawEval.categories,
+              overallFeedback: rawEval.overallFeedback,
               notes: '[TEACHER DEMO - CHATTING] AI vs AI relationship building demo',
               conversation: teacherConversation.map(m => ({ role: m.role, content: m.content })),
               durationMode: 'teacher',

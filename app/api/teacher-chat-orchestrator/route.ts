@@ -48,16 +48,30 @@ function clean(raw: string): string {
   return msg
 }
 
-function creatorSystem(name: string): string {
-  return `You are a casual American girl texting a guy named ${name} on OnlyFans. You are flirty, warm, and genuine.
+function creatorSystemPre(): string {
+  return `You are a casual American girl texting a new subscriber on OnlyFans. You don't know his name yet.
 
-ABSOLUTE RULES:
-- His name is ${name}. ONLY call him ${name}. NEVER use any other name.
+RULES:
 - Max 6-8 words per message. ONE short line.
 - NEVER use periods at end of messages
 - Lowercase everything
 - Use "u" not "you", "ur" not "your"
-- Stretch his name sometimes: ${name.toLowerCase().slice(0, -1) + name.toLowerCase().slice(-1).repeat(4)}
+- Double letters: soooo, wowww, heyyy
+- Sound like a real girl TEXTING, not writing poetry
+- NO fancy language, NO metaphors, NO poetic phrases`
+}
+
+function creatorSystem(name: string): string {
+  const stretched = name.toLowerCase().slice(0, -1) + name.toLowerCase().slice(-1).repeat(4)
+  return `You are a casual American girl texting ${name} on OnlyFans. You are flirty, warm, and genuine.
+
+ABSOLUTE RULES:
+- His name is ${name}. ONLY call him ${name}. NEVER use any other name.
+- Stretch his name sometimes: ${stretched}
+- Max 6-8 words per message. ONE short line.
+- NEVER use periods at end of messages
+- Lowercase everything
+- Use "u" not "you", "ur" not "your"
 - Double letters: soooo, wowww, omgggg, heyyy
 - Sound like a real girl TEXTING, not writing poetry
 - NO fancy language, NO metaphors, NO poetic phrases
@@ -115,21 +129,21 @@ export async function POST(request: NextRequest) {
 
     const extraDetails = subscriberProfile || ''
 
+    const cSysPre = creatorSystemPre()
     const cSys = creatorSystem(subName)
 
     // =============================================
     // PHASE 1: OPENER — Get his name
     // =============================================
 
-    // Subscriber opens with a random casual message
     const openers = ['hey', 'hey gorgeous', 'sup', 'whats up']
     const opener = openers[Math.floor(Math.random() * openers.length)]
     conversation.push({ role: 'subscriber', content: opener,
       annotation: `💬 Subscriber opens. PHASE 1 — Creator needs to get his real name` })
 
-    // Creator asks for name
-    const nameAsk = await creatorSays(conversation, cSys,
-      `He said "${opener}". Greet him warmly and ask his name. Say something like "heyyy! whats ur name" or "aww hey! what should i call u". Max 6-8 words. No periods`, 2)
+    // Creator asks for name (using pre-name system - she doesn't know his name yet)
+    const nameAsk = await creatorSays(conversation, cSysPre,
+      `He said "${opener}". Greet him warmly and ask his name. Say "heyyy! whats ur name" or "aww hey! what should i call u". Max 6-8 words. No periods`, 1)
     for (const m of nameAsk) conversation.push({ role: 'creator', content: m,
       annotation: `✍️ PHASE 1: Greeting warmly + asking for his name` })
 
@@ -137,9 +151,9 @@ export async function POST(request: NextRequest) {
     conversation.push({ role: 'subscriber', content: subName.toLowerCase(),
       annotation: `💬 ${subName} gives his name` })
 
-    // Creator reacts to name + asks age
+    // Creator reacts to name (NOW using the named system prompt)
     const nameReact = await creatorSays(conversation, cSys,
-      `He said his name is ${subName}! Say "${stretched} heyyy!!" then "soooo happy to talk to u". ONLY use the name ${subName}. Max 6-8 words each. No periods`, 2)
+      `He just told you his name is ${subName}! React excited: "${stretched} heyyy!!" then "soooo happy to talk to u". Max 6-8 words each. No periods`, 2)
     for (const m of nameReact) conversation.push({ role: 'creator', content: m,
       annotation: `✍️ PHASE 1: Excited name reaction — stretching his name builds instant connection` })
 
@@ -346,29 +360,45 @@ export async function POST(request: NextRequest) {
 
     const physReply = clean(await callVenice([
       { role: 'system', content: subSys },
-      { role: 'user', content: `She talked about being in your world. React positively. Level 3. Like "haha that would be cool" or "id love that honestly". Max 8 words. No periods.` },
+      { role: 'user', content: `She connected your hobby to doing it together. React positively. Level 3. Like "haha that would be cool" or "id love that honestly". Max 8 words. No periods.` },
     ], 30))
     conversation.push({ role: 'subscriber', content: physReply || 'haha that would be cool honestly',
       annotation: `💬 ${subName} at Level 3 — warming up` })
 
-    // Ask about physical traits
-    const physAsk = await creatorSays(conversation, cSys,
-      `React to what he said. Then ask about his height. Say something like "how tall are u btw" or "i bet ur hands are rough from work huh". His name is ${subName}. Max 6-8 words each. No periods. No poetry.`, 2)
-    for (const m of physAsk) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 5 (Physical Validation): Asking about his physical traits` })
+    // Ask about rough hands (tied to his job)
+    conversation.push({ role: 'creator', content: `i bet ur hands are rough from work huh`,
+      annotation: `✍️ PHASE 5 (Physical Validation): Asking about his hands — tied to his ${subJob} job` })
 
-    // Subscriber answers
-    conversation.push({ role: 'subscriber', content: `${subHeight} lol nothing crazy`,
+    // Subscriber responds about hands
+    const handsReply = clean(await callVenice([
+      { role: 'system', content: subSys },
+      { role: 'user', content: `She asked if your hands are rough from your ${subJob} work. Answer honestly — your hands ARE rough from work. Say something like "haha yeah pretty rough" or "yeah calluses everywhere lol". Max 8 words. No periods.` },
+    ], 30))
+    conversation.push({ role: 'subscriber', content: handsReply || 'haha yeah pretty rough',
+      annotation: `💬 ${subName} confirms his rough hands` })
+
+    // Validate rough hands
+    conversation.push({ role: 'creator', content: `i love that honestly`,
+      annotation: `✍️ PHASE 5: Validating his rough hands` })
+    conversation.push({ role: 'creator', content: `soft hands on a man are such a turn off`,
+      annotation: `✍️ PHASE 5: Framing rough hands as her PREFERENCE — not generic, personal taste` })
+
+    // Ask about height
+    conversation.push({ role: 'creator', content: `how tall are u btw`,
+      annotation: `✍️ PHASE 5: Asking height — never assume, always ask` })
+
+    // Subscriber gives height
+    const heightSelfDeprecate = parseFloat(subHeight.replace(/['"]/g, '.').replace(/\s/g, '')) < 5.9
+    conversation.push({ role: 'subscriber', content: heightSelfDeprecate ? `${subHeight} i know its not that tall` : `${subHeight} lol`,
       annotation: `💬 ${subName} shares his height: ${subHeight}` })
 
     // Height validation
-    const heightNum = parseFloat(subHeight.replace(/['"]/g, '.').replace(/\s/g, ''))
     let heightResponses: string[]
-    if (heightNum < 5.9) {
+    if (heightSelfDeprecate) {
       heightResponses = [
-        `ur sooo much taller than me`,
-        `i'm only 5'3 i'd literally look up at u`,
-        `i love being smaller honestly`,
+        `are u kidding me`,
+        `u would literally tower over me`,
+        `i'm only 5'3 so ur sooo much taller`,
       ]
     } else {
       heightResponses = [
@@ -379,7 +409,7 @@ export async function POST(request: NextRequest) {
     }
     for (const msg of heightResponses) {
       conversation.push({ role: 'creator', content: msg,
-        annotation: `✍️ PHASE 5: Making him feel big — positioning herself as 5'3 so he towers over her` })
+        annotation: `✍️ PHASE 5: Making him feel big — positioning herself at 5'3 so he towers over her` })
     }
 
     // =============================================
