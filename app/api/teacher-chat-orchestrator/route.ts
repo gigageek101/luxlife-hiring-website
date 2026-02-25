@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const maxDuration = 60
 
-const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
+const VENICE_API_KEY = process.env.VENICE_API_KEY
 
 const SUBSCRIBER_PROMPT = `You are a real blue-collar American man who just subscribed to a girl's OnlyFans. You are having your FIRST conversation with her.
 
@@ -91,51 +91,58 @@ interface ConversationMessage {
   annotation?: string
 }
 
-async function callClaude(messages: { role: string; content: string }[], systemPrompt: string, maxTokens = 80): Promise<string> {
+async function callVenice(messages: { role: string; content: string }[], maxTokens = 80, temperature = 0.85): Promise<string> {
   for (let attempt = 0; attempt < 3; attempt++) {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.venice.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': CLAUDE_API_KEY!,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${VENICE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'venice-uncensored',
         max_tokens: maxTokens,
-        system: systemPrompt,
         messages,
-        temperature: 0.85,
+        temperature,
       }),
     })
 
     if (response.ok) {
       const data = await response.json()
-      return data.content?.[0]?.text || ''
+      return data.choices?.[0]?.message?.content || ''
     }
 
     if (response.status === 429 || response.status >= 500) {
-      await new Promise(r => setTimeout(r, Math.min(2000 * Math.pow(2, attempt), 12000)))
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
+      console.warn(`Venice API ${response.status}, retrying in ${delay}ms (attempt ${attempt + 1}/3)`)
+      await new Promise(r => setTimeout(r, delay))
       continue
     }
 
-    throw new Error(`Claude API error: ${response.status}`)
+    throw new Error(`Venice API error: ${response.status}`)
   }
   throw new Error('Max retries exceeded')
 }
 
-function buildSubMessages(conversation: ConversationMessage[]): { role: string; content: string }[] {
-  return conversation.map(m => ({
-    role: m.role === 'subscriber' ? 'assistant' : 'user',
-    content: m.content,
-  }))
+function buildSubMessages(conversation: ConversationMessage[], systemPrompt: string): { role: string; content: string }[] {
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  for (const m of conversation) {
+    msgs.push({
+      role: m.role === 'subscriber' ? 'assistant' : 'user',
+      content: m.content,
+    })
+  }
+  return msgs
 }
 
-function buildCreatorMessages(conversation: ConversationMessage[], instruction: string): { role: string; content: string }[] {
-  const msgs = conversation.map(m => ({
-    role: m.role === 'creator' ? 'assistant' : 'user',
-    content: m.content,
-  }))
+function buildCreatorMessages(conversation: ConversationMessage[], systemPrompt: string, instruction: string): { role: string; content: string }[] {
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  for (const m of conversation) {
+    msgs.push({
+      role: m.role === 'creator' ? 'assistant' : 'user',
+      content: m.content,
+    })
+  }
   msgs.push({ role: 'user', content: instruction })
   return msgs
 }
@@ -151,8 +158,8 @@ async function getCreatorMessages(conversation: ConversationMessage[], systemPro
     const inst = i === 0
       ? instruction
       : 'Send your next short message (6-8 words max). Don\'t repeat yourself — say something new that continues the flow. No periods'
-    const msgs = buildCreatorMessages(tempConvo, inst)
-    let reply = cleanReply(await callClaude(msgs, systemPrompt, 60))
+    const msgs = buildCreatorMessages(tempConvo, systemPrompt, inst)
+    const reply = cleanReply(await callVenice(msgs, 60))
     if (reply) {
       results.push(reply)
       tempConvo.push({ role: 'creator', content: reply })
@@ -168,8 +175,8 @@ function getLastSubMessage(conversation: ConversationMessage[]): string {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!CLAUDE_API_KEY) {
-      return NextResponse.json({ error: 'Claude API key not configured.' }, { status: 500 })
+    if (!VENICE_API_KEY) {
+      return NextResponse.json({ error: 'Venice API key not configured.' }, { status: 500 })
     }
 
     const { subscriberProfile } = await request.json()
@@ -181,13 +188,15 @@ export async function POST(request: NextRequest) {
       (subscriberProfile ? `\n\nYour specific profile: ${subscriberProfile}. Stay consistent with these traits. When asked, reveal info matching this profile.` : '')
     const creatorSystemPrompt = CREATOR_PROMPT
 
-    // Extract name from profile for annotation
     const nameMatch = subscriberProfile?.match(/Name:\s*(\w+)/)
     const subName = nameMatch ? nameMatch[1] : 'Subscriber'
 
     // === PHASE 1: SUBSCRIBER OPENS ===
     const openerInstruction = `Send your very first message to this creator. Keep it casual and short — 1-5 words max. Something like "hey" or "hey gorgeous" or just your name. You're a regular subscriber, not super invested yet. No periods`
-    const openerRaw = cleanReply(await callClaude([], subSystemPrompt + '\n\n' + openerInstruction, 30))
+    const openerRaw = cleanReply(await callVenice([
+      { role: 'system', content: subSystemPrompt },
+      { role: 'user', content: openerInstruction },
+    ], 30))
     const opener = openerRaw || 'hey'
     conversation.push({ role: 'subscriber', content: opener,
       annotation: `💬 ${subName} opens with a casual message. PHASE 1 — Creator needs to get his name` })
@@ -212,7 +221,7 @@ export async function POST(request: NextRequest) {
 
     // If we didn't get name yet, subscriber gives it
     if (!hasName) {
-      const nameReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 30))
+      const nameReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 30))
       conversation.push({ role: 'subscriber', content: nameReply || subName.toLowerCase(),
         annotation: `💬 ${subName} gives his name` })
 
@@ -226,11 +235,10 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 2: GET TO KNOW — Age + Location ===
-    let subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 40))
+    let subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 40))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} shares age/location. PHASE 2 — Creator should react warmly before asking about his job` })
 
-    // Creator reacts to location, asks about job
     const locationReaction = await getCreatorMessages(conversation, creatorSystemPrompt,
       `He just told you about where he lives and his age. He said: "${subReply}". React to his LOCATION specifically — say something nice about where he lives. Like "oh i loveeee [state]" or "i heard [state] is so beautiful". Then ask what he does for work. TWO separate thoughts. ONE message (6-8 words). No periods`, 3)
     for (const msg of locationReaction) {
@@ -239,11 +247,10 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 3: JOB VALIDATION ===
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 40))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 40))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} shares his job. PHASE 3 — This is the MOST IMPORTANT phase. Creator must validate his work as masculine and desirable` })
 
-    // Creator validates his job (2-3 messages)
     const jobValidation = await getCreatorMessages(conversation, creatorSystemPrompt,
       `He just told you his job: "${subReply}". This is the MOST IMPORTANT moment. You need to make him feel like his job is the most impressive thing you've ever heard. Frame it as masculine, admirable, and YOUR personal preference over office guys. React with genuine amazement first, then validate. Like "oh so u r literally the reason people have lights on at night" or "real men come home dirty from work". ONE message (6-8 words). No periods`, 3)
     for (const msg of jobValidation) {
@@ -251,12 +258,10 @@ export async function POST(request: NextRequest) {
         annotation: `✍️ PHASE 3 (Job Validation): Making him feel like his work is the most masculine, impressive thing ever. Blue-collar men never hear this — it creates a deep emotional bond` })
     }
 
-    // Subscriber responds to validation (should be warming up - Level 2-3)
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} is warming up — notice how he's opening up more after the job validation` })
 
-    // Creator continues validating (1-2 more messages)
     const jobFollow = await getCreatorMessages(conversation, creatorSystemPrompt,
       `He responded to your job validation: "${subReply}". Keep going — add one more specific compliment about his type of work, then naturally transition to asking what he does for fun/hobbies. ONE message (6-8 words). No periods`, 2)
     for (const msg of jobFollow) {
@@ -265,7 +270,7 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 4: HOBBY MIRRORING ===
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} shares his hobbies. PHASE 4 — Creator must react with genuine excitement and mirror his interests` })
 
@@ -276,7 +281,7 @@ export async function POST(request: NextRequest) {
         annotation: `✍️ PHASE 4 (Hobby Mirroring): Reacting with excitement to his hobby then asking a specific follow-up — this shows genuine interest not just generic "thats cool"` })
     }
 
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} shares more details about his hobby — he's opening up because she showed real interest` })
 
@@ -288,7 +293,7 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 5: PHYSICAL VALIDATION ===
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} responds — conversation is flowing naturally now` })
 
@@ -299,7 +304,7 @@ export async function POST(request: NextRequest) {
         annotation: `✍️ PHASE 5 (Physical Validation): Transitioning to physical compliments — tied specifically to what he does, not generic` })
     }
 
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} responds to the physical topic` })
 
@@ -311,7 +316,7 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 6: DOMESTIC FANTASY ===
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} is engaged now — he's sharing more freely` })
 
@@ -322,7 +327,7 @@ export async function POST(request: NextRequest) {
         annotation: `✍️ PHASE 6 (Domestic Fantasy): Painting the picture that she's perfect for HIS specific lifestyle — not generic, tied to his actual job and hobbies` })
     }
 
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 80))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 80))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} is deeply engaged — probably at Level 3-4 now, sharing more and asking questions` })
 
@@ -334,7 +339,7 @@ export async function POST(request: NextRequest) {
     }
 
     // === PHASE 7: RE-ENGAGEMENT ===
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 60))
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} responds — conversation is at its peak` })
 
@@ -346,8 +351,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Final subscriber response
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt +
-      '\n\nThe conversation is ending naturally. Respond warmly — you enjoyed this. Show you want to come back.', 60))
+    const finalPrompt = subSystemPrompt + '\n\nThe conversation is ending naturally. Respond warmly — you enjoyed this. Show you want to come back.'
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, finalPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} wants to come back — the relationship building worked` })
 
