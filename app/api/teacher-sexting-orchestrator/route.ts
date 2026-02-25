@@ -2,90 +2,119 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const VENICE_API_KEY = process.env.VENICE_API_KEY
 
-const SUBSCRIBER_PROMPT = `You are simulating a real OnlyFans subscriber in the SEXTING phase. You are a horny blue-collar American man who has been chatting with a creator for days/weeks. You are now in sexting mode.
+const SUBSCRIBER_PROMPT = `You are a real OnlyFans subscriber in SEXTING mode. You are a horny blue-collar American man.
 
-YOUR PERSONALITY:
-- Sexually excited and explicit
-- You compliment her body specifically
-- You paint sexual scenarios
-- Mix of romantic and raw sexual energy
-- Casual American English: "fuck", "damn", "baby", abbreviations
-- VERY SHORT messages — 1 sentence, maximum 2
+CRITICAL MESSAGE LENGTH RULE:
+- MAXIMUM 6-8 words per message
+- One short line only
+- If you have more to say, the system will ask you again for another line
+- NEVER write more than one sentence
 
-CRITICAL: Every message must contain at least one vivid sexual phrase like:
-- "bend you over the counter"
-- "eat that pussy till u shake"
-- "pull your hair while i hit it from behind"
-- "slide deep inside you slow"
-- "wrap those thighs around my head"
-- "spank that ass till its red"
+YOUR STYLE:
+- Sexually excited and very explicit
+- Casual American: "fuck", "damn", "baby", abbreviations
+- Every message MUST have a vivid sexual phrase like:
+  "bend you over the counter"
+  "eat that pussy till u shake"  
+  "pull your hair while i hit it from behind"
+  "slide deep inside you slow"
+  "spank that ass till its red"
+  "choke you while i fuck you hard"
+  "pin you against the wall"
+  "ride my face till you cum"
+  "fill you up till it drips out"
+  "grab those hips and pull you back"
+  "make you gag on this dick"
+  "spread those legs for daddy"
 
-YOUR ENGAGEMENT:
-- React positively to voice memos ("fuck that voice memo got me throbbing")
-- When she mirrors YOUR words back, get even more turned on
-- Actively participate and escalate
+- React to voice memos with excitement ("fuck that got me throbbing")
+- When she mirrors YOUR words, get way more turned on
+- Introduce NEW phrases as the conversation progresses, don't repeat yourself
 
-PPV PURCHASING (respond naturally):
-- If she follows the framework well (voice memo before PPV, mirroring, tension): BUY with enthusiasm. Add [BUY] at the end.
-- 2nd PPV ($40): Initially object with "damn 40 is kinda steep baby" [PASS] — but if she follows up emotionally, buy on the follow-up
-- 3rd PPV ($60): Price objection [PASS] — buy if she handles it well
-- 4th PPV ($80): Buy if she's been amazing [BUY]
-- When you buy: react to content with excitement
+PPV PURCHASING:
+- If she follows framework well (voice memo before PPV, mirroring): include [BUY] at end
+- 2nd PPV ($40): "damn 40 is kinda steep baby" [PASS]
+- 3rd PPV ($60): "thats a lot baby" [PASS]
+- 4th PPV ($80): If she handled objections well, [BUY]. Otherwise [PASS]
+- If she follows up emotionally on passed content, consider buying: [BUY]
 
-FINISHING: After purchasing 2-4 videos and enough sexting (at least 20 messages total), climax: "fuck i just came" + [FINISHED]
+FINISHING: After 2-4 purchased videos and enough sexting (20+ messages total): "fuck i just came" [FINISHED]
 
 RULES:
 - NEVER break character
 - NEVER mention training/simulation/framework
-- MAX 1-2 short sentences
-- Always include vivid sexual phrases`
+- MAX 6-8 WORDS. One short line only.`
 
-const CREATOR_PROMPT = `You are the PERFECT OnlyFans chatter demonstrating flawless PPV framework execution. You follow the framework PERFECTLY.
+const CREATOR_PROMPT = `You are the PERFECT OnlyFans chatter demonstrating FLAWLESS PPV framework execution.
 
-THE FRAMEWORK (for each PPV):
-1. Voice Memo first — build anticipation
-2. PPV Video — just the price, no extra text
-3. 2-3 sentences using subscriber's EXACT words (mirroring)
-4. Open-ended question to maintain engagement
+CRITICAL MESSAGE LENGTH RULE — THIS IS THE MOST IMPORTANT RULE:
+- MAXIMUM 6-8 words per message
+- One short line only
+- If you need to say more, the system will call you again for another message
+- NEVER write more than 8 words in a single message
+- Examples of correct length:
+  "mmm u wanna eat my pussy?"
+  "i'm so wet thinking about u"
+  "that made me touch myself baby"
+  "don't u wanna spoil me?"
+  "i want u so bad rn"
 
-YOUR STYLE:
-- Casual American texting: lowercase, "u" not "you", short messages
-- Flirty, confident, sexually expressive but natural
-- Pick up the EXACT phrases the subscriber used and reflect them back
-- Build tension between PPVs — don't rush
+MIRRORING — YOUR #1 SKILL:
+- Pick up the EXACT phrases the subscriber just said
+- If he said "bend you over the counter" → you say "bend me over that counter baby"
+- If he said "eat that pussy till u shake" → you say "eat my pussy till i shake"
+- If he said "pull your hair while i hit it" → you say "pull my hair while u hit it"
+- ALWAYS use his NEWEST phrases, not old ones
+- Every mirroring message must use words HE said in his LAST message
 
-VAULT ACTIONS — include at END of your message:
-- [SEND_TEASER] — free teaser video
-- [SEND_VM] — voice memo
-- [SEND_PPV_20] / [SEND_PPV_40] / [SEND_PPV_60] / [SEND_PPV_80] — PPV videos
-- [FOLLOW_UP_PPV] — follow up on non-purchased content
-
-If sending ONLY a vault item with no text, just put the tag alone.
-Your text is your actual chat message.
-
-IDEAL FLOW:
-1. Respond to opener, flirt, build toward teaser
-2. [SEND_TEASER]
-3. More flirting + mirroring his words
-4. [SEND_VM] then [SEND_PPV_20]  
-5. Mirror text + open question
-6. Build tension with multiple exchanges
-7. [SEND_VM] then [SEND_PPV_40]
-8. Mirror + question, build more tension
-9. [SEND_VM] then [SEND_PPV_60]
-10. Follow up if he didn't buy: [FOLLOW_UP_PPV]
-11. [SEND_VM] then [SEND_PPV_80]
+TENSION BUILDING:
+- Between PPVs, have 3-5 short message exchanges
+- Each exchange should ESCALATE the sexual energy
+- Don't repeat the same question — vary your responses:
+  "tell me more about that..."
+  "mmm keep going..."
+  "u making me so wet rn"
+  "i need to hear more baby"
+  "what else u gonna do to me"
 
 OBJECTION HANDLING:
-- Price: "i just want u to spoil me as i spoil u baby"
-- Content: "i want it to be just u and me, no one else gets to see this"
-- Always emotional, never pushy
+- Price: "baby i made this just for u"
+- Then: "don't u wanna see what i do"
+- Then: "i just want u to spoil me baby"
+- Content: "i want it to be just u and me"
+
+YOUR STYLE:
+- Casual American: lowercase, "u" not "you", "ur" not "your", "rn" not "right now"
+- Flirty, confident, sexually expressive
+- Sound like a real girl texting on her phone
 
 RULES:
-- NEVER break character or mention framework/training
-- MAX 1-2 sentences per message
-- ALWAYS mirror his exact phrases
-- Sound natural, not robotic`
+- NEVER break character
+- NEVER mention framework/training/vault
+- MAX 6-8 WORDS PER MESSAGE. This is critical.
+- ALWAYS mirror his exact newest phrases`
+
+const VAULT_SEQUENCE = [
+  { id: 'teaser-1', type: 'teaser' as const, label: 'Teasing Video 1' },
+  { id: 'vm-1', type: 'voice_memo' as const, label: 'Voice Memo 1' },
+  { id: 'video-1', type: 'video' as const, label: 'Video 1', price: 20 },
+  { id: 'vm-2', type: 'voice_memo' as const, label: 'Voice Memo 2' },
+  { id: 'video-2', type: 'video' as const, label: 'Video 2', price: 40 },
+  { id: 'vm-3', type: 'voice_memo' as const, label: 'Voice Memo 3' },
+  { id: 'video-3', type: 'video' as const, label: 'Video 3', price: 60 },
+  { id: 'vm-4', type: 'voice_memo' as const, label: 'Voice Memo 4' },
+  { id: 'video-4', type: 'video' as const, label: 'Video 4', price: 80 },
+]
+
+interface ConversationMessage {
+  role: 'creator' | 'subscriber'
+  content: string
+  contentType: 'text' | 'voice_memo' | 'video' | 'teaser'
+  price?: number
+  unlocked?: boolean
+  isFollowUp?: boolean
+  annotation?: string
+}
 
 async function callVenice(messages: { role: string; content: string }[], temperature = 0.85): Promise<string> {
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -97,7 +126,7 @@ async function callVenice(messages: { role: string; content: string }[], tempera
       },
       body: JSON.stringify({
         model: 'venice-uncensored',
-        max_tokens: 150,
+        max_tokens: 60,
         messages,
         temperature,
       }),
@@ -118,27 +147,48 @@ async function callVenice(messages: { role: string; content: string }[], tempera
   throw new Error('Max retries exceeded')
 }
 
-interface ConversationMessage {
-  role: 'creator' | 'subscriber'
-  content: string
-  contentType: 'text' | 'voice_memo' | 'video' | 'teaser'
-  price?: number
-  unlocked?: boolean
-  isFollowUp?: boolean
-  annotation?: string
+function buildSubMessages(conversation: ConversationMessage[], systemPrompt: string): { role: string; content: string }[] {
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  for (const m of conversation) {
+    let content = m.content
+    if (m.contentType === 'voice_memo') content = '[CREATOR SENT A VOICE MEMO - breathy and sexual]'
+    else if (m.contentType === 'video') content = `[CREATOR SENT PPV VIDEO - $${m.price}]`
+    else if (m.contentType === 'teaser') content = '[CREATOR SENT FREE TEASER VIDEO]'
+    if (m.isFollowUp) content = `[FOLLOWING UP ON UNPURCHASED PPV] ${content}`
+    msgs.push({ role: m.role === 'subscriber' ? 'assistant' : 'user', content })
+  }
+  return msgs
 }
 
-const VAULT_SEQUENCE = [
-  { id: 'teaser-1', type: 'teaser' as const, label: 'Teasing Video 1' },
-  { id: 'vm-1', type: 'voice_memo' as const, label: 'Voice Memo 1' },
-  { id: 'video-1', type: 'video' as const, label: 'Video 1', price: 20 },
-  { id: 'vm-2', type: 'voice_memo' as const, label: 'Voice Memo 2' },
-  { id: 'video-2', type: 'video' as const, label: 'Video 2', price: 40 },
-  { id: 'vm-3', type: 'voice_memo' as const, label: 'Voice Memo 3' },
-  { id: 'video-3', type: 'video' as const, label: 'Video 3', price: 60 },
-  { id: 'vm-4', type: 'voice_memo' as const, label: 'Voice Memo 4' },
-  { id: 'video-4', type: 'video' as const, label: 'Video 4', price: 80 },
-]
+function buildCreatorMessages(conversation: ConversationMessage[], systemPrompt: string, instruction: string): { role: string; content: string }[] {
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  for (const m of conversation) {
+    let content = m.content
+    if (m.contentType === 'voice_memo') content = '[VOICE MEMO SENT]'
+    else if (m.contentType === 'video') content = `[PPV VIDEO SENT - $${m.price}]${m.unlocked === true ? ' [UNLOCKED]' : m.unlocked === false ? ' [NOT PURCHASED]' : ''}`
+    else if (m.contentType === 'teaser') content = '[FREE TEASER VIDEO SENT]'
+    msgs.push({ role: m.role === 'creator' ? 'assistant' : 'user', content })
+  }
+  msgs.push({ role: 'user', content: instruction })
+  return msgs
+}
+
+async function getCreatorTextMessages(conversation: ConversationMessage[], systemPrompt: string, instruction: string, count: number): Promise<string[]> {
+  const results: string[] = []
+  const tempConvo = [...conversation]
+  for (let i = 0; i < count; i++) {
+    const extraInstruction = i === 0 ? instruction : 'Send your next short message (6-8 words max, one line only). Continue the flow.'
+    const msgs = buildCreatorMessages(tempConvo, systemPrompt, extraInstruction)
+    let reply = await callVenice(msgs, 0.8)
+    reply = reply.replace(/\[.*?\]/g, '').trim()
+    const firstLine = reply.split('\n')[0].trim()
+    if (firstLine) {
+      results.push(firstLine)
+      tempConvo.push({ role: 'creator', content: firstLine, contentType: 'text' })
+    }
+  }
+  return results
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -152,8 +202,6 @@ export async function POST(request: NextRequest) {
     const annotations: string[] = []
     let vaultIndex = 0
     let finished = false
-    let turnCount = 0
-    const maxTurns = 40
 
     const subSystemPrompt = SUBSCRIBER_PROMPT +
       (subscriberProfile ? `\n\nYour profile: ${subscriberProfile}. Stay consistent.` : '')
@@ -162,186 +210,223 @@ export async function POST(request: NextRequest) {
       (subscriberProfile ? `\n\nSubscriber profile: ${subscriberProfile}. Mirror his specific language.` : '')
 
     const subtleOpeners = [
-      "i really wanna see more of you",
-      "damn you looked so good in that last post",
-      "what would u do if i was there rn",
-      "you got me so distracted at work today",
-      "those curves are perfect baby",
-      "i cant stop thinking about you",
-      "do u like it rough or slow?",
+      "damn u looked so good today",
+      "i cant stop thinking about u",
+      "those curves are insane baby",
+      "what would u do if i was there",
+      "u got me so hard rn",
+      "do u like it rough or slow",
+      "that body drives me crazy baby",
     ]
+
+    // === STEP 1: Subscriber opens ===
     const opener = subtleOpeners[Math.floor(Math.random() * subtleOpeners.length)]
-
     conversation.push({
-      role: 'subscriber',
-      content: opener,
-      contentType: 'text',
-      annotation: 'Subscriber opens with a sexually suggestive message to initiate sexting.',
+      role: 'subscriber', content: opener, contentType: 'text',
+      annotation: '💬 SUBSCRIBER opens with a sexually suggestive message.',
     })
-    annotations.push(`💬 SUBSCRIBER opens: The subscriber initiates the sexting conversation. This is where the creator needs to match energy and start building toward the first content drop.`)
+    annotations.push('💬 SUBSCRIBER: Opens the sexting conversation. Creator needs to match energy.')
 
-    while (!finished && turnCount < maxTurns) {
-      turnCount++
+    // === STEP 2: Creator responds with 2 short flirty messages ===
+    const flirtMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
+      'The subscriber just opened. Respond flirtatiously in ONE short message (6-8 words max). Match his energy.', 2)
+    for (const msg of flirtMsgs) {
+      conversation.push({ role: 'creator', content: msg, contentType: 'text',
+        annotation: '✍️ CREATOR flirts back — matching energy, building toward teaser.' })
+    }
+    annotations.push('✍️ CREATOR: Flirty response. Short messages, matching subscriber energy.')
 
-      const creatorMessages: { role: string; content: string }[] = [
-        { role: 'system', content: creatorSystemPrompt },
-      ]
-      for (const m of conversation) {
-        let content = m.content
-        if (m.contentType === 'voice_memo') content = '[VOICE MEMO SENT]'
-        else if (m.contentType === 'video') content = `[PPV VIDEO SENT - $${m.price}]${m.unlocked === true ? ' [UNLOCKED]' : m.unlocked === false ? ' [NOT PURCHASED]' : ''}`
-        else if (m.contentType === 'teaser') content = '[FREE TEASER VIDEO SENT]'
-        creatorMessages.push({
-          role: m.role === 'creator' ? 'assistant' : 'user',
-          content,
-        })
-      }
+    // === STEP 3: Subscriber responds ===
+    let subReply = await callVenice(buildSubMessages(conversation, subSystemPrompt))
+    subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+    conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+      annotation: '💬 SUBSCRIBER responds — notice the specific phrases to mirror later.' })
 
-      const creatorReply = await callVenice(creatorMessages, 0.8)
+    // === STEP 4: Send TEASER ===
+    conversation.push({ role: 'creator', content: 'Teasing Video', contentType: 'teaser',
+      annotation: '🎬 FRAMEWORK: Send FREE TEASER first to hook the subscriber.' })
+    annotations.push('🎬 FRAMEWORK STEP: Free teaser sent first. This hooks the subscriber before paid content.')
+    vaultIndex = 1
 
-      const sendTeaser = creatorReply.includes('[SEND_TEASER]')
-      const sendVm = creatorReply.includes('[SEND_VM]')
-      const sendPpv20 = creatorReply.includes('[SEND_PPV_20]')
-      const sendPpv40 = creatorReply.includes('[SEND_PPV_40]')
-      const sendPpv60 = creatorReply.includes('[SEND_PPV_60]')
-      const sendPpv80 = creatorReply.includes('[SEND_PPV_80]')
-      const followUpPpv = creatorReply.includes('[FOLLOW_UP_PPV]')
+    // Creator follows up teaser with a short message
+    const teaserFollowUp = await getCreatorTextMessages(conversation, creatorSystemPrompt,
+      'You just sent a free teaser video. Send ONE short flirty follow-up (6-8 words max) to build anticipation.', 1)
+    for (const msg of teaserFollowUp) {
+      conversation.push({ role: 'creator', content: msg, contentType: 'text',
+        annotation: '✍️ CREATOR follows up teaser with a short tease.' })
+    }
 
-      let textContent = creatorReply
-        .replace(/\[SEND_TEASER\]/gi, '')
-        .replace(/\[SEND_VM\]/gi, '')
-        .replace(/\[SEND_PPV_20\]/gi, '')
-        .replace(/\[SEND_PPV_40\]/gi, '')
-        .replace(/\[SEND_PPV_60\]/gi, '')
-        .replace(/\[SEND_PPV_80\]/gi, '')
-        .replace(/\[FOLLOW_UP_PPV\]/gi, '')
-        .trim()
+    // Subscriber reacts to teaser
+    subReply = await callVenice(buildSubMessages(conversation, subSystemPrompt))
+    subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+    conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+      annotation: '💬 SUBSCRIBER reacts to teaser — getting more excited.' })
 
-      if (textContent) {
-        let ann = '✍️ CREATOR texts: '
-        if (followUpPpv) ann += 'Following up on unpurchased content — emotional, not pushy.'
-        else ann += 'Engaging with subscriber, mirroring their language and building tension.'
-        conversation.push({
-          role: 'creator',
-          content: textContent,
-          contentType: 'text',
-          isFollowUp: followUpPpv,
-          annotation: ann,
-        })
-        annotations.push(ann)
-      }
+    // === NOW LOOP THROUGH PPV FRAMEWORK ===
+    // For each PPV: tension exchanges → VM → PPV → mirror messages → open question → subscriber reacts
+    const ppvSequence = [
+      { vmIdx: 1, ppvIdx: 2, price: 20 },
+      { vmIdx: 3, ppvIdx: 4, price: 40 },
+      { vmIdx: 5, ppvIdx: 6, price: 60 },
+      { vmIdx: 7, ppvIdx: 8, price: 80 },
+    ]
 
-      if (sendTeaser && vaultIndex === 0) {
-        conversation.push({
-          role: 'creator',
-          content: 'Teasing Video',
-          contentType: 'teaser',
-          annotation: '🎬 CREATOR sends FREE TEASER: Hook the subscriber with a free preview to build desire for paid content.',
-        })
-        annotations.push('🎬 FRAMEWORK STEP: Send free teaser first to hook the subscriber.')
-        vaultIndex = 1
-      }
+    for (const ppv of ppvSequence) {
+      if (finished) break
 
-      if (sendVm) {
-        const vmItem = VAULT_SEQUENCE[vaultIndex]
-        if (vmItem && vmItem.type === 'voice_memo') {
-          conversation.push({
-            role: 'creator',
-            content: vmItem.label,
-            contentType: 'voice_memo',
-            annotation: `🎤 CREATOR sends ${vmItem.label}: Voice memo BEFORE the PPV — builds anticipation and makes the subscriber want to see the video.`,
-          })
-          annotations.push(`🎤 FRAMEWORK STEP: Voice memo sent BEFORE the PPV video. This is step 1 of the framework.`)
-          vaultIndex++
+      // --- Tension building: 2-3 short exchanges ---
+      const tensionCount = ppv.price === 20 ? 2 : 3
+      for (let t = 0; t < tensionCount; t++) {
+        if (finished) break
+
+        const tensionInstruction = t === 0
+          ? `Build sexual tension. Mirror his EXACT latest phrase. Send ONE short message (6-8 words max). Use his newest words.`
+          : `Continue building tension. Vary your response — don't repeat. ONE short message (6-8 words). Escalate the energy.`
+
+        const tensionMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt, tensionInstruction, 1)
+        for (const msg of tensionMsgs) {
+          conversation.push({ role: 'creator', content: msg, contentType: 'text',
+            annotation: `✍️ CREATOR builds tension — mirroring subscriber's words, escalating energy.` })
         }
-      }
 
-      if (sendPpv20 || sendPpv40 || sendPpv60 || sendPpv80) {
-        const ppvItem = VAULT_SEQUENCE[vaultIndex]
-        if (ppvItem && ppvItem.type === 'video') {
-          conversation.push({
-            role: 'creator',
-            content: `PPV Video`,
-            contentType: 'video',
-            price: ppvItem.price,
-            annotation: `📹 CREATOR sends ${ppvItem.label} ($${ppvItem.price}): PPV sent with just the price — no extra text needed. Step 2 of the framework.`,
-          })
-          annotations.push(`📹 FRAMEWORK STEP: PPV video sent with price tag only. Step 2 complete.`)
-          vaultIndex++
+        const subMsgs = buildSubMessages(conversation, subSystemPrompt)
+        subReply = await callVenice(subMsgs)
+        const hasBuy = subReply.includes('[BUY]')
+        const hasPass = subReply.includes('[PASS]')
+        finished = subReply.includes('[FINISHED]')
+        subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+
+        if (finished) {
+          conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+            annotation: '🏁 SUBSCRIBER FINISHED — session complete!' })
+          break
         }
-      }
-
-      const subMessages: { role: string; content: string }[] = [
-        { role: 'system', content: subSystemPrompt },
-      ]
-      for (const m of conversation) {
-        let content = m.content
-        if (m.contentType === 'voice_memo') content = '[CREATOR SENT A VOICE MEMO - breathy and sexual]'
-        else if (m.contentType === 'video') content = `[CREATOR SENT PPV VIDEO - $${m.price}]`
-        else if (m.contentType === 'teaser') content = '[CREATOR SENT FREE TEASER VIDEO]'
-        if (m.isFollowUp) content = `[FOLLOWING UP ON UNPURCHASED PPV] ${content}`
-        subMessages.push({
-          role: m.role === 'subscriber' ? 'assistant' : 'user',
-          content,
-        })
-      }
-
-      const subReply = await callVenice(subMessages, 0.85)
-
-      const purchased = subReply.includes('[BUY]')
-      const passed = subReply.includes('[PASS]')
-      finished = subReply.includes('[FINISHED]')
-
-      let subText = subReply
-        .replace(/\[BUY\]/gi, '')
-        .replace(/\[PASS\]/gi, '')
-        .replace(/\[FINISHED\]/gi, '')
-        .trim()
-
-      if (purchased) {
-        const lastPpv = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === undefined)
-        if (lastPpv) lastPpv.unlocked = true
-
-        conversation.push({
-          role: 'subscriber',
-          content: subText,
-          contentType: 'text',
-          annotation: `💰 SUBSCRIBER BUYS! The framework worked — voice memo + PPV + mirroring convinced them to purchase.`,
-        })
-        annotations.push(`💰 PURCHASE: The subscriber buys because the creator followed the framework correctly.`)
-      } else if (passed) {
-        const lastPpv = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === undefined)
-        if (lastPpv) lastPpv.unlocked = false
-
-        conversation.push({
-          role: 'subscriber',
-          content: subText,
-          contentType: 'text',
-          annotation: `❌ SUBSCRIBER PASSES: This is an objection — the creator should follow up emotionally, not ignore it.`,
-        })
-        annotations.push(`❌ OBJECTION: Subscriber didn't buy. Watch how the creator handles this with emotional follow-up.`)
-      } else if (finished) {
-        conversation.push({
-          role: 'subscriber',
-          content: subText,
-          contentType: 'text',
-          annotation: `🏁 SUBSCRIBER FINISHED: Session complete! The creator successfully guided the subscriber through the full PPV framework.`,
-        })
-        annotations.push(`🏁 SESSION COMPLETE: The subscriber is satisfied. Time to evaluate the creator's performance.`)
-      } else {
-        conversation.push({
-          role: 'subscriber',
-          content: subText,
-          contentType: 'text',
-          annotation: `💬 SUBSCRIBER responds: Notice the specific sexual phrases — the creator should mirror these EXACT words back.`,
-        })
-        annotations.push(`💬 SUBSCRIBER: Pay attention to the subscriber's specific phrases. A good creator will echo these back.`)
+        conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+          annotation: `💬 SUBSCRIBER: Pay attention to new phrases — creator should mirror these next.` })
       }
 
       if (finished) break
 
-      await new Promise(r => setTimeout(r, 300))
+      // --- Send Voice Memo ---
+      const vmItem = VAULT_SEQUENCE[ppv.vmIdx]
+      conversation.push({ role: 'creator', content: vmItem.label, contentType: 'voice_memo',
+        annotation: `🎤 FRAMEWORK STEP 1: ${vmItem.label} sent BEFORE the PPV. Builds anticipation.` })
+      annotations.push(`🎤 FRAMEWORK: Voice memo sent before $${ppv.price} PPV. This is step 1.`)
+      vaultIndex = ppv.vmIdx + 1
+
+      // Subscriber reacts to voice memo
+      const vmSubMsgs = buildSubMessages(conversation, subSystemPrompt)
+      subReply = await callVenice(vmSubMsgs)
+      finished = subReply.includes('[FINISHED]')
+      subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+      conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+        annotation: '💬 SUBSCRIBER reacts to voice memo — usually very excited.' })
+
+      if (finished) break
+
+      // --- Send PPV Video ---
+      const ppvItem = VAULT_SEQUENCE[ppv.ppvIdx]
+      conversation.push({ role: 'creator', content: 'PPV Video', contentType: 'video', price: ppv.price,
+        annotation: `📹 FRAMEWORK STEP 2: ${ppvItem.label} ($${ppv.price}) sent with price only. No extra text.` })
+      annotations.push(`📹 FRAMEWORK: PPV $${ppv.price} sent. No text — just the price tag. Step 2.`)
+      vaultIndex = ppv.ppvIdx + 1
+
+      // --- Mirror messages (step 3) — 2 short messages using subscriber's words ---
+      const lastSubPhrases = conversation
+        .filter(m => m.role === 'subscriber' && m.contentType === 'text')
+        .slice(-3)
+        .map(m => m.content)
+        .join(', ')
+
+      const mirrorMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
+        `FRAMEWORK STEP 3: You just sent a $${ppv.price} PPV. Now mirror the subscriber's EXACT words from his recent messages: "${lastSubPhrases}". Send ONE short message (6-8 words) using HIS exact phrases rewritten as yours.`, 2)
+      for (const msg of mirrorMsgs) {
+        conversation.push({ role: 'creator', content: msg, contentType: 'text',
+          annotation: `✍️ FRAMEWORK STEP 3: Mirroring — using subscriber's exact words back at him.` })
+      }
+      annotations.push(`✍️ FRAMEWORK: 2 short mirroring messages using subscriber's own language. Step 3.`)
+
+      // --- Open question (step 4) ---
+      const questionMsg = await getCreatorTextMessages(conversation, creatorSystemPrompt,
+        `FRAMEWORK STEP 4: Ask an open-ended sexual question. Examples: "what would u do to me if..." or "how would u...". ONE short message (6-8 words max).`, 1)
+      for (const msg of questionMsg) {
+        conversation.push({ role: 'creator', content: msg, contentType: 'text',
+          annotation: `❓ FRAMEWORK STEP 4: Open-ended question to keep engagement flowing.` })
+      }
+      annotations.push(`❓ FRAMEWORK: Open question to maintain engagement. Step 4 complete.`)
+
+      // --- Subscriber reacts to PPV ---
+      const ppvSubMsgs = buildSubMessages(conversation, subSystemPrompt)
+      subReply = await callVenice(ppvSubMsgs)
+      const purchased = subReply.includes('[BUY]')
+      const passed = subReply.includes('[PASS]')
+      finished = subReply.includes('[FINISHED]')
+      subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+
+      if (purchased) {
+        const lastPpvMsg = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === undefined)
+        if (lastPpvMsg) lastPpvMsg.unlocked = true
+        conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+          annotation: `💰 SUBSCRIBER BUYS $${ppv.price}! Framework worked — VM + PPV + mirroring convinced him.` })
+        annotations.push(`💰 PURCHASE: Subscriber buys $${ppv.price} PPV because framework was followed correctly.`)
+      } else if (passed) {
+        const lastPpvMsg = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === undefined)
+        if (lastPpvMsg) lastPpvMsg.unlocked = false
+        conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+          annotation: `❌ SUBSCRIBER PASSES on $${ppv.price}. Creator should follow up emotionally!` })
+        annotations.push(`❌ OBJECTION: Subscriber didn't buy. Watch the creator handle this with emotional follow-up.`)
+
+        // --- Follow up on non-purchased content ---
+        if (ppv.price > 20) {
+          const followUpMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
+            `The subscriber didn't buy the $${ppv.price} PPV. Follow up EMOTIONALLY. Send ONE short message (6-8 words). Examples: "baby i made this just for u" or "don't u wanna see what i sent"`, 2)
+          for (const msg of followUpMsgs) {
+            conversation.push({ role: 'creator', content: msg, contentType: 'text', isFollowUp: true,
+              annotation: `🔄 FOLLOW-UP: Emotional follow-up on rejected $${ppv.price} PPV. Not pushy, curious.` })
+          }
+          annotations.push(`🔄 FOLLOW-UP: Creator follows up emotionally on rejected content. Key skill.`)
+
+          // Subscriber reconsiders
+          const followSubMsgs = buildSubMessages(conversation, subSystemPrompt)
+          subReply = await callVenice(followSubMsgs)
+          const rebought = subReply.includes('[BUY]')
+          finished = subReply.includes('[FINISHED]')
+          subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+
+          if (rebought) {
+            const lastPpvMsg = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === false)
+            if (lastPpvMsg) lastPpvMsg.unlocked = true
+            conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+              annotation: `💰 SUBSCRIBER BUYS after follow-up! Emotional approach worked.` })
+            annotations.push(`💰 FOLLOW-UP SUCCESS: Emotional follow-up converted the objection into a sale.`)
+          } else {
+            conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+              annotation: `💬 SUBSCRIBER responds to follow-up.` })
+          }
+        }
+      } else if (finished) {
+        conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+          annotation: '🏁 SUBSCRIBER FINISHED — session complete!' })
+      } else {
+        conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+          annotation: '💬 SUBSCRIBER responds.' })
+      }
+
+      if (finished) break
+
+      await new Promise(r => setTimeout(r, 200))
     }
+
+    // If not finished yet, let conversation wrap up
+    if (!finished) {
+      const wrapMsgs = buildSubMessages(conversation, subSystemPrompt + '\n\nYou should finish soon. Include [FINISHED] at the end of your next message.')
+      subReply = await callVenice(wrapMsgs)
+      subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+      conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
+        annotation: '🏁 SUBSCRIBER FINISHED — session complete!' })
+    }
+
+    annotations.push('🏁 SESSION COMPLETE: Full framework demonstrated successfully.')
 
     return NextResponse.json({
       conversation,
