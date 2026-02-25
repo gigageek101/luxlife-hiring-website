@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const maxDuration = 60
+export const maxDuration = 120
 
 const VENICE_API_KEY = process.env.VENICE_API_KEY
 
@@ -271,16 +271,16 @@ export async function POST(request: NextRequest) {
     const subSys = `You are ${subName}, a ${subAge}-year-old ${subJob} from ${subLocation}. You text casually: lowercase, short messages, max 6-8 words. No periods. You're warming up because a girl genuinely validated your work.`
     const valReply = clean(await callVenice([
       { role: 'system', content: subSys },
-      { role: 'user', content: `She just told you your ${subJob} job is really attractive and masculine. You're warming up. Say something like "haha yeah been doing it a while" or "yeah its hard work but i love it". Max 8 words. No periods.` },
+      { role: 'user', content: `She just told you your ${subJob} job is really attractive and masculine. You're warming up. Say something like "haha yeah been doing it a while feels good" or "yeah its hard work but i love it". Max 8 words. No periods.` },
     ], 30))
     conversation.push({ role: 'subscriber', content: valReply || 'haha yeah been doing it a while',
       annotation: `💬 ${subName} warming up (Level 2) — the job validation is working` })
 
-    // Transition to hobbies
-    const hobbyTrans = await creatorSays(conversation, cSys,
-      `He said: "${valReply}". React impressed, then ask what he does for fun. Like "thats awesome" then "what do u do for fun tho". His name is ${subName}. Max 6-8 words each. No periods`, 2)
-    for (const m of hobbyTrans) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 3: Reacting + transitioning to hobbies` })
+    // Creator reacts to what he said + transitions to hobbies
+    const jobReact = await creatorSays(conversation, cSys,
+      `He said: "${valReply}" about his ${subJob} job. React to what he ACTUALLY said — show you were listening. Like if he said "been doing it a while" say "i love that u stuck with it". Then ask what he does for fun. Max 6-8 words each. No periods`, 2)
+    for (const m of jobReact) conversation.push({ role: 'creator', content: m,
+      annotation: `✍️ PHASE 3: Reacting to his response — showing she listens, then transitioning to hobbies` })
 
     // =============================================
     // PHASE 4: HOBBY MIRRORING
@@ -304,14 +304,14 @@ export async function POST(request: NextRequest) {
     } else if (subHobbies.toLowerCase().includes('hunt')) {
       hobbyResponses = [
         `oh my god no wayyyy`,
-        `a man who hunts is literally my type`,
-        `what do u usually go for`,
+        `a man who hunts is literally my type honestly`,
+        `do u do bow or rifle`,
       ]
     } else if (subHobbies.toLowerCase().includes('shoot') || subHobbies.toLowerCase().includes('range')) {
       hobbyResponses = [
         `oh really u would take me to the range??`,
-        `no one ever offered that before`,
-        `i always wanted to learn how to shoot`,
+        `no one ever did that for me before`,
+        `what do u usually shoot with`,
       ]
     } else if (subHobbies.toLowerCase().includes('truck') || subHobbies.toLowerCase().includes('car')) {
       hobbyResponses = [
@@ -343,14 +343,28 @@ export async function POST(request: NextRequest) {
     // Subscriber shares more detail
     const hobbyDetail = clean(await callVenice([
       { role: 'system', content: subSys + ` Your hobbies: ${subHobbies}. Details: ${extraDetails}` },
-      { role: 'user', content: `She asked for more details about your hobby (${subHobbies}). Share something specific — like what you caught, where you go, etc. Level 2-3. Max 8 words. No periods.` },
+      { role: 'user', content: `She asked for more details about your hobby (${subHobbies}). Share something specific — like what you caught recently, where you go, your best story. Level 2-3. Max 8 words. No periods.` },
     ], 40))
     conversation.push({ role: 'subscriber', content: hobbyDetail || 'yeah went out last weekend actually',
       annotation: `💬 ${subName} sharing details (Level 2-3) — opening up because she showed real interest` })
 
+    // Creator asks a specific follow-up showing genuine interest
+    const hobbyFollowUp = await creatorSays(conversation, cSys,
+      `He shared: "${hobbyDetail}". React with excitement to the SPECIFIC thing he said, then ask a follow-up question about the detail. Like "omggg thats awesome" then "how long were u out there" or "do u go every weekend". Show genuine curiosity about HIS specific experience. His name is ${subName}. Max 6-8 words each. No periods.`, 2)
+    for (const m of hobbyFollowUp) conversation.push({ role: 'creator', content: m,
+      annotation: `✍️ PHASE 4: Asking a specific follow-up — showing she actually cares about the details of his life` })
+
+    // Subscriber shares even more
+    const hobbyMore = clean(await callVenice([
+      { role: 'system', content: subSys + ` Your hobbies: ${subHobbies}. Details: ${extraDetails}` },
+      { role: 'user', content: `She asked a follow-up question about your hobby. Share another detail. Level 3. Max 8 words. No periods.` },
+    ], 30))
+    conversation.push({ role: 'subscriber', content: hobbyMore || 'yeah every chance i get honestly',
+      annotation: `💬 ${subName} at Level 3 — sharing freely because she asked specific follow-ups` })
+
     // Connect hobby to shared vision
     const hobbyVision = await creatorSays(conversation, cSys,
-      `He shared: "${hobbyDetail}". React to what he said, then connect his hobby to a shared dream. Like "i wish i had a man who could [his hobby] and we'd [do it together]". His name is ${subName}. Max 6-8 words each. No periods. No poetry. Plain texting only.`, 2)
+      `He shared more: "${hobbyMore}". Now connect his hobby to a shared dream. Like "i wish i had a man who could [his hobby] and we'd [do it together]" or "u would really teach me??". His name is ${subName}. Max 6-8 words each. No periods. No poetry.`, 2)
     for (const m of hobbyVision) conversation.push({ role: 'creator', content: m,
       annotation: `✍️ PHASE 4: Connecting his hobby to a shared vision — making him picture her in his life` })
 
@@ -377,11 +391,11 @@ export async function POST(request: NextRequest) {
     conversation.push({ role: 'subscriber', content: handsReply || 'haha yeah pretty rough',
       annotation: `💬 ${subName} confirms his rough hands` })
 
-    // Validate rough hands
-    conversation.push({ role: 'creator', content: `i love that honestly`,
-      annotation: `✍️ PHASE 5: Validating his rough hands` })
-    conversation.push({ role: 'creator', content: `soft hands on a man are such a turn off`,
-      annotation: `✍️ PHASE 5: Framing rough hands as her PREFERENCE — not generic, personal taste` })
+    // Validate rough hands with reaction to what he said
+    const handsValidation = await creatorSays(conversation, cSys,
+      `He confirmed his hands are rough from ${subJob} work. He said: "${handsReply}". React to what he said specifically. Then say you love rough hands. Like "i love that honestly" then "soft hands on a man are such a turn off to me". His name is ${subName}. Max 6-8 words each. No periods`, 2)
+    for (const m of handsValidation) conversation.push({ role: 'creator', content: m,
+      annotation: `✍️ PHASE 5: Reacting to his rough hands — framing it as her personal preference` })
 
     // Ask about height
     conversation.push({ role: 'creator', content: `how tall are u btw`,
@@ -452,10 +466,24 @@ export async function POST(request: NextRequest) {
     // Subscriber deeply engaged
     const deepReply = clean(await callVenice([
       { role: 'system', content: subSys },
-      { role: 'user', content: `She painted a domestic fantasy perfectly tailored to your life. Level 4. Say something like "damn thats exactly what i need" or "i wish that was real honestly". Max 8 words. No periods.` },
+      { role: 'user', content: `She painted a domestic fantasy about cooking for you after work. You're deeply touched. Level 4. Say something like "damn thats exactly what i need" or "i wish i had that for real". Max 8 words. No periods.` },
     ], 30))
     conversation.push({ role: 'subscriber', content: deepReply || 'damn thats exactly what i need',
       annotation: `💬 ${subName} at Level 4 — the domestic fantasy resonated deeply` })
+
+    // Creator deepens emotional connection
+    const domesticDeep = await creatorSays(conversation, cSys,
+      `He said "${deepReply}" about your domestic fantasy. React emotionally to what he said. Show that his response moved you. Like "see thats what im saying" or "most guys dont even think about that". His name is ${subName}. Max 6-8 words each. No periods`, 2)
+    for (const m of domesticDeep) conversation.push({ role: 'creator', content: m,
+      annotation: `✍️ PHASE 6: Deepening emotional connection — reacting to his vulnerability` })
+
+    // Subscriber responds to the deeper connection
+    const connectReply = clean(await callVenice([
+      { role: 'system', content: subSys },
+      { role: 'user', content: `She reacted emotionally to what you said. You feel a real connection. Level 4. Say something like "ur different from most girls" or "no one ever said that to me". Max 8 words. No periods.` },
+    ], 30))
+    conversation.push({ role: 'subscriber', content: connectReply || 'ur different honestly',
+      annotation: `💬 ${subName} is deeply engaged — feeling a real connection` })
 
     // "Nobody wants me" play
     conversation.push({ role: 'creator', content: `i am single and nobody wants me honestly`,
@@ -466,10 +494,16 @@ export async function POST(request: NextRequest) {
     // Subscriber reassures
     const reassure = clean(await callVenice([
       { role: 'system', content: subSys },
-      { role: 'user', content: `She just said she's single and nobody wants her. You want to reassure her. Level 4. Say something like "thats crazy" or "their loss honestly" or "id treat u right". Max 8 words. No periods.` },
+      { role: 'user', content: `She just said she's single and nobody wants her. You want to reassure her strongly. Level 4-5. Say something like "thats crazy ur amazing" or "their loss honestly" or "id treat u so right". Max 8 words. No periods.` },
     ], 30))
-    conversation.push({ role: 'subscriber', content: reassure || 'their loss honestly',
+    conversation.push({ role: 'subscriber', content: reassure || 'thats crazy ur amazing honestly',
       annotation: `💬 ${subName} reassures her — he's emotionally hooked` })
+
+    // Creator reacts to his reassurance with vulnerability
+    const reassureReact = await creatorSays(conversation, cSys,
+      `He just reassured you after the "nobody wants me" play. He said "${reassure}". React with soft vulnerability. Like "aww ${stretched} thank u" or "u really mean that". Show it means something. Max 6-8 words each. No periods`, 2)
+    for (const m of reassureReact) conversation.push({ role: 'creator', content: m,
+      annotation: `✍️ PHASE 6: Reacting to his reassurance with genuine gratitude — solidifying the bond` })
 
     // =============================================
     // PHASE 7: RE-ENGAGEMENT

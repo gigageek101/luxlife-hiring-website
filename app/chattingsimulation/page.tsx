@@ -643,7 +643,9 @@ export default function ChattingSimulationPage() {
       setPhase('teacher-results')
 
       if (simUser && rawEval) {
-        const weighted = calculateWeightedScore(rawEval.categories || [])
+        const rawWeighted = calculateWeightedScore(rawEval.categories || [])
+        const maxPossible = (rawEval.categories || []).reduce((sum: number, cat: CategoryResult) => sum + (CATEGORY_WEIGHTS[cat.name] || 0), 0)
+        const weighted = maxPossible > 0 ? Math.round(((rawWeighted / maxPossible) * 100) * 10) / 10 : rawWeighted
         try {
           await fetch('/api/simulation/save-report', {
             method: 'POST',
@@ -1757,7 +1759,9 @@ export default function ChattingSimulationPage() {
 
         {/* TEACHER RESULTS PHASE */}
         {phase === 'teacher-results' && teacherEvaluation && (() => {
-          const weightedScore = calculateWeightedScore(teacherEvaluation.categories)
+          const rawScore = calculateWeightedScore(teacherEvaluation.categories)
+          const maxPossible = teacherEvaluation.categories.reduce((sum: number, cat: CategoryResult) => sum + (CATEGORY_WEIGHTS[cat.name] || 0), 0)
+          const weightedScore = maxPossible > 0 ? Math.round(((rawScore / maxPossible) * 100) * 10) / 10 : rawScore
           return (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="text-center mb-6">
