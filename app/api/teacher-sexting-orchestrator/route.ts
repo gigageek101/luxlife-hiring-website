@@ -331,20 +331,21 @@ export async function POST(request: NextRequest) {
       annotations.push(`📹 FRAMEWORK: PPV $${ppv.price} sent. No text — just the price tag. Step 2.`)
       vaultIndex = ppv.ppvIdx + 1
 
-      // --- Mirror messages (step 3) — 2 short messages using subscriber's words ---
+      // --- Mirror messages (step 3) — 2-3 short messages using subscriber's keywords ---
       const lastSubPhrases = conversation
         .filter(m => m.role === 'subscriber' && m.contentType === 'text')
         .slice(-3)
         .map(m => m.content)
         .join(', ')
 
+      const mirrorCount = ppv.price <= 20 ? 2 : 3
       const mirrorMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-        `FRAMEWORK STEP 3: You just sent a $${ppv.price} PPV. Now mirror the subscriber's EXACT words from his recent messages: "${lastSubPhrases}". Send ONE short message (6-8 words) using HIS exact phrases rewritten as yours.`, 2)
+        `FRAMEWORK STEP 3: You just sent a $${ppv.price} PPV. Now mirror the subscriber's EXACT words from his recent messages: "${lastSubPhrases}". Send ONE short message (6-8 words) using HIS exact phrases rewritten as yours. Take his keywords and make them yours.`, mirrorCount)
       for (const msg of mirrorMsgs) {
         conversation.push({ role: 'creator', content: msg, contentType: 'text',
-          annotation: `✍️ FRAMEWORK STEP 3: Mirroring — using subscriber's exact words back at him.` })
+          annotation: `✍️ FRAMEWORK STEP 3: Mirroring — using subscriber's exact keywords rewritten as hers.` })
       }
-      annotations.push(`✍️ FRAMEWORK: 2 short mirroring messages using subscriber's own language. Step 3.`)
+      annotations.push(`✍️ FRAMEWORK: ${mirrorCount} short mirroring messages using subscriber's keywords. Step 3.`)
 
       // --- Open question (step 4) ---
       const questionMsg = await getCreatorTextMessages(conversation, creatorSystemPrompt,
