@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2, Download, FileText, ExternalLink } from 'lucide-react'
+import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2, Download, FileText, ExternalLink, GraduationCap, Brain, Pause, SkipForward, Eye, Play } from 'lucide-react'
 
 interface ChatMessage {
   id: string
@@ -40,6 +40,12 @@ interface SimUser {
   id: number
   telegramUsername: string
   email: string
+}
+
+interface TeacherMessage {
+  role: 'creator' | 'subscriber'
+  content: string
+  annotation?: string
 }
 
 const DURATION_OPTIONS = [
@@ -105,7 +111,7 @@ function getScoreLabel(score: number): string {
 }
 
 export default function ChattingSimulationPage() {
-  const [phase, setPhase] = useState<'login' | 'intro' | 'chatting' | 'evaluating' | 'results'>('login')
+  const [phase, setPhase] = useState<'login' | 'intro' | 'chatting' | 'evaluating' | 'results' | 'teacher-loading' | 'teacher-watching' | 'teacher-evaluating' | 'teacher-results'>('login')
   const [simUser, setSimUser] = useState<SimUser | null>(null)
   const [loginTelegram, setLoginTelegram] = useState('')
   const [loginEmail, setLoginEmail] = useState('')
@@ -141,6 +147,15 @@ export default function ChattingSimulationPage() {
   const typingStartRef = useRef<number>(0)
   const recordingRef = useRef<{t:number;e:string;d:string}[]>([])
   const sessionStartRef = useRef<number>(0)
+
+  const [teacherConversation, setTeacherConversation] = useState<TeacherMessage[]>([])
+  const [teacherDisplayIndex, setTeacherDisplayIndex] = useState(0)
+  const [teacherPlaying, setTeacherPlaying] = useState(false)
+  const [teacherEvaluation, setTeacherEvaluation] = useState<EvaluationResult | null>(null)
+  const [teacherError, setTeacherError] = useState<string | null>(null)
+  const [teacherExpandedCategories, setTeacherExpandedCategories] = useState<Set<number>>(new Set())
+  const teacherChatRef = useRef<HTMLDivElement>(null)
+  const teacherPlayIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const recordEvent = useCallback((eventType: string, data: string = '') => {
     if (sessionStartRef.current === 0) return
@@ -447,18 +462,30 @@ export default function ChattingSimulationPage() {
         content: m.content,
       }))
 
-      const response = await fetch('/api/evaluate-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: allMessages, notes }),
-      })
+      await new Promise(r => setTimeout(r, Math.floor(Math.random() * 5000)))
 
-      if (!response.ok) {
-        const data = await response.json()
+      let evalResponse: Response | null = null
+      for (let evalAttempt = 0; evalAttempt < 3; evalAttempt++) {
+        evalResponse = await fetch('/api/evaluate-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: allMessages, notes }),
+        })
+        if (evalResponse.ok) break
+        if (evalAttempt < 2) {
+          await new Promise(r => setTimeout(r, 3000 * (evalAttempt + 1)))
+        }
+      }
+
+      if (!evalResponse || !evalResponse.ok) {
+        const data = evalResponse ? await evalResponse.json().catch(() => ({ error: 'AI is temporarily busy. Please try again.' })) : { error: 'Evaluation unavailable' }
         throw new Error(data.error || 'Failed to evaluate conversation')
       }
 
-      const data = await response.json()
+      const data = await evalResponse.json().catch(() => null)
+      if (!data?.evaluation) {
+        throw new Error('AI returned an invalid response. Please try ending the conversation again.')
+      }
       setEvaluation(data.evaluation)
       setPhase('results')
 
@@ -489,7 +516,7 @@ export default function ChattingSimulationPage() {
         }
       }
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
+      const errorMessage = err instanceof Error ? err.message : 'Something went wrong. Please wait a moment and try again.'
       setError(errorMessage)
       setPhase('chatting')
     }
@@ -530,6 +557,147 @@ export default function ChattingSimulationPage() {
     lastInputWasPaste.current = false
     recordingRef.current = []
     sessionStartRef.current = 0
+  }
+
+  // === TEACHER MODE ===
+  const startTeacherMode = async () => {
+    setPhase('teacher-loading')
+    setTeacherError(null)
+    setTeacherConversation([])
+    setTeacherDisplayIndex(0)
+    setTeacherPlaying(false)
+    setTeacherEvaluation(null)
+    setTeacherExpandedCategories(new Set())
+
+    const profile = SUBSCRIBER_PROFILES[Math.floor(Math.random() * SUBSCRIBER_PROFILES.length)]
+
+    try {
+      const response = await fetch('/api/teacher-chat-orchestrator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriberProfile: profile }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to run teacher simulation')
+      }
+
+      const data = await response.json()
+      setTeacherConversation(data.conversation)
+      setTeacherDisplayIndex(0)
+      setTeacherPlaying(true)
+      setPhase('teacher-watching')
+    } catch (err) {
+      setTeacherError(err instanceof Error ? err.message : 'Something went wrong')
+      setPhase('intro')
+    }
+  }
+
+  useEffect(() => {
+    if (phase === 'teacher-watching' && teacherPlaying && teacherDisplayIndex < teacherConversation.length) {
+      const delay = 2200
+      teacherPlayIntervalRef.current = setTimeout(() => {
+        setTeacherDisplayIndex(prev => prev + 1)
+        if (teacherChatRef.current) {
+          teacherChatRef.current.scrollTop = teacherChatRef.current.scrollHeight
+        }
+      }, delay)
+      return () => { if (teacherPlayIntervalRef.current) clearTimeout(teacherPlayIntervalRef.current) }
+    }
+    if (phase === 'teacher-watching' && teacherDisplayIndex >= teacherConversation.length && teacherConversation.length > 0) {
+      setTeacherPlaying(false)
+      const autoEvalTimer = setTimeout(() => { evaluateTeacherConversation() }, 2000)
+      return () => clearTimeout(autoEvalTimer)
+    }
+  }, [phase, teacherPlaying, teacherDisplayIndex, teacherConversation]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (teacherChatRef.current) {
+      teacherChatRef.current.scrollTop = teacherChatRef.current.scrollHeight
+    }
+  }, [teacherDisplayIndex])
+
+  const toggleTeacherPause = () => setTeacherPlaying(prev => !prev)
+
+  const skipToEnd = () => {
+    if (teacherPlayIntervalRef.current) clearTimeout(teacherPlayIntervalRef.current)
+    setTeacherDisplayIndex(teacherConversation.length)
+    setTeacherPlaying(false)
+  }
+
+  const evaluateTeacherConversation = async () => {
+    setPhase('teacher-evaluating')
+    setTeacherError(null)
+
+    try {
+      const allMessages = teacherConversation.map(m => ({ role: m.role, content: m.content }))
+
+      await new Promise(r => setTimeout(r, Math.floor(Math.random() * 3000)))
+
+      let evalResponse: Response | null = null
+      for (let attempt = 0; attempt < 3; attempt++) {
+        evalResponse = await fetch('/api/evaluate-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: allMessages, notes: '' }),
+        })
+        if (evalResponse.ok) break
+        if (attempt < 2) await new Promise(r => setTimeout(r, 3000 * (attempt + 1)))
+      }
+
+      if (!evalResponse || !evalResponse.ok) {
+        const data = evalResponse ? await evalResponse.json().catch(() => ({ error: 'AI is temporarily busy. Please try again.' })) : { error: 'Evaluation unavailable' }
+        throw new Error(data.error || 'Failed to evaluate')
+      }
+
+      const data = await evalResponse.json().catch(() => null)
+      if (!data?.evaluation) {
+        throw new Error('AI returned an invalid response. Please try again.')
+      }
+      setTeacherEvaluation(data.evaluation)
+      setPhase('teacher-results')
+
+      if (simUser && data.evaluation) {
+        const weighted = calculateWeightedScore(data.evaluation.categories || [])
+        try {
+          await fetch('/api/simulation/save-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              telegramUsername: simUser.telegramUsername,
+              email: simUser.email,
+              overallScore: Math.round(weighted),
+              categories: data.evaluation.categories,
+              overallFeedback: data.evaluation.overallFeedback,
+              notes: '[TEACHER DEMO - CHATTING] AI vs AI relationship building demo',
+              conversation: teacherConversation.map(m => ({ role: m.role, content: m.content })),
+              durationMode: 'teacher',
+              messageCount: teacherConversation.length,
+              typedCount: 0,
+              pasteCount: 0,
+              simulationType: 'chat-teacher',
+              wpm: 0,
+              sessionRecording: null,
+            }),
+          })
+        } catch {
+          console.error('Failed to save teacher report')
+        }
+      }
+    } catch (err) {
+      setTeacherError(err instanceof Error ? err.message : 'Evaluation failed')
+      setPhase('teacher-watching')
+    }
+  }
+
+  const toggleTeacherCategory = (index: number) => {
+    setTeacherExpandedCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(index)) next.delete(index)
+      else next.add(index)
+      return next
+    })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -831,10 +999,18 @@ export default function ChattingSimulationPage() {
               </div>
             </div>
 
-            <button onClick={startSimulation} className="btn-primary text-lg px-10 py-4">
-              <Sparkles className="w-5 h-5" />
-              {selectedDuration === 0 ? 'Start Free Simulation' : `Start ${selectedDuration}-Minute Simulation`}
-            </button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button onClick={startSimulation} className="btn-primary text-lg px-10 py-4">
+                <Sparkles className="w-5 h-5" />
+                {selectedDuration === 0 ? 'Start Free Simulation' : `Start ${selectedDuration}-Minute Simulation`}
+              </button>
+              <button onClick={startTeacherMode}
+                className="flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-lg transition-all hover:scale-[1.03]"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+                <GraduationCap className="w-5 h-5" />
+                Watch Teacher Demo
+              </button>
+            </div>
           </motion.div>
         )}
 
@@ -1475,6 +1651,281 @@ export default function ChattingSimulationPage() {
               </button>
             </div>
           </motion.div>
+          )
+        })()}
+
+        {/* TEACHER LOADING PHASE */}
+        {phase === 'teacher-loading' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+              <Brain className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Generating Perfect Conversation...</h2>
+            <p className="text-center max-w-md" style={{ color: 'var(--text-secondary)' }}>Two AIs are demonstrating perfect relationship building following all 7 phases. This may take 30-60 seconds.</p>
+            <div className="mt-8 flex gap-2">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="w-3 h-3 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: `${i * 150}ms` }} />
+              ))}
+            </div>
+            {teacherError && (
+              <div className="mt-6 p-4 rounded-xl max-w-md" style={{ background: '#fef2f2' }}>
+                <p className="text-red-600 flex items-center gap-2"><AlertCircle className="w-5 h-5" />{teacherError}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* TEACHER WATCHING PHASE */}
+        {phase === 'teacher-watching' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-3" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: 'white' }}>
+                <Eye className="w-4 h-4" />
+                <span className="font-bold text-sm">TEACHER DEMO — Watch & Learn</span>
+              </div>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                {teacherDisplayIndex}/{teacherConversation.length} messages
+              </p>
+            </div>
+
+            <div ref={teacherChatRef} className="rounded-2xl p-4 mb-4 overflow-y-auto" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', height: '60vh' }}>
+              <div className="space-y-3">
+                {teacherConversation.slice(0, teacherDisplayIndex).map((msg, idx) => (
+                  <div key={idx}>
+                    {msg.annotation && (
+                      <div className="text-xs px-3 py-1.5 mb-1 rounded-lg mx-auto max-w-[90%] text-center" style={{ background: 'rgba(124, 58, 237, 0.08)', color: '#7c3aed', border: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                        {msg.annotation}
+                      </div>
+                    )}
+                    <div className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
+                      <div className="flex flex-col gap-0.5" style={{ maxWidth: '75%' }}>
+                        <span className="text-[10px] font-bold px-1" style={{ color: msg.role === 'creator' ? '#7c3aed' : 'var(--text-muted)', textAlign: msg.role === 'creator' ? 'right' : 'left' }}>
+                          {msg.role === 'creator' ? 'AI Creator' : 'AI Subscriber'}
+                        </span>
+                        <div className={`px-4 py-2 rounded-2xl text-sm`}
+                          style={{
+                            background: msg.role === 'creator' ? 'linear-gradient(135deg, #7c3aed, #6d28d9)' : '#ffffff',
+                            color: msg.role === 'creator' ? '#ffffff' : '#000000',
+                            borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
+                            borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
+                            border: msg.role === 'subscriber' ? '1px solid var(--border)' : 'none',
+                          }}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {teacherPlaying && teacherDisplayIndex < teacherConversation.length && (
+                  <div className="flex justify-start">
+                    <div className="px-4 py-2 rounded-2xl text-sm" style={{ background: '#f3f4f6' }}>
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-3">
+              <button onClick={toggleTeacherPause}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all hover:scale-[1.02]"
+                style={{ background: teacherPlaying ? '#f59e0b' : '#10b981' }}>
+                {teacherPlaying ? <><Pause className="w-4 h-4" />Pause</> : <><Play className="w-4 h-4" />Play</>}
+              </button>
+              <button onClick={skipToEnd}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all hover:scale-[1.02]"
+                style={{ background: '#6b7280' }}>
+                <SkipForward className="w-4 h-4" />Skip to End
+              </button>
+              <button onClick={() => setPhase('intro')}
+                className="px-4 py-2.5 rounded-xl font-semibold transition-all hover:scale-[1.02]"
+                style={{ background: 'var(--bg-secondary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
+                Back
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* TEACHER EVALUATING PHASE */}
+        {phase === 'teacher-evaluating' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20">
+            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6 animate-pulse" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
+              <Award className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Evaluating Teacher Conversation...</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Analyzing relationship building across all categories</p>
+            <div className="mt-8 flex gap-2">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className="w-3 h-3 rounded-full animate-bounce" style={{ background: '#7c3aed', animationDelay: `${i * 150}ms` }} />
+              ))}
+            </div>
+            {teacherError && (
+              <div className="mt-6 p-4 rounded-xl" style={{ background: '#fef2f2' }}>
+                <p className="text-red-600 flex items-center gap-2"><AlertCircle className="w-5 h-5" />{teacherError}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* TEACHER RESULTS PHASE */}
+        {phase === 'teacher-results' && teacherEvaluation && (() => {
+          const weightedScore = calculateWeightedScore(teacherEvaluation.categories)
+          return (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: 'white' }}>
+                  <GraduationCap className="w-5 h-5" />
+                  <span className="font-bold text-sm">TEACHER&apos;S RESULTS — AI DEMO</span>
+                </div>
+              </div>
+
+              <div className="text-center mb-10">
+                <motion.div
+                  initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
+                  className="inline-flex items-center justify-center w-36 h-36 rounded-full mb-6 relative"
+                  style={{ background: `conic-gradient(${getScoreColor(weightedScore)} ${weightedScore}%, #e5e7eb ${weightedScore}%)` }}>
+                  <div className="w-28 h-28 rounded-full flex flex-col items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
+                    <span className="text-4xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}</span>
+                    <span className="text-xs font-semibold" style={{ color: 'var(--text-muted)' }}>/100</span>
+                  </div>
+                </motion.div>
+                <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Teacher Score: {weightedScore}/100</h2>
+                <p className="text-lg font-semibold mb-4" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</p>
+              </div>
+
+              {/* Score Table */}
+              <div className="rounded-2xl overflow-hidden mb-10" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ background: 'var(--bg-secondary)' }}>
+                      <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>#</th>
+                      <th className="text-left px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Category</th>
+                      <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Weight</th>
+                      <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Raw</th>
+                      <th className="text-center px-4 py-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Points</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teacherEvaluation.categories.map((cat, idx) => {
+                      const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                      const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                      return (
+                        <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
+                          <td className="px-4 py-3 font-semibold" style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                          <td className="px-4 py-3 font-medium" style={{ color: 'var(--text-primary)' }}>{cat.name}</td>
+                          <td className="px-4 py-3 text-center" style={{ color: 'var(--text-muted)' }}>{weight} pts</td>
+                          <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{cat.score}/10</td>
+                          <td className="px-4 py-3 text-center font-bold" style={{ color: getCategoryScoreColor(cat.score) }}>{earned}</td>
+                        </tr>
+                      )
+                    })}
+                    <tr style={{ borderTop: '2px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                      <td colSpan={2} className="px-4 py-3 font-bold" style={{ color: 'var(--text-primary)' }}>TOTAL</td>
+                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text-muted)' }}>100 pts</td>
+                      <td className="px-4 py-3 text-center"></td>
+                      <td className="px-4 py-3 text-center font-black text-lg" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Category Cards */}
+              <div className="space-y-4 mb-10">
+                {teacherEvaluation.categories.map((cat, idx) => {
+                  const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                  const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
+                  return (
+                    <motion.div key={idx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 * idx }}
+                      className="rounded-2xl overflow-hidden"
+                      style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                      <button onClick={() => toggleTeacherCategory(idx)}
+                        className="w-full px-6 py-4 flex items-center justify-between text-left transition-colors duration-200"
+                        style={{ background: teacherExpandedCategories.has(idx) ? 'var(--bg-secondary)' : 'transparent' }}>
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg" style={{ background: `${getCategoryScoreColor(cat.score)}15`, color: getCategoryScoreColor(cat.score) }}>
+                            {cat.score}
+                          </div>
+                          <div>
+                            <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{cat.name}</p>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{earned}/{weight} pts</p>
+                          </div>
+                        </div>
+                        {teacherExpandedCategories.has(idx) ? <ChevronUp className="w-5 h-5" style={{ color: 'var(--text-muted)' }} /> : <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />}
+                      </button>
+                      <AnimatePresence>
+                        {teacherExpandedCategories.has(idx) && (
+                          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
+                            <div className="px-6 py-4 space-y-3" style={{ borderTop: '1px solid var(--border)' }}>
+                              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{cat.feedback}</p>
+                              {cat.examples?.good?.length > 0 && (
+                                <div>
+                                  <p className="text-xs font-bold uppercase mb-1" style={{ color: '#10b981' }}>What the AI did well:</p>
+                                  {cat.examples.good.map((g, i) => (
+                                    <p key={i} className="text-sm pl-3 border-l-2" style={{ borderColor: '#10b981', color: 'var(--text-secondary)' }}>{g}</p>
+                                  ))}
+                                </div>
+                              )}
+                              {cat.examples?.needsWork?.length > 0 && (
+                                <div>
+                                  <p className="text-xs font-bold uppercase mb-1" style={{ color: '#f59e0b' }}>Even the AI could improve here:</p>
+                                  {cat.examples.needsWork.map((n, i) => (
+                                    <p key={i} className="text-sm pl-3 border-l-2" style={{ borderColor: '#f59e0b', color: 'var(--text-secondary)' }}>{n}</p>
+                                  ))}
+                                </div>
+                              )}
+                              {cat.advice && (
+                                <div className="p-3 rounded-xl text-sm" style={{ background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.15)', color: '#5b21b6' }}>
+                                  <strong>Key Takeaway:</strong> {cat.advice}
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )
+                })}
+              </div>
+
+              {/* Conversation Review */}
+              <div className="rounded-2xl p-6 mb-8" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Teacher Conversation</h3>
+                <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+                  {teacherConversation.map((msg, idx) => (
+                    <div key={idx}>
+                      {msg.annotation && (
+                        <div className="text-xs px-3 py-1 mb-1 rounded-lg text-center" style={{ background: 'rgba(124, 58, 237, 0.06)', color: '#7c3aed' }}>
+                          {msg.annotation}
+                        </div>
+                      )}
+                      <div className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
+                        <div className="max-w-[75%] px-4 py-2 rounded-2xl text-sm"
+                          style={{
+                            background: msg.role === 'creator' ? 'linear-gradient(135deg, #7c3aed, #6d28d9)' : '#ffffff',
+                            color: msg.role === 'creator' ? '#ffffff' : '#000000',
+                            borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
+                            borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
+                            border: msg.role === 'subscriber' ? '1px solid var(--border)' : 'none',
+                          }}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <button onClick={() => setPhase('intro')} className="btn-primary text-lg px-10 py-4">
+                  <RotateCcw className="w-5 h-5" />
+                  Back to Menu
+                </button>
+              </div>
+            </motion.div>
           )
         })()}
       </div>

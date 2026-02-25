@@ -68,7 +68,7 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher'
+  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher'
   hasRecording?: boolean
   wpm: number
   completedAt: string
@@ -84,7 +84,7 @@ function AdminPanelContent() {
   const [simReports, setSimReports] = useState<SimReport[]>([])
   const [simLoading, setSimLoading] = useState(true)
   const [simSearch, setSimSearch] = useState('')
-  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher'>('all')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher'>('all')
   const [replayReport, setReplayReport] = useState<SimReport | null>(null)
   const [replayRecording, setReplayRecording] = useState<{t:number;e:string;d:string}[] | null>(null)
   const [replayLoading, setReplayLoading] = useState(false)
@@ -731,13 +731,13 @@ function AdminPanelContent() {
             <>
               {/* Sim Type Filter */}
               <div className="flex gap-1.5 md:gap-2 mb-6 max-w-3xl mx-auto overflow-x-auto pb-1">
-                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
+                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
                   const count = key === 'all' ? simReports.length : simReports.filter(r => r.simulationType === key).length
                   return (
                     <button key={key} onClick={() => setSimTypeFilter(key as typeof simTypeFilter)}
                       className={`flex-1 min-w-0 py-2 md:py-2.5 px-2 md:px-3 rounded-lg font-semibold text-xs md:text-sm transition-all flex items-center justify-center gap-1 md:gap-1.5 ${
                         simTypeFilter === key
-                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' : key === 'chat-teacher' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}>
                       {Icon && <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0" />}
@@ -879,8 +879,8 @@ function AdminPanelContent() {
                                 <h3 className="text-base md:text-lg font-bold truncate">{report.telegramUsername}</h3>
                                 <p className="text-xs md:text-sm truncate" style={{ color: 'var(--text-secondary-on-white)' }}>{report.email}</p>
                                 <div className="flex flex-wrap items-center gap-1 md:gap-2 mt-1">
-                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                                    {report.simulationType === 'sexting-teacher' ? '🎓 Teacher Demo' : report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
+                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    {report.simulationType === 'sexting-teacher' ? '🎓 Teacher Demo' : report.simulationType === 'chat-teacher' ? '🎓 Chat Teacher' : report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
                                   </span>
                                   <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                                     {report.durationMode}
@@ -1304,7 +1304,7 @@ function AdminPanelContent() {
                                         <div
                                           className="max-w-[85%] md:max-w-[75%] px-3 md:px-4 py-2 rounded-2xl text-xs md:text-sm"
                                           style={{
-                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting' ? '#e11d48' : report.simulationType === 'aftercare' ? '#e84393' : '#ff6b35') : '#ffffff',
+                                            background: msg.role === 'creator' ? (report.simulationType === 'sexting-teacher' ? '#7c3aed' : report.simulationType === 'chat-teacher' ? '#6366f1' : report.simulationType === 'sexting' ? '#e11d48' : report.simulationType === 'aftercare' ? '#e84393' : '#ff6b35') : '#ffffff',
                                             color: msg.role === 'creator' ? '#ffffff' : '#000000',
                                             borderBottomRightRadius: msg.role === 'creator' ? '4px' : '18px',
                                             borderBottomLeftRadius: msg.role === 'subscriber' ? '4px' : '18px',
@@ -1666,8 +1666,8 @@ function AdminPanelContent() {
                                               </div>
                                               <div className="min-w-0">
                                                 <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                                                    {report.simulationType === 'sexting-teacher' ? '🎓 Teacher' : report.simulationType === 'sexting' ? 'Sexting' : report.simulationType === 'aftercare' ? 'Aftercare' : 'Chatting'}
+                                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                                    {report.simulationType === 'sexting-teacher' ? '🎓 Sexting Teacher' : report.simulationType === 'chat-teacher' ? '🎓 Chat Teacher' : report.simulationType === 'sexting' ? 'Sexting' : report.simulationType === 'aftercare' ? 'Aftercare' : 'Chatting'}
                                                   </span>
                                                   <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{report.durationMode}</span>
                                                   <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>{report.messageCount} msgs</span>

@@ -8,6 +8,9 @@
     "app/api/teacher-sexting-orchestrator/route.ts": {
       "maxDuration": 60
     },
+    "app/api/teacher-chat-orchestrator/route.ts": {
+      "maxDuration": 60
+    },
     "app/api/evaluate-sexting/route.ts": {
       "maxDuration": 30
     },

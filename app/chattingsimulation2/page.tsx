@@ -611,11 +611,14 @@ export default function SextingSimulationPage() {
       }
 
       if (!evalResponse || !evalResponse.ok) {
-        const data = evalResponse ? await evalResponse.json() : { error: 'Evaluation unavailable' }
+        const data = evalResponse ? await evalResponse.json().catch(() => ({ error: 'AI is temporarily busy. Please try again.' })) : { error: 'Evaluation unavailable' }
         throw new Error(data.error || 'Failed to evaluate conversation')
       }
 
-      const data = await evalResponse.json()
+      const data = await evalResponse.json().catch(() => null)
+      if (!data?.evaluation) {
+        throw new Error('AI returned an invalid response. Please try ending the conversation again.')
+      }
       setEvaluation(data.evaluation)
       setPhase('results')
 
@@ -647,7 +650,7 @@ export default function SextingSimulationPage() {
         }
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please wait a moment and try again.')
       setPhase('chatting')
     }
   }, [messages, resetReplyTimer, simUser, vaultItems, selectedDuration, messageCount, typedCount, pasteCount, totalWordsTyped, totalTypingTimeMs])
@@ -844,11 +847,14 @@ export default function SextingSimulationPage() {
       }
 
       if (!evalResponse || !evalResponse.ok) {
-        const data = evalResponse ? await evalResponse.json() : { error: 'Evaluation unavailable' }
+        const data = evalResponse ? await evalResponse.json().catch(() => ({ error: 'AI is temporarily busy. Please try again.' })) : { error: 'Evaluation unavailable' }
         throw new Error(data.error || 'Failed to evaluate')
       }
 
-      const data = await evalResponse.json()
+      const data = await evalResponse.json().catch(() => null)
+      if (!data?.evaluation) {
+        throw new Error('AI returned an invalid response. Please try again.')
+      }
       const rawEval = data.evaluation
       if (rawEval && rawEval.categories) {
         rawEval.categories = rawEval.categories.filter(
