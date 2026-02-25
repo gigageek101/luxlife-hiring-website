@@ -36,7 +36,7 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher'
+  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher'
   hasRecording?: boolean
   wpm: number
   completedAt: string
@@ -114,7 +114,7 @@ function MyResultsContent() {
   const [loading, setLoading] = useState(true)
   const [expandedReport, setExpandedReport] = useState<number | null>(null)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
-  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher'>('all')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher'>('all')
   const [replayReport, setReplayReport] = useState<SimReport | null>(null)
   const [replayRecording, setReplayRecording] = useState<{t:number;e:string;d:string}[] | null>(null)
   const [replayLoading, setReplayLoading] = useState(false)
@@ -174,7 +174,7 @@ function MyResultsContent() {
   const chattingCount = reports.filter(r => r.simulationType === 'chatting').length
   const sextingCount = reports.filter(r => r.simulationType === 'sexting').length
   const aftercareCount = reports.filter(r => r.simulationType === 'aftercare').length
-  const teacherCount = reports.filter(r => r.simulationType === 'sexting-teacher' || r.simulationType === 'chat-teacher').length
+  const teacherCount = reports.filter(r => r.simulationType === 'sexting-teacher' || r.simulationType === 'chat-teacher' || r.simulationType === 'aftercare-teacher').length
   const avgScore = filtered.length > 0
     ? Math.round(filtered.reduce((s, r) => s + calculateWeightedScore(r.categories, r.simulationType), 0) / filtered.length * 10) / 10
     : null
@@ -203,13 +203,13 @@ function MyResultsContent() {
 
           {/* Type Filter */}
           <div className="flex gap-1.5 md:gap-2 mb-6 max-w-3xl overflow-x-auto pb-1">
-            {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
+            {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
               const count = key === 'all' ? reports.length : reports.filter(r => r.simulationType === key).length
               return (
                 <button key={key} onClick={() => setSimTypeFilter(key as typeof simTypeFilter)}
                   className={`flex-1 min-w-0 py-2 md:py-2.5 px-2 md:px-3 rounded-lg font-semibold text-xs md:text-sm transition-all flex items-center justify-center gap-1 md:gap-1.5 ${
                     simTypeFilter === key
-                      ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' : key === 'chat-teacher' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+                      ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' : key === 'chat-teacher' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white' : key === 'aftercare-teacher' ? 'bg-gradient-to-r from-violet-500 to-violet-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}>
                   {Icon && <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0" />}
@@ -313,8 +313,8 @@ function MyResultsContent() {
                         </div>
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                            <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                              {report.simulationType === 'sexting-teacher' ? '🎓 Teacher Demo' : report.simulationType === 'chat-teacher' ? '🎓 Chat Teacher' : report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
+                            <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'aftercare-teacher' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                              {report.simulationType === 'sexting-teacher' ? '🎓 Teacher Demo' : report.simulationType === 'chat-teacher' ? '🎓 Chat Teacher' : report.simulationType === 'aftercare-teacher' ? '🎓 AC Teacher' : report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
                             </span>
                             <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{report.durationMode}</span>
                             <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>{report.messageCount} msgs</span>
