@@ -305,35 +305,22 @@ export default function SextingSimulationPage() {
         followUpPpvId: m.followUpPpvId,
       }))
 
-      let chatData: { reply: string; purchased: boolean; passed: boolean; finished: boolean } | null = null
-      for (let chatAttempt = 0; chatAttempt < 3; chatAttempt++) {
-        const response = await fetch('/api/sexting-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: allMessages,
-            subscriberProfile: profileRef.current,
-          }),
-        })
+      const response = await fetch('/api/sexting-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: allMessages,
+          subscriberProfile: profileRef.current,
+        }),
+      })
 
-        if (response.ok) {
-          chatData = await response.json()
-          break
-        }
-
-        const errData = await response.json().catch(() => ({}))
-        if (errData.rate_limited && chatAttempt < 2) {
-          setError('AI is busy, retrying...')
-          await new Promise(r => setTimeout(r, 4000 * (chatAttempt + 1)))
-          setError(null)
-          continue
-        }
-
-        throw new Error(errData.error || 'Failed to get response')
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to get response')
       }
 
-      if (!chatData) throw new Error('Failed to get response after retries')
-      const { reply, purchased, passed, finished } = chatData
+      const data = await response.json()
+      const { reply, purchased, passed, finished } = data
 
       if (pendingPpvRef.current && (purchased || passed)) {
         const ppvId = pendingPpvRef.current
@@ -440,27 +427,16 @@ export default function SextingSimulationPage() {
     setIsTyping(true)
     recordEvent('y')
     try {
-      let data: { reply: string } | null = null
-      for (let startAttempt = 0; startAttempt < 3; startAttempt++) {
-        const response = await fetch('/api/sexting-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: [], subscriberProfile: profile }),
-        })
-        if (response.ok) {
-          data = await response.json()
-          break
-        }
-        const errData = await response.json().catch(() => ({}))
-        if (errData.rate_limited && startAttempt < 2) {
-          setError('AI is busy, retrying...')
-          await new Promise(r => setTimeout(r, 4000 * (startAttempt + 1)))
-          setError(null)
-          continue
-        }
-        throw new Error(errData.error || 'Failed to start simulation')
+      const response = await fetch('/api/sexting-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [], subscriberProfile: profile }),
+      })
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to start simulation')
       }
-      if (!data) throw new Error('Failed to start after retries')
+      const data = await response.json()
       const subscriberLines = data.reply.split('\n').filter((l: string) => l.trim())
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))

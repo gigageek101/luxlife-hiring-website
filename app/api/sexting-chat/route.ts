@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const VENICE_KEYS = [
-  process.env.VENICE_API_KEY,
-  process.env.VENICE_API_KEY_2,
-].filter(Boolean) as string[]
-
-let keyIndex = 0
-function getNextVeniceKey(): string {
-  if (VENICE_KEYS.length === 0) return ''
-  const key = VENICE_KEYS[keyIndex % VENICE_KEYS.length]
-  keyIndex++
-  return key
-}
+const VENICE_API_KEY = process.env.VENICE_API_KEY
 
 const SUBSCRIBER_SEXTING_PROMPT = `You are simulating a real OnlyFans subscriber in the SEXTING phase of a conversation. This is a training exercise for chatters learning the PPV selling framework.
 
@@ -89,14 +78,12 @@ CRITICAL RULES:
 - Every message must contain at least one vivid sexual phrase the creator can mirror
 - React differently to content types (excited for explicit, teasing for teasers)`
 
-async function callVeniceWithRetry(body: object, maxRetries = 4): Promise<Response> {
-  let lastResponse: Response | null = null
+async function callVeniceWithRetry(body: object, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const key = getNextVeniceKey()
     const response = await fetch('https://api.venice.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${key}`,
+        'Authorization': `Bearer ${VENICE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
@@ -104,21 +91,22 @@ async function callVeniceWithRetry(body: object, maxRetries = 4): Promise<Respon
 
     if (response.ok) return response
 
-    lastResponse = response
     const status = response.status
     if ((status === 429 || status >= 500) && attempt < maxRetries - 1) {
-      const delay = Math.min(1500 * Math.pow(2, attempt), 12000)
-      console.warn(`Venice API ${status}, rotating key and retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
+      console.warn(`Venice API ${status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
       await new Promise(r => setTimeout(r, delay))
       continue
     }
+
+    return response
   }
-  return lastResponse!
+  throw new Error('Max retries exceeded')
 }
 
 export async function POST(request: NextRequest) {
   try {
-    if (VENICE_KEYS.length === 0) {
+    if (!VENICE_API_KEY) {
       return NextResponse.json(
         { error: 'Venice API key not configured. Add VENICE_API_KEY to your .env.local file.' },
         { status: 500 }
@@ -202,10 +190,9 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Venice API error after retries:', errorText)
-      const isRateLimit = response.status === 429
       return NextResponse.json(
-        { error: 'AI is temporarily busy, retrying...', rate_limited: isRateLimit },
-        { status: 429 }
+        { error: 'AI is temporarily busy. Please wait a moment and try again.' },
+        { status: 500 }
       )
     }
 
