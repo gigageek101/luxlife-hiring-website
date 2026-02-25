@@ -179,6 +179,25 @@ function getLastSubMessage(conversation: ConversationMessage[]): string {
   return lastSub ? lastSub.content : ''
 }
 
+function findKeywordsInMessage(text: string): string[] {
+  const hotWords = new Set([
+    'pussy', 'ass', 'tits', 'thighs', 'lips', 'cock', 'dick', 'mouth', 'throat', 'neck', 'hips', 'body',
+    'bend', 'eat', 'spank', 'choke', 'pull', 'pin', 'slide', 'pound', 'ride', 'gag', 'spread', 'fill', 'grab',
+    'lick', 'suck', 'fuck', 'hit', 'taste', 'squeeze', 'slap', 'push', 'wrap', 'stroke', 'finger', 'cum',
+    'hard', 'wet', 'deep', 'slow', 'rough', 'raw', 'tight', 'dripping', 'red', 'fast',
+    'counter', 'wall', 'bed', 'shower', 'behind', 'back', 'inside', 'over', 'down', 'face',
+    'shake', 'scream', 'beg', 'drip', 'throb', 'moan',
+  ])
+  const words = text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/)
+  return words.filter(w => hotWords.has(w))
+}
+
+function findUsedKeywords(subMessage: string, creatorReply: string): string[] {
+  const subKeys = findKeywordsInMessage(subMessage)
+  const replyLower = creatorReply.toLowerCase()
+  return subKeys.filter(k => replyLower.includes(k))
+}
+
 async function getCreatorTextMessages(conversation: ConversationMessage[], systemPrompt: string, instruction: string, count: number): Promise<string[]> {
   const results: string[] = []
   const tempConvo = [...conversation]
@@ -251,8 +270,9 @@ export async function POST(request: NextRequest) {
 
     // === STEP 3: Subscriber responds to HER ===
     let subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt)))
+    const earlySubKeys = findKeywordsInMessage(subReply)
     conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-      annotation: '💬 Subscriber responds to what she said — conversation is flowing.' })
+      annotation: `💬 Subscriber responds. Keywords to pick up: [${earlySubKeys.slice(0, 4).join(', ') || 'none'}]` })
 
     // === STEP 4: Send TEASER ===
     conversation.push({ role: 'creator', content: 'Teasing Video', contentType: 'teaser',
@@ -268,8 +288,9 @@ export async function POST(request: NextRequest) {
     }
 
     subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt)))
+    const teaserSubKeys = findKeywordsInMessage(subReply)
     conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-      annotation: '💬 Subscriber reacts to the teaser — getting hooked.' })
+      annotation: `💬 Subscriber reacts to teaser. Keywords to pick up: [${teaserSubKeys.slice(0, 4).join(', ') || 'none'}]` })
 
     // === PPV FRAMEWORK LOOP ===
     const ppvSequence = [
@@ -290,12 +311,14 @@ export async function POST(request: NextRequest) {
         const lastSubMsg = getLastSubMessage(conversation)
 
         const isLastTension = t === tensionCount - 1
+        const subKeywords = findKeywordsInMessage(lastSubMsg)
+        const keywordPreview = subKeywords.slice(0, 4).join(', ')
 
         let tensionInstruction: string
         if (isLastTension) {
-          tensionInstruction = `He just said: "${lastSubMsg}". Ask him a SHORT sexy question that makes him describe what he wants to do to you. Use one of his words in the question. Examples: "mmm what would u do next?" or "and then what baby?" or "how hard would u go?" — ONE question (6-8 words max). Must end with ?`
+          tensionInstruction = `He just said: "${lastSubMsg}". Ask him a short open question about what he'd do to you. Use one of his words naturally. Keep it simple like: "what would u do next baby?" or "mmm and then what?" or "how would u do it baby?" or "u gonna show me how?" — ONE question (6-8 words max). Must end with ? No periods`
         } else if (t === 0) {
-          tensionInstruction = `He just said: "${lastSubMsg}". React to what he said — show him you're into it. Pick up one of his words and use it in your response. Like "mmm i love when u talk like that" or take his word and respond to it. ONE message (6-8 words). No periods`
+          tensionInstruction = `He just said: "${lastSubMsg}". React to what he said — show him you're into it. Pick up one of his words and use it in your response naturally. ONE message (6-8 words). No periods`
         } else {
           tensionInstruction = `He said: "${lastSubMsg}". Tease him or tell him what you want. Pick up a word he used and build on his fantasy. ONE message (6-8 words). No periods`
         }
@@ -303,8 +326,17 @@ export async function POST(request: NextRequest) {
         const tensionMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
           tensionInstruction, 1)
         for (const msg of tensionMsgs) {
-          conversation.push({ role: 'creator', content: msg, contentType: 'text',
-            annotation: `✍️ Creator responds to "${lastSubMsg}" — building tension.` })
+          const usedKeys = findUsedKeywords(lastSubMsg, msg)
+          const keyNote = usedKeys.length > 0
+            ? `Picked up keyword${usedKeys.length > 1 ? 's' : ''} "${usedKeys.join(', ')}" from his message`
+            : `Responding to his message`
+          if (isLastTension) {
+            conversation.push({ role: 'creator', content: msg, contentType: 'text',
+              annotation: `❓ QUESTION to draw him out — ${keyNote}. His keywords were: [${keywordPreview}]. Asking a question keeps him talking and builds anticipation before the PPV block` })
+          } else {
+            conversation.push({ role: 'creator', content: msg, contentType: 'text',
+              annotation: `✍️ ${keyNote}. His keywords were: [${keywordPreview}]. She responds to what he said and uses his language to build the same fantasy together` })
+          }
         }
 
         const subMsgs = buildSubMessages(conversation, subSystemPrompt)
@@ -317,8 +349,10 @@ export async function POST(request: NextRequest) {
             annotation: '🏁 Subscriber finished — session complete!' })
           break
         }
+        const newSubKeys = findKeywordsInMessage(subReply)
+        const newKeyPreview = newSubKeys.slice(0, 4).join(', ')
         conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-          annotation: '💬 Subscriber responds — building the fantasy together.' })
+          annotation: `💬 Subscriber responds. Keywords to pick up: [${newKeyPreview || 'none'}] — creator should use these in her next message` })
       }
 
       if (finished) break
@@ -341,22 +375,30 @@ export async function POST(request: NextRequest) {
 
       // --- Step 3: 2-3 mirror messages that respond to what he's been saying ---
       const mirrorCount = ppv.price <= 20 ? 2 : 3
+      const preBlockKeywords = findKeywordsInMessage(lastSubMsg)
+      const preBlockKeyStr = preBlockKeywords.slice(0, 5).join(', ')
       const mirrorMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-        `You just sent him a voice memo and a $${ppv.price} PPV. Now keep the heat going. His last message was: "${lastSubMsg}". Respond to what he said — pick up his words and tell him what you want. Make it feel like you're both in the same fantasy. ONE short message (6-8 words).`, mirrorCount)
+        `You just sent him a voice memo and a $${ppv.price} PPV. Now keep the heat going. His last message was: "${lastSubMsg}". Respond to what he said — pick up his words and tell him what you want. Make it feel like you're both in the same fantasy. ONE short message (6-8 words). No periods`, mirrorCount)
       for (const msg of mirrorMsgs) {
+        const usedKeys = findUsedKeywords(lastSubMsg, msg)
+        const keyNote = usedKeys.length > 0
+          ? `Used his keyword${usedKeys.length > 1 ? 's' : ''} "${usedKeys.join(', ')}"`
+          : `Responding to his message`
         conversation.push({ role: 'creator', content: msg, contentType: 'text',
-          annotation: `✍️ STEP 3: Responding to his words, keeping the fantasy alive.` })
+          annotation: `✍️ STEP 3 (Mirroring): ${keyNote}. His keywords were: [${preBlockKeyStr}]. She takes his words and builds new sentences that continue the fantasy they're sharing` })
       }
-      annotations.push(`✍️ ${mirrorCount} messages responding to his words after PPV.`)
+      annotations.push(`✍️ ${mirrorCount} mirror messages picking up keywords [${preBlockKeyStr}] from his last message.`)
 
       // --- Step 4: Open-ended question ---
       const questionMsg = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-        `Now ask him something open-ended that continues what you two have been talking about. Make it specific to the scenario you've been building together — not a generic question. ONE message (6-8 words).`, 1)
+        `Now ask him a simple open question about what he'd do to you next. Use one of his words naturally. Keep it like: "what would u do next baby?" or "mmm and then what?" or "how would u do it?" — ONE question (6-8 words). Must end with ? No periods`, 1)
       for (const msg of questionMsg) {
+        const usedKeys = findUsedKeywords(lastSubMsg, msg)
+        const keyNote = usedKeys.length > 0 ? `Uses his keyword "${usedKeys[0]}" in the question` : `Continues the scenario`
         conversation.push({ role: 'creator', content: msg, contentType: 'text',
-          annotation: '❓ STEP 4: Open question that continues their shared fantasy.' })
+          annotation: `❓ STEP 4 (Open question): ${keyNote}. This draws him back into the conversation after the PPV, keeping him engaged and talking` })
       }
-      annotations.push('❓ Open question to keep him engaged.')
+      annotations.push('❓ Open question after mirror messages to keep him talking.')
 
       // === Subscriber responds to the full block ===
       const ppvSubMsgs = buildSubMessages(conversation, subSystemPrompt)
