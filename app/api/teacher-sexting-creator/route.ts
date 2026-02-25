@@ -33,7 +33,9 @@ YOUR STYLE:
 RULES:
 - MAX 6-8 words per message
 - ALWAYS respond to what he said
-- Never break character`
+- Never break character
+- NEVER use periods (.) — no dots at the end
+- Question marks (?) are fine`
 
 async function callVeniceWithRetry(body: object, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -104,7 +106,7 @@ export async function POST(request: NextRequest) {
     let reply = data.choices?.[0]?.message?.content || ''
 
     reply = reply.replace(/\[.*?\]/g, '').trim()
-    const firstLine = reply.split('\n')[0].trim()
+    const firstLine = reply.split('\n')[0].trim().replace(/\.+$/g, '')
 
     return NextResponse.json({ reply: firstLine })
   } catch (error) {

@@ -40,7 +40,9 @@ RULES:
 - MAX 6-8 words, one line
 - ALWAYS react to her last message
 - Never break character
-- Never mention training/simulation`
+- Never mention training/simulation
+- NEVER use periods (.) — no dots at the end of messages
+- Question marks (?) are fine when asking something`
 
 const CREATOR_PROMPT = `You are a hot OnlyFans girl having a REAL sexting conversation with a subscriber. You're flirty, confident, and you know how to keep a man engaged.
 
@@ -89,7 +91,9 @@ RULES:
 - MAX 6-8 words per message
 - ALWAYS respond to what he actually said
 - Never break character
-- Never mention framework/training/vault`
+- Never mention framework/training/vault
+- NEVER use periods (.) — no dots at the end of messages
+- Question marks (?) are fine when asking something`
 
 const VAULT_SEQUENCE = [
   { id: 'teaser-1', type: 'teaser' as const, label: 'Teasing Video 1' },
@@ -186,7 +190,8 @@ async function getCreatorTextMessages(conversation: ConversationMessage[], syste
     const msgs = buildCreatorMessages(tempConvo, systemPrompt, extraInstruction)
     let reply = await callVenice(msgs, 0.85)
     reply = reply.replace(/\[.*?\]/g, '').trim()
-    const firstLine = reply.split('\n')[0].trim()
+    let firstLine = reply.split('\n')[0].trim()
+    firstLine = firstLine.replace(/\.+$/g, '')
     if (firstLine) {
       results.push(firstLine)
       tempConvo.push({ role: 'creator', content: firstLine, contentType: 'text' })
@@ -196,7 +201,7 @@ async function getCreatorTextMessages(conversation: ConversationMessage[], syste
 }
 
 function cleanReply(raw: string): string {
-  return raw.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
+  return raw.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim().replace(/\.+$/g, '')
 }
 
 export async function POST(request: NextRequest) {
@@ -284,14 +289,19 @@ export async function POST(request: NextRequest) {
 
         const lastSubMsg = getLastSubMessage(conversation)
 
-        const tensionStyles = [
-          `He just said: "${lastSubMsg}". Respond to THAT — react to his words and use 1-2 of his keywords in your response. Keep building the sexual tension. ONE message (6-8 words).`,
-          `He said: "${lastSubMsg}". Tease him or tell him what you want him to do. Pick up a word he used and weave it into your reply naturally. ONE message (6-8 words).`,
-          `His last message: "${lastSubMsg}". You're getting turned on by what he's saying. React to it — use one of his words and build on his fantasy. ONE message (6-8 words).`,
-        ]
+        const isLastTension = t === tensionCount - 1
+
+        let tensionInstruction: string
+        if (isLastTension) {
+          tensionInstruction = `He just said: "${lastSubMsg}". Ask him a SHORT sexy question that makes him describe what he wants to do to you. Use one of his words in the question. Examples: "mmm what would u do next?" or "and then what baby?" or "how hard would u go?" — ONE question (6-8 words max). Must end with ?`
+        } else if (t === 0) {
+          tensionInstruction = `He just said: "${lastSubMsg}". React to what he said — show him you're into it. Pick up one of his words and use it in your response. Like "mmm i love when u talk like that" or take his word and respond to it. ONE message (6-8 words). No periods`
+        } else {
+          tensionInstruction = `He said: "${lastSubMsg}". Tease him or tell him what you want. Pick up a word he used and build on his fantasy. ONE message (6-8 words). No periods`
+        }
 
         const tensionMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-          tensionStyles[t % tensionStyles.length], 1)
+          tensionInstruction, 1)
         for (const msg of tensionMsgs) {
           conversation.push({ role: 'creator', content: msg, contentType: 'text',
             annotation: `✍️ Creator responds to "${lastSubMsg}" — building tension.` })
