@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const maxDuration = 60
 
-const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
+const VENICE_API_KEY = process.env.VENICE_API_KEY
 
 const SUBSCRIBER_PROMPT = `You are a blue-collar American man in a POST-PPV emotional state. A spicy exchange/PPV just ended. You're in your most vulnerable window.
 
@@ -71,51 +71,58 @@ interface ConversationMessage {
   annotation?: string
 }
 
-async function callClaude(messages: { role: string; content: string }[], systemPrompt: string, maxTokens = 60): Promise<string> {
+async function callVenice(messages: { role: string; content: string }[], maxTokens = 60, temperature = 0.85): Promise<string> {
   for (let attempt = 0; attempt < 3; attempt++) {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.venice.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': CLAUDE_API_KEY!,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${VENICE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'venice-uncensored',
         max_tokens: maxTokens,
-        system: systemPrompt,
         messages,
-        temperature: 0.85,
+        temperature,
       }),
     })
 
     if (response.ok) {
       const data = await response.json()
-      return data.content?.[0]?.text || ''
+      return data.choices?.[0]?.message?.content || ''
     }
 
     if (response.status === 429 || response.status >= 500) {
-      await new Promise(r => setTimeout(r, Math.min(2000 * Math.pow(2, attempt), 12000)))
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
+      console.warn(`Venice API ${response.status}, retrying in ${delay}ms (attempt ${attempt + 1}/3)`)
+      await new Promise(r => setTimeout(r, delay))
       continue
     }
 
-    throw new Error(`Claude API error: ${response.status}`)
+    throw new Error(`Venice API error: ${response.status}`)
   }
   throw new Error('Max retries exceeded')
 }
 
-function buildSubMessages(conversation: ConversationMessage[]): { role: string; content: string }[] {
-  return conversation.map(m => ({
-    role: m.role === 'subscriber' ? 'assistant' : 'user',
-    content: m.content,
-  }))
+function buildSubMessages(conversation: ConversationMessage[], systemPrompt: string): { role: string; content: string }[] {
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  for (const m of conversation) {
+    msgs.push({
+      role: m.role === 'subscriber' ? 'assistant' : 'user',
+      content: m.content,
+    })
+  }
+  return msgs
 }
 
-function buildCreatorMessages(conversation: ConversationMessage[], instruction: string): { role: string; content: string }[] {
-  const msgs = conversation.map(m => ({
-    role: m.role === 'creator' ? 'assistant' : 'user',
-    content: m.content,
-  }))
+function buildCreatorMessages(conversation: ConversationMessage[], systemPrompt: string, instruction: string): { role: string; content: string }[] {
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  for (const m of conversation) {
+    msgs.push({
+      role: m.role === 'creator' ? 'assistant' : 'user',
+      content: m.content,
+    })
+  }
   msgs.push({ role: 'user', content: instruction })
   return msgs
 }
@@ -131,8 +138,8 @@ async function getCreatorMessages(conversation: ConversationMessage[], systemPro
     const inst = i === 0
       ? instruction
       : 'Send your next short message (6-8 words max). Continue naturally from what you just said. No periods'
-    const msgs = buildCreatorMessages(tempConvo, inst)
-    const reply = cleanReply(await callClaude(msgs, systemPrompt, 60))
+    const msgs = buildCreatorMessages(tempConvo, systemPrompt, inst)
+    const reply = cleanReply(await callVenice(msgs, 60))
     if (reply) {
       results.push(reply)
       tempConvo.push({ role: 'creator', content: reply })
@@ -143,8 +150,8 @@ async function getCreatorMessages(conversation: ConversationMessage[], systemPro
 
 export async function POST(request: NextRequest) {
   try {
-    if (!CLAUDE_API_KEY) {
-      return NextResponse.json({ error: 'Claude API key not configured.' }, { status: 500 })
+    if (!VENICE_API_KEY) {
+      return NextResponse.json({ error: 'Venice API key not configured.' }, { status: 500 })
     }
 
     const { scenario } = await request.json()
@@ -181,13 +188,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Subscriber responds (Level 1 — short)
-    let subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt, 30))
+    let subReply = cleanReply(await callVenice(buildSubMessages(conversation, subSystemPrompt), 30))
     if (!subReply || subReply === '...') subReply = scenarioType === 'goes-quiet' ? 'haha' : (subReply || 'yeah')
     conversation.push({ role: 'subscriber', content: subReply,
       annotation: `💬 ${subName} at Level 1 — short post-PPV response. Creator needs to earn his engagement through genuine warmth` })
 
     // === STAGE B: VULNERABILITY DROP ===
-    const vulnInstruction = `He responded: "${subReply}". Now send the VULNERABILITY DROP — show genuine vulnerability. Say something soft and honest like "u made me feel so wanted [name]" or "not everyone does that for me" or "i don't usually feel like this after". Be hesitant, genuine, like you're saying something you don't say to everyone. Use his name. ONE message (6-8 words). No periods`
+    const vulnInstruction = `He responded: "${subReply}". Now send the VULNERABILITY DROP — show genuine vulnerability. Say something soft and honest like "u made me feel so wanted ${stretched}" or "not everyone does that for me" or "i don't usually feel like this after". Be hesitant, genuine, like you're saying something you don't say to everyone. Use his name. ONE message (6-8 words). No periods`
 
     const vulnMsgs = await getCreatorMessages(conversation, creatorSystemPrompt, vulnInstruction, 3)
     for (const msg of vulnMsgs) {
@@ -196,8 +203,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Subscriber responds (Level 2 — warming up)
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt +
-      '\n\nShe just showed genuine vulnerability. Move to Level 2 — respond a bit warmer than before. A short sentence showing you feel something.', 50))
+    const level2Prompt = subSystemPrompt + '\n\nShe just showed genuine vulnerability. Move to Level 2 — respond a bit warmer than before. A short sentence showing you feel something.'
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, level2Prompt), 50))
     conversation.push({ role: 'subscriber', content: subReply || 'that actually means a lot',
       annotation: `💬 ${subName} warming up to Level 2 — her vulnerability is getting to him. Notice the shift from one-word answers` })
 
@@ -223,9 +230,9 @@ Use his name. Be specific to HIS life, not generic. ONE message (6-8 words). No 
     }
 
     // Subscriber responds (Level 3 — noticeably warmer)
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt +
-      `\n\nShe just referenced something very personal about YOUR life — your job as a ${subJob} and personal details. This hits HARD in the post-PPV window. Jump to Level 3. Open up noticeably. Share a detail. 1-2 sentences. Show that her remembering your life details got to you.`, 70))
-    conversation.push({ role: 'subscriber', content: subReply || `haha yeah it really does mean a lot honestly`,
+    const level3Prompt = subSystemPrompt + `\n\nShe just referenced something very personal about YOUR life — your job as a ${subJob} and personal details. This hits HARD in the post-PPV window. Jump to Level 3. Open up noticeably. Share a detail. 1-2 sentences. Show that her remembering your life details got to you.`
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, level3Prompt), 70))
+    conversation.push({ role: 'subscriber', content: subReply || 'haha yeah it really does mean a lot honestly',
       annotation: `💬 ${subName} at Level 3 — the personal callback HIT. He's opening up because she proved she actually listens and remembers. This is the turning point` })
 
     // Creator reacts warmly to his opening up
@@ -237,8 +244,8 @@ Use his name. Be specific to HIS life, not generic. ONE message (6-8 words). No 
     }
 
     // Subscriber responds again (staying Level 3-4)
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt +
-      '\n\nYou are at Level 3-4 now. She keeps being genuine. Stay warm, maybe ask when you can do this again or share how you feel.', 60))
+    const level4Prompt = subSystemPrompt + '\n\nYou are at Level 3-4 now. She keeps being genuine. Stay warm, maybe ask when you can do this again or share how you feel.'
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, level4Prompt), 60))
     conversation.push({ role: 'subscriber', content: subReply || 'when can we do this again honestly',
       annotation: `💬 ${subName} is emotionally engaged (Level 3-4) — he wants to come back. The aftercare is working` })
 
@@ -252,8 +259,8 @@ Use his name. Be specific to HIS life, not generic. ONE message (6-8 words). No 
     }
 
     // Final subscriber response
-    subReply = cleanReply(await callClaude(buildSubMessages(conversation), subSystemPrompt +
-      '\n\nShe wrapped the conversation beautifully with warmth. You feel genuinely valued and want to come back. Respond warmly. You might say you will definitely be back, or express that this meant something to you. Level 4.', 60))
+    const finalPrompt = subSystemPrompt + '\n\nShe wrapped the conversation beautifully with warmth. You feel genuinely valued and want to come back. Respond warmly. You might say you will definitely be back, or express that this meant something to you. Level 4.'
+    subReply = cleanReply(await callVenice(buildSubMessages(conversation, finalPrompt), 60))
     conversation.push({ role: 'subscriber', content: subReply || 'ill be back tomorrow for sure',
       annotation: `💬 ${subName} is LOCKED IN — he will come back. The aftercare converted a one-time buyer into a loyal returning subscriber` })
 
