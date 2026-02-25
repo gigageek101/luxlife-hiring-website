@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const maxDuration = 60
+
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
 const SUBSCRIBER_PROMPT = `You are a real blue-collar American man who just subscribed to a girl's OnlyFans. You are having your FIRST conversation with her.

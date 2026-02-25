@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const maxDuration = 60
+
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
 const SUBSCRIBER_PROMPT = `You are a blue-collar American man in a POST-PPV emotional state. A spicy exchange/PPV just ended. You're in your most vulnerable window.

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const maxDuration = 60
+
 const VENICE_KEYS = [
   process.env.VENICE_API_KEY,
   process.env.VENICE_API_KEY_2,
