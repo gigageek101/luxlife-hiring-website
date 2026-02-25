@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const VENICE_API_KEY = process.env.VENICE_API_KEY
+const VENICE_KEYS = [
+  process.env.VENICE_API_KEY,
+  process.env.VENICE_API_KEY_2,
+].filter(Boolean) as string[]
+
+let keyIndex = 0
+function getNextVeniceKey(): string {
+  if (VENICE_KEYS.length === 0) return ''
+  const key = VENICE_KEYS[keyIndex % VENICE_KEYS.length]
+  keyIndex++
+  return key
+}
 
 const PERFECT_CREATOR_PROMPT = `You are a hot OnlyFans girl having a REAL sexting conversation with a subscriber. You're flirty, confident, and you know how to keep a man engaged.
 
@@ -37,12 +48,14 @@ RULES:
 - NEVER use periods (.) — no dots at the end
 - Question marks (?) are fine`
 
-async function callVeniceWithRetry(body: object, maxRetries = 3): Promise<Response> {
+async function callVeniceWithRetry(body: object, maxRetries = 4): Promise<Response> {
+  let lastResponse: Response | null = null
   for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const key = getNextVeniceKey()
     const response = await fetch('https://api.venice.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${VENICE_API_KEY}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
@@ -50,19 +63,20 @@ async function callVeniceWithRetry(body: object, maxRetries = 3): Promise<Respon
 
     if (response.ok) return response
 
+    lastResponse = response
     if ((response.status === 429 || response.status >= 500) && attempt < maxRetries - 1) {
-      await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, attempt), 8000)))
+      const delay = Math.min(1500 * Math.pow(2, attempt), 12000)
+      console.warn(`Venice API ${response.status}, rotating key (attempt ${attempt + 1}/${maxRetries})`)
+      await new Promise(r => setTimeout(r, delay))
       continue
     }
-
-    return response
   }
-  throw new Error('Max retries exceeded')
+  return lastResponse!
 }
 
 export async function POST(request: NextRequest) {
   try {
-    if (!VENICE_API_KEY) {
+    if (VENICE_KEYS.length === 0) {
       return NextResponse.json({ error: 'Venice API key not configured.' }, { status: 500 })
     }
 

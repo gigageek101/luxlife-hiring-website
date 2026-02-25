@@ -3,5 +3,19 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
-  "devCommand": "npm run dev"
+  "devCommand": "npm run dev",
+  "functions": {
+    "app/api/teacher-sexting-orchestrator/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/evaluate-sexting/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/evaluate-chat/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/evaluate-aftercare/route.ts": {
+      "maxDuration": 30
+    }
+  }
 }

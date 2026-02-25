@@ -305,22 +305,35 @@ export default function SextingSimulationPage() {
         followUpPpvId: m.followUpPpvId,
       }))
 
-      const response = await fetch('/api/sexting-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: allMessages,
-          subscriberProfile: profileRef.current,
-        }),
-      })
+      let chatData: { reply: string; purchased: boolean; passed: boolean; finished: boolean } | null = null
+      for (let chatAttempt = 0; chatAttempt < 3; chatAttempt++) {
+        const response = await fetch('/api/sexting-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: allMessages,
+            subscriberProfile: profileRef.current,
+          }),
+        })
 
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to get response')
+        if (response.ok) {
+          chatData = await response.json()
+          break
+        }
+
+        const errData = await response.json().catch(() => ({}))
+        if (errData.rate_limited && chatAttempt < 2) {
+          setError('AI is busy, retrying...')
+          await new Promise(r => setTimeout(r, 4000 * (chatAttempt + 1)))
+          setError(null)
+          continue
+        }
+
+        throw new Error(errData.error || 'Failed to get response')
       }
 
-      const data = await response.json()
-      const { reply, purchased, passed, finished } = data
+      if (!chatData) throw new Error('Failed to get response after retries')
+      const { reply, purchased, passed, finished } = chatData
 
       if (pendingPpvRef.current && (purchased || passed)) {
         const ppvId = pendingPpvRef.current
@@ -427,16 +440,27 @@ export default function SextingSimulationPage() {
     setIsTyping(true)
     recordEvent('y')
     try {
-      const response = await fetch('/api/sexting-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [], subscriberProfile: profile }),
-      })
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to start simulation')
+      let data: { reply: string } | null = null
+      for (let startAttempt = 0; startAttempt < 3; startAttempt++) {
+        const response = await fetch('/api/sexting-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: [], subscriberProfile: profile }),
+        })
+        if (response.ok) {
+          data = await response.json()
+          break
+        }
+        const errData = await response.json().catch(() => ({}))
+        if (errData.rate_limited && startAttempt < 2) {
+          setError('AI is busy, retrying...')
+          await new Promise(r => setTimeout(r, 4000 * (startAttempt + 1)))
+          setError(null)
+          continue
+        }
+        throw new Error(errData.error || 'Failed to start simulation')
       }
-      const data = await response.json()
+      if (!data) throw new Error('Failed to start after retries')
       const subscriberLines = data.reply.split('\n').filter((l: string) => l.trim())
       for (let i = 0; i < subscriberLines.length; i++) {
         await new Promise(resolve => setTimeout(resolve, i * 600))
@@ -571,18 +595,27 @@ export default function SextingSimulationPage() {
         .filter(v => v.type === 'video' && v.id !== 'video-1')
         .map(v => ({ id: v.id, label: v.label, sent: v.sent, unlocked: v.unlocked, followedUp: v.followedUp }))
 
-      const response = await fetch('/api/evaluate-sexting', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: allMessages, followUpData }),
-      })
+      await new Promise(r => setTimeout(r, Math.floor(Math.random() * 5000)))
 
-      if (!response.ok) {
-        const data = await response.json()
+      let evalResponse: Response | null = null
+      for (let evalAttempt = 0; evalAttempt < 3; evalAttempt++) {
+        evalResponse = await fetch('/api/evaluate-sexting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: allMessages, followUpData }),
+        })
+        if (evalResponse.ok) break
+        if (evalAttempt < 2) {
+          await new Promise(r => setTimeout(r, 3000 * (evalAttempt + 1)))
+        }
+      }
+
+      if (!evalResponse || !evalResponse.ok) {
+        const data = evalResponse ? await evalResponse.json() : { error: 'Evaluation unavailable' }
         throw new Error(data.error || 'Failed to evaluate conversation')
       }
 
-      const data = await response.json()
+      const data = await evalResponse.json()
       setEvaluation(data.evaluation)
       setPhase('results')
 
@@ -795,18 +828,27 @@ export default function SextingSimulationPage() {
         { id: 'video-4', label: 'Video 4', sent: teacherVaultUsed >= 9, unlocked: teacherConversation.some(m => m.contentType === 'video' && m.price === 80 && m.unlocked === true), followedUp: false },
       ]
 
-      const response = await fetch('/api/evaluate-sexting', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: allMessages, followUpData }),
-      })
+      await new Promise(r => setTimeout(r, Math.floor(Math.random() * 5000)))
 
-      if (!response.ok) {
-        const data = await response.json()
+      let evalResponse: Response | null = null
+      for (let evalAttempt = 0; evalAttempt < 3; evalAttempt++) {
+        evalResponse = await fetch('/api/evaluate-sexting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: allMessages, followUpData }),
+        })
+        if (evalResponse.ok) break
+        if (evalAttempt < 2) {
+          await new Promise(r => setTimeout(r, 3000 * (evalAttempt + 1)))
+        }
+      }
+
+      if (!evalResponse || !evalResponse.ok) {
+        const data = evalResponse ? await evalResponse.json() : { error: 'Evaluation unavailable' }
         throw new Error(data.error || 'Failed to evaluate')
       }
 
-      const data = await response.json()
+      const data = await evalResponse.json()
       const rawEval = data.evaluation
       if (rawEval && rawEval.categories) {
         rawEval.categories = rawEval.categories.filter(

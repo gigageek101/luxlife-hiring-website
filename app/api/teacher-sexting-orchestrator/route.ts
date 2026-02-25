@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const VENICE_API_KEY = process.env.VENICE_API_KEY
+const VENICE_KEYS = [
+  process.env.VENICE_API_KEY,
+  process.env.VENICE_API_KEY_2,
+].filter(Boolean) as string[]
+
+let keyIndex = 0
+function getNextVeniceKey(): string {
+  if (VENICE_KEYS.length === 0) return ''
+  const key = VENICE_KEYS[keyIndex % VENICE_KEYS.length]
+  keyIndex++
+  return key
+}
 
 const SUBSCRIBER_PROMPT = `You are a horny blue-collar American guy chatting with a hot girl on OnlyFans. You're having a REAL back-and-forth sexting conversation.
 
@@ -118,11 +129,12 @@ interface ConversationMessage {
 }
 
 async function callVenice(messages: { role: string; content: string }[], temperature = 0.85): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const key = getNextVeniceKey()
     const response = await fetch('https://api.venice.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${VENICE_API_KEY}`,
+        'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -139,7 +151,9 @@ async function callVenice(messages: { role: string; content: string }[], tempera
     }
 
     if (response.status === 429 || response.status >= 500) {
-      await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, attempt), 8000)))
+      const delay = Math.min(1500 * Math.pow(2, attempt), 12000)
+      console.warn(`Venice API ${response.status}, rotating key (attempt ${attempt + 1}/4)`)
+      await new Promise(r => setTimeout(r, delay))
       continue
     }
 
@@ -225,7 +239,7 @@ function cleanReply(raw: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!VENICE_API_KEY) {
+    if (VENICE_KEYS.length === 0) {
       return NextResponse.json({ error: 'Venice API key not configured.' }, { status: 500 })
     }
 
