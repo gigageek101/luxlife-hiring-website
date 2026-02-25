@@ -180,7 +180,7 @@ function extractJSON(text: string): object | null {
   }
 }
 
-async function callClaudeWithRetry(body: object, maxRetries = 4): Promise<Response> {
+async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -196,7 +196,7 @@ async function callClaudeWithRetry(body: object, maxRetries = 4): Promise<Respon
 
     const status = response.status
     if ((status === 429 || status === 529 || status >= 500) && attempt < maxRetries - 1) {
-      const delay = Math.min(2000 * Math.pow(2, attempt), 15000)
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
       console.warn(`Claude API ${status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
       await new Promise(r => setTimeout(r, delay))
       continue

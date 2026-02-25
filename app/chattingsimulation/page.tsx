@@ -462,30 +462,18 @@ export default function ChattingSimulationPage() {
         content: m.content,
       }))
 
-      await new Promise(r => setTimeout(r, Math.floor(Math.random() * 5000)))
+      const response = await fetch('/api/evaluate-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: allMessages, notes }),
+      })
 
-      let evalResponse: Response | null = null
-      for (let evalAttempt = 0; evalAttempt < 3; evalAttempt++) {
-        evalResponse = await fetch('/api/evaluate-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: allMessages, notes }),
-        })
-        if (evalResponse.ok) break
-        if (evalAttempt < 2) {
-          await new Promise(r => setTimeout(r, 3000 * (evalAttempt + 1)))
-        }
-      }
-
-      if (!evalResponse || !evalResponse.ok) {
-        const data = evalResponse ? await evalResponse.json().catch(() => ({ error: 'AI is temporarily busy. Please try again.' })) : { error: 'Evaluation unavailable' }
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ error: 'Failed to evaluate conversation' }))
         throw new Error(data.error || 'Failed to evaluate conversation')
       }
 
-      const data = await evalResponse.json().catch(() => null)
-      if (!data?.evaluation) {
-        throw new Error('AI returned an invalid response. Please try ending the conversation again.')
-      }
+      const data = await response.json()
       setEvaluation(data.evaluation)
       setPhase('results')
 
@@ -633,28 +621,18 @@ export default function ChattingSimulationPage() {
     try {
       const allMessages = teacherConversation.map(m => ({ role: m.role, content: m.content }))
 
-      await new Promise(r => setTimeout(r, Math.floor(Math.random() * 3000)))
+      const evalResponse = await fetch('/api/evaluate-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: allMessages, notes: '' }),
+      })
 
-      let evalResponse: Response | null = null
-      for (let attempt = 0; attempt < 3; attempt++) {
-        evalResponse = await fetch('/api/evaluate-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: allMessages, notes: '' }),
-        })
-        if (evalResponse.ok) break
-        if (attempt < 2) await new Promise(r => setTimeout(r, 3000 * (attempt + 1)))
+      if (!evalResponse.ok) {
+        const errData = await evalResponse.json().catch(() => ({ error: 'Failed to evaluate' }))
+        throw new Error(errData.error || 'Failed to evaluate')
       }
 
-      if (!evalResponse || !evalResponse.ok) {
-        const data = evalResponse ? await evalResponse.json().catch(() => ({ error: 'AI is temporarily busy. Please try again.' })) : { error: 'Evaluation unavailable' }
-        throw new Error(data.error || 'Failed to evaluate')
-      }
-
-      const data = await evalResponse.json().catch(() => null)
-      if (!data?.evaluation) {
-        throw new Error('AI returned an invalid response. Please try again.')
-      }
+      const data = await evalResponse.json()
       setTeacherEvaluation(data.evaluation)
       setPhase('teacher-results')
 
