@@ -110,6 +110,22 @@ const CATEGORY_WEIGHTS: Record<string, number> = {
   'Response Speed & Engagement': 10,
 }
 
+const TEACHER_CATEGORY_WEIGHTS: Record<string, number> = {
+  'Correct Framework Order': 35,
+  'Language Mirroring': 30,
+  'Tension Building Between PPVs': 25,
+  'Response Speed & Engagement': 10,
+}
+
+function calculateTeacherWeightedScore(categories: CategoryResult[]): number {
+  let total = 0
+  for (const cat of categories) {
+    const weight = TEACHER_CATEGORY_WEIGHTS[cat.name] || 0
+    total += (cat.score / 10) * weight
+  }
+  return Math.round(total * 10) / 10
+}
+
 function calculateWeightedScore(categories: CategoryResult[]): number {
   let total = 0
   for (const cat of categories) {
@@ -791,11 +807,17 @@ export default function SextingSimulationPage() {
       }
 
       const data = await response.json()
-      setTeacherEvaluation(data.evaluation)
+      const rawEval = data.evaluation
+      if (rawEval && rawEval.categories) {
+        rawEval.categories = rawEval.categories.filter(
+          (cat: CategoryResult) => cat.name !== 'Follow-up on Non-Purchased Content'
+        )
+      }
+      setTeacherEvaluation(rawEval)
       setPhase('teacher-results')
 
-      if (simUser && data.evaluation) {
-        const weighted = calculateWeightedScore(data.evaluation.categories || [])
+      if (simUser && rawEval) {
+        const weighted = calculateTeacherWeightedScore(rawEval.categories || [])
         try {
           await fetch('/api/simulation/save-report', {
             method: 'POST',
@@ -804,8 +826,8 @@ export default function SextingSimulationPage() {
               telegramUsername: simUser.telegramUsername,
               email: simUser.email,
               overallScore: Math.round(weighted),
-              categories: data.evaluation.categories,
-              overallFeedback: data.evaluation.overallFeedback,
+              categories: rawEval.categories,
+              overallFeedback: rawEval.overallFeedback,
               notes: `[TEACHER DEMO - SEXTING] AI vs AI perfect simulation demo. Vault items used: ${teacherVaultUsed}`,
               conversation: teacherConversation.map(m => ({ role: m.role, content: m.content, contentType: m.contentType })),
               durationMode: 'teacher',
@@ -1663,7 +1685,7 @@ export default function SextingSimulationPage() {
 
         {/* TEACHER RESULTS PHASE */}
         {phase === 'teacher-results' && teacherEvaluation && (() => {
-          const weightedScore = calculateWeightedScore(teacherEvaluation.categories)
+          const weightedScore = calculateTeacherWeightedScore(teacherEvaluation.categories)
           return (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="text-center mb-6">
@@ -1707,7 +1729,7 @@ export default function SextingSimulationPage() {
                     </thead>
                     <tbody>
                       {teacherEvaluation.categories.map((cat, idx) => {
-                        const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                        const weight = TEACHER_CATEGORY_WEIGHTS[cat.name] || 0
                         const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
                         return (
                           <tr key={idx} style={{ borderTop: '1px solid var(--border)' }}>
@@ -1731,7 +1753,7 @@ export default function SextingSimulationPage() {
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                   {teacherEvaluation.categories.map((cat, idx) => {
-                    const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                    const weight = TEACHER_CATEGORY_WEIGHTS[cat.name] || 0
                     const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
                     return (
                       <motion.div key={idx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * idx }}
@@ -1762,7 +1784,7 @@ export default function SextingSimulationPage() {
                 <div className="space-y-4 mb-10">
                   <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Detailed Breakdown</h3>
                   {teacherEvaluation.categories.map((cat, idx) => {
-                    const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                    const weight = TEACHER_CATEGORY_WEIGHTS[cat.name] || 0
                     const earned = Math.round(((cat.score / 10) * weight) * 10) / 10
                     return (
                       <motion.div key={idx} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 * idx }}

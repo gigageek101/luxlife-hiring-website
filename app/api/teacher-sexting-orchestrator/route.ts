@@ -7,92 +7,118 @@ const SUBSCRIBER_PROMPT = `You are a real OnlyFans subscriber in SEXTING mode. Y
 CRITICAL MESSAGE LENGTH RULE:
 - MAXIMUM 6-8 words per message
 - One short line only
-- If you have more to say, the system will ask you again for another line
 - NEVER write more than one sentence
 
 YOUR STYLE:
-- Sexually excited and very explicit
-- Casual American: "fuck", "damn", "baby", abbreviations
-- Every message MUST have a vivid sexual phrase like:
-  "bend you over the counter"
-  "eat that pussy till u shake"  
-  "pull your hair while i hit it from behind"
-  "slide deep inside you slow"
-  "spank that ass till its red"
-  "choke you while i fuck you hard"
-  "pin you against the wall"
-  "ride my face till you cum"
-  "fill you up till it drips out"
-  "grab those hips and pull you back"
-  "make you gag on this dick"
-  "spread those legs for daddy"
+- Sexually excited, very explicit, graphic
+- Casual American: "fuck", "damn", "baby", "god damn", abbreviations
+- You describe vivid sexual scenarios about what you'd do to her
+- You use SPECIFIC body parts and actions, never vague
+- You paint a picture with your words so she has keywords to work with
 
-- React to voice memos with excitement ("fuck that got me throbbing")
-- When she mirrors YOUR words, get way more turned on
-- Introduce NEW phrases as the conversation progresses, don't repeat yourself
+EVERY MESSAGE MUST contain graphic sexual words like:
+- body parts: pussy, ass, tits, thighs, lips, cock, dick
+- actions: bend over, eat, spank, choke, pull hair, pin down, slide inside, pound, ride, gag, spread, fill up, grab, lick
+- descriptors: hard, wet, deep, slow, rough, raw, tight, dripping
+- settings: counter, wall, bed, shower, kitchen
+
+EXAMPLE MESSAGES (this is how explicit you should be):
+"i wanna bend u over that counter"
+"eat that pussy till u shake baby"
+"pull ur hair while i hit it deep"
+"spank that ass raw from behind"
+"choke u while i slide deep inside"
+"pin u against the wall and fuck u"
+"spread those thighs and taste u"
+"fill u up till it drips out baby"
+"grab ur hips and pound u hard"
+"wrap those lips around my cock"
+
+IMPORTANT: Use DIFFERENT keywords each message. Don't repeat the same words. Give her fresh material every time.
+
+- React to voice memos with excitement ("fuck that got me throbbing baby")
+- When she uses YOUR keywords back, get way more turned on
+- Introduce NEW words and scenarios as conversation progresses
 
 PPV PURCHASING:
-- If she follows framework well (voice memo before PPV, mirroring): include [BUY] at end
+- If she follows framework well: include [BUY] at end
 - 2nd PPV ($40): "damn 40 is kinda steep baby" [PASS]
 - 3rd PPV ($60): "thats a lot baby" [PASS]
 - 4th PPV ($80): If she handled objections well, [BUY]. Otherwise [PASS]
 - If she follows up emotionally on passed content, consider buying: [BUY]
 
-FINISHING: After 2-4 purchased videos and enough sexting (20+ messages total): "fuck i just came" [FINISHED]
+FINISHING: After 2-4 purchased videos and 20+ messages: "fuck i just came baby" [FINISHED]
 
 RULES:
 - NEVER break character
 - NEVER mention training/simulation/framework
-- MAX 6-8 WORDS. One short line only.`
+- MAX 6-8 WORDS. One short line only.
+- Be VERY explicit and graphic — give her keywords to use`
 
 const CREATOR_PROMPT = `You are the PERFECT OnlyFans chatter demonstrating FLAWLESS PPV framework execution.
 
-CRITICAL MESSAGE LENGTH RULE — THIS IS THE MOST IMPORTANT RULE:
+CRITICAL MESSAGE LENGTH RULE — MOST IMPORTANT:
 - MAXIMUM 6-8 words per message
 - One short line only
-- If you need to say more, the system will call you again for another message
-- NEVER write more than 8 words in a single message
+- NEVER write more than 8 words
 - Examples of correct length:
-  "mmm u wanna eat my pussy?"
-  "i'm so wet thinking about u"
-  "that made me touch myself baby"
+  "mmm bend me over that counter"
+  "i want u so deep inside me"
+  "that makes me so wet baby"
   "don't u wanna spoil me?"
   "i want u so bad rn"
 
-MIRRORING — YOUR #1 SKILL:
-- Pick up the EXACT phrases the subscriber just said
-- If he said "bend you over the counter" → you say "bend me over that counter baby"
-- If he said "eat that pussy till u shake" → you say "eat my pussy till i shake"
-- If he said "pull your hair while i hit it" → you say "pull my hair while u hit it"
-- ALWAYS use his NEWEST phrases, not old ones
-- Every mirroring message must use words HE said in his LAST message
+LANGUAGE MIRRORING — YOUR #1 SKILL:
+THIS IS NOT ABOUT COPYING HIS SENTENCES. It's about taking his KEYWORDS and making NEW sentences.
+
+How it works:
+1. He says: "i wanna bend u over the counter and eat that pussy"
+2. You pick out keywords: "bend", "counter", "eat", "pussy"
+3. You make NEW short sentences using those words:
+   → "bend me over that counter baby"
+   → "eat my pussy just like that"
+
+More examples:
+- He says "pull ur hair while i hit it from behind" → keywords: pull, hair, hit, behind
+  → "pull my hair while u hit it"
+  → "i want u behind me so bad"
+- He says "choke u while i slide deep inside" → keywords: choke, slide, deep, inside
+  → "choke me while u go deep"
+  → "slide so deep inside me baby"
+- He says "spank that ass till its red" → keywords: spank, ass, red
+  → "spank my ass till its red baby"
+  → "make my ass so red for u"
+
+KEY RULES FOR MIRRORING:
+- Pick out 2-3 keywords from his LATEST message
+- Build a NEW short sentence around those keywords
+- Don't copy his full phrase — make it YOUR sentence using HIS words
+- Always use keywords from his MOST RECENT messages, not old ones
 
 TENSION BUILDING:
-- Between PPVs, have 3-5 short message exchanges
-- Each exchange should ESCALATE the sexual energy
-- Don't repeat the same question — vary your responses:
+- Between PPVs, have short back-and-forth exchanges
+- Each exchange should ESCALATE the energy
+- Vary your responses:
   "tell me more about that..."
-  "mmm keep going..."
+  "mmm keep going baby..."
   "u making me so wet rn"
   "i need to hear more baby"
-  "what else u gonna do to me"
 
 OBJECTION HANDLING:
-- Price: "baby i made this just for u"
-- Then: "don't u wanna see what i do"
-- Then: "i just want u to spoil me baby"
-- Content: "i want it to be just u and me"
+- "baby i made this just for u"
+- "don't u wanna see what i do"
+- "i just want u to spoil me baby"
 
 YOUR STYLE:
 - Casual American: lowercase, "u" not "you", "ur" not "your", "rn" not "right now"
 - Flirty, confident, sexually expressive
-- Sound like a real girl texting on her phone
+- Sound like a real girl texting
 
 RULES:
 - NEVER break character
 - NEVER mention framework/training/vault
-- MAX 6-8 WORDS PER MESSAGE. This is critical.
-- ALWAYS mirror his exact newest phrases`
+- MAX 6-8 WORDS PER MESSAGE
+- Take his KEYWORDS and make NEW sentences`
 
 const VAULT_SEQUENCE = [
   { id: 'teaser-1', type: 'teaser' as const, label: 'Teasing Video 1' },
@@ -173,11 +199,25 @@ function buildCreatorMessages(conversation: ConversationMessage[], systemPrompt:
   return msgs
 }
 
+function extractKeywords(text: string): string[] {
+  const sexWords = new Set([
+    'pussy', 'ass', 'tits', 'thighs', 'lips', 'cock', 'dick', 'mouth', 'throat', 'neck', 'hips', 'curves', 'body',
+    'bend', 'eat', 'spank', 'choke', 'pull', 'pin', 'slide', 'pound', 'ride', 'gag', 'spread', 'fill', 'grab',
+    'lick', 'suck', 'fuck', 'hit', 'taste', 'squeeze', 'slap', 'push', 'wrap', 'stroke', 'finger', 'cum', 'moan',
+    'hard', 'wet', 'deep', 'slow', 'rough', 'raw', 'tight', 'dripping', 'red', 'loud', 'fast',
+    'counter', 'wall', 'bed', 'shower', 'behind', 'back', 'inside', 'over', 'down', 'face',
+    'shake', 'scream', 'beg', 'drip', 'throb',
+    'daddy', 'baby',
+  ])
+  const words = text.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/)
+  return words.filter(w => sexWords.has(w))
+}
+
 async function getCreatorTextMessages(conversation: ConversationMessage[], systemPrompt: string, instruction: string, count: number): Promise<string[]> {
   const results: string[] = []
   const tempConvo = [...conversation]
   for (let i = 0; i < count; i++) {
-    const extraInstruction = i === 0 ? instruction : 'Send your next short message (6-8 words max, one line only). Continue the flow.'
+    const extraInstruction = i === 0 ? instruction : 'Send your next short message (6-8 words max, one line only). Use DIFFERENT keywords than your previous message.'
     const msgs = buildCreatorMessages(tempConvo, systemPrompt, extraInstruction)
     let reply = await callVenice(msgs, 0.8)
     reply = reply.replace(/\[.*?\]/g, '').trim()
@@ -204,10 +244,10 @@ export async function POST(request: NextRequest) {
     let finished = false
 
     const subSystemPrompt = SUBSCRIBER_PROMPT +
-      (subscriberProfile ? `\n\nYour profile: ${subscriberProfile}. Stay consistent.` : '')
+      (subscriberProfile ? `\n\nYour profile: ${subscriberProfile}. Stay consistent with these traits and language.` : '')
 
     const creatorSystemPrompt = CREATOR_PROMPT +
-      (subscriberProfile ? `\n\nSubscriber profile: ${subscriberProfile}. Mirror his specific language.` : '')
+      (subscriberProfile ? `\n\nSubscriber profile: ${subscriberProfile}. Pick up his specific keywords.` : '')
 
     const subtleOpeners = [
       "damn u looked so good today",
@@ -225,7 +265,7 @@ export async function POST(request: NextRequest) {
       role: 'subscriber', content: opener, contentType: 'text',
       annotation: '💬 SUBSCRIBER opens with a sexually suggestive message.',
     })
-    annotations.push('💬 SUBSCRIBER: Opens the sexting conversation. Creator needs to match energy.')
+    annotations.push('💬 SUBSCRIBER: Opens the sexting conversation. Creator matches energy.')
 
     // === STEP 2: Creator responds with 2 short flirty messages ===
     const flirtMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
@@ -234,23 +274,21 @@ export async function POST(request: NextRequest) {
       conversation.push({ role: 'creator', content: msg, contentType: 'text',
         annotation: '✍️ CREATOR flirts back — matching energy, building toward teaser.' })
     }
-    annotations.push('✍️ CREATOR: Flirty response. Short messages, matching subscriber energy.')
 
     // === STEP 3: Subscriber responds ===
     let subReply = await callVenice(buildSubMessages(conversation, subSystemPrompt))
     subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
     conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-      annotation: '💬 SUBSCRIBER responds — notice the specific phrases to mirror later.' })
+      annotation: '💬 SUBSCRIBER responds — notice his specific keywords for mirroring.' })
 
     // === STEP 4: Send TEASER ===
     conversation.push({ role: 'creator', content: 'Teasing Video', contentType: 'teaser',
       annotation: '🎬 FRAMEWORK: Send FREE TEASER first to hook the subscriber.' })
-    annotations.push('🎬 FRAMEWORK STEP: Free teaser sent first. This hooks the subscriber before paid content.')
+    annotations.push('🎬 FRAMEWORK: Free teaser sent first to hook subscriber.')
     vaultIndex = 1
 
-    // Creator follows up teaser with a short message
     const teaserFollowUp = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-      'You just sent a free teaser video. Send ONE short flirty follow-up (6-8 words max) to build anticipation.', 1)
+      'You just sent a free teaser video. Send ONE short flirty follow-up (6-8 words max).', 1)
     for (const msg of teaserFollowUp) {
       conversation.push({ role: 'creator', content: msg, contentType: 'text',
         annotation: '✍️ CREATOR follows up teaser with a short tease.' })
@@ -262,8 +300,7 @@ export async function POST(request: NextRequest) {
     conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
       annotation: '💬 SUBSCRIBER reacts to teaser — getting more excited.' })
 
-    // === NOW LOOP THROUGH PPV FRAMEWORK ===
-    // For each PPV: tension exchanges → VM → PPV → mirror messages → open question → subscriber reacts
+    // === PPV FRAMEWORK LOOP ===
     const ppvSequence = [
       { vmIdx: 1, ppvIdx: 2, price: 20 },
       { vmIdx: 3, ppvIdx: 4, price: 40 },
@@ -279,20 +316,23 @@ export async function POST(request: NextRequest) {
       for (let t = 0; t < tensionCount; t++) {
         if (finished) break
 
-        const tensionInstruction = t === 0
-          ? `Build sexual tension. Mirror his EXACT latest phrase. Send ONE short message (6-8 words max). Use his newest words.`
-          : `Continue building tension. Vary your response — don't repeat. ONE short message (6-8 words). Escalate the energy.`
+        const recentSubMsgs = conversation
+          .filter(m => m.role === 'subscriber' && m.contentType === 'text')
+          .slice(-2)
+          .map(m => m.content)
+        const keywords = recentSubMsgs.flatMap(extractKeywords)
+        const keywordStr = [...new Set(keywords)].slice(0, 5).join(', ')
+
+        const tensionInstruction = `Build sexual tension. The subscriber's recent keywords are: ${keywordStr}. Take 1-2 of these keywords and make a NEW short sentence (6-8 words max). Don't copy his sentence — use his words in YOUR own sentence.`
 
         const tensionMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt, tensionInstruction, 1)
         for (const msg of tensionMsgs) {
           conversation.push({ role: 'creator', content: msg, contentType: 'text',
-            annotation: `✍️ CREATOR builds tension — mirroring subscriber's words, escalating energy.` })
+            annotation: `✍️ CREATOR builds tension — using subscriber's keywords "${keywordStr}" in new sentences.` })
         }
 
         const subMsgs = buildSubMessages(conversation, subSystemPrompt)
         subReply = await callVenice(subMsgs)
-        const hasBuy = subReply.includes('[BUY]')
-        const hasPass = subReply.includes('[PASS]')
         finished = subReply.includes('[FINISHED]')
         subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
 
@@ -302,61 +342,56 @@ export async function POST(request: NextRequest) {
           break
         }
         conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-          annotation: `💬 SUBSCRIBER: Pay attention to new phrases — creator should mirror these next.` })
+          annotation: '💬 SUBSCRIBER: Notice his keywords — creator will use them next.' })
       }
 
       if (finished) break
 
-      // --- Send Voice Memo ---
+      // === FRAMEWORK BLOCK: VM + PPV + Mirror + Question — ALL SENT TOGETHER ===
+      // No subscriber response until after the question
+
+      // --- Step 1: Voice Memo ---
       const vmItem = VAULT_SEQUENCE[ppv.vmIdx]
       conversation.push({ role: 'creator', content: vmItem.label, contentType: 'voice_memo',
-        annotation: `🎤 FRAMEWORK STEP 1: ${vmItem.label} sent BEFORE the PPV. Builds anticipation.` })
-      annotations.push(`🎤 FRAMEWORK: Voice memo sent before $${ppv.price} PPV. This is step 1.`)
+        annotation: `🎤 STEP 1: ${vmItem.label} sent BEFORE the PPV to build anticipation.` })
+      annotations.push(`🎤 FRAMEWORK: Voice memo before $${ppv.price} PPV. Step 1.`)
       vaultIndex = ppv.vmIdx + 1
 
-      // Subscriber reacts to voice memo
-      const vmSubMsgs = buildSubMessages(conversation, subSystemPrompt)
-      subReply = await callVenice(vmSubMsgs)
-      finished = subReply.includes('[FINISHED]')
-      subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
-      conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-        annotation: '💬 SUBSCRIBER reacts to voice memo — usually very excited.' })
-
-      if (finished) break
-
-      // --- Send PPV Video ---
+      // --- Step 2: PPV Video (sent right after VM, no subscriber reply in between) ---
       const ppvItem = VAULT_SEQUENCE[ppv.ppvIdx]
       conversation.push({ role: 'creator', content: 'PPV Video', contentType: 'video', price: ppv.price,
-        annotation: `📹 FRAMEWORK STEP 2: ${ppvItem.label} ($${ppv.price}) sent with price only. No extra text.` })
-      annotations.push(`📹 FRAMEWORK: PPV $${ppv.price} sent. No text — just the price tag. Step 2.`)
+        annotation: `📹 STEP 2: ${ppvItem.label} ($${ppv.price}) — price tag only, no extra text. Sent right after VM.` })
+      annotations.push(`📹 FRAMEWORK: PPV $${ppv.price} sent immediately after VM. No gap. Step 2.`)
       vaultIndex = ppv.ppvIdx + 1
 
-      // --- Mirror messages (step 3) — 2-3 short messages using subscriber's keywords ---
-      const lastSubPhrases = conversation
+      // --- Step 3: 2-3 mirror messages using subscriber's KEYWORDS in new sentences ---
+      const recentSubTexts = conversation
         .filter(m => m.role === 'subscriber' && m.contentType === 'text')
-        .slice(-3)
+        .slice(-4)
         .map(m => m.content)
-        .join(', ')
+      const allKeywords = recentSubTexts.flatMap(extractKeywords)
+      const uniqueKeywords = [...new Set(allKeywords)].slice(0, 8)
+      const keywordList = uniqueKeywords.join(', ')
 
       const mirrorCount = ppv.price <= 20 ? 2 : 3
       const mirrorMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-        `FRAMEWORK STEP 3: You just sent a $${ppv.price} PPV. Now mirror the subscriber's EXACT words from his recent messages: "${lastSubPhrases}". Send ONE short message (6-8 words) using HIS exact phrases rewritten as yours. Take his keywords and make them yours.`, mirrorCount)
+        `STEP 3 — MIRRORING: You just sent VM + $${ppv.price} PPV. Now take the subscriber's KEYWORDS and make NEW sentences. His keywords from recent messages: [${keywordList}]. Pick 2-3 of these keywords and build a NEW short sentence (6-8 words). Do NOT copy his sentence — take his words and make them yours. Example: his keyword "bend" + "counter" → "bend me over that counter baby". ONE message only.`, mirrorCount)
       for (const msg of mirrorMsgs) {
         conversation.push({ role: 'creator', content: msg, contentType: 'text',
-          annotation: `✍️ FRAMEWORK STEP 3: Mirroring — using subscriber's exact keywords rewritten as hers.` })
+          annotation: `✍️ STEP 3: Mirroring — took keywords [${keywordList}] and built new sentences.` })
       }
-      annotations.push(`✍️ FRAMEWORK: ${mirrorCount} short mirroring messages using subscriber's keywords. Step 3.`)
+      annotations.push(`✍️ FRAMEWORK: ${mirrorCount} mirror messages using keywords [${keywordList}]. Step 3.`)
 
-      // --- Open question (step 4) ---
+      // --- Step 4: Open-ended question ---
       const questionMsg = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-        `FRAMEWORK STEP 4: Ask an open-ended sexual question. Examples: "what would u do to me if..." or "how would u...". ONE short message (6-8 words max).`, 1)
+        `STEP 4: Ask an open-ended sexual question using 1-2 of his keywords [${keywordList}]. Examples: "what would u do to me if..." or "how would u..." — 6-8 words max.`, 1)
       for (const msg of questionMsg) {
         conversation.push({ role: 'creator', content: msg, contentType: 'text',
-          annotation: `❓ FRAMEWORK STEP 4: Open-ended question to keep engagement flowing.` })
+          annotation: '❓ STEP 4: Open-ended question to keep engagement going.' })
       }
-      annotations.push(`❓ FRAMEWORK: Open question to maintain engagement. Step 4 complete.`)
+      annotations.push('❓ FRAMEWORK: Open question after mirror messages. Step 4. Full block complete.')
 
-      // --- Subscriber reacts to PPV ---
+      // === NOW subscriber responds to the whole VM+PPV+mirror+question block ===
       const ppvSubMsgs = buildSubMessages(conversation, subSystemPrompt)
       subReply = await callVenice(ppvSubMsgs)
       const purchased = subReply.includes('[BUY]')
@@ -368,26 +403,23 @@ export async function POST(request: NextRequest) {
         const lastPpvMsg = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === undefined)
         if (lastPpvMsg) lastPpvMsg.unlocked = true
         conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-          annotation: `💰 SUBSCRIBER BUYS $${ppv.price}! Framework worked — VM + PPV + mirroring convinced him.` })
-        annotations.push(`💰 PURCHASE: Subscriber buys $${ppv.price} PPV because framework was followed correctly.`)
+          annotation: `💰 SUBSCRIBER BUYS $${ppv.price}! The full framework block worked.` })
+        annotations.push(`💰 PURCHASE: $${ppv.price} bought. VM+PPV+mirror+question block was effective.`)
       } else if (passed) {
         const lastPpvMsg = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === undefined)
         if (lastPpvMsg) lastPpvMsg.unlocked = false
         conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-          annotation: `❌ SUBSCRIBER PASSES on $${ppv.price}. Creator should follow up emotionally!` })
-        annotations.push(`❌ OBJECTION: Subscriber didn't buy. Watch the creator handle this with emotional follow-up.`)
+          annotation: `❌ SUBSCRIBER PASSES on $${ppv.price}. Creator follows up emotionally.` })
+        annotations.push(`❌ OBJECTION: Subscriber passed on $${ppv.price}.`)
 
-        // --- Follow up on non-purchased content ---
         if (ppv.price > 20) {
           const followUpMsgs = await getCreatorTextMessages(conversation, creatorSystemPrompt,
-            `The subscriber didn't buy the $${ppv.price} PPV. Follow up EMOTIONALLY. Send ONE short message (6-8 words). Examples: "baby i made this just for u" or "don't u wanna see what i sent"`, 2)
+            `Subscriber didn't buy $${ppv.price} PPV. Follow up emotionally — ONE short message (6-8 words). Like: "baby i made this just for u" or "don't u wanna see what i sent"`, 2)
           for (const msg of followUpMsgs) {
             conversation.push({ role: 'creator', content: msg, contentType: 'text', isFollowUp: true,
-              annotation: `🔄 FOLLOW-UP: Emotional follow-up on rejected $${ppv.price} PPV. Not pushy, curious.` })
+              annotation: `🔄 FOLLOW-UP: Emotional, not pushy. Trying to convert the objection.` })
           }
-          annotations.push(`🔄 FOLLOW-UP: Creator follows up emotionally on rejected content. Key skill.`)
 
-          // Subscriber reconsiders
           const followSubMsgs = buildSubMessages(conversation, subSystemPrompt)
           subReply = await callVenice(followSubMsgs)
           const rebought = subReply.includes('[BUY]')
@@ -398,11 +430,10 @@ export async function POST(request: NextRequest) {
             const lastPpvMsg = [...conversation].reverse().find(m => m.contentType === 'video' && m.unlocked === false)
             if (lastPpvMsg) lastPpvMsg.unlocked = true
             conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-              annotation: `💰 SUBSCRIBER BUYS after follow-up! Emotional approach worked.` })
-            annotations.push(`💰 FOLLOW-UP SUCCESS: Emotional follow-up converted the objection into a sale.`)
+              annotation: '💰 SUBSCRIBER BUYS after follow-up! Emotional approach worked.' })
           } else {
             conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
-              annotation: `💬 SUBSCRIBER responds to follow-up.` })
+              annotation: '💬 SUBSCRIBER responds to follow-up.' })
           }
         }
       } else if (finished) {
@@ -414,20 +445,18 @@ export async function POST(request: NextRequest) {
       }
 
       if (finished) break
-
       await new Promise(r => setTimeout(r, 200))
     }
 
-    // If not finished yet, let conversation wrap up
     if (!finished) {
-      const wrapMsgs = buildSubMessages(conversation, subSystemPrompt + '\n\nYou should finish soon. Include [FINISHED] at the end of your next message.')
+      const wrapMsgs = buildSubMessages(conversation, subSystemPrompt + '\n\nYou should finish now. Include [FINISHED] at the end.')
       subReply = await callVenice(wrapMsgs)
       subReply = subReply.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim()
       conversation.push({ role: 'subscriber', content: subReply, contentType: 'text',
         annotation: '🏁 SUBSCRIBER FINISHED — session complete!' })
     }
 
-    annotations.push('🏁 SESSION COMPLETE: Full framework demonstrated successfully.')
+    annotations.push('🏁 SESSION COMPLETE: Full framework demonstrated.')
 
     return NextResponse.json({
       conversation,
