@@ -448,26 +448,42 @@ CRITICAL RULES:
 
     const allCallbacks = getPersonalCallbacks(p, stretched)
 
-    // Use the primary job-based callback
+    // Use the primary job-based callback (send first 2 lines, wait, then emotional landing)
     const primaryCallback = allCallbacks[0]
-    for (const msg of primaryCallback) {
-      conversation.push({ role: 'creator', content: msg,
-        annotation: `🎯 STAGE C (Personal Callback — THE POWER MOVE): Using his ${subJob} details to create deep emotional connection. She PROVES she was listening to his life` })
+    conversation.push({ role: 'creator', content: primaryCallback[0],
+      annotation: `🎯 STAGE C (Personal Callback — THE POWER MOVE): Using his ${subJob} details to create deep emotional connection` })
+    if (primaryCallback[1]) {
+      conversation.push({ role: 'creator', content: primaryCallback[1],
+        annotation: `🎯 STAGE C: Building the personal callback — referencing SPECIFIC details from his life` })
     }
 
-    // Subscriber responds to personal callback (Level 3 - big jump)
+    // Subscriber starts to respond (Level 2-3 — the callback is hitting)
+    const sub4a = clean(await callVenice([
+      { role: 'system', content: subSys },
+      { role: 'user', content: `She just started referencing your actual ${subJob} job in an emotional way. You're warming up. Level 2-3. Short reaction. Like "haha yeah" or "that means a lot". Max 5 words. No periods.` },
+    ], 25))
+    conversation.push({ role: 'subscriber', content: sub4a || 'haha yeah',
+      annotation: `💬 ${subName} reacting to the personal callback — the details are hitting` })
+
+    // Land the emotional payoff of the callback
+    if (primaryCallback[2]) {
+      conversation.push({ role: 'creator', content: primaryCallback[2],
+        annotation: `🎯 STAGE C: Landing the emotional payoff — tying his work to how he makes HER feel` })
+    }
+
+    // Subscriber responds fully to personal callback (Level 3)
     const sub4 = clean(await callVenice([
       { role: 'system', content: subSys },
-      { role: 'user', content: `She just referenced your actual job (${subJob}) and specific details about your life in an emotional way. This hit HARD. Level 3. Open up — share something personal. Like "haha yeah its a lot but i love it" or reference your ${p.pets[0] ? 'dog ' + p.pets[0] : p.hobbies[0] || 'life'}. Max 8 words. No periods.` },
+      { role: 'user', content: `She just connected your ${subJob} work to how you make her feel. This hit HARD. Level 3. Open up — share something personal. Like "yeah its a lot but i love it" or reference your ${p.pets[0] ? 'dog ' + p.pets[0] : p.hobbies[0] || 'life'}. Max 8 words. No periods.` },
     ], 40))
     conversation.push({ role: 'subscriber', content: sub4 || 'haha yeah it really does mean a lot',
       annotation: `💬 ${subName} at Level 3 — the personal callback HIT. He's opening up because she proved she actually listens` })
 
     // Creator reacts to what he shared
     const callbackReact = await creatorSays(conversation, creatorSys,
-      `He opened up after your personal callback. He said: "${sub4}". React to what he SPECIFICALLY said — show you heard him. Something warm and genuine. Use his name ${stretched}. ONE message. 6-8 words. No periods`, 1)
+      `He opened up after your personal callback about his ${subJob} job. He said: "${sub4}". React to what he SPECIFICALLY said. Use his name ${stretched}. ONE message. 6-8 words. No periods`, 1)
     for (const m of callbackReact) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ Creator reacts to his vulnerability — reinforcing that opening up to her is safe` })
+      annotation: `✍️ Creator reacts to his vulnerability — reinforcing that opening up is safe` })
 
     // Use secondary callback (pet/kids/loneliness detail)
     if (allCallbacks.length > 1) {
@@ -475,6 +491,15 @@ CRITICAL RULES:
       for (const msg of secondaryCallback) {
         conversation.push({ role: 'creator', content: msg,
           annotation: `🎯 STAGE C: Second personal detail — layering personalization (${p.pets[0] ? 'his dog ' + p.pets[0] : p.hasKids ? 'his kids' : 'his personal life'})` })
+      }
+    }
+
+    // Use third callback if available (early mornings, loneliness, etc.)
+    if (allCallbacks.length > 2) {
+      const thirdCallback = allCallbacks[2]
+      for (const msg of thirdCallback) {
+        conversation.push({ role: 'creator', content: msg,
+          annotation: `🎯 STAGE C: Third personal detail — deep personalization (${p.specificDetails[0] || 'his personal situation'})` })
       }
     }
 

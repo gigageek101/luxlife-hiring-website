@@ -245,6 +245,8 @@ export default function AfterCareSimulationPage() {
   const [teacherEvaluation, setTeacherEvaluation] = useState<EvaluationResult | null>(null)
   const [teacherError, setTeacherError] = useState<string | null>(null)
   const [teacherExpandedCategories, setTeacherExpandedCategories] = useState<Set<number>>(new Set())
+  const [teacherScenarioNotes, setTeacherScenarioNotes] = useState<string>('')
+  const [teacherScenarioLabel, setTeacherScenarioLabel] = useState<string>('')
   const teacherChatRef = useRef<HTMLDivElement>(null)
   const teacherPlayIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -658,6 +660,9 @@ export default function AfterCareSimulationPage() {
     const jobMatch = scenario.subscriberProfile.match(/Job:\s*([^,]+)/)
     const subJob = jobMatch ? jobMatch[1].trim() : 'Electrician'
 
+    setTeacherScenarioNotes(scenario.prePopulatedNotes)
+    setTeacherScenarioLabel(scenario.label)
+
     try {
       const response = await fetch('/api/teacher-aftercare-orchestrator', {
         method: 'POST',
@@ -725,7 +730,7 @@ export default function AfterCareSimulationPage() {
       const evalResponse = await fetch('/api/evaluate-aftercare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: allMessages, notes: '', scenarioLabel: 'Teacher Demo' }),
+        body: JSON.stringify({ messages: allMessages, notes: teacherScenarioNotes, scenarioLabel: teacherScenarioLabel || 'Teacher Demo' }),
       })
 
       if (!evalResponse.ok) {
