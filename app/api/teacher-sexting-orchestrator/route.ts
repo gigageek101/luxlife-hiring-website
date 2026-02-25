@@ -321,7 +321,7 @@ export async function POST(request: NextRequest) {
           .slice(-2)
           .map(m => m.content)
         const keywords = recentSubMsgs.flatMap(extractKeywords)
-        const keywordStr = [...new Set(keywords)].slice(0, 5).join(', ')
+        const keywordStr = Array.from(new Set(keywords)).slice(0, 5).join(', ')
 
         const tensionInstruction = `Build sexual tension. The subscriber's recent keywords are: ${keywordStr}. Take 1-2 of these keywords and make a NEW short sentence (6-8 words max). Don't copy his sentence — use his words in YOUR own sentence.`
 
@@ -370,7 +370,7 @@ export async function POST(request: NextRequest) {
         .slice(-4)
         .map(m => m.content)
       const allKeywords = recentSubTexts.flatMap(extractKeywords)
-      const uniqueKeywords = [...new Set(allKeywords)].slice(0, 8)
+      const uniqueKeywords = Array.from(new Set(allKeywords)).slice(0, 8)
       const keywordList = uniqueKeywords.join(', ')
 
       const mirrorCount = ppv.price <= 20 ? 2 : 3
