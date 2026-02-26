@@ -53,6 +53,15 @@ function stretch(name: string): string {
   return lower.slice(0, -1) + lower.slice(-1).repeat(4)
 }
 
+async function subscriberSays(conversation: ConversationMessage[], systemPrompt: string, instruction: string): Promise<string> {
+  const fullSystem = systemPrompt + `\n\nINSTRUCTION FOR YOUR NEXT REPLY: ${instruction}`
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: fullSystem }]
+  for (const m of conversation) {
+    msgs.push({ role: m.role === 'subscriber' ? 'assistant' : 'user', content: m.content })
+  }
+  return clean(await callVenice(msgs, 40))
+}
+
 async function creatorSays(
   conversation: ConversationMessage[],
   systemPrompt: string,
@@ -379,10 +388,8 @@ CRITICAL RULES:
       annotation: `💨 STAGE A: Still breathless — letting the moment land before expecting a response` })
 
     // Subscriber responds (Level 1)
-    const sub1 = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: `She just sounded breathless after what happened: "${breathMsg1}" then "${breathMsg2[0] || ''}". You're at Level 1 — short response. Like "haha yeah" or "thanks" or "it was pretty good". Max 4-5 words. No periods.` },
-    ], 25))
+    const sub1 = await subscriberSays(conversation, subSys,
+      `She sounded breathless after what happened. You're at Level 1 — short response. React to what SHE said. Like "haha yeah" or "thanks" or "it was pretty good". Max 4-5 words. No periods.`)
     conversation.push({ role: 'subscriber', content: sub1 || 'haha yeah',
       annotation: `💬 ${subName} at Level 1 — short post-PPV response. Creator needs to earn deeper engagement` })
 
@@ -390,56 +397,101 @@ CRITICAL RULES:
     // STAGE B: VULNERABILITY DROP (react, then vulnerable)
     // =============================================
 
-    // React to what he said first
-    const vulnReact = await creatorSays(conversation, creatorSys,
-      `He said: "${sub1}". React to HIS specific words first — show you're listening. Something like "see thats what i mean" or "i love that u felt it too". Use his name ${stretched}. ONE message. 6-8 words. No periods`, 1)
-    for (const m of vulnReact) conversation.push({ role: 'creator', content: m,
-      annotation: `💕 STAGE B: Reacting to his words — always acknowledge what HE said before continuing` })
+    // Scenario-specific Stage B flow
+    if (scenarioType === 'feels-guilty') {
+      conversation.push({ role: 'creator', content: `hey ${stretched} dont do that okay`,
+        annotation: `💕 STAGE B (Vulnerability Drop): Addressing his guilt directly — making him feel safe` })
+      conversation.push({ role: 'creator', content: `u work so hard u deserve to feel good`,
+        annotation: `💕 STAGE B: Framing the purchase as something he EARNED` })
 
-    // Vulnerability with hesitation
-    const vulnMsg = scenarioType === 'feels-guilty'
-      ? `hey ${stretched} dont do that okay`
-      : scenarioType === 'never-does-this'
-        ? `${stretched} that actually makes it mean more`
-        : `${stretched} i dont say this a lot but`
-    conversation.push({ role: 'creator', content: vulnMsg,
-      annotation: `💕 STAGE B (Vulnerability Drop): The hesitation makes it feel genuine — "i don't say this a lot but..." creates anticipation` })
+      const sub2 = await subscriberSays(conversation, subSys,
+        `She reassured you about spending money. React to what SHE said. Level 2. Like "yeah i guess ur right" or "thanks that means a lot". Use "u" not "you". Max 6 words. No periods.`)
+      conversation.push({ role: 'subscriber', content: sub2 || 'yeah i guess ur right',
+        annotation: `💬 ${subName} warming up — her reassurance is getting to him` })
 
-    const vulnFollow = scenarioType === 'feels-guilty'
-      ? `u deserve to feel good sometimes`
-      : scenarioType === 'never-does-this'
-        ? `it means ur not like the other guys`
-        : `u actually made me feel something real`
-    conversation.push({ role: 'creator', content: vulnFollow,
-      annotation: `💕 STAGE B: Completing the vulnerability drop — specific to what just happened` })
+      conversation.push({ role: 'creator', content: `i mean it ${stretched}`,
+        annotation: `💕 STAGE B: Reinforcing — she genuinely believes he deserves it` })
+      conversation.push({ role: 'creator', content: `u give so much to everyone around u`,
+        annotation: `💕 STAGE B: Deepening — connecting his work ethic to why he deserves pleasure` })
 
-    // Subscriber responds (Level 2)
-    const sub2prompt = scenarioType === 'feels-guilty'
-      ? `She reassured you about spending money, said you deserve to feel good. You're warming up. Level 2. Like "yeah i guess u right" or "thanks that means a lot". Max 6 words. No periods.`
-      : scenarioType === 'never-does-this'
-        ? `She said it makes it mean more that you don't usually do this. Level 2. Like "yeah its different with u" or "i really dont do this". Max 6 words. No periods.`
-        : scenarioType === 'opens-up-lonely'
-          ? `She showed real vulnerability. You're opening up. Level 2. Like "yeah it hit different honestly" or "that means a lot fr". Max 6 words. No periods.`
-          : `She showed vulnerability and said you made her feel something real. Level 2. Something like "yeah it was different with u" or "that means a lot honestly". Max 6 words. No periods.`
-    const sub2 = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: sub2prompt },
-    ], 30))
-    conversation.push({ role: 'subscriber', content: sub2 || 'yeah that means a lot',
-      annotation: `💬 ${subName} warming up to Level 2 — her vulnerability is getting to him. Notice longer responses now` })
+    } else if (scenarioType === 'never-does-this') {
+      conversation.push({ role: 'creator', content: `${stretched} honestly that makes it mean more`,
+        annotation: `💕 STAGE B (Vulnerability Drop): Flipping his embarrassment into something special` })
+      conversation.push({ role: 'creator', content: `ur not like the other guys on here`,
+        annotation: `💕 STAGE B: Making his vulnerability a positive — he's different` })
 
-    // Deepen vulnerability based on his response
-    const vulnDeep = await creatorSays(conversation, creatorSys,
-      `He said: "${sub2}" and is warming up. Deepen the vulnerability. React to his words, then share something more personal. Like "see ${stretched} thats what im saying" or "i feel like i can be real with u". Show him this is special. TWO messages. 6-8 words each. No periods`, 2)
-    for (const m of vulnDeep) conversation.push({ role: 'creator', content: m,
-      annotation: `💕 STAGE B: Deepening vulnerability — responding to HIS words specifically, building trust` })
+      const sub2 = await subscriberSays(conversation, subSys,
+        `She said you're different from other guys. React to what SHE said. Level 2. Like "yeah its just different with u" or "i mean it i dont do this". Use "u" not "you". Max 6 words. No periods.`)
+      conversation.push({ role: 'subscriber', content: sub2 || 'yeah its just different with u',
+        annotation: `💬 ${subName} warming up — he feels seen, not judged` })
+
+      conversation.push({ role: 'creator', content: `i could tell from the start ${stretched}`,
+        annotation: `💕 STAGE B: Deepening — she noticed he was special early on` })
+
+    } else if (scenarioType === 'opens-up-lonely') {
+      conversation.push({ role: 'creator', content: `${stretched} i hate that for u honestly`,
+        annotation: `💕 STAGE B (Vulnerability Drop): Meeting his loneliness with genuine empathy` })
+      conversation.push({ role: 'creator', content: `u seem like the kind of guy who deserves someone`,
+        annotation: `💕 STAGE B: Validating him — he deserves connection` })
+
+      const sub2 = await subscriberSays(conversation, subSys,
+        `She showed real empathy about your loneliness. React to what SHE said. Level 2. Like "yeah it gets rough sometimes" or "that means a lot honestly". Use "u" not "you". Max 6 words. No periods.`)
+      conversation.push({ role: 'subscriber', content: sub2 || 'yeah it gets rough sometimes',
+        annotation: `💬 ${subName} warming up — her empathy is reaching him` })
+
+      conversation.push({ role: 'creator', content: `well im right here ${stretched} okay`,
+        annotation: `💕 STAGE B: Offering herself as his safe space` })
+
+    } else if (scenarioType === 'deflects-humor') {
+      conversation.push({ role: 'creator', content: `lmaoooo ${stretched} ur so funny`,
+        annotation: `💕 STAGE B: Acknowledging the joke — don't fight the humor` })
+      conversation.push({ role: 'creator', content: `but i know u felt something too`,
+        annotation: `💕 STAGE B (Vulnerability Drop): Seeing through the joke to the real feeling` })
+
+      const sub2 = await subscriberSays(conversation, subSys,
+        `She called out that you're deflecting with humor. She said she knows you felt something. React honestly. Level 2. Like "haha maybe a little" or "yeah it was pretty real". Use "u" not "you". Max 6 words. No periods.`)
+      conversation.push({ role: 'subscriber', content: sub2 || 'haha yeah maybe a little',
+        annotation: `💬 ${subName} dropping the joke — her honesty got through` })
+
+      conversation.push({ role: 'creator', content: `see i knew it ${stretched}`,
+        annotation: `💕 STAGE B: Celebrating his honesty — rewarding vulnerability` })
+
+    } else if (scenarioType === 'late-night') {
+      conversation.push({ role: 'creator', content: `${stretched} its so late and u stayed up for me`,
+        annotation: `💕 STAGE B: Acknowledging the sacrifice of his sleep` })
+      conversation.push({ role: 'creator', content: `that actually means everything honestly`,
+        annotation: `💕 STAGE B (Vulnerability Drop): His time is more valuable because he has work early` })
+
+      const sub2 = await subscriberSays(conversation, subSys,
+        `She acknowledged you staying up late for her even though you work early. React to what SHE said. Level 2. Like "haha yeah worth it tho" or "i couldnt sleep anyway". Use "u" not "you". Max 6 words. No periods.`)
+      conversation.push({ role: 'subscriber', content: sub2 || 'haha yeah worth it tho',
+        annotation: `💬 ${subName} warming up — he stayed up because she matters` })
+
+      conversation.push({ role: 'creator', content: `${stretched} dont say that ull make me blush`,
+        annotation: `💕 STAGE B: Playful vulnerability — she's affected by what he said` })
+
+    } else {
+      // Default: compliments, has-to-go, goes-quiet
+      conversation.push({ role: 'creator', content: `${stretched} i dont say this a lot but`,
+        annotation: `💕 STAGE B (Vulnerability Drop): The hesitation makes it feel genuine` })
+      conversation.push({ role: 'creator', content: `u actually made me feel something real`,
+        annotation: `💕 STAGE B: Completing the vulnerability — specific to what just happened` })
+
+      const sub2 = await subscriberSays(conversation, subSys,
+        `She showed genuine vulnerability and said you made her feel something real. React to what SHE said. Level 2. Like "yeah it was different with u" or "that means a lot honestly". Use "u" not "you". Max 6 words. No periods.`)
+      conversation.push({ role: 'subscriber', content: sub2 || 'yeah it was different with u',
+        annotation: `💬 ${subName} warming up to Level 2 — her vulnerability is getting to him` })
+
+      conversation.push({ role: 'creator', content: `i feel like i can be real with u`,
+        annotation: `💕 STAGE B: Deepening — she trusts him specifically` })
+      conversation.push({ role: 'creator', content: `and i dont feel that with most people`,
+        annotation: `💕 STAGE B: Making him feel rare — not everyone gets this side of her` })
+    }
 
     // Subscriber warms more (Level 2-3)
-    const sub3 = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: `She deepened the vulnerability. You're between Level 2-3 now. Open up a bit more. Mention something about your life naturally. Like "yeah i dont usually open up like this" or reference your ${subJob} work or ${p.hobbies[0] || 'hobbies'}. Max 8 words. No periods.` },
-    ], 40))
-    conversation.push({ role: 'subscriber', content: sub3 || 'yeah it just hit different tonight',
+    const sub3 = await subscriberSays(conversation, subSys,
+      `She showed deep vulnerability. You're at Level 2-3 now. React to what SHE said — open up a bit. Like "yeah i feel that too" or "its nice to just be real". Use "u" not "you". Max 8 words. No periods.`)
+    conversation.push({ role: 'subscriber', content: sub3 || 'yeah i feel that too honestly',
       annotation: `💬 ${subName} at Level 2-3 — opening up because vulnerability feels safe with her` })
 
     // =============================================
@@ -458,10 +510,8 @@ CRITICAL RULES:
     }
 
     // Subscriber starts to respond (Level 2-3 — the callback is hitting)
-    const sub4a = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: `She just started referencing your actual ${subJob} job in an emotional way. You're warming up. Level 2-3. Short reaction. Like "haha yeah" or "that means a lot". Max 5 words. No periods.` },
-    ], 25))
+    const sub4a = await subscriberSays(conversation, subSys,
+      `She just referenced your actual ${subJob} job in an emotional way. React to what SHE said. Level 2-3. Short reaction. Like "haha yeah thats real" or "that actually means a lot". Use "u" not "you". Max 5 words. No periods.`)
     conversation.push({ role: 'subscriber', content: sub4a || 'haha yeah',
       annotation: `💬 ${subName} reacting to the personal callback — the details are hitting` })
 
@@ -472,10 +522,8 @@ CRITICAL RULES:
     }
 
     // Subscriber responds fully to personal callback (Level 3)
-    const sub4 = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: `She just connected your ${subJob} work to how you make her feel. This hit HARD. Level 3. Open up — share something personal. Like "yeah its a lot but i love it" or reference your ${p.pets[0] ? 'dog ' + p.pets[0] : p.hobbies[0] || 'life'}. Max 8 words. No periods.` },
-    ], 40))
+    const sub4 = await subscriberSays(conversation, subSys,
+      `She connected your ${subJob} work to how you make her feel. This hit HARD. Level 3. React to what SHE said — open up and share something personal about your work or life. Like "yeah its what keeps me going honestly" or "means a lot coming from u". Use "u" not "you". Max 8 words. No periods.`)
     conversation.push({ role: 'subscriber', content: sub4 || 'haha yeah it really does mean a lot',
       annotation: `💬 ${subName} at Level 3 — the personal callback HIT. He's opening up because she proved she actually listens` })
 
@@ -505,14 +553,11 @@ CRITICAL RULES:
 
     // Subscriber deeply touched (Level 3-4)
     const sub5prompt = p.pets.length > 0
-      ? `She mentioned your dog ${p.pets[0]}. This really got to you. Level 3-4. React warmly — mention your dog. Like "haha yeah ${p.pets[0].toLowerCase()} is probably waiting for me" or "ill give him a pet from u lol". Max 8 words. No periods.`
+      ? `She mentioned your dog ${p.pets[0]} and other personal details. React to what SHE said. Level 3-4. Mention your dog naturally. Like "haha yeah ${p.pets[0].toLowerCase()} is probably wondering where i am" or "ill give him a pet from u". Use "u" not "you". Max 8 words. No periods.`
       : p.hasKids
-        ? `She mentioned your kids. Level 3-4. React warmly. Like "yeah they keep me going honestly" or "haha yeah theyre everything". Max 8 words. No periods.`
-        : `She doubled down on personal details. Level 3-4. You feel genuinely valued. Like "damn u really remember all that" or "nobody ever said that to me". Max 8 words. No periods.`
-    const sub5 = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: sub5prompt },
-    ], 40))
+        ? `She mentioned your kids and personal details. React to what SHE said. Level 3-4. Like "yeah they keep me going honestly" or "haha best part of my day". Use "u" not "you". Max 8 words. No periods.`
+        : `She layered multiple personal details about your life. React to what SHE said. Level 3-4. Like "damn nobody ever remembers all that" or "u really pay attention huh". Use "u" not "you". Max 8 words. No periods.`
+    const sub5 = await subscriberSays(conversation, subSys, sub5prompt)
     conversation.push({ role: 'subscriber', content: sub5 || 'haha yeah that means everything',
       annotation: `💬 ${subName} at Level 3-4 — emotionally engaged. He feels seen and valued as a person, not just a wallet` })
 
@@ -520,11 +565,9 @@ CRITICAL RULES:
     // STAGE D: GRATITUDE CLOSE + RE-ENTRY SEED
     // =============================================
 
-    // React to his warmth first
-    const closeReact = await creatorSays(conversation, creatorSys,
-      `He said: "${sub5}" and is deeply engaged. React warmly to what he said. Something like "see ${stretched} thats why i love talking to u" or "stop ur gonna make me feel things". ONE message. 6-8 words. No periods`, 1)
-    for (const m of closeReact) conversation.push({ role: 'creator', content: m,
-      annotation: `🌅 STAGE D: Reacting to his warmth — validating his openness` })
+    // React to his warmth (hardcoded to avoid repetitive AI phrases)
+    conversation.push({ role: 'creator', content: `stop ${stretched} ur gonna make me cry`,
+      annotation: `🌅 STAGE D: Reacting to his warmth — playful vulnerability that validates his openness` })
 
     // Gratitude close with re-entry seed
     const closeMessages = getGratitudeClose(p, stretched)
@@ -535,12 +578,9 @@ CRITICAL RULES:
 
     // Final subscriber response (Level 4)
     const sub6prompt = p.pets.length > 0
-      ? `She told you to cuddle with ${p.pets[0]} and send a pic tomorrow. Level 4. You WILL come back. Like "haha ill snap one for u tomorrow" or "deal ill send u the cutest one". Max 8 words. No periods.`
-      : `She planted a seed for tomorrow and showed she cares. Level 4. You will definitely come back. Like "for sure ill hit u up" or "deal talk tomorrow". Max 8 words. No periods.`
-    const sub6 = clean(await callVenice([
-      { role: 'system', content: subSys },
-      { role: 'user', content: sub6prompt },
-    ], 30))
+      ? `She told you to cuddle with ${p.pets[0]} and send a pic tomorrow. React to what SHE said. Level 4. You WILL come back. Like "haha deal ill snap one for u" or "ill send u his cutest face". Use "u" not "you". Max 8 words. No periods.`
+      : `She planted a seed for tomorrow and showed she cares. React to what SHE said. Level 4. You will come back. Like "for sure ill hit u up" or "deal talk tomorrow". Use "u" not "you". Max 8 words. No periods.`
+    const sub6 = await subscriberSays(conversation, subSys, sub6prompt)
     conversation.push({ role: 'subscriber', content: sub6 || 'deal ill be back tomorrow',
       annotation: `💬 ${subName} is LOCKED IN — he will come back. The aftercare converted a one-time buyer into a loyal subscriber` })
 
