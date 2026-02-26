@@ -182,11 +182,11 @@ export async function POST(request: NextRequest) {
     conversation.push({ role: 'subscriber', content: subAge,
       annotation: `💬 ${subName} shares his age: ${subAge}` })
 
-    // Creator reacts + asks location
-    const locAsk = await creatorSays(conversation, cSys,
-      `He said he's ${subAge}. React briefly then ask where he's from. Like "love that" then "where u from ${stretched}". Remember his name is ${subName}. Max 6-8 words each. No periods`, 2)
-    for (const m of locAsk) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 1: Reacting to age + asking location` })
+    // Creator reacts to age then asks location (separate messages, never stacked)
+    conversation.push({ role: 'creator', content: `love that`,
+      annotation: `✍️ PHASE 1: Reacting to age — short warm reaction` })
+    conversation.push({ role: 'creator', content: `where u from ${stretched}`,
+      annotation: `✍️ PHASE 1: Asking location — one question at a time, NEVER stack with other questions` })
 
     // =============================================
     // PHASE 2: LOCATION REACTION
@@ -350,11 +350,12 @@ CRITICAL RULES:
     conversation.push({ role: 'subscriber', content: hobbyReply || firstHobby,
       annotation: `💬 ${subName} shares his hobbies. PHASE 4 — Creator must react with excitement` })
 
-    // Hobby-specific reactions
+    // Hobby-specific reactions (personal: why SHE loves men like HIM)
     let hobbyResponses: string[]
     if (subHobbies.toLowerCase().includes('fish')) {
       hobbyResponses = [
-        `damn i ran into a real man`,
+        `omggg a man who can catch his own dinner??`,
+        `i love that so much honestly`,
         `what kind of fish do u usually go for`,
       ]
     } else if (subHobbies.toLowerCase().includes('hunt')) {
@@ -366,12 +367,12 @@ CRITICAL RULES:
     } else if (subHobbies.toLowerCase().includes('shoot') || subHobbies.toLowerCase().includes('range')) {
       hobbyResponses = [
         `oh really u would take me to the range??`,
-        `no one ever did that for me before`,
+        `i always wanted a man who could teach me`,
         `what do u usually shoot with`,
       ]
     } else if (subHobbies.toLowerCase().includes('truck') || subHobbies.toLowerCase().includes('car')) {
       hobbyResponses = [
-        `ok so u r literally the definition of a handyman`,
+        `a man who can fix his own truck is everything`,
         `i find that so attractive honestly`,
         `what are u working on right now`,
       ]
@@ -402,11 +403,11 @@ CRITICAL RULES:
     conversation.push({ role: 'subscriber', content: hobbyDetail || 'yeah went out last weekend actually',
       annotation: `💬 ${subName} sharing details (Level 2-3) — opening up because she showed real interest` })
 
-    // Creator reacts with excitement to what he shared
+    // Creator reacts to hobby detail personally (not generic "thats amazing")
     const hobbyFollowUp = await creatorSays(conversation, cSys,
-      `He shared: "${hobbyDetail}" about ${subHobbies}. React with excitement to the SPECIFIC thing he said. Then ask ONE follow-up question about it. Like "omggg thats awesome ${stretched}" then "how long have u been doing that". His name is ${subName}. The second message MUST be a question. Max 6-8 words each. No periods.`, 2)
+      `He shared: "${hobbyDetail}" about ${subHobbies}. React by explaining why YOU personally find this attractive about HIM. NOT generic like "thats amazing". Instead like "i love a man who can provide like that" or "that takes so much patience i respect that". Then ask ONE follow-up question. His name is ${subName}. Max 6-8 words each. No periods.`, 2)
     for (const m of hobbyFollowUp) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 4: Reacting + asking follow-up — showing she actually cares about his life` })
+      annotation: `✍️ PHASE 4: Explaining why SHE personally loves this about HIM — not generic compliments` })
 
     // Subscriber shares even more
     const hobbyMore = await subscriberSays(conversation, subSys + ` Your hobbies: ${subHobbies}. Details: ${extraDetails}`,
