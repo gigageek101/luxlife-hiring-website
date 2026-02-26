@@ -301,6 +301,41 @@ CRITICAL RULES:
       `He said: "${valReply}" about his ${subJob} job. React to what he ACTUALLY said — show you were listening. Like if he said "been doing it a while" say "i love that u stuck with it" or if he said "hard work but love it" say "thats what makes u different". ONE message only. Max 6-8 words. No periods`, 1)
     for (const m of jobReact) conversation.push({ role: 'creator', content: m,
       annotation: `✍️ PHASE 3: Reacting to his response — showing she listens` })
+
+    // Job follow-up question to show deeper interest
+    let jobFollowUp: string
+    if (jobLower.includes('electric') || jobLower.includes('lineman')) {
+      jobFollowUp = `how long have u been doing that`
+    } else if (jobLower.includes('mechanic')) {
+      jobFollowUp = `whats the craziest thing u ever fixed`
+    } else if (jobLower.includes('truck') && jobLower.includes('driv')) {
+      jobFollowUp = `how long are ur trips usually`
+    } else if (jobLower.includes('construct') || jobLower.includes('weld')) {
+      jobFollowUp = `whats the coolest thing u ever built`
+    } else if (jobLower.includes('plumb') || jobLower.includes('hvac')) {
+      jobFollowUp = `do u do it all or specialize in something`
+    } else if (jobLower.includes('carpenter') || jobLower.includes('wood')) {
+      jobFollowUp = `whats the coolest thing u ever made`
+    } else if (jobLower.includes('farm') || jobLower.includes('ranch')) {
+      jobFollowUp = `how long have u been doing that`
+    } else {
+      jobFollowUp = `how long have u been doing that`
+    }
+    conversation.push({ role: 'creator', content: jobFollowUp,
+      annotation: `✍️ PHASE 3: Asking a deeper follow-up about his job — shows genuine curiosity, not just validation` })
+
+    // Subscriber answers the follow-up
+    const jobDetailReply = await subscriberSays(conversation, subSys,
+      `She asked "${jobFollowUp}" about your ${subJob} work. Answer HER question with a specific detail. Like "about 10 years now" or "built a whole house once". Use "u" not "you". Max 8 words. No periods.`)
+    conversation.push({ role: 'subscriber', content: jobDetailReply || 'been at it about 10 years now',
+      annotation: `💬 ${subName} shares more about his work — he's opening up because she asked a real question` })
+
+    // Creator reacts warmly then transitions to hobbies
+    const jobDetailReact = await creatorSays(conversation, cSys,
+      `He answered your follow-up about his ${subJob} job. He said: "${jobDetailReply}". React with genuine excitement to what he said. Like "omggg thats amazing" or "i love that so much". ONE message. Max 6-8 words. No periods`, 1)
+    for (const m of jobDetailReact) conversation.push({ role: 'creator', content: m,
+      annotation: `✍️ PHASE 3: Reacting to his job detail — showing deeper interest` })
+
     // Hardcoded hobby question to ensure it always gets asked
     conversation.push({ role: 'creator', content: `sooo what do u do for fun tho`,
       annotation: `✍️ PHASE 3: Transitioning to hobbies — asking about his free time` })
@@ -504,11 +539,11 @@ CRITICAL RULES:
     conversation.push({ role: 'subscriber', content: reassure || 'thats crazy ur amazing honestly',
       annotation: `💬 ${subName} reassures her — he's emotionally hooked` })
 
-    // Creator reacts to his reassurance with vulnerability
-    const reassureReact = await creatorSays(conversation, cSys,
-      `He just reassured you after the "nobody wants me" play. He said "${reassure}". React with soft vulnerability. Like "aww ${stretched} thank u" or "u really mean that". Show it means something. Max 6-8 words each. No periods`, 2)
-    for (const m of reassureReact) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 6: Reacting to his reassurance with genuine gratitude — solidifying the bond` })
+    // Creator reacts to his reassurance (hardcoded to stay on-script)
+    conversation.push({ role: 'creator', content: `aww ${stretched} thank u`,
+      annotation: `✍️ PHASE 6: Reacting to his reassurance — soft gratitude` })
+    conversation.push({ role: 'creator', content: `i appreciate that more than u know`,
+      annotation: `✍️ PHASE 6: Solidifying the bond — vulnerability closes the emotional loop` })
 
     // =============================================
     // PHASE 7: RE-ENGAGEMENT
