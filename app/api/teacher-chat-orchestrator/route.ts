@@ -42,9 +42,15 @@ async function callVenice(messages: { role: string; content: string }[], maxToke
 }
 
 function clean(raw: string): string {
-  let msg = raw.replace(/\[.*?\]/g, '').trim().split('\n')[0].trim().replace(/\.+$/g, '')
+  let msg = raw.replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim().split('\n')[0].trim().replace(/\.+$/g, '')
+  msg = msg.replace(/["]/g, '')
   const words = msg.split(/\s+/)
-  if (words.length > 10) msg = words.slice(0, 8).join(' ')
+  if (words.length > 10) {
+    const danglers = ['the', 'a', 'an', 'to', 'my', 'ur', 'and', 'or', 'in', 'at', 'on', 'of', 'for', 'with', 'is', 'i', 'u', 'so', 'its', 'that', 'this', 'but', 'if']
+    let cutAt = 8
+    while (cutAt > 5 && danglers.includes(words[cutAt - 1].toLowerCase())) cutAt--
+    msg = words.slice(0, cutAt).join(' ')
+  }
   return msg
 }
 
@@ -80,11 +86,11 @@ ABSOLUTE RULES:
 }
 
 async function subscriberSays(conversation: ConversationMessage[], systemPrompt: string, instruction: string): Promise<string> {
-  const msgs: { role: string; content: string }[] = [{ role: 'system', content: systemPrompt }]
+  const fullSystem = systemPrompt + `\n\nINSTRUCTION FOR YOUR NEXT REPLY: ${instruction}`
+  const msgs: { role: string; content: string }[] = [{ role: 'system', content: fullSystem }]
   for (const m of conversation) {
     msgs.push({ role: m.role === 'subscriber' ? 'assistant' : 'user', content: m.content })
   }
-  msgs.push({ role: 'user', content: instruction })
   return clean(await callVenice(msgs, 40))
 }
 
@@ -205,10 +211,8 @@ export async function POST(request: NextRequest) {
     conversation.push({ role: 'creator', content: locReaction,
       annotation: `✍️ PHASE 2: Reacting specifically to ${subLocation} — making his home feel special` })
 
-    // Creator asks about work
-    const workAsk = await creatorSays(conversation, cSys,
-      `You just reacted to his location ${subLocation}. Now ask what he does for work. Just say "what do u do for work btw" or "sooo what do u do for work ${stretched}". ONLY use the name ${subName}. Max 6-8 words. No periods`, 1)
-    for (const m of workAsk) conversation.push({ role: 'creator', content: m,
+    // Creator asks about work (hardcoded to ensure the question is always asked)
+    conversation.push({ role: 'creator', content: `sooo what do u do for work ${stretched}`,
       annotation: `✍️ PHASE 2: Asking about his job — setting up the most important phase` })
 
     // =============================================
@@ -292,11 +296,14 @@ CRITICAL RULES:
     conversation.push({ role: 'subscriber', content: valReply || 'haha yeah been doing it a while',
       annotation: `💬 ${subName} warming up (Level 2) — the job validation is working` })
 
-    // Creator reacts to what he said + transitions to hobbies
+    // Creator reacts to what he said
     const jobReact = await creatorSays(conversation, cSys,
-      `He said: "${valReply}" about his ${subJob} job. React to what he ACTUALLY said — show you were listening. Like if he said "been doing it a while" say "i love that u stuck with it". Then ask what he does for fun. Max 6-8 words each. No periods`, 2)
+      `He said: "${valReply}" about his ${subJob} job. React to what he ACTUALLY said — show you were listening. Like if he said "been doing it a while" say "i love that u stuck with it" or if he said "hard work but love it" say "thats what makes u different". ONE message only. Max 6-8 words. No periods`, 1)
     for (const m of jobReact) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 3: Reacting to his response — showing she listens, then transitioning to hobbies` })
+      annotation: `✍️ PHASE 3: Reacting to his response — showing she listens` })
+    // Hardcoded hobby question to ensure it always gets asked
+    conversation.push({ role: 'creator', content: `sooo what do u do for fun tho`,
+      annotation: `✍️ PHASE 3: Transitioning to hobbies — asking about his free time` })
 
     // =============================================
     // PHASE 4: HOBBY MIRRORING
@@ -360,11 +367,11 @@ CRITICAL RULES:
     conversation.push({ role: 'subscriber', content: hobbyDetail || 'yeah went out last weekend actually',
       annotation: `💬 ${subName} sharing details (Level 2-3) — opening up because she showed real interest` })
 
-    // Creator asks a specific follow-up showing genuine interest
+    // Creator reacts with excitement to what he shared
     const hobbyFollowUp = await creatorSays(conversation, cSys,
-      `He shared: "${hobbyDetail}". React with excitement to the SPECIFIC thing he said, then ask a follow-up question about the detail. Like "omggg thats awesome" then "how long were u out there" or "do u go every weekend". Show genuine curiosity about HIS specific experience. His name is ${subName}. Max 6-8 words each. No periods.`, 2)
+      `He shared: "${hobbyDetail}" about ${subHobbies}. React with excitement to the SPECIFIC thing he said. Then ask ONE follow-up question about it. Like "omggg thats awesome ${stretched}" then "how long have u been doing that". His name is ${subName}. The second message MUST be a question. Max 6-8 words each. No periods.`, 2)
     for (const m of hobbyFollowUp) conversation.push({ role: 'creator', content: m,
-      annotation: `✍️ PHASE 4: Asking a specific follow-up — showing she actually cares about the details of his life` })
+      annotation: `✍️ PHASE 4: Reacting + asking follow-up — showing she actually cares about his life` })
 
     // Subscriber shares even more
     const hobbyMore = await subscriberSays(conversation, subSys + ` Your hobbies: ${subHobbies}. Details: ${extraDetails}`,
