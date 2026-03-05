@@ -1191,20 +1191,19 @@ function AdminPanelContent() {
           {activeTab === 'simulations' && (
             <>
               {/* Sim Type Filter */}
-              <div className="flex gap-1.5 md:gap-2 mb-6 max-w-3xl mx-auto overflow-x-auto pb-1">
+              <div className="flex flex-wrap gap-2 mb-6 max-w-4xl mx-auto justify-center">
                 {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
                   const count = key === 'all' ? simReports.length : simReports.filter(r => r.simulationType === key).length
                   return (
                     <button key={key} onClick={() => setSimTypeFilter(key as typeof simTypeFilter)}
-                      className={`flex-1 min-w-0 py-2 md:py-2.5 px-2 md:px-3 rounded-lg font-semibold text-xs md:text-sm transition-all flex items-center justify-center gap-1 md:gap-1.5 ${
+                      className={`py-2 px-3.5 md:px-4 rounded-xl font-semibold text-sm transition-all flex items-center gap-1.5 whitespace-nowrap ${
                         simTypeFilter === key
-                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' : key === 'chat-teacher' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? key === 'sexting' ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-md' : key === 'aftercare' ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-md' : key === 'sexting-teacher' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md' : key === 'chat-teacher' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md' : key === 'aftercare-teacher' ? 'bg-gradient-to-r from-fuchsia-500 to-fuchsia-600 text-white shadow-md' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
+                          : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                       }`}>
-                      {Icon && <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0" />}
-                      <span className="hidden sm:inline">{label}</span>
-                      <span className="sm:hidden">{key === 'all' ? 'All' : label.slice(0, 5)}</span>
-                      <span className={`text-xs px-1 md:px-1.5 py-0.5 rounded-full ${simTypeFilter === key ? 'bg-white/20' : 'bg-gray-200'}`}>{count}</span>
+                      {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+                      <span>{label}</span>
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${simTypeFilter === key ? 'bg-white/25' : 'bg-gray-100 text-gray-500'}`}>{count}</span>
                     </button>
                   )
                 })}
