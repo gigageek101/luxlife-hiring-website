@@ -1142,27 +1142,28 @@ function AdminPanelContent() {
                                 </div>
                                 <div className="divide-y divide-gray-100">
                                   {assessments.map((attempt, idx) => (
-                                    <div key={idx} className="p-4">
-                                      <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-3">
+                                    <div key={idx} className="p-3 md:p-4">
+                                      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                        <div className="flex items-center gap-2 md:gap-3">
                                           <span className={`text-xs font-bold px-2 py-1 rounded-full ${attempt.passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                            {attempt.passed ? '✅ Passed' : '❌ Failed'}
+                                            {attempt.passed ? 'Passed' : 'Failed'}
                                           </span>
-                                          <span className="text-sm font-semibold">
-                                            Attempt #{attempt.attempt_number}: {attempt.score}/{attempt.total_questions} ({Math.round(attempt.percentage)}%)
+                                          <span className="text-xs md:text-sm font-semibold">
+                                            #{attempt.attempt_number}: {attempt.score}/{attempt.total_questions} ({Math.round(attempt.percentage)}%)
                                           </span>
                                         </div>
                                         <span className="text-xs text-gray-400">
-                                          {new Date(attempt.completed_at).toLocaleString()}
+                                          <span className="hidden sm:inline">{new Date(attempt.completed_at).toLocaleString()}</span>
+                                          <span className="sm:hidden">{new Date(attempt.completed_at).toLocaleDateString()}</span>
                                         </span>
                                       </div>
 
                                       {attempt.answers && attempt.answers.length > 0 ? (
-                                        <div className="space-y-3">
+                                        <div className="space-y-2 md:space-y-3">
                                           {attempt.answers.map((ans: AssessmentAnswer, ansIdx: number) => (
                                             <div
                                               key={ansIdx}
-                                              className="rounded-lg p-3 text-sm"
+                                              className="rounded-lg p-2.5 md:p-3 text-xs md:text-sm"
                                               style={{
                                                 background: ans.isCorrect ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)',
                                                 border: `1px solid ${ans.isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
@@ -1172,16 +1173,16 @@ function AdminPanelContent() {
                                                 <span className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white ${ans.isCorrect ? 'bg-green-500' : 'bg-red-500'}`}>
                                                   {ans.isCorrect ? '✓' : '✗'}
                                                 </span>
-                                                <p className="font-semibold text-gray-900">{ans.question}</p>
+                                                <p className="font-semibold text-gray-900 text-xs md:text-sm">{ans.question}</p>
                                               </div>
                                               <div className="ml-7 space-y-1.5">
                                                 <p className="text-xs">
-                                                  <span className="font-semibold text-gray-500">Their answer: </span>
+                                                  <span className="font-semibold text-gray-500">Answer: </span>
                                                   <span className={ans.isCorrect ? 'text-green-700' : 'text-red-700'}>{ans.userAnswer || '(no answer)'}</span>
                                                 </p>
                                                 {!ans.isCorrect && (
                                                   <p className="text-xs">
-                                                    <span className="font-semibold text-gray-500">Correct answer: </span>
+                                                    <span className="font-semibold text-gray-500">Correct: </span>
                                                     <span className="text-green-700">{ans.correctAnswer}</span>
                                                   </p>
                                                 )}
@@ -1363,42 +1364,32 @@ function AdminPanelContent() {
                               <div className="min-w-0">
                                 <h3 className="text-base md:text-lg font-bold truncate">{report.telegramUsername}</h3>
                                 <p className="text-xs md:text-sm truncate" style={{ color: 'var(--text-secondary-on-white)' }}>{report.email}</p>
-                                <div className="flex flex-wrap items-center gap-1 md:gap-2 mt-1">
-                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'combined' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'aftercare-teacher' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                                    {report.simulationType === 'combined' ? '⚡ Full Session' : report.simulationType === 'sexting-teacher' ? '🎓 Teacher Demo' : report.simulationType === 'chat-teacher' ? '🎓 Chat Teacher' : report.simulationType === 'aftercare-teacher' ? '🎓 AC Teacher' : report.simulationType === 'sexting' ? '🔥 Sexting' : report.simulationType === 'aftercare' ? '💗 Aftercare' : '💬 Chatting'}
+                                <div className="flex flex-wrap items-center gap-1 md:gap-1.5 mt-1">
+                                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${report.simulationType === 'combined' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'aftercare-teacher' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    {report.simulationType === 'combined' ? 'Full' : report.simulationType === 'sexting-teacher' ? 'Sext T' : report.simulationType === 'chat-teacher' ? 'Chat T' : report.simulationType === 'aftercare-teacher' ? 'AC T' : report.simulationType === 'sexting' ? 'Sext' : report.simulationType === 'aftercare' ? 'After' : 'Chat'}
                                   </span>
-                                  <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                                    {report.durationMode}
-                                  </span>
-                                  <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>
-                                    {report.messageCount} msgs
-                                  </span>
-                                  <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                                    <Keyboard className="w-3 h-3" /> {report.typedCount}
+                                  <span className="text-xs text-gray-500">{report.durationMode}</span>
+                                  <span className="text-xs text-gray-500">{report.messageCount}msg</span>
+                                  <span className="text-xs inline-flex items-center gap-0.5 text-blue-700">
+                                    <Keyboard className="w-3 h-3" />{report.typedCount}
                                   </span>
                                   {report.pasteCount > 0 ? (
-                                    <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">
-                                      <ClipboardPaste className="w-3 h-3" /> {report.pasteCount} pasted
+                                    <span className="text-xs inline-flex items-center gap-0.5 text-red-700 font-semibold">
+                                      <ClipboardPaste className="w-3 h-3" />{report.pasteCount}
                                     </span>
                                   ) : (
-                                    <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-green-50 text-green-700">
-                                      <Keyboard className="w-3 h-3" /> all typed
-                                    </span>
+                                    <span className="text-xs text-green-700 hidden sm:inline">all typed</span>
                                   )}
                                   {report.wpm > 0 && (
-                                    <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 font-semibold">
-                                      <Zap className="w-3 h-3" /> {report.wpm} WPM
+                                    <span className="text-xs inline-flex items-center gap-0.5 text-violet-700 font-semibold hidden sm:inline-flex">
+                                      <Zap className="w-3 h-3" />{report.wpm}
                                     </span>
                                   )}
-                                  <span className="text-xs hidden sm:inline" style={{ color: 'var(--text-muted-on-white)' }}>
-                                    {new Date(report.completedAt).toLocaleString()}
-                                  </span>
                                 </div>
-                                <div className="sm:hidden mt-1">
-                                  <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>
-                                    {new Date(report.completedAt).toLocaleDateString()}
-                                  </span>
-                                </div>
+                                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted-on-white)' }}>
+                                  <span className="hidden sm:inline">{new Date(report.completedAt).toLocaleString()}</span>
+                                  <span className="sm:hidden">{new Date(report.completedAt).toLocaleDateString()}</span>
+                                </p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2 md:gap-3 mt-3 md:mt-0">
@@ -1462,12 +1453,12 @@ function AdminPanelContent() {
                                 </div>
                                 <h2 className="text-2xl md:text-3xl font-bold mb-2">Score: {weightedScore}/100</h2>
                                 <p className="text-base md:text-lg font-semibold mb-3 md:mb-4" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</p>
-                                <div className="inline-flex flex-wrap gap-1.5 md:gap-3 justify-center text-xs font-medium">
-                                  <span className="px-2 md:px-2.5 py-1 rounded-full" style={{ background: '#10b98115', color: '#10b981' }}>85-100 Elite</span>
-                                  <span className="px-2 md:px-2.5 py-1 rounded-full" style={{ background: '#f59e0b15', color: '#f59e0b' }}>70-84 Strong</span>
-                                  <span className="px-2 md:px-2.5 py-1 rounded-full" style={{ background: '#f9731615', color: '#f97316' }}>55-69 Dev</span>
-                                  <span className="px-2 md:px-2.5 py-1 rounded-full" style={{ background: '#ef444415', color: '#ef4444' }}>40-54 Below</span>
-                                  <span className="px-2 md:px-2.5 py-1 rounded-full" style={{ background: '#dc262615', color: '#dc2626' }}>0-39 Coach</span>
+                                <div className="inline-flex flex-wrap gap-1 md:gap-2 justify-center text-xs font-medium">
+                                  <span className="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full" style={{ background: '#10b98115', color: '#10b981' }}>85+ Elite</span>
+                                  <span className="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full" style={{ background: '#f59e0b15', color: '#f59e0b' }}>70-84</span>
+                                  <span className="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full" style={{ background: '#f9731615', color: '#f97316' }}>55-69</span>
+                                  <span className="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full" style={{ background: '#ef444415', color: '#ef4444' }}>40-54</span>
+                                  <span className="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full" style={{ background: '#dc262615', color: '#dc2626' }}>&lt;40</span>
                                 </div>
                               </div>
 
@@ -2026,9 +2017,9 @@ function AdminPanelContent() {
                               {/* 1. User Analysis */}
                               {userAnalysis && (
                                 <div style={{ order: 1 }}>
-                                  <div className="rounded-2xl p-5 md:p-8" style={{ background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', border: '2px solid #e2e8f0' }}>
-                                    <h4 className="text-lg md:text-xl font-bold mb-5 flex items-center gap-2">
-                                      <Sparkles className="w-5 h-5 text-violet-500" />
+                                  <div className="rounded-xl md:rounded-2xl p-3.5 md:p-8" style={{ background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', border: '2px solid #e2e8f0' }}>
+                                    <h4 className="text-base md:text-xl font-bold mb-4 md:mb-5 flex items-center gap-2">
+                                      <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-violet-500" />
                                       Performance Analysis
                                     </h4>
 
@@ -2063,16 +2054,16 @@ function AdminPanelContent() {
                                     {userAnalysis.simTypeBreakdowns.length > 0 && (
                                       <div className="mb-6">
                                         <h5 className="text-xs font-bold uppercase tracking-wider mb-3 text-gray-500">Score by Category</h5>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                                           {userAnalysis.simTypeBreakdowns.map(tb => (
-                                            <div key={tb.type} className="rounded-xl p-4 bg-white flex items-center gap-4" style={{ border: '1px solid #e5e7eb' }}>
-                                              <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0"
+                                            <div key={tb.type} className="rounded-xl p-3 md:p-4 bg-white flex items-center gap-3 md:gap-4" style={{ border: '1px solid #e5e7eb' }}>
+                                              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-black text-xs md:text-sm flex-shrink-0"
                                                 style={{ background: `${getScoreColor(tb.avgScore)}12`, color: getScoreColor(tb.avgScore) }}>
                                                 {tb.avgScore}
                                               </div>
                                               <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold">{tb.label}</p>
-                                                <p className="text-xs text-gray-500">{tb.simCount} sim{tb.simCount !== 1 ? 's' : ''} &middot; Best: {tb.bestScore} &middot; Worst: {tb.worstScore}</p>
+                                                <p className="text-xs md:text-sm font-bold truncate">{tb.label}</p>
+                                                <p className="text-xs text-gray-500">{tb.simCount}x &middot; {tb.bestScore}↑ {tb.worstScore}↓</p>
                                                 <div className="w-full rounded-full h-1.5 mt-1.5" style={{ background: '#e5e7eb' }}>
                                                   <div className="h-1.5 rounded-full transition-all" style={{ width: `${tb.avgScore}%`, background: getScoreColor(tb.avgScore) }} />
                                                 </div>
@@ -2091,21 +2082,23 @@ function AdminPanelContent() {
                                         </h5>
                                         <div className="space-y-2.5">
                                           {userAnalysis.topStrengths.map((s, i) => (
-                                            <div key={i} className="rounded-xl p-4 bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                                              <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-lg font-black" style={{ color: getCategoryScoreColor(s.avgScore) }}>{s.avgScore}</span>
+                                            <div key={i} className="rounded-xl p-3 md:p-4 bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                              <div className="flex items-start gap-2.5 md:gap-3 mb-2">
+                                                <span className="text-lg font-black flex-shrink-0" style={{ color: getCategoryScoreColor(s.avgScore) }}>{s.avgScore}</span>
                                                 <div className="flex-1 min-w-0">
-                                                  <p className="text-sm font-bold">{s.category}</p>
-                                                  <div className="flex items-center gap-2">
+                                                  <div className="flex items-center gap-2 mb-0.5">
+                                                    <p className="text-sm font-bold truncate">{s.category}</p>
+                                                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">#{i + 1}</span>
+                                                  </div>
+                                                  <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                                                     <span className="text-xs text-gray-500">{s.simTypeLabel}</span>
                                                     <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold" style={{
                                                       background: s.trend === 'improving' ? '#dcfce7' : s.trend === 'declining' ? '#fee2e2' : '#f3f4f6',
                                                       color: s.trend === 'improving' ? '#16a34a' : s.trend === 'declining' ? '#dc2626' : '#6b7280',
-                                                    }}>{s.trend === 'improving' ? '↑ Improving' : s.trend === 'declining' ? '↓ Declining' : s.trend === 'stable' ? '→ Stable' : 'New'}</span>
-                                                    <span className="text-xs text-gray-400">Best: {s.bestScore}/10 &middot; {s.count} evals</span>
+                                                    }}>{s.trend === 'improving' ? '↑' : s.trend === 'declining' ? '↓' : s.trend === 'stable' ? '→' : '●'}</span>
+                                                    <span className="text-xs text-gray-400">{s.bestScore}/10 best &middot; {s.count}x</span>
                                                   </div>
                                                 </div>
-                                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">#{i + 1}</span>
                                               </div>
                                               {s.goodExamples.length > 0 && (
                                                 <div className="mt-2 space-y-1">
@@ -2122,15 +2115,14 @@ function AdminPanelContent() {
                                       </div>
                                     )}
 
-                                    {/* Overall Strengths from feedback */}
                                     {userAnalysis.topOverallStrengths.length > 0 && (
                                       <div className="mb-6">
-                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#059669' }}>
-                                          <span className="w-2 h-2 rounded-full bg-emerald-500" /> What They Do Well (AI Evaluator Summary)
+                                        <h5 className="text-xs md:text-sm font-bold uppercase tracking-wider mb-2 md:mb-3 flex items-center gap-2" style={{ color: '#059669' }}>
+                                          <span className="w-2 h-2 rounded-full bg-emerald-500" /> What They Do Well
                                         </h5>
                                         <div className="space-y-1.5">
                                           {userAnalysis.topOverallStrengths.map((s, i) => (
-                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.15)', color: '#065f46' }}>
+                                            <div key={i} className="flex gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.15)', color: '#065f46' }}>
                                               <span className="text-green-500 font-bold flex-shrink-0">+</span>
                                               <span>{s}</span>
                                             </div>
@@ -2147,25 +2139,27 @@ function AdminPanelContent() {
                                         </h5>
                                         <div className="space-y-2.5">
                                           {userAnalysis.weaknesses.map((w, i) => (
-                                            <div key={i} className="rounded-xl p-4 bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                                              <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-lg font-black" style={{ color: getCategoryScoreColor(w.avgScore) }}>{w.avgScore}</span>
+                                            <div key={i} className="rounded-xl p-3 md:p-4 bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                                              <div className="flex items-start gap-2.5 md:gap-3 mb-2">
+                                                <span className="text-lg font-black flex-shrink-0" style={{ color: getCategoryScoreColor(w.avgScore) }}>{w.avgScore}</span>
                                                 <div className="flex-1 min-w-0">
-                                                  <p className="text-sm font-bold">{w.category}</p>
-                                                  <div className="flex items-center gap-2">
+                                                  <div className="flex items-center gap-2 mb-0.5">
+                                                    <p className="text-sm font-bold truncate">{w.category}</p>
+                                                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 flex-shrink-0">{w.avgScore}/10</span>
+                                                  </div>
+                                                  <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
                                                     <span className="text-xs text-gray-500">{w.simTypeLabel}</span>
                                                     <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold" style={{
                                                       background: w.trend === 'improving' ? '#dcfce7' : w.trend === 'declining' ? '#fee2e2' : '#f3f4f6',
                                                       color: w.trend === 'improving' ? '#16a34a' : w.trend === 'declining' ? '#dc2626' : '#6b7280',
-                                                    }}>{w.trend === 'improving' ? '↑ Improving' : w.trend === 'declining' ? '↓ Declining' : w.trend === 'stable' ? '→ Stable' : 'New'}</span>
-                                                    <span className="text-xs text-gray-400">Best: {w.bestScore}/10 &middot; Worst: {w.worstScore}/10</span>
+                                                    }}>{w.trend === 'improving' ? '↑' : w.trend === 'declining' ? '↓' : w.trend === 'stable' ? '→' : '●'}</span>
+                                                    <span className="text-xs text-gray-400">{w.bestScore}↑ {w.worstScore}↓</span>
                                                   </div>
                                                 </div>
-                                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{w.avgScore}/10</span>
                                               </div>
                                               {w.badExamples.length > 0 && (
                                                 <div className="mt-2 space-y-1">
-                                                  <p className="text-xs font-semibold text-red-600 mb-1">Examples that need work:</p>
+                                                  <p className="text-xs font-semibold text-red-600 mb-1">Needs work:</p>
                                                   {w.badExamples.map((ex, j) => (
                                                     <div key={j} className="text-xs px-3 py-1.5 rounded-lg leading-relaxed" style={{ background: 'rgba(239, 68, 68, 0.05)', color: '#991b1b' }}>
                                                       &ldquo;{ex}&rdquo;
@@ -2184,15 +2178,14 @@ function AdminPanelContent() {
                                       </div>
                                     )}
 
-                                    {/* Overall Weaknesses from AI feedback */}
                                     {userAnalysis.topOverallWeaknesses.length > 0 && (
                                       <div className="mb-6">
-                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#dc2626' }}>
-                                          <span className="w-2 h-2 rounded-full bg-red-500" /> Recurring Issues (AI Evaluator Summary)
+                                        <h5 className="text-xs md:text-sm font-bold uppercase tracking-wider mb-2 md:mb-3 flex items-center gap-2" style={{ color: '#dc2626' }}>
+                                          <span className="w-2 h-2 rounded-full bg-red-500" /> Recurring Issues
                                         </h5>
                                         <div className="space-y-1.5">
                                           {userAnalysis.topOverallWeaknesses.map((w, i) => (
-                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.15)', color: '#991b1b' }}>
+                                            <div key={i} className="flex gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.15)', color: '#991b1b' }}>
                                               <span className="text-red-500 font-bold flex-shrink-0">-</span>
                                               <span>{w}</span>
                                             </div>
@@ -2201,15 +2194,14 @@ function AdminPanelContent() {
                                       </div>
                                     )}
 
-                                    {/* Missed Opportunities */}
                                     {userAnalysis.topMissedOpportunities.length > 0 && (
                                       <div className="mb-6">
-                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                                        <h5 className="text-xs md:text-sm font-bold uppercase tracking-wider mb-2 md:mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
                                           <span className="w-2 h-2 rounded-full bg-amber-500" /> Missed Opportunities
                                         </h5>
                                         <div className="space-y-1.5">
                                           {userAnalysis.topMissedOpportunities.map((m, i) => (
-                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(245, 158, 11, 0.2)', color: '#92400e' }}>
+                                            <div key={i} className="flex gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(245, 158, 11, 0.2)', color: '#92400e' }}>
                                               <span className="text-amber-500 font-bold flex-shrink-0">!</span>
                                               <span>{m}</span>
                                             </div>
@@ -2218,15 +2210,14 @@ function AdminPanelContent() {
                                       </div>
                                     )}
 
-                                    {/* Practice Recommendations */}
                                     {userAnalysis.topPracticeScenarios.length > 0 && (
-                                <div>
-                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#7c3aed' }}>
+                                      <div>
+                                        <h5 className="text-xs md:text-sm font-bold uppercase tracking-wider mb-2 md:mb-3 flex items-center gap-2" style={{ color: '#7c3aed' }}>
                                           <Sparkles className="w-3.5 h-3.5" /> Practice Recommendations
                                         </h5>
                                         <div className="space-y-1.5">
                                           {userAnalysis.topPracticeScenarios.map((p, i) => (
-                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(124, 58, 237, 0.15)', color: '#4c1d95' }}>
+                                            <div key={i} className="flex gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(124, 58, 237, 0.15)', color: '#4c1d95' }}>
                                               <span className="font-bold flex-shrink-0" style={{ color: '#7c3aed' }}>{i + 1}.</span>
                                               <span>{p}</span>
                                             </div>
@@ -2253,13 +2244,13 @@ function AdminPanelContent() {
                                     ] as const).filter(g => g.sims.length > 0).map(group => (
                                       <div key={group.label}>
                                         <h5 className="text-sm font-bold mb-2.5" style={{ color: group.color }}>{group.label}</h5>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                           {group.sims.map((sim, i) => {
                                             const ws = calculateWeightedScore(sim.categories, sim.simulationType)
                                             const isSelected = expandedPerUserReport === sim.id
                                             return (
                                               <div key={sim.id}
-                                                className="rounded-xl p-4 flex items-center gap-3 cursor-pointer transition-all duration-200 hover:scale-[1.02]"
+                                                className="rounded-xl p-3 md:p-4 flex items-center gap-2.5 md:gap-3 cursor-pointer transition-all duration-200 active:scale-[0.98] md:hover:scale-[1.02]"
                                                 style={{
                                                   background: group.bg,
                                                   border: `1px solid ${isSelected ? group.color : group.color + '20'}`,
@@ -2267,15 +2258,15 @@ function AdminPanelContent() {
                                                 }}
                                                 onClick={() => setExpandedPerUserReport(isSelected ? null : sim.id)}
                                               >
-                                                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-sm" style={{ background: `${getScoreColor(ws)}15`, color: getScoreColor(ws) }}>
+                                                <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center font-black text-xs md:text-sm flex-shrink-0" style={{ background: `${getScoreColor(ws)}15`, color: getScoreColor(ws) }}>
                                                   {ws}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                  <div className="flex items-center gap-2">
+                                                  <div className="flex items-center gap-1.5 md:gap-2">
                                                     <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: `${group.color}15`, color: group.color }}>#{i + 1}</span>
-                                                    <span className="text-xs font-semibold" style={{ color: getScoreColor(ws) }}>{getScoreLabel(ws)}</span>
+                                                    <span className="text-xs font-semibold truncate" style={{ color: getScoreColor(ws) }}>{getScoreLabel(ws)}</span>
                                                   </div>
-                                                  <p className="text-xs text-gray-500 mt-0.5">{new Date(sim.completedAt).toLocaleDateString()} &middot; {sim.durationMode}</p>
+                                                  <p className="text-xs text-gray-500 mt-0.5 truncate">{new Date(sim.completedAt).toLocaleDateString()}</p>
                                                 </div>
                                                 {isSelected ? <ChevronUp className="w-4 h-4 flex-shrink-0" style={{ color: group.color }} /> : <ChevronDown className="w-4 h-4 flex-shrink-0" style={{ color: group.color }} />}
                                               </div>
@@ -2433,33 +2424,32 @@ function AdminPanelContent() {
                                                 {weightedScore}
                                               </div>
                                               <div className="min-w-0">
-                                                <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                                                  <span className={`text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full ${report.simulationType === 'combined' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
-                                                    {report.simulationType === 'combined' ? '⚡ Full Session' : report.simulationType === 'sexting-teacher' ? '🎓 Sexting Teacher' : report.simulationType === 'chat-teacher' ? '🎓 Chat Teacher' : report.simulationType === 'aftercare-teacher' ? '🎓 AC Teacher' : report.simulationType === 'sexting' ? 'Sexting' : report.simulationType === 'aftercare' ? 'Aftercare' : 'Chatting'}
+                                                <div className="flex flex-wrap items-center gap-1 md:gap-1.5">
+                                                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${report.simulationType === 'combined' ? 'bg-violet-100 text-violet-700' : report.simulationType === 'sexting-teacher' ? 'bg-purple-100 text-purple-700' : report.simulationType === 'chat-teacher' ? 'bg-indigo-100 text-indigo-700' : report.simulationType === 'sexting' ? 'bg-rose-100 text-rose-700' : report.simulationType === 'aftercare' ? 'bg-pink-100 text-pink-700' : 'bg-orange-100 text-orange-700'}`}>
+                                                    {report.simulationType === 'combined' ? 'Full' : report.simulationType === 'sexting-teacher' ? 'Sext T' : report.simulationType === 'chat-teacher' ? 'Chat T' : report.simulationType === 'aftercare-teacher' ? 'AC T' : report.simulationType === 'sexting' ? 'Sext' : report.simulationType === 'aftercare' ? 'After' : 'Chat'}
                                                   </span>
-                                                  <span className="text-xs px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{report.durationMode}</span>
-                                                  <span className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>{report.messageCount} msgs</span>
-                                                  <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                                                    <Keyboard className="w-3 h-3" /> {report.typedCount}
+                                                  <span className="text-xs text-gray-500">{report.messageCount}msg</span>
+                                                  <span className="text-xs inline-flex items-center gap-0.5 text-blue-700">
+                                                    <Keyboard className="w-3 h-3" />{report.typedCount}
                                                   </span>
                                                   {report.pasteCount > 0 && (
-                                                    <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">
-                                                      <ClipboardPaste className="w-3 h-3" /> {report.pasteCount}
+                                                    <span className="text-xs inline-flex items-center gap-0.5 text-red-700 font-semibold">
+                                                      <ClipboardPaste className="w-3 h-3" />{report.pasteCount}
                                                     </span>
                                                   )}
                                                   {report.wpm > 0 && (
-                                                    <span className="text-xs inline-flex items-center gap-1 px-1.5 md:px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 font-semibold">
-                                                      <Zap className="w-3 h-3" /> {report.wpm}
+                                                    <span className="text-xs inline-flex items-center gap-0.5 text-violet-700 font-semibold hidden sm:inline-flex">
+                                                      <Zap className="w-3 h-3" />{report.wpm}
                                                     </span>
                                                   )}
                                                 </div>
-                                                <p className="text-xs mt-1" style={{ color: 'var(--text-muted-on-white)' }}>
+                                                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted-on-white)' }}>
                                                   <span className="hidden sm:inline">{new Date(report.completedAt).toLocaleString()}</span>
                                                   <span className="sm:hidden">{new Date(report.completedAt).toLocaleDateString()}</span>
                                                 </p>
                                               </div>
                                             </div>
-                                            <div className="flex items-center gap-3 mt-2 md:mt-0">
+                                            <div className="flex items-center gap-1.5 md:gap-3 mt-2 md:mt-0 ml-auto">
                                               <div className="text-right hidden md:block">
                                                 <div className="text-xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</div>
                                                 <div className="text-xs font-semibold" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</div>
@@ -2467,7 +2457,7 @@ function AdminPanelContent() {
                                               {report.hasRecording && (
                                                 <button
                                                   onClick={(e) => { e.stopPropagation(); openReplay(report) }}
-                                                  className="p-2 rounded-lg hover:bg-purple-50 transition-colors group flex-shrink-0"
+                                                  className="p-1.5 md:p-2 rounded-lg hover:bg-purple-50 transition-colors group flex-shrink-0"
                                                   title="Watch session replay"
                                                 >
                                                   <Video className="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-colors" />
@@ -2476,7 +2466,7 @@ function AdminPanelContent() {
                                               <button
                                                 onClick={(e) => { e.stopPropagation(); exportSimReportAsPdf(report) }}
                                                 disabled={exportingReportId === report.id}
-                                                className="p-2 rounded-lg hover:bg-blue-50 transition-colors group flex-shrink-0"
+                                                className="p-1.5 md:p-2 rounded-lg hover:bg-blue-50 transition-colors group flex-shrink-0"
                                                 title="Export as PDF"
                                               >
                                                 {exportingReportId === report.id ? (
@@ -2487,15 +2477,15 @@ function AdminPanelContent() {
                                               </button>
                                               <button
                                                 onClick={(e) => { e.stopPropagation(); deleteSimReport(report.id) }}
-                                                className="p-2 rounded-lg hover:bg-red-50 transition-colors group flex-shrink-0"
+                                                className="p-1.5 md:p-2 rounded-lg hover:bg-red-50 transition-colors group flex-shrink-0 hidden sm:block"
                                                 title="Delete report"
                                               >
                                                 <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
                                               </button>
                                               {isReportOpen ? (
-                                                <ChevronUp className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
+                                                <ChevronUp className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
                                               ) : (
-                                                <ChevronDown className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
+                                                <ChevronDown className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
                                               )}
                                             </div>
                                           </div>
