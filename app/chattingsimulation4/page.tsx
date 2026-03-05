@@ -82,16 +82,26 @@ const VAULT_ITEMS: VaultItem[] = [
 ]
 
 const CATEGORY_WEIGHTS: Record<string, number> = {
-  'Relationship Building Quality': 12,
-  'Subscriber Engagement': 10,
-  'Sexting Framework Execution': 15,
-  'Language Mirroring': 12,
-  'Tension Building': 10,
-  'Aftercare Emotional Quality': 12,
+  'Giving Him What He Wants to Hear': 7,
+  'Making the Subscriber Feel Special': 6,
+  'Caring About the Subscriber': 5,
+  'Asking the Right Questions': 4,
+  'American Texting Style': 4,
+  'Grammar & Natural Flow': 2,
+  'Note-Taking & Information Tracking': 2,
+  'Correct Framework Order': 10,
+  'Language Mirroring': 8,
+  'Tension Building Between PPVs': 7,
+  'Response Speed & Engagement': 3,
+  'Emotional Authenticity & Vulnerability': 7,
+  'Personalization Using His Notes': 5,
+  'Name Usage & Intimacy Anchoring': 4,
+  'Re-engagement Seed Planting': 4,
+  'Pacing & Message Timing': 2,
+  'No Hard-Sell / No Desperation': 2,
   'Objection Handling': 10,
-  'Stage Transitions': 7,
-  'American Texting Style': 7,
-  'Note-Taking & Consistency': 5,
+  'Stage Transitions': 5,
+  'Cross-Stage Consistency': 3,
 }
 
 const STAGE_DURATIONS = { relationship: 15, sexting: 10, aftercare: 10 }
@@ -693,7 +703,7 @@ export default function CombinedSimulationPage() {
                 })}
               </div>
               <p className="text-xs text-gray-500 mt-3 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" /> Total: 35 minutes &middot; 10 scoring categories
+                <Clock className="w-3.5 h-3.5" /> Total: 35 minutes &middot; 20 scoring categories across all stages
               </p>
             </div>
 
@@ -761,67 +771,91 @@ export default function CombinedSimulationPage() {
               </button>
             </div>
 
-            {/* Score Overview */}
-            <div className="rounded-2xl p-6 mb-6 bg-white shadow-sm" style={{ border: '1px solid #e5e7eb' }}>
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-violet-500" /> Score Breakdown
-              </h3>
-              <div className="space-y-3">
-                {evaluation.categories.map((cat, i) => {
-                  const weight = CATEGORY_WEIGHTS[cat.name] || 0
-                  const isOpen = expandedCategories.has(i)
-                  return (
-                    <div key={i} className="rounded-xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
-                      <button onClick={() => toggleCategory(i)}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-sm flex-shrink-0"
-                          style={{ background: `${getCategoryScoreColor(cat.score)}15`, color: getCategoryScoreColor(cat.score) }}>
-                          {cat.score}
+            {/* Score Overview — Grouped by Stage */}
+            {(() => {
+              const STAGE_GROUPS = [
+                { label: 'Relationship Building', color: '#f97316', icon: MessageCircle, cats: ['Giving Him What He Wants to Hear', 'Making the Subscriber Feel Special', 'Caring About the Subscriber', 'Asking the Right Questions', 'American Texting Style', 'Grammar & Natural Flow', 'Note-Taking & Information Tracking'], totalPts: 30 },
+                { label: 'Sexting & PPV Sales', color: '#e11d48', icon: Flame, cats: ['Correct Framework Order', 'Language Mirroring', 'Tension Building Between PPVs', 'Response Speed & Engagement'], totalPts: 28 },
+                { label: 'Aftercare', color: '#ec4899', icon: Heart, cats: ['Emotional Authenticity & Vulnerability', 'Personalization Using His Notes', 'Name Usage & Intimacy Anchoring', 'Re-engagement Seed Planting', 'Pacing & Message Timing', 'No Hard-Sell / No Desperation'], totalPts: 24 },
+                { label: 'Cross-Stage Skills', color: '#7c3aed', icon: Award, cats: ['Objection Handling', 'Stage Transitions', 'Cross-Stage Consistency'], totalPts: 18 },
+              ]
+              return STAGE_GROUPS.map((group) => {
+                const groupCats = evaluation.categories.filter(c => group.cats.includes(c.name))
+                const groupScore = groupCats.reduce((s, c) => s + (c.score / 10) * (CATEGORY_WEIGHTS[c.name] || 0), 0)
+                const GroupIcon = group.icon
+                return (
+                  <div key={group.label} className="rounded-2xl p-6 mb-4 bg-white shadow-sm" style={{ border: '1px solid #e5e7eb' }}>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold flex items-center gap-2">
+                        <GroupIcon className="w-5 h-5" style={{ color: group.color }} /> {group.label}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold" style={{ color: group.color }}>{Math.round(groupScore * 10) / 10}/{group.totalPts} pts</span>
+                        <div className="w-20 rounded-full h-2" style={{ background: '#e5e7eb' }}>
+                          <div className="h-2 rounded-full transition-all" style={{ width: `${(groupScore / group.totalPts) * 100}%`, background: group.color }} />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold truncate">{cat.name}</p>
-                          <p className="text-xs text-gray-400">{weight} pts weight</p>
-                        </div>
-                        <div className="w-24 rounded-full h-2" style={{ background: '#e5e7eb' }}>
-                          <div className="h-2 rounded-full transition-all" style={{ width: `${cat.score * 10}%`, background: getCategoryScoreColor(cat.score) }} />
-                        </div>
-                        {isOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-                      </button>
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
-                            <div className="px-4 pb-4 space-y-3">
-                              <p className="text-sm text-gray-700">{cat.feedback}</p>
-                              {cat.examples.good.length > 0 && (
-                                <div>
-                                  <p className="text-xs font-bold text-green-600 mb-1">Good examples:</p>
-                                  {cat.examples.good.map((ex, j) => (
-                                    <p key={j} className="text-xs px-3 py-1.5 rounded-lg mb-1" style={{ background: '#f0fdf4', color: '#166534' }}>&ldquo;{ex}&rdquo;</p>
-                                  ))}
-                                </div>
-                              )}
-                              {cat.examples.needsWork.length > 0 && (
-                                <div>
-                                  <p className="text-xs font-bold text-red-600 mb-1">Needs work:</p>
-                                  {cat.examples.needsWork.map((ex, j) => (
-                                    <p key={j} className="text-xs px-3 py-1.5 rounded-lg mb-1" style={{ background: '#fef2f2', color: '#991b1b' }}>&ldquo;{ex}&rdquo;</p>
-                                  ))}
-                                </div>
-                              )}
-                              {cat.advice && (
-                                <div className="px-3 py-2 rounded-lg text-xs leading-relaxed" style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fcd34d40' }}>
-                                  <span className="font-bold">Advice:</span> {cat.advice}
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      </div>
                     </div>
-                  )
-                })}
-              </div>
-            </div>
+                    <div className="space-y-2">
+                      {groupCats.map((cat) => {
+                        const globalIdx = evaluation.categories.indexOf(cat)
+                        const weight = CATEGORY_WEIGHTS[cat.name] || 0
+                        const isOpen = expandedCategories.has(globalIdx)
+                        return (
+                          <div key={globalIdx} className="rounded-xl overflow-hidden" style={{ border: '1px solid #e5e7eb' }}>
+                            <button onClick={() => toggleCategory(globalIdx)}
+                              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left">
+                              <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-sm flex-shrink-0"
+                                style={{ background: `${getCategoryScoreColor(cat.score)}15`, color: getCategoryScoreColor(cat.score) }}>
+                                {cat.score}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold truncate">{cat.name}</p>
+                                <p className="text-xs text-gray-400">{weight} pts weight</p>
+                              </div>
+                              <div className="w-24 rounded-full h-2" style={{ background: '#e5e7eb' }}>
+                                <div className="h-2 rounded-full transition-all" style={{ width: `${cat.score * 10}%`, background: getCategoryScoreColor(cat.score) }} />
+                              </div>
+                              {isOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                            </button>
+                            <AnimatePresence>
+                              {isOpen && (
+                                <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
+                                  <div className="px-4 pb-4 space-y-3">
+                                    <p className="text-sm text-gray-700">{cat.feedback}</p>
+                                    {cat.examples.good.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-bold text-green-600 mb-1">Good examples:</p>
+                                        {cat.examples.good.map((ex, j) => (
+                                          <p key={j} className="text-xs px-3 py-1.5 rounded-lg mb-1" style={{ background: '#f0fdf4', color: '#166534' }}>&ldquo;{ex}&rdquo;</p>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {cat.examples.needsWork.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-bold text-red-600 mb-1">Needs work:</p>
+                                        {cat.examples.needsWork.map((ex, j) => (
+                                          <p key={j} className="text-xs px-3 py-1.5 rounded-lg mb-1" style={{ background: '#fef2f2', color: '#991b1b' }}>&ldquo;{ex}&rdquo;</p>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {cat.advice && (
+                                      <div className="px-3 py-2 rounded-lg text-xs leading-relaxed" style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fcd34d40' }}>
+                                        <span className="font-bold">Advice:</span> {cat.advice}
+                                      </div>
+                                    )}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })
+            })()}
 
             {/* Overall Feedback */}
             {overallFb && (

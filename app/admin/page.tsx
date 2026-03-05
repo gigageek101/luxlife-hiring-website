@@ -316,16 +316,26 @@ function AdminPanelContent() {
   }
 
   const COMBINED_CATEGORY_WEIGHTS: Record<string, number> = {
-    'Relationship Building Quality': 12,
-    'Subscriber Engagement': 10,
-    'Sexting Framework Execution': 15,
-    'Language Mirroring': 12,
-    'Tension Building': 10,
-    'Aftercare Emotional Quality': 12,
+    'Giving Him What He Wants to Hear': 7,
+    'Making the Subscriber Feel Special': 6,
+    'Caring About the Subscriber': 5,
+    'Asking the Right Questions': 4,
+    'American Texting Style': 4,
+    'Grammar & Natural Flow': 2,
+    'Note-Taking & Information Tracking': 2,
+    'Correct Framework Order': 10,
+    'Language Mirroring': 8,
+    'Tension Building Between PPVs': 7,
+    'Response Speed & Engagement': 3,
+    'Emotional Authenticity & Vulnerability': 7,
+    'Personalization Using His Notes': 5,
+    'Name Usage & Intimacy Anchoring': 4,
+    'Re-engagement Seed Planting': 4,
+    'Pacing & Message Timing': 2,
+    'No Hard-Sell / No Desperation': 2,
     'Objection Handling': 10,
-    'Stage Transitions': 7,
-    'American Texting Style': 7,
-    'Note-Taking & Consistency': 5,
+    'Stage Transitions': 5,
+    'Cross-Stage Consistency': 3,
   }
 
   const getWeightsForReport = (report: SimReport): Record<string, number> => {

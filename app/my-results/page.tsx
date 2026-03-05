@@ -36,7 +36,7 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher'
+  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined'
   hasRecording?: boolean
   wpm: number
   completedAt: string
@@ -69,14 +69,38 @@ const AFTERCARE_CATEGORY_WEIGHTS: Record<string, number> = {
   'No Hard-Sell / No Desperation': 3,
 }
 
+const COMBINED_CATEGORY_WEIGHTS: Record<string, number> = {
+  'Giving Him What He Wants to Hear': 7,
+  'Making the Subscriber Feel Special': 6,
+  'Caring About the Subscriber': 5,
+  'Asking the Right Questions': 4,
+  'American Texting Style': 4,
+  'Grammar & Natural Flow': 2,
+  'Note-Taking & Information Tracking': 2,
+  'Correct Framework Order': 10,
+  'Language Mirroring': 8,
+  'Tension Building Between PPVs': 7,
+  'Response Speed & Engagement': 3,
+  'Emotional Authenticity & Vulnerability': 7,
+  'Personalization Using His Notes': 5,
+  'Name Usage & Intimacy Anchoring': 4,
+  'Re-engagement Seed Planting': 4,
+  'Pacing & Message Timing': 2,
+  'No Hard-Sell / No Desperation': 2,
+  'Objection Handling': 10,
+  'Stage Transitions': 5,
+  'Cross-Stage Consistency': 3,
+}
+
 function getWeightsForReport(report: SimReport): Record<string, number> {
   if (report.simulationType === 'sexting' || report.simulationType === 'sexting-teacher') return SEXTING_CATEGORY_WEIGHTS
   if (report.simulationType === 'aftercare') return AFTERCARE_CATEGORY_WEIGHTS
+  if (report.simulationType === 'combined') return COMBINED_CATEGORY_WEIGHTS
   return CHATTING_CATEGORY_WEIGHTS
 }
 
 function calculateWeightedScore(categories: SimCategory[], simType?: string): number {
-  const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+  const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : simType === 'combined' ? COMBINED_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
   let total = 0
   for (const cat of categories) {
     const weight = weights[cat.name] || 0

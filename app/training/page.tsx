@@ -59,8 +59,31 @@ const AFTERCARE_WEIGHTS: Record<string, number> = {
   'No Hard-Sell / No Desperation': 3,
 }
 
+const COMBINED_WEIGHTS: Record<string, number> = {
+  'Giving Him What He Wants to Hear': 7,
+  'Making the Subscriber Feel Special': 6,
+  'Caring About the Subscriber': 5,
+  'Asking the Right Questions': 4,
+  'American Texting Style': 4,
+  'Grammar & Natural Flow': 2,
+  'Note-Taking & Information Tracking': 2,
+  'Correct Framework Order': 10,
+  'Language Mirroring': 8,
+  'Tension Building Between PPVs': 7,
+  'Response Speed & Engagement': 3,
+  'Emotional Authenticity & Vulnerability': 7,
+  'Personalization Using His Notes': 5,
+  'Name Usage & Intimacy Anchoring': 4,
+  'Re-engagement Seed Planting': 4,
+  'Pacing & Message Timing': 2,
+  'No Hard-Sell / No Desperation': 2,
+  'Objection Handling': 10,
+  'Stage Transitions': 5,
+  'Cross-Stage Consistency': 3,
+}
+
 function calcWeightedScore(cats: SimCategory[], simType?: string): number {
-  const w = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_WEIGHTS : simType === 'aftercare' ? AFTERCARE_WEIGHTS : CHATTING_WEIGHTS
+  const w = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_WEIGHTS : simType === 'aftercare' ? AFTERCARE_WEIGHTS : simType === 'combined' ? COMBINED_WEIGHTS : CHATTING_WEIGHTS
   let t = 0
   for (const c of cats) { t += (c.score / 10) * (w[c.name] || 0) }
   return Math.round(t * 10) / 10
