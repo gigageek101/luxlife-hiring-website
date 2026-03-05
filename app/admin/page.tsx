@@ -299,10 +299,9 @@ function AdminPanelContent() {
   }
 
   const SEXTING_CATEGORY_WEIGHTS: Record<string, number> = {
-    'Correct Framework Order': 30,
-    'Language Mirroring': 25,
-    'Tension Building Between PPVs': 20,
-    'Follow-up on Non-Purchased Content': 15,
+    'Correct Framework Order': 35,
+    'Language Mirroring': 30,
+    'Tension Building Between PPVs': 25,
     'Response Speed & Engagement': 10,
   }
 

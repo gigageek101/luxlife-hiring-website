@@ -36,10 +36,9 @@ const simulations = [
     color: '#e11d48',
     gradient: 'linear-gradient(135deg, #e11d48, #be123c)',
     categories: [
-      'Correct Framework Order (30 pts)',
-      'Language Mirroring (25 pts)',
-      'Tension Building Between PPVs (20 pts)',
-      'Follow-up on Non-Purchased Content (15 pts)',
+      'Correct Framework Order (35 pts)',
+      'Language Mirroring (30 pts)',
+      'Tension Building Between PPVs (25 pts)',
       'Response Speed & Engagement (10 pts)',
     ],
   },
