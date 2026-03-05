@@ -355,6 +355,88 @@ function AdminPanelContent() {
     return 'Needs Immediate Coaching'
   }
 
+  interface UserAnalysis {
+    topStrengths: { category: string; avgScore: number; simType: string }[]
+    weaknesses: { category: string; avgScore: number; simType: string }[]
+    overallAvg: number
+    totalSims: number
+    improvementAreas: string[]
+  }
+
+  const generateUserAnalysis = (simulations: SimReport[]): UserAnalysis | null => {
+    if (simulations.length === 0) return null
+
+    const byType: Record<string, SimReport[]> = {
+      chatting: simulations.filter(s => s.simulationType === 'chatting' || s.simulationType === 'chat-teacher'),
+      sexting: simulations.filter(s => s.simulationType === 'sexting' || s.simulationType === 'sexting-teacher'),
+      aftercare: simulations.filter(s => s.simulationType === 'aftercare' || s.simulationType === 'aftercare-teacher'),
+    }
+
+    const categoryAvgs: { category: string; avgScore: number; simType: string }[] = []
+
+    for (const [type, sims] of Object.entries(byType)) {
+      if (sims.length === 0) continue
+      const catScores: Record<string, number[]> = {}
+      for (const sim of sims) {
+        for (const cat of sim.categories) {
+          if (!catScores[cat.name]) catScores[cat.name] = []
+          catScores[cat.name].push(cat.score)
+        }
+      }
+      for (const [name, scores] of Object.entries(catScores)) {
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length
+        categoryAvgs.push({ category: name, avgScore: Math.round(avg * 10) / 10, simType: type })
+      }
+    }
+
+    const sorted = [...categoryAvgs].sort((a, b) => b.avgScore - a.avgScore)
+    const topStrengths = sorted.slice(0, 3)
+    const weaknesses = sorted.filter(c => c.avgScore < 6)
+
+    const improvementAreas: string[] = []
+    for (const sim of simulations) {
+      if (typeof sim.overallFeedback === 'object' && sim.overallFeedback !== null) {
+        const fb = sim.overallFeedback as OverallFeedback
+        if (fb.weaknesses) improvementAreas.push(...fb.weaknesses)
+      }
+    }
+    const uniqueImprovements = Array.from(new Set(improvementAreas)).slice(0, 8)
+
+    const overallAvg = Math.round(
+      simulations.reduce((s, r) => s + calculateWeightedScore(r.categories, r.simulationType), 0) / simulations.length * 10
+    ) / 10
+
+    return { topStrengths, weaknesses, overallAvg, totalSims: simulations.length, improvementAreas: uniqueImprovements }
+  }
+
+  const getTop3PerType = (simulations: SimReport[]): {
+    chatting: SimReport[]; sexting: SimReport[]; aftercare: SimReport[]; top3Ids: Set<number>
+  } => {
+    const sortBest = (sims: SimReport[]) =>
+      [...sims].sort((a, b) => calculateWeightedScore(b.categories, b.simulationType) - calculateWeightedScore(a.categories, a.simulationType)).slice(0, 3)
+
+    const top3Chatting = sortBest(simulations.filter(s => s.simulationType === 'chatting' || s.simulationType === 'chat-teacher'))
+    const top3Sexting = sortBest(simulations.filter(s => s.simulationType === 'sexting' || s.simulationType === 'sexting-teacher'))
+    const top3Aftercare = sortBest(simulations.filter(s => s.simulationType === 'aftercare' || s.simulationType === 'aftercare-teacher'))
+
+    const top3Ids = new Set([
+      ...top3Chatting.map(s => s.id),
+      ...top3Sexting.map(s => s.id),
+      ...top3Aftercare.map(s => s.id),
+    ])
+
+    return { chatting: top3Chatting, sexting: top3Sexting, aftercare: top3Aftercare, top3Ids }
+  }
+
+  const getSimTypeLabel = (type: string) => {
+    switch (type) {
+      case 'chatting': return 'Relationship Building'
+      case 'sexting': return 'Sexting'
+      case 'aftercare': return 'Aftercare'
+      default: return type
+    }
+  }
+
   useEffect(() => {
     fetchUsers()
     fetchSimReports()
@@ -1455,6 +1537,10 @@ function AdminPanelContent() {
                         ? (['day2', 'day3', 'day4', 'day5'] as const).filter(d => mu.assessments![d].length > 0).length
                         : 0
 
+                      const userAnalysis = generateUserAnalysis(mu.simulations)
+                      const { chatting: top3Chatting, sexting: top3Sexting, aftercare: top3Aftercare, top3Ids } = getTop3PerType(mu.simulations)
+                      const otherSims = mu.simulations.filter(s => !top3Ids.has(s.id))
+
                       return (
                         <motion.div
                           key={mu.telegramUsername}
@@ -1526,14 +1612,137 @@ function AdminPanelContent() {
 
                           {/* Expanded User Content */}
                           {isOpen && (
-                            <div className="mt-6 pt-6 border-t border-gray-200 space-y-8">
+                            <div className="mt-6 pt-6 border-t border-gray-200 flex flex-col gap-8">
 
-                              {/* Assessments Section */}
-                              {mu.assessments && (
-                                <div>
+                              {/* 1. User Analysis */}
+                              {userAnalysis && (
+                                <div style={{ order: 1 }}>
+                                  <div className="rounded-2xl p-5 md:p-8" style={{ background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', border: '2px solid #e2e8f0' }}>
+                                    <h4 className="text-lg md:text-xl font-bold mb-5 flex items-center gap-2">
+                                      <Sparkles className="w-5 h-5 text-violet-500" />
+                                      Performance Analysis
+                                    </h4>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                                      <div className="rounded-xl p-4 text-center" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
+                                        <div className="text-2xl font-black" style={{ color: getScoreColor(userAnalysis.overallAvg) }}>{userAnalysis.overallAvg}</div>
+                                        <div className="text-xs text-gray-500 mt-1">Avg Score</div>
+                                      </div>
+                                      <div className="rounded-xl p-4 text-center" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
+                                        <div className="text-2xl font-black text-blue-700">{userAnalysis.totalSims}</div>
+                                        <div className="text-xs text-gray-500 mt-1">Total Sims</div>
+                                      </div>
+                                      <div className="rounded-xl p-4 text-center col-span-2 md:col-span-1" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
+                                        <div className="text-2xl font-black" style={{ color: getScoreColor(userAnalysis.overallAvg) }}>{getScoreLabel(userAnalysis.overallAvg)}</div>
+                                        <div className="text-xs text-gray-500 mt-1">Level</div>
+                                      </div>
+                                    </div>
+
+                                    {userAnalysis.topStrengths.length > 0 && (
+                                      <div className="mb-5">
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#10b981' }}>
+                                          <span className="w-2 h-2 rounded-full bg-green-500" /> Top 3 Strengths
+                                        </h5>
+                                        <div className="space-y-2">
+                                          {userAnalysis.topStrengths.map((s, i) => (
+                                            <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(16, 185, 129, 0.06)', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
+                                              <span className="text-lg font-black" style={{ color: getCategoryScoreColor(s.avgScore) }}>{s.avgScore}</span>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold truncate">{s.category}</p>
+                                                <p className="text-xs text-gray-500">{getSimTypeLabel(s.simType)}</p>
+                                              </div>
+                                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">#{i + 1}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {userAnalysis.weaknesses.length > 0 && (
+                                      <div className="mb-5">
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ef4444' }}>
+                                          <span className="w-2 h-2 rounded-full bg-red-500" /> All Weaknesses
+                                        </h5>
+                                        <div className="space-y-2">
+                                          {userAnalysis.weaknesses.map((w, i) => (
+                                            <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
+                                              <span className="text-lg font-black" style={{ color: getCategoryScoreColor(w.avgScore) }}>{w.avgScore}</span>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold truncate">{w.category}</p>
+                                                <p className="text-xs text-gray-500">{getSimTypeLabel(w.simType)}</p>
+                                              </div>
+                                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{w.avgScore}/10</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {userAnalysis.improvementAreas.length > 0 && (
+                                      <div>
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                                          <span className="w-2 h-2 rounded-full bg-amber-500" /> Key Improvement Areas
+                                        </h5>
+                                        <div className="space-y-1.5">
+                                          {userAnalysis.improvementAreas.map((area, i) => (
+                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed" style={{ background: 'rgba(245, 158, 11, 0.06)', border: '1px solid rgba(245, 158, 11, 0.15)', color: '#92400e' }}>
+                                              <span className="text-amber-500 font-bold flex-shrink-0">!</span>
+                                              <span>{area}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 2. Top 3 Best Simulations Per Category */}
+                              {mu.simulations.length > 0 && (
+                                <div style={{ order: 2 }}>
                                   <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                    <CheckCircle className="w-5 h-5 text-purple-600" />
-                                    Assessments
+                                    <Sparkles className="w-5 h-5 text-amber-500" />
+                                    Top 3 Best Scores Per Category
+                                  </h4>
+                                  <div className="space-y-5">
+                                    {([
+                                      { label: 'Relationship Building (Chatting)', sims: top3Chatting, color: '#f97316', bg: 'rgba(249, 115, 22, 0.06)' },
+                                      { label: 'Sexting', sims: top3Sexting, color: '#e11d48', bg: 'rgba(225, 29, 72, 0.06)' },
+                                      { label: 'Aftercare', sims: top3Aftercare, color: '#ec4899', bg: 'rgba(236, 72, 153, 0.06)' },
+                                    ] as const).filter(g => g.sims.length > 0).map(group => (
+                                      <div key={group.label}>
+                                        <h5 className="text-sm font-bold mb-2.5" style={{ color: group.color }}>{group.label}</h5>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                          {group.sims.map((sim, i) => {
+                                            const ws = calculateWeightedScore(sim.categories, sim.simulationType)
+                                            return (
+                                              <div key={sim.id} className="rounded-xl p-4 flex items-center gap-3" style={{ background: group.bg, border: `1px solid ${group.color}20` }}>
+                                                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-sm" style={{ background: `${getScoreColor(ws)}15`, color: getScoreColor(ws) }}>
+                                                  {ws}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: `${group.color}15`, color: group.color }}>#{i + 1}</span>
+                                                    <span className="text-xs font-semibold" style={{ color: getScoreColor(ws) }}>{getScoreLabel(ws)}</span>
+                                                  </div>
+                                                  <p className="text-xs text-gray-500 mt-0.5">{new Date(sim.completedAt).toLocaleDateString()} &middot; {sim.durationMode}</p>
+                                                </div>
+                                              </div>
+                                            )
+                                          })}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 4. Training Results (Assessments) */}
+                              {mu.assessments && (
+                                <div style={{ order: 4 }}>
+                                  <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                    <GraduationCap className="w-5 h-5 text-purple-600" />
+                                    Training Results
                                   </h4>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                                     {(['day2', 'day3', 'day4', 'day5'] as const).map((dayKey) => {
@@ -1637,15 +1846,15 @@ function AdminPanelContent() {
                                 </div>
                               )}
 
-                              {/* Simulations Section */}
-                              {mu.simulations.length > 0 ? (
-                                <div>
+                              {/* 3. Other Simulations */}
+                              {otherSims.length > 0 ? (
+                                <div style={{ order: 3 }}>
                                   <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
                                     <MessageCircle className="w-5 h-5 text-blue-600" />
-                                    Simulations ({mu.simulations.length})
+                                    Other Simulations ({otherSims.length})
                                   </h4>
                                   <div className="space-y-3">
-                                    {mu.simulations.map((report) => {
+                                    {otherSims.map((report) => {
                                       const isReportOpen = expandedPerUserReport === report.id
                                       const weightedScore = calculateWeightedScore(report.categories, report.simulationType)
                                       const reportWeights = getWeightsForReport(report)
@@ -2038,7 +2247,7 @@ function AdminPanelContent() {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="rounded-xl p-6 text-center" style={{ background: '#f8fafc', border: '1px solid #e5e7eb' }}>
+                                <div className="rounded-xl p-6 text-center" style={{ order: 3, background: '#f8fafc', border: '1px solid #e5e7eb' }}>
                                   <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                                   <p className="text-sm" style={{ color: 'var(--text-muted-on-white)' }}>No simulations completed yet</p>
                                 </div>

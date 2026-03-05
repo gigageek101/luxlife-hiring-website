@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, MessageCircle, ChevronDown, ChevronUp, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Flame, Zap, Play, Pause, X, Video, RefreshCw, Loader2, CheckCircle, GraduationCap } from 'lucide-react'
+import { ArrowLeft, MessageCircle, ChevronDown, ChevronUp, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Flame, Zap, Play, Pause, X, Video, RefreshCw, Loader2, CheckCircle, GraduationCap, TrendingUp } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import TrainingClientWrapper from '../training/client-wrapper'
 import Link from 'next/link'
@@ -109,6 +109,63 @@ function getScoreLabel(score: number): string {
   return 'Needs Immediate Coaching'
 }
 
+interface UserAnalysis {
+  topStrengths: { category: string; avgScore: number; simType: string }[]
+  weaknesses: { category: string; avgScore: number; simType: string }[]
+  overallAvg: number
+  totalSims: number
+  improvementAreas: string[]
+}
+
+function computeAnalysis(simulations: SimReport[]): UserAnalysis | null {
+  if (simulations.length === 0) return null
+
+  const byType: Record<string, SimReport[]> = {
+    chatting: simulations.filter(s => s.simulationType === 'chatting' || s.simulationType === 'chat-teacher'),
+    sexting: simulations.filter(s => s.simulationType === 'sexting' || s.simulationType === 'sexting-teacher'),
+    aftercare: simulations.filter(s => s.simulationType === 'aftercare' || s.simulationType === 'aftercare-teacher'),
+  }
+
+  const categoryAvgs: { category: string; avgScore: number; simType: string }[] = []
+  for (const [type, sims] of Object.entries(byType)) {
+    if (sims.length === 0) continue
+    const catScores: Record<string, number[]> = {}
+    for (const sim of sims) {
+      for (const cat of sim.categories) {
+        if (!catScores[cat.name]) catScores[cat.name] = []
+        catScores[cat.name].push(cat.score)
+      }
+    }
+    for (const [name, scores] of Object.entries(catScores)) {
+      categoryAvgs.push({ category: name, avgScore: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length * 10) / 10, simType: type })
+    }
+  }
+
+  const sorted = [...categoryAvgs].sort((a, b) => b.avgScore - a.avgScore)
+  const improvementAreas: string[] = []
+  for (const sim of simulations) {
+    if (typeof sim.overallFeedback === 'object' && sim.overallFeedback !== null) {
+      const fb = sim.overallFeedback as OverallFeedback
+      if (fb.weaknesses) improvementAreas.push(...fb.weaknesses)
+    }
+  }
+
+  return {
+    topStrengths: sorted.slice(0, 3),
+    weaknesses: sorted.filter(c => c.avgScore < 6),
+    overallAvg: Math.round(simulations.reduce((s, r) => s + calculateWeightedScore(r.categories, r.simulationType), 0) / simulations.length * 10) / 10,
+    totalSims: simulations.length,
+    improvementAreas: Array.from(new Set(improvementAreas)).slice(0, 8),
+  }
+}
+
+function getSimTypeLabel(type: string) {
+  if (type === 'chatting') return 'Relationship Building'
+  if (type === 'sexting') return 'Sexting'
+  if (type === 'aftercare') return 'Aftercare'
+  return type
+}
+
 function MyResultsContent() {
   const [reports, setReports] = useState<SimReport[]>([])
   const [loading, setLoading] = useState(true)
@@ -182,6 +239,8 @@ function MyResultsContent() {
     ? Math.max(...filtered.map(r => calculateWeightedScore(r.categories, r.simulationType)))
     : null
 
+  const analysis = useMemo(() => computeAnalysis(reports), [reports])
+
   return (
     <div className="min-h-screen relative">
       <DynamicBackground />
@@ -252,6 +311,96 @@ function MyResultsContent() {
               </div>
             </div>
           </div>
+
+          {/* Performance Analysis */}
+          {!loading && analysis && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-6 md:mb-8"
+            >
+              <div className="card" style={{ background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', border: '2px solid #e2e8f0' }}>
+                <h3 className="text-lg md:text-xl font-bold mb-5 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-violet-500" />
+                  Your Performance Analysis
+                </h3>
+
+                <div className="grid grid-cols-3 gap-3 mb-5">
+                  <div className="rounded-xl p-3 text-center bg-white" style={{ border: '1px solid #e5e7eb' }}>
+                    <div className="text-xl md:text-2xl font-black" style={{ color: getScoreColor(analysis.overallAvg) }}>{analysis.overallAvg}</div>
+                    <div className="text-xs text-gray-500">Avg Score</div>
+                  </div>
+                  <div className="rounded-xl p-3 text-center bg-white" style={{ border: '1px solid #e5e7eb' }}>
+                    <div className="text-xl md:text-2xl font-black text-blue-700">{analysis.totalSims}</div>
+                    <div className="text-xs text-gray-500">Total Sims</div>
+                  </div>
+                  <div className="rounded-xl p-3 text-center bg-white" style={{ border: '1px solid #e5e7eb' }}>
+                    <div className="text-lg md:text-xl font-black" style={{ color: getScoreColor(analysis.overallAvg) }}>{getScoreLabel(analysis.overallAvg)}</div>
+                    <div className="text-xs text-gray-500">Level</div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-5">
+                  {analysis.topStrengths.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#10b981' }}>
+                        <TrendingUp className="w-4 h-4" /> Top 3 Strengths
+                      </h4>
+                      <div className="space-y-1.5">
+                        {analysis.topStrengths.map((s, i) => (
+                          <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                            <span className="text-base font-black" style={{ color: getCategoryScoreColor(s.avgScore) }}>{s.avgScore}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold truncate">{s.category}</p>
+                              <p className="text-xs text-gray-500">{getSimTypeLabel(s.simType)}</p>
+                            </div>
+                            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">#{i + 1}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {analysis.weaknesses.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#ef4444' }}>
+                        <AlertTriangle className="w-4 h-4" /> Areas to Improve
+                      </h4>
+                      <div className="space-y-1.5">
+                        {analysis.weaknesses.map((w, i) => (
+                          <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                            <span className="text-base font-black" style={{ color: getCategoryScoreColor(w.avgScore) }}>{w.avgScore}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold truncate">{w.category}</p>
+                              <p className="text-xs text-gray-500">{getSimTypeLabel(w.simType)}</p>
+                            </div>
+                            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">{w.avgScore}/10</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {analysis.improvementAreas.length > 0 && (
+                  <div className="mt-5">
+                    <h4 className="text-sm font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                      Key Improvement Feedback
+                    </h4>
+                    <div className="space-y-1">
+                      {analysis.improvementAreas.map((area, i) => (
+                        <div key={i} className="flex gap-2 px-3 py-2 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(245, 158, 11, 0.2)', color: '#92400e' }}>
+                          <span className="text-amber-500 font-bold flex-shrink-0">!</span>
+                          <span>{area}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
 
           {/* Refresh */}
           {user && (
