@@ -55,7 +55,7 @@ Return ONLY a valid JSON array with ${answers.length} evaluation objects, no oth
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 8000,
         temperature: 0.3,
         messages: [
