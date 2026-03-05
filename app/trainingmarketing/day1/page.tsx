@@ -50,7 +50,7 @@ export default function MarketingDay1() {
                 Day 1 Training Materials
               </h3>
               <a
-                href="https://pentagonal-thief-156.notion.site/DAY-1-317b6586b06d8044950ed58c42435893?source=copy_link"
+                href="https://pentagonal-thief-156.notion.site/FIXED-MINDSET-VS-GROWTH-MINDSET-317b6586b06d8001a6a1c2b1cf9d4429?source=copy_link"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-4 px-8 rounded-lg font-semibold text-lg text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all inline-flex items-center gap-3 justify-center"

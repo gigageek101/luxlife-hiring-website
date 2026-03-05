@@ -48,7 +48,7 @@ export default function MarketingDay2() {
                 Day 2 Training Materials
               </h3>
               <a
-                href="https://pentagonal-thief-156.notion.site/DAY-2-317b6586b06d806f931dfc02a920991f?source=copy_link"
+                href="https://pentagonal-thief-156.notion.site/INTRODUCTION-SOFTWARE-AND-TASK-317b6586b06d80879bd3cef45f3f2e69?source=copy_link"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-4 px-8 rounded-lg font-semibold text-lg text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all inline-flex items-center gap-3 justify-center"
