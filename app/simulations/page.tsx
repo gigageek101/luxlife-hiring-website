@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Flame, Heart, ArrowLeft } from 'lucide-react'
+import { ArrowRight, MessageCircle, Flame, Heart, ArrowLeft, Zap } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import Reveal from '@/components/Reveal'
 import Link from 'next/link'
@@ -60,6 +60,28 @@ const simulations = [
       'Texting Style & Casual American Flow (10 pts)',
       'Pacing & Message Timing (7 pts)',
       'No Hard-Sell / No Desperation (3 pts)',
+    ],
+  },
+  {
+    id: 'combined',
+    emoji: '⚡',
+    icon: Zap,
+    title: 'Full Session (All 3 Stages)',
+    description: 'The ultimate test — 35 minutes combining Relationship Building, Sexting & PPV Sales, and Aftercare in one continuous conversation with random objections. Same subscriber, full journey.',
+    path: '/chattingsimulation4',
+    color: '#7c3aed',
+    gradient: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+    categories: [
+      'Relationship Building Quality (12 pts)',
+      'Subscriber Engagement (10 pts)',
+      'Sexting Framework Execution (15 pts)',
+      'Language Mirroring (12 pts)',
+      'Tension Building (10 pts)',
+      'Aftercare Emotional Quality (12 pts)',
+      'Objection Handling (10 pts)',
+      'Stage Transitions (7 pts)',
+      'American Texting Style (7 pts)',
+      'Note-Taking & Consistency (5 pts)',
     ],
   },
 ]
