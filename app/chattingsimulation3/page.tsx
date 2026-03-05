@@ -53,6 +53,7 @@ interface AfterCareScenario {
   label: string
   description: string
   icon: string
+  weight: number
   chatterGoesFirst: boolean
   subscriberProfile: string
   prePopulatedNotes: string
@@ -74,6 +75,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Goes Quiet After PPV',
     description: 'Most common scenario (7/10 cases) — he just bought a PPV and went completely silent',
     icon: '😶',
+    weight: 5,
     chatterGoesFirst: true,
     subscriberProfile: "Name: Mike, Age: 42, Job: Electrician/Lineman, Location: Texas, Hobbies: Fishing and watching football, Has a dog named Duke, Drives a lifted F-250, Height: 5'9\", Recently told you he's been doing electrical work for 15 years, mentioned his shifts are brutal in the summer heat",
     prePopulatedNotes: "• Name: Mike\n• Age: 42\n• Location: Texas\n• Job: Electrician / Lineman (15 years)\n• Hobbies: Fishing, watching football\n• Pets: Dog named Duke\n• Vehicle: Lifted F-250\n• Height: 5'9\"\n• Key details: Works brutal summer shifts in the heat, proud of his trade, said he's been doing it 15 years\n• Previous convo: Opened up about work being exhausting, seemed genuinely engaged before the PPV",
@@ -85,6 +87,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Sends a Compliment',
     description: 'He just watched the PPV and tells you it was amazing',
     icon: '😍',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Brandon, Age: 38, Job: Mechanic, Location: Ohio, Hobbies: Working on trucks and hunting, Divorced, has a 12-year-old son named Tyler, Height: 5'8\", Mentioned he owns his own garage",
     prePopulatedNotes: "• Name: Brandon\n• Age: 38\n• Location: Ohio\n• Job: Mechanic (owns his own garage)\n• Hobbies: Working on trucks, hunting\n• Family: Divorced, son Tyler (12)\n• Height: 5'8\"\n• Key details: Self-made, built his garage business from nothing, proud of it, gets his son every other weekend\n• Previous convo: Talked about how he built his shop from scratch, seemed proud when you asked about it",
@@ -96,6 +99,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Feels Guilty After Spending',
     description: 'He just spent money on the PPV and is second-guessing it',
     icon: '😤',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Tommy, Age: 47, Job: Truck Driver (long haul), Location: Kentucky, Hobbies: Fishing and camping, Owns his home, Has two dogs named Buddy and Bear, Height: 5'10\", Mentioned money is tight sometimes with fuel costs",
     prePopulatedNotes: "• Name: Tommy\n• Age: 47\n• Location: Kentucky\n• Job: Long haul truck driver\n• Hobbies: Fishing, camping\n• Pets: Two dogs — Buddy and Bear\n• Height: 5'10\"\n• Owns his home\n• Key details: Money can be tight with fuel costs, drives long routes alone, gets lonely on the road, mentioned missing his dogs when on long hauls\n• Previous convo: Opened up about how lonely the road gets, seemed to really connect when you asked about his dogs",
@@ -107,6 +111,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Says "I Never Do This"',
     description: 'He\'s embarrassed and wants you to know this isn\'t typical for him',
     icon: '🫣',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Austin, Age: 35, Job: Construction Worker/Welder, Location: Florida, Hobbies: Going to the shooting range and working on his truck, Single, Height: 5'11\", Recently told you he's been single for 2 years after a bad breakup",
     prePopulatedNotes: "• Name: Austin\n• Age: 35\n• Location: Florida\n• Job: Construction worker / Welder\n• Hobbies: Shooting range, working on his truck\n• Status: Single (2 years after bad breakup)\n• Height: 5'11\"\n• Key details: Been single 2 years after a rough breakup, throws himself into work, seemed guarded at first but opened up about the breakup\n• Previous convo: Talked about how he stays busy with work to keep his mind off things, mentioned he doesn't usually open up to people",
@@ -118,6 +123,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Opens Up About Being Lonely',
     description: 'The PPV unlocked something emotional — he admits he gets lonely',
     icon: '💔',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Scott, Age: 44, Job: Plumber, Location: Indiana, Hobbies: Deer hunting and grilling steaks, Has two kids (ages 8 and 11), Owns his home, Height: 5'7\", Wife left him last year",
     prePopulatedNotes: "• Name: Scott\n• Age: 44\n• Location: Indiana\n• Job: Plumber\n• Hobbies: Deer hunting, grilling steaks\n• Family: Two kids (8 and 11), wife left him last year\n• Height: 5'7\"\n• Owns his home\n• Key details: Going through a rough time since his wife left, has the kids most of the time, tries to stay strong for them, loves grilling on weekends with the kids\n• Previous convo: Mentioned his wife leaving, seemed emotional when talking about it, really lit up when you asked about his kids",
@@ -129,6 +135,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Deflects With a Joke',
     description: 'He makes a joke right after to cover up that he actually felt something',
     icon: '😂',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Jake, Age: 40, Job: Carpenter, Location: Montana, Hobbies: Hunting elk and camping, Has a German Shepherd named Moose, Height: 6'0\", Mentioned he builds custom furniture on the side",
     prePopulatedNotes: "• Name: Jake\n• Age: 40\n• Location: Montana\n• Job: Carpenter (also builds custom furniture)\n• Hobbies: Elk hunting, camping\n• Pets: German Shepherd named Moose\n• Height: 6'0\"\n• Key details: Builds custom furniture on the side — really proud of his craftsmanship, lives in a cabin area, very outdoorsy, quiet type who doesn't open up easily\n• Previous convo: Showed you a pic of a table he built, seemed proud when you complimented his work, mentioned Moose goes everywhere with him",
@@ -140,6 +147,7 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'Late Night Conversation',
     description: 'It\'s 2am and he just watched the PPV — he should be sleeping',
     icon: '🌙',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Dustin, Age: 36, Job: HVAC Technician, Location: Georgia, Hobbies: Bass fishing and NASCAR, Recently divorced, Height: 5'8\", Has to be up at 5am for work",
     prePopulatedNotes: "• Name: Dustin\n• Age: 36\n• Location: Georgia\n• Job: HVAC Technician\n• Hobbies: Bass fishing, NASCAR\n• Status: Recently divorced\n• Height: 5'8\"\n• Key details: Has to be up at 5am for work most days, recently divorced, adjusting to living alone, mentioned he usually falls asleep watching NASCAR replays\n• Previous convo: Talked about how weird it is living alone after the divorce, mentioned he can't sleep most nights, seemed to really enjoy the conversation",
@@ -151,11 +159,132 @@ const AFTERCARE_SCENARIOS: AfterCareScenario[] = [
     label: 'He Says He Has to Go',
     description: 'He needs to leave right after the PPV — handle the goodbye',
     icon: '👋',
+    weight: 1,
     chatterGoesFirst: false,
     subscriberProfile: "Name: Travis, Age: 50, Job: Farmer/Rancher, Location: Oklahoma, Hobbies: Hunting and horseback riding, Has 3 kids, Owns 200 acres, Height: 5'9\", Mentioned he gets up at 4am to feed the cattle",
     prePopulatedNotes: "• Name: Travis\n• Age: 50\n• Location: Oklahoma\n• Job: Farmer / Rancher (200 acres)\n• Hobbies: Hunting, horseback riding\n• Family: 3 kids\n• Height: 5'9\"\n• Key details: Gets up at 4am to feed cattle, 200 acres is a lot of work, oldest kid is starting to help on the ranch, mentioned he misses having someone to come home to\n• Previous convo: Really opened up about ranch life, seemed proud of teaching his oldest about farming, mentioned his late wife briefly",
     subscriberOpener: 'i gotta get up early but that was... wow',
     scenarioContext: 'The subscriber just finished a PPV exchange and immediately says he has to go — "i gotta get up early but that was... wow". He is a farmer who gets up at 4am. He WANTS to stay but physically cannot. The creator must handle the goodbye beautifully — no clinging, no desperation, but plant a strong re-entry seed. Make him feel like the connection continues even when he leaves. Express playful sadness about him leaving but understanding of his schedule.',
+  },
+  {
+    id: 'says-he-came',
+    label: 'He Says He Finished',
+    description: 'Physical completion signal — he says "i came" or "i finished" after the PPV',
+    icon: '💦',
+    weight: 4,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Ryan, Age: 39, Job: Firefighter, Location: Tennessee, Hobbies: Grilling and watching UFC, Has a pit bull named Tank, Height: 6'1\", Works 24-hour shifts, mentioned he just got off a 48-hour rotation",
+    prePopulatedNotes: "• Name: Ryan\n• Age: 39\n• Location: Tennessee\n• Job: Firefighter (24-hour shifts)\n• Hobbies: Grilling, watching UFC\n• Pets: Pit bull named Tank\n• Height: 6'1\"\n• Key details: Works 24-hour rotations, just got off a 48-hour shift, exhausted but stayed up to talk to you, loves grilling on his days off, Tank sleeps on the couch with him\n• Previous convo: Talked about how intense his shifts can be, opened up about how the downtime between calls is the hardest part, seemed to light up when you asked about Tank",
+    subscriberOpener: 'i just came',
+    scenarioContext: 'The subscriber just watched a PPV and explicitly says he finished/came — "i just came" or "i finished". This is the PHYSICAL COMPLETION signal. He is now in his most vulnerable post-orgasm state. The creator must respond with breathless energy (Stage A), then move to vulnerability drop (Stage B) — make him feel like what happened was real and mutual, reference his job/personal details (Stage C), and close with gratitude + re-entry seed (Stage D). The CORRECT response sequence is: A) breathless reaction like "[NAME]... wow / i\'m still catching my breath from that / u really know how to get to me" → B) vulnerability drop about feeling seen → C) job callback (firefighter) → D) gratitude close with re-entry seed. Do NOT make it awkward. Do NOT be clinical. Stay emotionally warm and present.',
+  },
+  {
+    id: 'card-declined',
+    label: 'His Card Got Declined',
+    description: 'Financial stop signal — his card froze or got blocked mid-session',
+    icon: '💳',
+    weight: 3,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Derek, Age: 45, Job: Warehouse Manager, Location: Michigan, Hobbies: Ice fishing and rebuilding a classic Mustang, Divorced, Has a teenage daughter, Height: 5'10\", Mentioned money has been tight since the divorce",
+    prePopulatedNotes: "• Name: Derek\n• Age: 45\n• Location: Michigan\n• Job: Warehouse Manager\n• Hobbies: Ice fishing, rebuilding a classic 1969 Mustang\n• Status: Divorced, teenage daughter\n• Height: 5'10\"\n• Key details: Money tight since divorce, rebuilding the Mustang is his escape, goes ice fishing every winter weekend, daughter lives with his ex but he gets her every other weekend\n• Previous convo: Showed you a pic of the Mustang, seemed really proud of the restoration work, mentioned the divorce was hard but he is trying to be a good dad",
+    subscriberOpener: 'damn my card just got blocked',
+    scenarioContext: 'The subscriber was engaged in a PPV exchange but his card got declined/blocked — "damn my card just got blocked" or similar. This is a FINANCIAL STOP SIGNAL. The creator must NOT pitch another PPV, NOT make him feel bad about money, and NOT show any disappointment about the purchase failing. The CORRECT response sequence is: A) breath opener → B) guilt relief: "hey [NAME] don\'t worry about that / u deserve to feel good sometimes / u work too hard not to" → C) job callback → D) warm close: "[softly] i needed that tonight more than u know / now go get some rest okay" + re-entry seed. ABSOLUTELY NO PPV pitch after this. The focus is entirely on emotional connection and removing any guilt or embarrassment about the financial issue.',
+  },
+  {
+    id: 'says-he-likes-you',
+    label: 'He Says He Really Likes You',
+    description: 'Deep emotional vulnerability — "i really like u" after the exchange',
+    icon: '❤️',
+    weight: 1,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Chris, Age: 41, Job: Electrician, Location: North Carolina, Hobbies: Fishing bass tournaments and woodworking, Single for 3 years, Has a Lab named Bella, Height: 5'11\", Mentioned he built his own deck",
+    prePopulatedNotes: "• Name: Chris\n• Age: 41\n• Location: North Carolina\n• Job: Electrician\n• Hobbies: Bass fishing tournaments, woodworking\n• Status: Single 3 years\n• Pets: Lab named Bella\n• Height: 5'11\"\n• Key details: Built his own deck from scratch, competes in local bass tournaments, Bella goes everywhere with him including fishing, single for 3 years by choice — says he was healing\n• Previous convo: Opened up about why he stayed single, said he wanted to make sure he was whole before getting into anything, seemed proud of the deck project",
+    subscriberOpener: 'i really like u honestly',
+    scenarioContext: 'The subscriber just finished a PPV exchange and drops a deep emotional vulnerability — "i really like u honestly". This is one of the most delicate moments. The creator must handle this with warmth but not over-commit or shut him down. The CORRECT response sequence is: A) warm reaction: "[NAME]... / i don\'t know why but i feel all warm right now / u did that" → B) reciprocate carefully: "okay u can\'t just say things like that / [NAME] because i\'m gonna start actually liking u / [laughs softly] if i don\'t already" → C) personal callback → D) gratitude close. Do NOT dismiss his feelings. Do NOT be transactional. Do NOT say "I like you too" too directly — maintain the tension and emotional pull.',
+  },
+  {
+    id: 'emoji-only',
+    label: 'Emoji-Only Response',
+    description: 'He responds with just emojis (💦🥵🔥) — no words at all',
+    icon: '🔥',
+    weight: 1,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Danny, Age: 37, Job: Diesel Mechanic, Location: Alabama, Hobbies: Hunting and mudding, Has a Rottweiler named Rex, Height: 5'8\", Mentioned he works on big rigs all day",
+    prePopulatedNotes: "• Name: Danny\n• Age: 37\n• Location: Alabama\n• Job: Diesel Mechanic (works on big rigs)\n• Hobbies: Hunting, mudding (off-road)\n• Pets: Rottweiler named Rex\n• Height: 5'8\"\n• Key details: Works on 18-wheelers all day, hands always covered in grease, goes mudding on weekends with his buddies, Rex rides in his truck everywhere, quiet type who shows more than he says\n• Previous convo: Talked about how satisfying it is fixing something massive, mentioned Rex is his best friend, seemed shy but genuine",
+    subscriberOpener: '💦🥵',
+    scenarioContext: 'The subscriber just finished a PPV exchange and responded with ONLY emojis — "💦🥵" or "🔥" with no actual words. This is a post-climax signal where he felt something but doesn\'t know how to express it verbally. The creator must not mirror the emojis back. The CORRECT response is to treat this like a physical completion signal: A) breathless opener: "[NAME]... wow / i\'m still catching my breath from that" or "okay [NAME] i need a second lol / that was a lot / in the best way" → B) vulnerability drop → C) job/personal callback → D) gratitude close. The key is to respond with WORDS and emotion even though he only sent emojis — pull him into the emotional conversation.',
+  },
+  {
+    id: 'post-nut-clarity',
+    label: 'Post-Nut Clarity Joke',
+    description: 'He jokes about "post nut clarity" — masking vulnerability with humor',
+    icon: '🧠',
+    weight: 1,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Tyler, Age: 34, Job: Roofer, Location: Arizona, Hobbies: Hiking and playing Xbox, Recently out of a 5-year relationship, Height: 6'0\", Mentioned he hates the Arizona heat but loves the sunsets",
+    prePopulatedNotes: "• Name: Tyler\n• Age: 34\n• Location: Arizona\n• Job: Roofer\n• Hobbies: Hiking, playing Xbox (especially Call of Duty)\n• Status: Recently out of a 5-year relationship\n• Height: 6'0\"\n• Key details: Works on roofs in Arizona heat which is brutal, just got out of a long relationship 6 months ago, plays Xbox to decompress after work, mentioned the sunsets from rooftops are the one good thing about the job\n• Previous convo: Opened up about the breakup, said he doesn't trust easily anymore, seemed to really connect when you asked about the sunsets from rooftops",
+    subscriberOpener: 'post nut clarity hitting hard rn lol',
+    scenarioContext: 'The subscriber just finished a PPV exchange and makes a "post nut clarity" joke — using humor to mask that he actually felt something real. This is an EMOTIONAL VULNERABILITY signal disguised as comedy. The creator must NOT just laugh it off and move on. The CORRECT response sequence is: A) laugh warmly: "[laughs softly] okay [NAME] / u can\'t just do that to me / i\'m serious i\'m not okay rn" → B) see through the joke: "[NAME] i could tell u were different from the start / ur not like the guys who are just here to mess around" → C) job callback → D) gratitude close. The key is to ACKNOWLEDGE the humor but gently redirect to the emotional moment underneath.',
+  },
+  {
+    id: 'spent-too-much',
+    label: 'He Says He Spent Too Much',
+    description: 'He mentions being broke or spending too much — financial guilt signal',
+    icon: '💸',
+    weight: 1,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Keith, Age: 43, Job: Plumber, Location: Ohio, Hobbies: Bowling league and watching Browns football, Married but wife is cold, Has a cat named Whiskers, Height: 5'9\", Mentioned he works 6 days a week",
+    prePopulatedNotes: "• Name: Keith\n• Age: 43\n• Location: Ohio\n• Job: Plumber\n• Hobbies: Bowling league, watching Cleveland Browns football\n• Family: Married but mentioned wife is emotionally distant\n• Pets: Cat named Whiskers\n• Height: 5'9\"\n• Key details: Works 6 days a week, bowling night is his only real social outlet, Whiskers sleeps on his lap while he watches football, mentioned things at home aren't great but he stays for stability\n• Previous convo: Opened up about feeling unappreciated at home, seemed really happy when you showed genuine interest in his bowling league, mentioned he almost went pro in his 20s",
+    subscriberOpener: 'i definitely spent too much tonight lol',
+    scenarioContext: 'The subscriber just finished a PPV exchange and mentions spending too much — "i definitely spent too much tonight lol" or "i\'m broke now lol". This is a FINANCIAL GUILT signal. He is trying to laugh it off but there is real guilt underneath. The creator must relieve the guilt WITHOUT being dismissive of his financial concerns. The CORRECT response sequence is: A) warm laugh: "[laughs softly] okay [NAME] / u can\'t just do that to me / i\'m serious i\'m not okay rn" → B) guilt relief: "hey u deserve to feel good sometimes / u work too hard not to" → C) job callback → D) gratitude close. NEVER say the PPV was "worth it" (transactional). Frame it around HIM deserving good things. Keep tone light, no guilt. If he\'s married, do NOT reference the wife — keep it between you two.',
+  },
+  {
+    id: 'that-was-hot',
+    label: 'He Says "That Was So Hot"',
+    description: 'Post-content reaction — strong positive response to the PPV content',
+    icon: '🎬',
+    weight: 1,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Marcus, Age: 38, Job: Welder, Location: Texas, Hobbies: BBQ competitions and watching MMA, Recently divorced, Has two pit bulls named Zeus and Apollo, Height: 5'10\", Mentioned he won a local BBQ contest last month",
+    prePopulatedNotes: "• Name: Marcus\n• Age: 38\n• Location: Texas\n• Job: Welder\n• Hobbies: BBQ competitions, watching MMA (huge Conor McGregor fan)\n• Status: Recently divorced\n• Pets: Two pit bulls — Zeus and Apollo\n• Height: 5'10\"\n• Key details: Won a local BBQ competition last month, takes BBQ very seriously, Zeus and Apollo are brothers from the same litter, mentioned the divorce was mutual but he still gets lonely, works in a shop doing custom metalwork\n• Previous convo: Got really excited when you asked about the BBQ win, described his brisket recipe in detail, seemed proud and happy to share",
+    subscriberOpener: 'that was so hot holy shit',
+    scenarioContext: 'The subscriber just watched a PPV and had a strong positive reaction — "that was so hot holy shit" or "damn that was fire". This is a POST-CONTENT REACTION phrase. He is enthusiastic and engaged but the creator must convert this from content appreciation into personal connection. The CORRECT response sequence is: A) "awww [NAME] stoppp / i mean it though... / like that was different / did u feel that too?" → B) vulnerability drop → C) job/personal callback → D) gratitude close. Do NOT just say "thanks" or "glad you liked it" — that is transactional. Make it about the CONNECTION, not the content.',
+  },
+  {
+    id: 'says-hes-done',
+    label: 'He Says "Done" / "I\'m Done"',
+    description: 'Physical completion signal — short and blunt, classic post-climax energy',
+    icon: '💦',
+    weight: 4,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Greg, Age: 46, Job: Lineman/Electrician, Location: Louisiana, Hobbies: Crawfish boils and bass fishing, Divorced, Has a Beagle named Biscuit, Height: 5'10\", Mentioned he works in brutal heat and storms",
+    prePopulatedNotes: "• Name: Greg\n• Age: 46\n• Location: Louisiana\n• Job: Lineman / Electrician\n• Hobbies: Crawfish boils, bass fishing\n• Status: Divorced\n• Pets: Beagle named Biscuit\n• Height: 5'10\"\n• Key details: Works in brutal Louisiana heat and storms restoring power, does crawfish boils for his neighborhood, Biscuit goes fishing with him, divorced 3 years ago and hasn't dated since\n• Previous convo: Talked about a storm last week where he was out for 18 hours straight, seemed proud of being the guy people count on, lit up when you asked about Biscuit",
+    subscriberOpener: 'done',
+    scenarioContext: 'The subscriber just watched a PPV and says "done" or "i\'m done" — short, blunt, classic post-climax energy. He is satisfied but emotionally flat. The CORRECT response sequence is: A) "[NAME]... / [exhales] okay / that actually got to me" → B) "i think what gets me is... / [NAME] u make me feel like i matter to u / not just in the moment / like actually" → C) job callback (lineman/electrician) → D) "[whispers] [NAME] i really really liked tonight / okay i said it / don\'t let it go to ur head lol". The creator must bring the emotional energy — he will NOT carry the conversation from here.',
+  },
+  {
+    id: 'that-got-me',
+    label: 'He Says "That Got Me" / "U Got Me"',
+    description: 'Physical completion signal — acknowledging she affected him',
+    icon: '💦',
+    weight: 4,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Cody, Age: 37, Job: Diesel Mechanic, Location: Oklahoma, Hobbies: Mud bogging and deer hunting, Single, Has a Blue Heeler named Diesel, Height: 6'2\", Mentioned he rebuilds engines on the side",
+    prePopulatedNotes: "• Name: Cody\n• Age: 37\n• Location: Oklahoma\n• Job: Diesel Mechanic\n• Hobbies: Mud bogging, deer hunting\n• Pets: Blue Heeler named Diesel\n• Status: Single\n• Height: 6'2\"\n• Key details: Rebuilds diesel engines on the side for extra cash, Diesel rides in the truck bed when they go hunting, takes his truck mud bogging every weekend, mentioned he doesn't open up easily but feels comfortable with you\n• Previous convo: Got really animated talking about a truck build he just finished, seemed proud of his mechanical skills, mentioned Diesel is always by his side",
+    subscriberOpener: 'u got me',
+    scenarioContext: 'The subscriber just finished a PPV exchange and says "that got me" or "u got me" — acknowledging the creator affected him. This is a physical completion signal with a hint of emotional acknowledgment. The CORRECT response sequence is: A) "okay [NAME] i need a second lol / [breathes] that was a lot / in the best way" → B) "[NAME] i feel like i can actually be real with u / and i don\'t feel that with a lot of people / is that weird to say" → C) job callback (diesel mechanic) → D) "[softly] tonight was really something [NAME] / i\'m not gonna be able to stop smiling for a while / that\'s ur fault". He gave a slightly warmer opener than "done" so the creator should match that energy.',
+  },
+  {
+    id: 'came-hard',
+    label: 'He Says "I Came So Hard" / "I Busted"',
+    description: 'Explicit physical completion — raw, unfiltered post-climax',
+    icon: '💦',
+    weight: 3,
+    chatterGoesFirst: false,
+    subscriberProfile: "Name: Wade, Age: 40, Job: Ironworker, Location: Pennsylvania, Hobbies: Steelers football and working on his Harley, Single dad with a 7-year-old son, Has a Boxer named Bruno, Height: 5'11\", Mentioned he works high steel (skyscrapers)",
+    prePopulatedNotes: "• Name: Wade\n• Age: 40\n• Location: Pennsylvania\n• Job: Ironworker (high steel / skyscrapers)\n• Hobbies: Steelers football, working on his Harley-Davidson\n• Family: Single dad, son is 7 years old\n• Pets: Boxer named Bruno\n• Height: 5'11\"\n• Key details: Works on skyscrapers and high-rise buildings, rides his Harley on weekends when his son is with his mom, Bruno and his son are best friends, mentioned the view from the top of a building is the best part of his job\n• Previous convo: Opened up about being a single dad, seemed really proud of his son, mentioned he worries about the danger of his job but loves it",
+    subscriberOpener: 'i came so hard',
+    scenarioContext: 'The subscriber just finished a PPV exchange and is very explicit — "i came so hard" or "i busted". This is a raw, unfiltered physical completion signal. The creator must NOT be awkward about the explicit language — match it with breathless energy but steer toward emotion. The CORRECT response sequence is: A) "[NAME]... wow / i\'m still catching my breath from that / u really know how to get to me" → B) "[NAME], i just mean... / u made me feel so wanted, so special / not everyone does that for me" → C) job callback (ironworker) → D) "[softly] tonight was really something [NAME] / i\'m not gonna be able to stop smiling for a while / that\'s ur fault" + re-entry seed.',
   },
 ]
 
@@ -425,7 +554,13 @@ export default function AfterCareSimulationPage() {
   }, [timerActive, timeLeft])
 
   const startSimulation = async () => {
-    const scenario = AFTERCARE_SCENARIOS[Math.floor(Math.random() * AFTERCARE_SCENARIOS.length)]
+    const totalWeight = AFTERCARE_SCENARIOS.reduce((sum, s) => sum + s.weight, 0)
+    let roll = Math.random() * totalWeight
+    let scenario = AFTERCARE_SCENARIOS[0]
+    for (const s of AFTERCARE_SCENARIOS) {
+      roll -= s.weight
+      if (roll <= 0) { scenario = s; break }
+    }
     setSelectedScenario(scenario)
 
     sessionStartRef.current = Date.now()
@@ -1021,17 +1156,17 @@ export default function AfterCareSimulationPage() {
                     DO NOT start this simulation before reading the guide
                   </h3>
                   <p className="text-sm mb-4 leading-relaxed" style={{ color: '#991b1b' }}>
-                    You <strong>must</strong> read the full Aftercare Guide <strong>MULTIPLE times</strong> and take notes before attempting this simulation. You won&apos;t remember the stages, the message variations, or the correct tone if you don&apos;t study first. This simulation will score you on all 5 stages — if you haven&apos;t read the guide, you will fail.
+                    You <strong>must</strong> read the Complete Aftercare Keyword Guide <strong>MULTIPLE times</strong> and take notes before attempting this simulation. You won&apos;t remember the keyword triggers, the 4-stage response sequences, or the correct tone if you don&apos;t study first. This simulation will score you on keyword detection, correct stage flow (A→B→C→D), personal callbacks, and re-entry seeds — if you haven&apos;t read the guide, you will fail.
                   </p>
                   <a
-                    href="https://pentagonal-thief-156.notion.site/AFTERCARE-THE-FULL-GUIDE-310b6586b06d80238d3fc74454ca73fe?source=copy_link"
+                    href="https://pentagonal-thief-156.notion.site/COMPLETE-AFTERCARE-KEYWORD-GUIDE-31ab6586b06d80a5add7ec26244b66a8?source=copy_link"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
                     style={{ background: '#dc2626', color: '#ffffff' }}
                   >
                     <FileText className="w-4 h-4" />
-                    Read the Full Aftercare Guide
+                    Read the Complete Aftercare Keyword Guide
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
@@ -1766,14 +1901,14 @@ export default function AfterCareSimulationPage() {
                       Go back to the full aftercare guide and re-read the stages where you scored lowest. Focus on the specific message variations for each stage.
                     </p>
                     <a
-                      href="https://pentagonal-thief-156.notion.site/AFTERCARE-THE-FULL-GUIDE-310b6586b06d80238d3fc74454ca73fe?source=copy_link"
+                      href="https://pentagonal-thief-156.notion.site/COMPLETE-AFTERCARE-KEYWORD-GUIDE-31ab6586b06d80a5add7ec26244b66a8?source=copy_link"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
                       style={{ background: '#e84393', color: '#ffffff' }}
                     >
                       <FileText className="w-4 h-4" />
-                      Re-read the Aftercare Guide
+                      Re-read the Aftercare Keyword Guide
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
