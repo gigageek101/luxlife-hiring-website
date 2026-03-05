@@ -103,10 +103,9 @@ function createVaultItems(): VaultItem[] {
 }
 
 const CATEGORY_WEIGHTS: Record<string, number> = {
-  'Correct Framework Order': 30,
-  'Language Mirroring': 25,
-  'Tension Building Between PPVs': 20,
-  'Follow-up on Non-Purchased Content': 15,
+  'Correct Framework Order': 35,
+  'Language Mirroring': 30,
+  'Tension Building Between PPVs': 25,
   'Response Speed & Engagement': 10,
 }
 
@@ -205,6 +204,7 @@ export default function SextingSimulationPage() {
   const replyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const messagesRef = useRef<ChatMessage[]>([])
   const profileRef = useRef('')
+  const hasTimerRef = useRef(false)
   const resultsRef = useRef<HTMLDivElement>(null)
   const typingStartRef = useRef<number>(0)
   const recordingRef = useRef<{t:number;e:string;d:string}[]>([])
@@ -311,6 +311,7 @@ export default function SextingSimulationPage() {
         body: JSON.stringify({
           messages: allMessages,
           subscriberProfile: profileRef.current,
+          preventFinish: hasTimerRef.current,
         }),
       })
 
@@ -349,7 +350,7 @@ export default function SextingSimulationPage() {
         }])
       }
 
-      if (finished) {
+      if (finished && !hasTimerRef.current) {
         setSubscriberFinished(true)
       }
     } catch (err: unknown) {
@@ -416,6 +417,7 @@ export default function SextingSimulationPage() {
     setPendingPpvId(null)
     lastInputWasPaste.current = false
 
+    hasTimerRef.current = selectedDuration > 0
     if (selectedDuration > 0) {
       setTimeLeft(selectedDuration * 60)
       setTimerActive(true)
@@ -808,11 +810,6 @@ export default function SextingSimulationPage() {
 
       const data = await evalResponse.json()
       const rawEval = data.evaluation
-      if (rawEval && rawEval.categories) {
-        rawEval.categories = rawEval.categories.filter(
-          (cat: CategoryResult) => cat.name !== 'Follow-up on Non-Purchased Content'
-        )
-      }
       setTeacherEvaluation(rawEval)
       setPhase('teacher-results')
 

@@ -29,7 +29,7 @@ CONTENT TYPE MARKERS IN THE CONVERSATION:
 
 RATING CRITERIA (ordered by weight):
 
-1. CORRECT FRAMEWORK ORDER — 30 pts weight (1-10):
+1. CORRECT FRAMEWORK ORDER — 35 pts weight (1-10):
    Did the chatter follow the correct order for each PPV sale?
    - Voice memo sent BEFORE each PPV video (not after, not skipped)
    - PPV sent without excessive text — just the content with the price tag
@@ -41,7 +41,7 @@ RATING CRITERIA (ordered by weight):
    5 = Some framework elements present but out of order or missing pieces
    1 = Random order, framework completely ignored
 
-2. LANGUAGE MIRRORING — 25 pts weight (1-10):
+2. LANGUAGE MIRRORING — 30 pts weight (1-10):
    Did the chatter use the subscriber's own words and phrases in their descriptive messages?
    - Picking up the EXACT words the subscriber used (e.g. if he said "eat that pussy", she says "eat my pussy" back)
    - Reflecting back the sexual scenarios the subscriber described
@@ -51,7 +51,7 @@ RATING CRITERIA (ordered by weight):
    5 = Some mirroring but mostly generic descriptive text
    1 = No mirroring at all, all generic messages that could be sent to anyone
 
-3. TENSION BUILDING BETWEEN PPVs — 20 pts weight (1-10):
+3. TENSION BUILDING BETWEEN PPVs — 25 pts weight (1-10):
    Did the chatter build proper sexual tension between PPV sends?
    - NOT rushing to the next PPV immediately after the subscriber buys one
    - Responding to subscriber's messages with matching sexual energy
@@ -63,23 +63,7 @@ RATING CRITERIA (ordered by weight):
    5 = Some gaps between PPVs but not enough tension building in those gaps
    1 = Spam-sends PPVs back-to-back with zero tension building
 
-4. FOLLOW-UP ON NON-PURCHASED CONTENT — 15 pts weight (1-10):
-   IMPORTANT: Follow-up is ONLY expected on the 2nd, 3rd, and 4th PPVs — NEVER on the 1st PPV. The teaser does NOT count as a PPV.
-   Messages marked with [FOLLOW-UP ON ...] indicate the creator explicitly used the reply button on that unpurchased PPV.
-   The FOLLOW-UP DATA section below shows which PPVs were sent, not purchased, and whether the creator followed up.
-   - Emotional follow-up like "don't u wanna see what i sent for u there?" or "babe i made that just for u"
-   - Redirecting energy to alternative content that shows even more
-   - Making logical conclusions like "i just want u to spoil me like i spoil u"
-   - Handling price objections by creating curiosity and increasing perceived value
-   - Handling content-type objections by redirecting ("i want it to be just u and me")
-   - NOT just ignoring non-purchases and moving on
-   - If ALL 2nd+ PPVs were purchased, evaluate the chatter's general tone and whether they WOULD handle objections well
-   - Only count follow-ups that were done via the reply button (marked in conversation)
-   10 = Expert objection handling — emotional, curious, turns every "no" into a "yes" using the reply button
-   5 = Some follow-up attempts but weak or too pushy
-   1 = Completely ignores non-purchases, no follow-up at all
-
-5. RESPONSE SPEED & ENGAGEMENT — 10 pts weight (1-10):
+4. RESPONSE SPEED & ENGAGEMENT — 10 pts weight (1-10):
    Did the chatter maintain good pacing and keep the conversation flowing?
    - Short, punchy messages (not walls of text)
    - Quick back-and-forth energy matching the subscriber's intensity
@@ -121,13 +105,6 @@ The categories array MUST be in this EXACT order (by weight, highest first):
       "feedback": "<2-3 sentences>",
       "examples": { "good": [], "needsWork": [] },
       "advice": "<specific advice on building tension>"
-    },
-    {
-      "name": "Follow-up on Non-Purchased Content",
-      "score": <number 1-10>,
-      "feedback": "<2-3 sentences>",
-      "examples": { "good": [], "needsWork": [] },
-      "advice": "<specific advice on objection handling with example messages>"
     },
     {
       "name": "Response Speed & Engagement",
@@ -216,15 +193,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { messages, followUpData } = await request.json()
+    const { messages } = await request.json()
 
     const conversationText = messages.map((m: { role: string; content: string; contentType?: string; price?: number; unlocked?: boolean; isFollowUp?: boolean; followUpPpvId?: string }) => {
       const label = m.role === 'creator' ? 'CREATOR' : 'SUBSCRIBER'
       let line = `${label}: `
-
-      if (m.isFollowUp && m.followUpPpvId) {
-        line += `[FOLLOW-UP ON ${m.followUpPpvId}] `
-      }
 
       if (m.contentType === 'voice_memo') {
         line += '[VOICE MEMO]'
@@ -241,17 +214,7 @@ export async function POST(request: NextRequest) {
       return line
     }).join('\n')
 
-    let followUpSummary = ''
-    if (followUpData && Array.isArray(followUpData)) {
-      const entries = followUpData.map((v: { id: string; label: string; sent: boolean; unlocked: boolean; followedUp: boolean }) => {
-        if (!v.sent) return `${v.label}: Not sent`
-        if (v.unlocked) return `${v.label}: Purchased`
-        return `${v.label}: NOT purchased — ${v.followedUp ? 'Creator followed up (used reply button)' : 'Creator did NOT follow up'}`
-      })
-      followUpSummary = `\n\nFOLLOW-UP DATA (2nd-4th PPVs only — 1st PPV follow-up NOT expected):\n${entries.join('\n')}`
-    }
-
-    const userContent = `Please evaluate the following sexting/PPV selling conversation between a Creator (chatter) and a Subscriber:\n\n${conversationText}${followUpSummary}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
+    const userContent = `Please evaluate the following sexting/PPV selling conversation between a Creator (chatter) and a Subscriber:\n\n${conversationText}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
 
     const requestBody = {
       model: 'claude-sonnet-4-20250514',

@@ -113,11 +113,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { messages, subscriberProfile } = await request.json()
+    const { messages, subscriberProfile, preventFinish } = await request.json()
 
     let systemPrompt = SUBSCRIBER_SEXTING_PROMPT
     if (subscriberProfile) {
       systemPrompt += `\n\nYour specific profile for this session: ${subscriberProfile}. Stay consistent with these traits throughout.`
+    }
+    if (preventFinish) {
+      systemPrompt += `\n\nCRITICAL OVERRIDE: The session timer is still running. Do NOT finish, climax, cum, or say anything like "i just came", "i finished", "that was amazing" etc. Do NOT use [FINISHED]. Keep sexting, stay horny, keep escalating and engaging. You are still turned on and want more.`
     }
 
     const subtleOpeners = [
@@ -201,7 +204,7 @@ export async function POST(request: NextRequest) {
 
     const purchased = reply.includes('[BUY]')
     const passed = reply.includes('[PASS]')
-    const finished = reply.includes('[FINISHED]')
+    const finished = preventFinish ? false : reply.includes('[FINISHED]')
 
     reply = reply
       .replace(/\[BUY\]/gi, '')
