@@ -2379,7 +2379,7 @@ function AdminPanelContent() {
                                 <div style={{ order: 3 }}>
                                   <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
                                     <MessageCircle className="w-5 h-5 text-blue-600" />
-                                    Other Simulations ({otherSims.length})
+                                    Latest Simulations ({otherSims.length})
                                   </h4>
                                   <div className="space-y-3">
                                     {otherSims.map((report) => {
