@@ -731,7 +731,7 @@ export default function CombinedSimulationPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
           <Loader2 className="w-16 h-16 text-violet-400 animate-spin mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-white mb-2">Evaluating Your Full Session...</h2>
-          <p className="text-violet-300">Analyzing all 3 stages with Claude AI</p>
+          <p className="text-violet-300">Analyzing all 3 stages...</p>
           <p className="text-violet-400/60 text-sm mt-2">This may take 15-30 seconds</p>
         </motion.div>
       </div>
