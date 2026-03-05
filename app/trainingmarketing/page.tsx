@@ -51,6 +51,14 @@ function MarketingTrainingDashboardContent() {
       link: '/trainingmarketing/day2',
       unlocked: true,
     },
+    {
+      day: 3,
+      title: 'Day 3 — Hands On',
+      description: 'Apply everything you learned — get hands-on with the AI Content Machine',
+      hasAssessment: false,
+      link: '/trainingmarketing/day3',
+      unlocked: true,
+    },
   ]
 
   return (
