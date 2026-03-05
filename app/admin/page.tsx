@@ -355,12 +355,42 @@ function AdminPanelContent() {
     return 'Needs Immediate Coaching'
   }
 
+  interface CategoryDetail {
+    category: string
+    simType: string
+    simTypeLabel: string
+    avgScore: number
+    bestScore: number
+    worstScore: number
+    count: number
+    trend: 'improving' | 'declining' | 'stable' | 'new'
+    goodExamples: string[]
+    badExamples: string[]
+    topAdvice: string
+  }
+
+  interface SimTypeBreakdown {
+    type: string
+    label: string
+    avgScore: number
+    simCount: number
+    bestScore: number
+    worstScore: number
+  }
+
   interface UserAnalysis {
-    topStrengths: { category: string; avgScore: number; simType: string }[]
-    weaknesses: { category: string; avgScore: number; simType: string }[]
     overallAvg: number
     totalSims: number
-    improvementAreas: string[]
+    simTypeBreakdowns: SimTypeBreakdown[]
+    allCategories: CategoryDetail[]
+    topStrengths: CategoryDetail[]
+    weaknesses: CategoryDetail[]
+    topMissedOpportunities: string[]
+    topPracticeScenarios: string[]
+    topOverallStrengths: string[]
+    topOverallWeaknesses: string[]
+    bestSim: { score: number; type: string; date: string } | null
+    worstSim: { score: number; type: string; date: string } | null
   }
 
   const generateUserAnalysis = (simulations: SimReport[]): UserAnalysis | null => {
@@ -372,41 +402,94 @@ function AdminPanelContent() {
       aftercare: simulations.filter(s => s.simulationType === 'aftercare' || s.simulationType === 'aftercare-teacher'),
     }
 
-    const categoryAvgs: { category: string; avgScore: number; simType: string }[] = []
-
+    const simTypeBreakdowns: SimTypeBreakdown[] = []
     for (const [type, sims] of Object.entries(byType)) {
       if (sims.length === 0) continue
-      const catScores: Record<string, number[]> = {}
-      for (const sim of sims) {
+      const scores = sims.map(s => calculateWeightedScore(s.categories, s.simulationType))
+      simTypeBreakdowns.push({
+        type,
+        label: getSimTypeLabel(type),
+        avgScore: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length * 10) / 10,
+        simCount: sims.length,
+        bestScore: Math.max(...scores),
+        worstScore: Math.min(...scores),
+      })
+    }
+
+    const allCategories: CategoryDetail[] = []
+    for (const [type, sims] of Object.entries(byType)) {
+      if (sims.length === 0) continue
+      const catData: Record<string, { scores: number[]; goods: string[]; bads: string[]; advices: string[] }> = {}
+      const sortedSims = [...sims].sort((a, b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime())
+
+      for (const sim of sortedSims) {
         for (const cat of sim.categories) {
-          if (!catScores[cat.name]) catScores[cat.name] = []
-          catScores[cat.name].push(cat.score)
+          if (!catData[cat.name]) catData[cat.name] = { scores: [], goods: [], bads: [], advices: [] }
+          catData[cat.name].scores.push(cat.score)
+          if (cat.examples?.good) catData[cat.name].goods.push(...cat.examples.good.filter(e => e.trim()))
+          if (cat.examples?.needsWork) catData[cat.name].bads.push(...cat.examples.needsWork.filter(e => e.trim()))
+          if (cat.advice?.trim()) catData[cat.name].advices.push(cat.advice.trim())
         }
       }
-      for (const [name, scores] of Object.entries(catScores)) {
-        const avg = scores.reduce((a, b) => a + b, 0) / scores.length
-        categoryAvgs.push({ category: name, avgScore: Math.round(avg * 10) / 10, simType: type })
+
+      for (const [name, data] of Object.entries(catData)) {
+        const avg = Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length * 10) / 10
+        let trend: 'improving' | 'declining' | 'stable' | 'new' = 'new'
+        if (data.scores.length >= 3) {
+          const half = Math.floor(data.scores.length / 2)
+          const firstHalf = data.scores.slice(0, half).reduce((a, b) => a + b, 0) / half
+          const secondHalf = data.scores.slice(half).reduce((a, b) => a + b, 0) / (data.scores.length - half)
+          if (secondHalf - firstHalf >= 1) trend = 'improving'
+          else if (firstHalf - secondHalf >= 1) trend = 'declining'
+          else trend = 'stable'
+        }
+
+        allCategories.push({
+          category: name, simType: type, simTypeLabel: getSimTypeLabel(type),
+          avgScore: avg, bestScore: Math.max(...data.scores), worstScore: Math.min(...data.scores),
+          count: data.scores.length, trend,
+          goodExamples: Array.from(new Set(data.goods)).slice(0, 3),
+          badExamples: Array.from(new Set(data.bads)).slice(0, 3),
+          topAdvice: data.advices[data.advices.length - 1] || '',
+        })
       }
     }
 
-    const sorted = [...categoryAvgs].sort((a, b) => b.avgScore - a.avgScore)
-    const topStrengths = sorted.slice(0, 3)
-    const weaknesses = sorted.filter(c => c.avgScore < 6)
+    const sorted = [...allCategories].sort((a, b) => b.avgScore - a.avgScore)
+    const topStrengths = sorted.filter(c => c.avgScore >= 7).slice(0, 5)
+    const weaknesses = sorted.filter(c => c.avgScore < 6).sort((a, b) => a.avgScore - b.avgScore).slice(0, 8)
 
-    const improvementAreas: string[] = []
+    const missedOps: string[] = []
+    const practiceScens: string[] = []
+    const overallStrengths: string[] = []
+    const overallWeaknesses: string[] = []
     for (const sim of simulations) {
       if (typeof sim.overallFeedback === 'object' && sim.overallFeedback !== null) {
         const fb = sim.overallFeedback as OverallFeedback
-        if (fb.weaknesses) improvementAreas.push(...fb.weaknesses)
+        if (fb.missedOpportunities) missedOps.push(...fb.missedOpportunities)
+        if (fb.practiceScenarios) practiceScens.push(...fb.practiceScenarios)
+        if (fb.strengths) overallStrengths.push(...fb.strengths)
+        if (fb.weaknesses) overallWeaknesses.push(...fb.weaknesses)
       }
     }
-    const uniqueImprovements = Array.from(new Set(improvementAreas)).slice(0, 8)
 
     const overallAvg = Math.round(
       simulations.reduce((s, r) => s + calculateWeightedScore(r.categories, r.simulationType), 0) / simulations.length * 10
     ) / 10
 
-    return { topStrengths, weaknesses, overallAvg, totalSims: simulations.length, improvementAreas: uniqueImprovements }
+    const allScored = simulations.map(s => ({ score: calculateWeightedScore(s.categories, s.simulationType), type: s.simulationType, date: s.completedAt }))
+    const bestSim = allScored.length > 0 ? allScored.reduce((a, b) => a.score >= b.score ? a : b) : null
+    const worstSim = allScored.length > 0 ? allScored.reduce((a, b) => a.score <= b.score ? a : b) : null
+
+    return {
+      overallAvg, totalSims: simulations.length, simTypeBreakdowns, allCategories,
+      topStrengths, weaknesses,
+      topMissedOpportunities: Array.from(new Set(missedOps)).slice(0, 6),
+      topPracticeScenarios: Array.from(new Set(practiceScens)).slice(0, 4),
+      topOverallStrengths: Array.from(new Set(overallStrengths)).slice(0, 5),
+      topOverallWeaknesses: Array.from(new Set(overallWeaknesses)).slice(0, 6),
+      bestSim, worstSim,
+    }
   }
 
   const getTop3PerType = (simulations: SimReport[]): {
@@ -1919,71 +2002,203 @@ function AdminPanelContent() {
                                       Performance Analysis
                                     </h4>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-                                      <div className="rounded-xl p-4 text-center" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
+                                    {/* Stats Row */}
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                                      <div className="rounded-xl p-4 text-center bg-white" style={{ border: '1px solid #e5e7eb' }}>
                                         <div className="text-2xl font-black" style={{ color: getScoreColor(userAnalysis.overallAvg) }}>{userAnalysis.overallAvg}</div>
                                         <div className="text-xs text-gray-500 mt-1">Avg Score</div>
+                                        <div className="text-xs font-bold mt-0.5" style={{ color: getScoreColor(userAnalysis.overallAvg) }}>{getScoreLabel(userAnalysis.overallAvg)}</div>
                                       </div>
-                                      <div className="rounded-xl p-4 text-center" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
+                                      <div className="rounded-xl p-4 text-center bg-white" style={{ border: '1px solid #e5e7eb' }}>
                                         <div className="text-2xl font-black text-blue-700">{userAnalysis.totalSims}</div>
                                         <div className="text-xs text-gray-500 mt-1">Total Sims</div>
                                       </div>
-                                      <div className="rounded-xl p-4 text-center col-span-2 md:col-span-1" style={{ background: '#ffffff', border: '1px solid #e5e7eb' }}>
-                                        <div className="text-2xl font-black" style={{ color: getScoreColor(userAnalysis.overallAvg) }}>{getScoreLabel(userAnalysis.overallAvg)}</div>
-                                        <div className="text-xs text-gray-500 mt-1">Level</div>
-                                      </div>
+                                      {userAnalysis.bestSim && (
+                                        <div className="rounded-xl p-4 text-center bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                                          <div className="text-2xl font-black text-green-600">{userAnalysis.bestSim.score}</div>
+                                          <div className="text-xs text-gray-500 mt-1">Best Score</div>
+                                          <div className="text-xs text-gray-400 mt-0.5">{new Date(userAnalysis.bestSim.date).toLocaleDateString()}</div>
+                                        </div>
+                                      )}
+                                      {userAnalysis.worstSim && (
+                                        <div className="rounded-xl p-4 text-center bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                                          <div className="text-2xl font-black text-red-600">{userAnalysis.worstSim.score}</div>
+                                          <div className="text-xs text-gray-500 mt-1">Worst Score</div>
+                                          <div className="text-xs text-gray-400 mt-0.5">{new Date(userAnalysis.worstSim.date).toLocaleDateString()}</div>
+                                        </div>
+                                      )}
                                     </div>
 
+                                    {/* Per-Type Breakdown */}
+                                    {userAnalysis.simTypeBreakdowns.length > 0 && (
+                                      <div className="mb-6">
+                                        <h5 className="text-xs font-bold uppercase tracking-wider mb-3 text-gray-500">Score by Category</h5>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                                          {userAnalysis.simTypeBreakdowns.map(tb => (
+                                            <div key={tb.type} className="rounded-xl p-4 bg-white flex items-center gap-4" style={{ border: '1px solid #e5e7eb' }}>
+                                              <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0"
+                                                style={{ background: `${getScoreColor(tb.avgScore)}12`, color: getScoreColor(tb.avgScore) }}>
+                                                {tb.avgScore}
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold">{tb.label}</p>
+                                                <p className="text-xs text-gray-500">{tb.simCount} sim{tb.simCount !== 1 ? 's' : ''} &middot; Best: {tb.bestScore} &middot; Worst: {tb.worstScore}</p>
+                                                <div className="w-full rounded-full h-1.5 mt-1.5" style={{ background: '#e5e7eb' }}>
+                                                  <div className="h-1.5 rounded-full transition-all" style={{ width: `${tb.avgScore}%`, background: getScoreColor(tb.avgScore) }} />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Strengths with evidence */}
                                     {userAnalysis.topStrengths.length > 0 && (
-                                      <div className="mb-5">
+                                      <div className="mb-6">
                                         <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#10b981' }}>
-                                          <span className="w-2 h-2 rounded-full bg-green-500" /> Top 3 Strengths
+                                          <span className="w-2 h-2 rounded-full bg-green-500" /> Top Strengths
                                         </h5>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2.5">
                                           {userAnalysis.topStrengths.map((s, i) => (
-                                            <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(16, 185, 129, 0.06)', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
-                                              <span className="text-lg font-black" style={{ color: getCategoryScoreColor(s.avgScore) }}>{s.avgScore}</span>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-semibold truncate">{s.category}</p>
-                                                <p className="text-xs text-gray-500">{getSimTypeLabel(s.simType)}</p>
+                                            <div key={i} className="rounded-xl p-4 bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                              <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-lg font-black" style={{ color: getCategoryScoreColor(s.avgScore) }}>{s.avgScore}</span>
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-bold">{s.category}</p>
+                                                  <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-gray-500">{s.simTypeLabel}</span>
+                                                    <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold" style={{
+                                                      background: s.trend === 'improving' ? '#dcfce7' : s.trend === 'declining' ? '#fee2e2' : '#f3f4f6',
+                                                      color: s.trend === 'improving' ? '#16a34a' : s.trend === 'declining' ? '#dc2626' : '#6b7280',
+                                                    }}>{s.trend === 'improving' ? '↑ Improving' : s.trend === 'declining' ? '↓ Declining' : s.trend === 'stable' ? '→ Stable' : 'New'}</span>
+                                                    <span className="text-xs text-gray-400">Best: {s.bestScore}/10 &middot; {s.count} evals</span>
+                                                  </div>
+                                                </div>
+                                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">#{i + 1}</span>
                                               </div>
-                                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">#{i + 1}</span>
+                                              {s.goodExamples.length > 0 && (
+                                                <div className="mt-2 space-y-1">
+                                                  {s.goodExamples.map((ex, j) => (
+                                                    <div key={j} className="text-xs px-3 py-1.5 rounded-lg leading-relaxed" style={{ background: 'rgba(16, 185, 129, 0.06)', color: '#065f46' }}>
+                                                      &ldquo;{ex}&rdquo;
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              )}
                                             </div>
                                           ))}
                                         </div>
                                       </div>
                                     )}
 
-                                    {userAnalysis.weaknesses.length > 0 && (
-                                      <div className="mb-5">
-                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ef4444' }}>
-                                          <span className="w-2 h-2 rounded-full bg-red-500" /> All Weaknesses
-                                        </h5>
-                                        <div className="space-y-2">
-                                          {userAnalysis.weaknesses.map((w, i) => (
-                                            <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
-                                              <span className="text-lg font-black" style={{ color: getCategoryScoreColor(w.avgScore) }}>{w.avgScore}</span>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-semibold truncate">{w.category}</p>
-                                                <p className="text-xs text-gray-500">{getSimTypeLabel(w.simType)}</p>
-                                              </div>
-                                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{w.avgScore}/10</span>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {userAnalysis.improvementAreas.length > 0 && (
-                                      <div>
-                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
-                                          <span className="w-2 h-2 rounded-full bg-amber-500" /> Key Improvement Areas
+                                    {/* Overall Strengths from feedback */}
+                                    {userAnalysis.topOverallStrengths.length > 0 && (
+                                      <div className="mb-6">
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#059669' }}>
+                                          <span className="w-2 h-2 rounded-full bg-emerald-500" /> What They Do Well (AI Evaluator Summary)
                                         </h5>
                                         <div className="space-y-1.5">
-                                          {userAnalysis.improvementAreas.map((area, i) => (
-                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed" style={{ background: 'rgba(245, 158, 11, 0.06)', border: '1px solid rgba(245, 158, 11, 0.15)', color: '#92400e' }}>
+                                          {userAnalysis.topOverallStrengths.map((s, i) => (
+                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(16, 185, 129, 0.15)', color: '#065f46' }}>
+                                              <span className="text-green-500 font-bold flex-shrink-0">+</span>
+                                              <span>{s}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Weaknesses with evidence and advice */}
+                                    {userAnalysis.weaknesses.length > 0 && (
+                                      <div className="mb-6">
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#ef4444' }}>
+                                          <span className="w-2 h-2 rounded-full bg-red-500" /> Weaknesses &amp; What to Fix
+                                        </h5>
+                                        <div className="space-y-2.5">
+                                          {userAnalysis.weaknesses.map((w, i) => (
+                                            <div key={i} className="rounded-xl p-4 bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                                              <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-lg font-black" style={{ color: getCategoryScoreColor(w.avgScore) }}>{w.avgScore}</span>
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="text-sm font-bold">{w.category}</p>
+                                                  <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-gray-500">{w.simTypeLabel}</span>
+                                                    <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold" style={{
+                                                      background: w.trend === 'improving' ? '#dcfce7' : w.trend === 'declining' ? '#fee2e2' : '#f3f4f6',
+                                                      color: w.trend === 'improving' ? '#16a34a' : w.trend === 'declining' ? '#dc2626' : '#6b7280',
+                                                    }}>{w.trend === 'improving' ? '↑ Improving' : w.trend === 'declining' ? '↓ Declining' : w.trend === 'stable' ? '→ Stable' : 'New'}</span>
+                                                    <span className="text-xs text-gray-400">Best: {w.bestScore}/10 &middot; Worst: {w.worstScore}/10</span>
+                                                  </div>
+                                                </div>
+                                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">{w.avgScore}/10</span>
+                                              </div>
+                                              {w.badExamples.length > 0 && (
+                                                <div className="mt-2 space-y-1">
+                                                  <p className="text-xs font-semibold text-red-600 mb-1">Examples that need work:</p>
+                                                  {w.badExamples.map((ex, j) => (
+                                                    <div key={j} className="text-xs px-3 py-1.5 rounded-lg leading-relaxed" style={{ background: 'rgba(239, 68, 68, 0.05)', color: '#991b1b' }}>
+                                                      &ldquo;{ex}&rdquo;
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              )}
+                                              {w.topAdvice && (
+                                                <div className="mt-2 px-3 py-2 rounded-lg text-xs leading-relaxed" style={{ background: 'rgba(249, 115, 22, 0.06)', border: '1px solid rgba(249, 115, 22, 0.15)', color: '#7c2d12' }}>
+                                                  <span className="font-bold" style={{ color: '#ea580c' }}>Advice: </span>{w.topAdvice}
+                                                </div>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Overall Weaknesses from AI feedback */}
+                                    {userAnalysis.topOverallWeaknesses.length > 0 && (
+                                      <div className="mb-6">
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#dc2626' }}>
+                                          <span className="w-2 h-2 rounded-full bg-red-500" /> Recurring Issues (AI Evaluator Summary)
+                                        </h5>
+                                        <div className="space-y-1.5">
+                                          {userAnalysis.topOverallWeaknesses.map((w, i) => (
+                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(239, 68, 68, 0.15)', color: '#991b1b' }}>
+                                              <span className="text-red-500 font-bold flex-shrink-0">-</span>
+                                              <span>{w}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Missed Opportunities */}
+                                    {userAnalysis.topMissedOpportunities.length > 0 && (
+                                      <div className="mb-6">
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#f59e0b' }}>
+                                          <span className="w-2 h-2 rounded-full bg-amber-500" /> Missed Opportunities
+                                        </h5>
+                                        <div className="space-y-1.5">
+                                          {userAnalysis.topMissedOpportunities.map((m, i) => (
+                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(245, 158, 11, 0.2)', color: '#92400e' }}>
                                               <span className="text-amber-500 font-bold flex-shrink-0">!</span>
-                                              <span>{area}</span>
+                                              <span>{m}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Practice Recommendations */}
+                                    {userAnalysis.topPracticeScenarios.length > 0 && (
+                                <div>
+                                        <h5 className="text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: '#7c3aed' }}>
+                                          <Sparkles className="w-3.5 h-3.5" /> Practice Recommendations
+                                        </h5>
+                                        <div className="space-y-1.5">
+                                          {userAnalysis.topPracticeScenarios.map((p, i) => (
+                                            <div key={i} className="flex gap-2 px-4 py-2.5 rounded-xl text-xs leading-relaxed bg-white" style={{ border: '1px solid rgba(124, 58, 237, 0.15)', color: '#4c1d95' }}>
+                                              <span className="font-bold flex-shrink-0" style={{ color: '#7c3aed' }}>{i + 1}.</span>
+                                              <span>{p}</span>
                                             </div>
                                           ))}
                                         </div>
@@ -2256,11 +2471,11 @@ function AdminPanelContent() {
                                           </div>
 
                                           {isReportOpen && renderExpandedReport(report)}
-                                        </div>
+                                                  </div>
                                       )
                                     })}
-                                  </div>
-                                </div>
+                                              </div>
+                                                      </div>
                               ) : (
                                 <div className="rounded-xl p-6 text-center" style={{ order: 3, background: '#f8fafc', border: '1px solid #e5e7eb' }}>
                                   <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
