@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -97,6 +97,31 @@ function AdminPanelContent() {
   const [expandedPerUserReport, setExpandedPerUserReport] = useState<number | null>(null)
   const [expandedPerUserCats, setExpandedPerUserCats] = useState<Set<string>>(new Set())
   const reportContentRefs = useRef<Record<number, HTMLDivElement | null>>({})
+  const [grantingRetry, setGrantingRetry] = useState<string | null>(null)
+
+  const grantRetry = async (user: User, day: number) => {
+    const key = `${user.id}-day${day}`
+    if (!confirm(`Grant ${user.telegramUsername} another try for Day ${day}?`)) return
+    setGrantingRetry(key)
+    try {
+      const res = await fetch('/api/admin/grant-retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegram_username: user.telegramUsername,
+          email: user.email,
+          day,
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to grant retry')
+      await fetchUsers()
+    } catch (err) {
+      console.error('Grant retry error:', err)
+      alert('Failed to grant retry. Please try again.')
+    } finally {
+      setGrantingRetry(null)
+    }
+  }
 
   const exportSimReportAsPdf = useCallback(async (report: SimReport) => {
     setExportingReportId(report.id)
@@ -1106,6 +1131,20 @@ function AdminPanelContent() {
                                 <p className="text-xs" style={{ color: 'var(--text-muted-on-white)' }}>
                                   {Math.round(latest.percentage)}% ({new Date(latest.completed_at).toLocaleDateString()})
                                 </p>
+                              )}
+                              {latest && !latest.passed && (
+                                <button
+                                  onClick={() => grantRetry(user, Number(dayNum))}
+                                  disabled={grantingRetry === `${user.id}-${dayKey}`}
+                                  className="mt-2 w-full py-1.5 px-2 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white text-xs font-semibold rounded-md transition-colors inline-flex items-center justify-center gap-1.5"
+                                >
+                                  {grantingRetry === `${user.id}-${dayKey}` ? (
+                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                  ) : (
+                                    <RotateCcw className="w-3 h-3" />
+                                  )}
+                                  Grant Another Try
+                                </button>
                               )}
                             </>
                           )}
