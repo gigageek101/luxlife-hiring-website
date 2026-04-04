@@ -136,6 +136,15 @@ export default function ApplyForMarketingPage() {
     setApplicantData(updatedData)
     saveToLocalStorage(updatedData)
 
+    if (updatedData.currentStep === TOTAL_STEPS) {
+      const isQualified = !updatedData.isDisqualified
+      fetch('/api/track-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ positionType: 'marketing', qualified: isQualified })
+      }).catch(() => {})
+    }
+
     if (updatedData.currentStep > TOTAL_STEPS) {
       updatedData.isCompleted = true
       saveToLocalStorage(updatedData)
@@ -143,12 +152,6 @@ export default function ApplyForMarketingPage() {
       const isQualified = !updatedData.isDisqualified
       localStorage.setItem('luxlife-marketing-application-completed', 'true')
       localStorage.setItem('luxlife-marketing-application-qualified', isQualified ? 'true' : 'false')
-      
-      fetch('/api/track-application', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ positionType: 'marketing', qualified: isQualified })
-      }).catch(() => {})
       
       router.push('/thank-you-marketing')
     }
@@ -1151,7 +1154,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
 }
 
 function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
-  const [phase, setPhase] = useState<'intro' | 'aut' | 'caption' | 'done'>('intro')
+  const [phase, setPhase] = useState<'intro' | 'aut' | 'caption' | 'evaluating' | 'done'>('intro')
   const [selectedObject] = useState(() => alternateUsesObjects[Math.floor(Math.random() * alternateUsesObjects.length)])
   const [selectedScenario] = useState(() => captionScenarios[Math.floor(Math.random() * captionScenarios.length)])
   const [uses, setUses] = useState<string[]>([])
@@ -1160,7 +1163,6 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
   const [captions, setCaptions] = useState(['', '', ''])
   const [captionTimeLeft, setCaptionTimeLeft] = useState(120)
 
-  // AUT timer
   useEffect(() => {
     if (phase !== 'aut' || autTimeLeft <= 0) return
     const timer = setInterval(() => {
@@ -1172,12 +1174,11 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
     return () => clearInterval(timer)
   }, [phase, autTimeLeft])
 
-  // Caption timer
   useEffect(() => {
     if (phase !== 'caption' || captionTimeLeft <= 0) return
     const timer = setInterval(() => {
       setCaptionTimeLeft(prev => {
-        if (prev <= 1) { clearInterval(timer); setPhase('done'); return 0 }
+        if (prev <= 1) { clearInterval(timer); setPhase('evaluating'); return 0 }
         return prev - 1
       })
     }, 1000)
@@ -1185,19 +1186,49 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
   }, [phase, captionTimeLeft])
 
   useEffect(() => {
-    if (phase !== 'done') return
-    const validUses = uses.filter(u => u.trim().length >= 3)
-    const validCaptions = captions.filter(c => c.trim().length >= 15)
-    const passed = validUses.length >= config.creativityMinUses && validCaptions.length >= config.creativityMinCaptions
-    const result: CreativityTestResult = {
-      object: selectedObject.name,
-      alternateUses: uses,
-      fluencyScore: validUses.length,
-      scenario: selectedScenario.product,
-      captions,
-      passed,
+    if (phase !== 'evaluating') return
+    let cancelled = false
+
+    const evaluate = async () => {
+      let passed = false
+      let validUses = uses.filter(u => u.trim().length >= 3).length
+
+      try {
+        const res = await fetch('/api/evaluate-creativity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            object: selectedObject.name,
+            alternateUses: uses,
+            product: selectedScenario.product,
+            productDescription: selectedScenario.description,
+            captions: captions,
+          })
+        })
+        if (res.ok) {
+          const evaluation = await res.json()
+          validUses = evaluation.validUses ?? validUses
+          passed = evaluation.passed ?? false
+        }
+      } catch {
+        const validCaptions = captions.filter(c => c.trim().length >= 15).length
+        passed = validUses >= config.creativityMinUses && validCaptions >= config.creativityMinCaptions
+      }
+
+      if (cancelled) return
+      const result: CreativityTestResult = {
+        object: selectedObject.name,
+        alternateUses: uses,
+        fluencyScore: validUses,
+        scenario: selectedScenario.product,
+        captions,
+        passed,
+      }
+      onNext({ creativityTestResult: result })
     }
-    onNext({ creativityTestResult: result })
+
+    evaluate()
+    return () => { cancelled = true }
   }, [phase])
 
   const addUse = () => {
@@ -1293,7 +1324,17 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
             </div>
           ))}
         </div>
-        <button onClick={() => setPhase('done')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Submit Creativity Test</button>
+        <button onClick={() => setPhase('evaluating')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Submit Creativity Test</button>
+      </div>
+    )
+  }
+
+  if (phase === 'evaluating') {
+    return (
+      <div className="text-center py-8">
+        <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-6" style={{ borderColor: 'var(--accent)' }}></div>
+        <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Evaluating your answers...</h2>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>We're reviewing your creativity test responses. This takes a few seconds.</p>
       </div>
     )
   }

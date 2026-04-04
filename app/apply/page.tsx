@@ -126,11 +126,20 @@ export default function ApplyPage() {
       updatedData.disqualificationReason = disqualificationCheck.reason
     }
     
-    // Always continue to next step
     updatedData.currentStep += 1
 
     setApplicantData(updatedData)
     saveToLocalStorage(updatedData)
+
+    // Track attempt as soon as results page is reached (before user can close tab)
+    if (updatedData.currentStep === TOTAL_STEPS) {
+      const isQualified = !updatedData.isDisqualified
+      fetch('/api/track-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ positionType: 'backend', qualified: isQualified })
+      }).catch(() => {})
+    }
 
     if (updatedData.currentStep > TOTAL_STEPS) {
       updatedData.isCompleted = true
@@ -139,12 +148,6 @@ export default function ApplyPage() {
       const isQualified = !updatedData.isDisqualified
       localStorage.setItem('luxlife-application-completed', 'true')
       localStorage.setItem('luxlife-application-qualified', isQualified ? 'true' : 'false')
-      
-      fetch('/api/track-application', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ positionType: 'backend', qualified: isQualified })
-      }).catch(() => {})
       
       router.push('/thank-you')
     }
