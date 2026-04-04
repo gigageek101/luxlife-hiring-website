@@ -1062,28 +1062,40 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
   const [downloadSpeed, setDownloadSpeed] = useState<number | null>(null)
   const [uploadSpeed, setUploadSpeed] = useState<number | null>(null)
   const [progress, setProgress] = useState(0)
+  const [sampleCount, setSampleCount] = useState(0)
+
+  const runSamplesFor = async (direction: 'download' | 'upload', durationMs: number) => {
+    const speeds: number[] = []
+    const deadline = performance.now() + durationMs
+    while (performance.now() < deadline) {
+      try {
+        if (direction === 'download') {
+          const start = performance.now()
+          const res = await fetch('/api/speedtest/download?t=' + Date.now(), { cache: 'no-store' })
+          const blob = await res.blob()
+          const elapsed = (performance.now() - start) / 1000
+          if (elapsed > 0) speeds.push((blob.size * 8) / elapsed / 1_000_000)
+        } else {
+          const payload = new Uint8Array(2 * 1024 * 1024)
+          const start = performance.now()
+          await fetch('/api/speedtest/upload', { method: 'POST', body: payload })
+          const elapsed = (performance.now() - start) / 1000
+          if (elapsed > 0) speeds.push((payload.length * 8) / elapsed / 1_000_000)
+        }
+        setSampleCount(speeds.length)
+      } catch { break }
+    }
+    if (speeds.length === 0) return 0
+    return Math.round((speeds.reduce((a, b) => a + b, 0) / speeds.length) * 10) / 10
+  }
 
   const runTest = async () => {
-    setPhase('download'); setProgress(10)
-    try {
-      const dlStart = performance.now()
-      const response = await fetch('/api/speedtest/download?t=' + Date.now(), { cache: 'no-store' })
-      const blob = await response.blob()
-      const dlTime = (performance.now() - dlStart) / 1000
-      setDownloadSpeed(Math.round((blob.size * 8 / dlTime / 1_000_000) * 10) / 10)
-      setProgress(50)
-    } catch { setDownloadSpeed(0) }
-
-    setPhase('upload'); setProgress(60)
-    try {
-      const uploadData = new Uint8Array(2 * 1024 * 1024)
-      for (let i = 0; i < uploadData.length; i++) uploadData[i] = Math.floor(Math.random() * 256)
-      const ulStart = performance.now()
-      await fetch('/api/speedtest/upload', { method: 'POST', body: uploadData })
-      const ulTime = (performance.now() - ulStart) / 1000
-      setUploadSpeed(Math.round((uploadData.length * 8 / ulTime / 1_000_000) * 10) / 10)
-      setProgress(100)
-    } catch { setUploadSpeed(0) }
+    setPhase('download'); setProgress(5); setSampleCount(0)
+    const dl = await runSamplesFor('download', 15000)
+    setDownloadSpeed(dl); setProgress(50)
+    setPhase('upload'); setSampleCount(0)
+    const ul = await runSamplesFor('upload', 15000)
+    setUploadSpeed(ul); setProgress(100)
     setPhase('done')
   }
 
@@ -1098,7 +1110,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
         <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">🌐</span></div>
-        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>10-15 seconds</strong>.</p>
+        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Requirements:</strong><br/>• Minimum <strong>{config.speedMinDownload} Mbps</strong> download speed<br/>• Make sure no large downloads are running<br/>• Close other tabs using bandwidth for best results</p>
         </div>
@@ -1132,7 +1144,8 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
       <h2 className="text-xl md:text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>{phase === 'download' ? 'Testing Download Speed...' : 'Testing Upload Speed...'}</h2>
       <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse" style={{ background: 'var(--accent)' }}><span className="text-4xl">{phase === 'download' ? '⬇️' : '⬆️'}</span></div>
       <div className="w-full bg-gray-700 rounded-full h-3 mb-4 overflow-hidden"><div className="h-3 rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}></div></div>
-      {downloadSpeed !== null && phase === 'upload' && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Download: {downloadSpeed} Mbps</p>}
+      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Sample {sampleCount}... measuring average speed</p>
+      {downloadSpeed !== null && phase === 'upload' && <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Download: {downloadSpeed} Mbps (avg)</p>}
     </div>
   )
 }
