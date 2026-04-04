@@ -1258,29 +1258,35 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
   const runSamplesFor = async (direction: 'download' | 'upload', durationMs: number) => {
     const speeds: number[] = []
     const deadline = performance.now() + durationMs
+    const PARALLEL = 3
 
     while (performance.now() < deadline) {
       try {
-        if (direction === 'download') {
-          const start = performance.now()
-          const res = await fetch('/api/speedtest/download?t=' + Date.now(), { cache: 'no-store' })
-          const blob = await res.blob()
-          const elapsed = (performance.now() - start) / 1000
-          if (elapsed > 0) {
-            const mbps = (blob.size * 8) / elapsed / 1_000_000
-            speeds.push(mbps)
-            setLiveSpeed(mbps)
+        const batch = Array.from({ length: PARALLEL }, async () => {
+          if (direction === 'download') {
+            const start = performance.now()
+            const res = await fetch('/api/speedtest/download?t=' + Math.random(), { cache: 'no-store' })
+            const blob = await res.blob()
+            const elapsed = (performance.now() - start) / 1000
+            return elapsed > 0 ? (blob.size * 8) / elapsed / 1_000_000 : 0
+          } else {
+            const payload = new Uint8Array(5 * 1024 * 1024)
+            const start = performance.now()
+            await fetch('/api/speedtest/upload', { method: 'POST', body: payload })
+            const elapsed = (performance.now() - start) / 1000
+            return elapsed > 0 ? (payload.length * 8) / elapsed / 1_000_000 : 0
           }
-        } else {
-          const payload = new Uint8Array(2 * 1024 * 1024)
-          const start = performance.now()
-          await fetch('/api/speedtest/upload', { method: 'POST', body: payload })
-          const elapsed = (performance.now() - start) / 1000
-          if (elapsed > 0) {
-            const mbps = (payload.length * 8) / elapsed / 1_000_000
-            speeds.push(mbps)
-            setLiveSpeed(mbps)
-          }
+        })
+
+        const start = performance.now()
+        const results = await Promise.all(batch)
+        const elapsed = (performance.now() - start) / 1000
+        const totalBytes = direction === 'download' ? 10 * 1024 * 1024 * PARALLEL : 5 * 1024 * 1024 * PARALLEL
+        const combinedMbps = elapsed > 0 ? (totalBytes * 8) / elapsed / 1_000_000 : 0
+
+        if (combinedMbps > 0) {
+          speeds.push(combinedMbps)
+          setLiveSpeed(combinedMbps)
         }
         setSampleCount(speeds.length)
       } catch { break }

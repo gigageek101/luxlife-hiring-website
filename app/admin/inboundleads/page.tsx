@@ -92,6 +92,10 @@ function InboundLeadsContent() {
 
   useEffect(() => {
     fetchData()
+    const interval = setInterval(() => {
+      fetchData()
+    }, 10000)
+    return () => clearInterval(interval)
   }, [fetchData])
 
   const handleRefresh = () => {
@@ -138,7 +142,7 @@ function InboundLeadsContent() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-24 md:pt-28 px-4 md:px-8 pb-8" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
