@@ -1232,27 +1232,46 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
   const [uploadSpeed, setUploadSpeed] = useState<number | null>(null)
   const [liveSpeed, setLiveSpeed] = useState(0)
 
-  const STREAMS = 6
-  const WARMUP_MS = 2000
+  const DL_STREAMS = 6
+  const UL_STREAMS = 3
+  const DL_GRACE = 1500
+  const UL_GRACE = 3000
   const TEST_DURATION = 15000
-  const UPLOAD_CHUNK = 10 * 1024 * 1024
+  const UL_BLOB = 10 * 1024 * 1024
+  const OH = 1.06
+  const STAGGER = 300
 
-  const xhrMeasure = (direction: 'download' | 'upload', durationMs: number, onProgress: (speed: number) => void): Promise<number> => {
+  const speedMeasure = (direction: 'download' | 'upload', durationMs: number, graceMs: number, streams: number, onProgress: (speed: number) => void): Promise<number> => {
     return new Promise((resolve) => {
       const xhrs: XMLHttpRequest[] = []
       const testStart = performance.now()
-      let mStart: number | null = null
+      let graceEnded = false
+      let mStart = 0
       let totalBytes = 0
       let done = false
-      const uploadData = direction === 'upload' ? new Uint8Array(UPLOAD_CHUNK) : null
+
+      let uploadBlob: Uint8Array | null = null
+      if (direction === 'upload') {
+        uploadBlob = new Uint8Array(UL_BLOB)
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+          for (let o = 0; o < UL_BLOB; o += 65536) crypto.getRandomValues(uploadBlob.subarray(o, Math.min(o + 65536, UL_BLOB)))
+        }
+      }
+
+      const tick = setInterval(() => {
+        if (!graceEnded || done) return
+        const el = (performance.now() - mStart) / 1000
+        if (el > 0) onProgress((totalBytes * 8 * OH) / el / 1e6)
+      }, 200)
 
       const end = () => {
         if (done) return
         done = true
+        clearInterval(tick)
         xhrs.forEach(x => { try { x.abort() } catch {} })
-        if (mStart !== null) {
-          const elapsed = (performance.now() - mStart) / 1000
-          resolve(elapsed > 0 ? Math.round((totalBytes * 8 / elapsed / 1_000_000) * 10) / 10 : 0)
+        if (graceEnded) {
+          const el = (performance.now() - mStart) / 1000
+          resolve(el > 0 ? Math.round(((totalBytes * 8 * OH) / el / 1e6) * 10) / 10 : 0)
         } else { resolve(0) }
       }
 
@@ -1265,38 +1284,33 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
         const handleProgress = (e: ProgressEvent) => {
           if (done) return
           const now = performance.now()
-          const elapsed = now - testStart
           const bytes = e.loaded - last
           last = e.loaded
-          if (elapsed < WARMUP_MS) return
-          if (mStart === null) { mStart = now; totalBytes = 0; return }
+          if ((now - testStart) < graceMs) return
+          if (!graceEnded) { graceEnded = true; mStart = now }
           totalBytes += bytes
-          const mElapsed = (now - mStart) / 1000
-          if (mElapsed > 0.1) onProgress(totalBytes * 8 / mElapsed / 1_000_000)
-          if (elapsed >= durationMs) end()
         }
 
         if (direction === 'download') {
-          xhr.open('GET', '/api/speedtest/download?t=' + Math.random() + '&s=' + i, true)
-          xhr.responseType = 'arraybuffer'
+          xhr.open('GET', '/api/speedtest/download?r=' + Math.random(), true)
+          xhr.responseType = 'blob'
           xhr.onprogress = handleProgress
         } else {
-          xhr.open('POST', '/api/speedtest/upload?t=' + Math.random() + '&s=' + i, true)
+          xhr.open('POST', '/api/speedtest/upload?r=' + Math.random(), true)
           xhr.upload.onprogress = handleProgress
         }
 
         xhr.onload = () => {
           if (!done && (performance.now() - testStart) < durationMs) launch(i)
-          else end()
         }
         xhr.onerror = () => {
           if (!done && (performance.now() - testStart) < durationMs) setTimeout(() => launch(i), 200)
         }
 
-        direction === 'upload' ? xhr.send(uploadData) : xhr.send()
+        direction === 'upload' ? xhr.send(uploadBlob) : xhr.send()
       }
 
-      for (let i = 0; i < STREAMS; i++) launch(i)
+      for (let i = 0; i < streams; i++) setTimeout(() => launch(i), i * STAGGER)
       setTimeout(end, durationMs)
     })
   }
@@ -1305,14 +1319,14 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
     setPhase('download')
     setLiveSpeed(0)
 
-    const dl = await xhrMeasure('download', TEST_DURATION, (s) => setLiveSpeed(s))
+    const dl = await speedMeasure('download', TEST_DURATION, DL_GRACE, DL_STREAMS, (s) => setLiveSpeed(s))
     setDownloadSpeed(dl)
     setLiveSpeed(dl)
 
     setPhase('upload')
     setLiveSpeed(0)
 
-    const ul = await xhrMeasure('upload', TEST_DURATION, (s) => setLiveSpeed(s))
+    const ul = await speedMeasure('upload', TEST_DURATION, UL_GRACE, UL_STREAMS, (s) => setLiveSpeed(s))
     setUploadSpeed(ul)
     setLiveSpeed(ul)
 

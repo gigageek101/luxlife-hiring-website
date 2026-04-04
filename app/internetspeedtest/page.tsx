@@ -2,13 +2,24 @@
 
 import { useState, useRef, useCallback } from 'react'
 
-const STREAMS = 6
-const WARMUP_MS = 2000
-const DOWNLOAD_DURATION_MS = 15000
-const UPLOAD_DURATION_MS = 15000
-const UPLOAD_CHUNK_SIZE = 10 * 1024 * 1024 // 10MB per upload stream
+/*
+ * Parameters aligned with LibreSpeed (https://github.com/librespeed/speedtest)
+ * - Download: 6 streams, 1.5s grace time
+ * - Upload: 3 streams, 3s grace time
+ * - Overhead compensation: 1.06 (HTTP + TCP + IPv4 + ETH)
+ * - Stream stagger delay: 300ms
+ */
+const DL_STREAMS = 6
+const UL_STREAMS = 3
+const DL_GRACE_MS = 1500
+const UL_GRACE_MS = 3000
+const DL_DURATION_MS = 15000
+const UL_DURATION_MS = 15000
+const UL_BLOB_SIZE = 10 * 1024 * 1024
+const OVERHEAD = 1.06
+const STREAM_DELAY = 300
 
-function SpeedGauge({ speed, maxSpeed = 500, label }: { speed: number, maxSpeed?: number, label: string }) {
+function SpeedGauge({ speed, maxSpeed = 500, label }: { speed: number; maxSpeed?: number; label: string }) {
   const clampedSpeed = Math.min(speed, maxSpeed)
   const angle = -135 + (clampedSpeed / maxSpeed) * 270
   const cx = 140, cy = 140, r = 110
@@ -25,10 +36,10 @@ function SpeedGauge({ speed, maxSpeed = 500, label }: { speed: number, maxSpeed?
 
   const arcPath = (startAngle: number, endAngle: number) => {
     const s = (startAngle * Math.PI) / 180, e = (endAngle * Math.PI) / 180
-    const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s)
-    const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e)
+    const x1g = cx + r * Math.cos(s), y1g = cy + r * Math.sin(s)
+    const x2g = cx + r * Math.cos(e), y2g = cy + r * Math.sin(e)
     const large = endAngle - startAngle > 180 ? 1 : 0
-    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`
+    return `M ${x1g} ${y1g} A ${r} ${r} 0 ${large} 1 ${x2g} ${y2g}`
   }
 
   const needleAngle = angle * (Math.PI / 180)
@@ -74,187 +85,155 @@ function SpeedGauge({ speed, maxSpeed = 500, label }: { speed: number, maxSpeed?
   )
 }
 
-type MeasureResult = { speed: number }
-
 function measureDownload(
   durationMs: number,
+  graceMs: number,
   onProgress: (speed: number) => void,
   abortRef: React.MutableRefObject<boolean>
-): Promise<MeasureResult> {
+): Promise<number> {
   return new Promise((resolve) => {
-    const xhrs: XMLHttpRequest[] = []
     const testStart = performance.now()
-    let measurementStart: number | null = null
-    let totalBytesAfterWarmup = 0
-    let finished = false
+    let graceEnded = false
+    let measureStart = 0
+    let totalBytes = 0
+    let done = false
+    const xhrs: XMLHttpRequest[] = []
+
+    const tick = setInterval(() => {
+      if (!graceEnded || done) return
+      const elapsed = (performance.now() - measureStart) / 1000
+      if (elapsed > 0) {
+        onProgress((totalBytes * 8 * OVERHEAD) / elapsed / 1e6)
+      }
+    }, 200)
 
     const finish = () => {
-      if (finished) return
-      finished = true
-      xhrs.forEach(xhr => { try { xhr.abort() } catch {} })
-      if (measurementStart !== null) {
-        const elapsed = (performance.now() - measurementStart) / 1000
-        const speed = elapsed > 0 ? (totalBytesAfterWarmup * 8) / elapsed / 1_000_000 : 0
-        resolve({ speed: Math.round(speed * 10) / 10 })
+      if (done) return
+      done = true
+      clearInterval(tick)
+      xhrs.forEach(x => { try { x.abort() } catch {} })
+      if (graceEnded) {
+        const elapsed = (performance.now() - measureStart) / 1000
+        resolve(elapsed > 0 ? Math.round(((totalBytes * 8 * OVERHEAD) / elapsed / 1e6) * 10) / 10 : 0)
       } else {
-        resolve({ speed: 0 })
+        resolve(0)
       }
     }
 
-    const timeout = setTimeout(finish, durationMs + 500)
-
-    const launchStream = (index: number) => {
-      if (finished || abortRef.current) return
+    const launch = (i: number) => {
+      if (done || abortRef.current) return
       const xhr = new XMLHttpRequest()
-      xhrs[index] = xhr
+      xhrs[i] = xhr
       let lastLoaded = 0
 
-      xhr.open('GET', '/api/speedtest/download?t=' + Math.random() + '&s=' + index, true)
-      xhr.responseType = 'arraybuffer'
+      xhr.open('GET', '/api/speedtest/download?r=' + Math.random(), true)
+      xhr.responseType = 'blob'
 
       xhr.onprogress = (e) => {
-        if (finished || abortRef.current) return
+        if (done || abortRef.current) return
         const now = performance.now()
-        const elapsed = now - testStart
-        const bytesThisEvent = e.loaded - lastLoaded
+        const bytes = e.loaded - lastLoaded
         lastLoaded = e.loaded
-
-        if (elapsed < WARMUP_MS) return
-
-        if (measurementStart === null) {
-          measurementStart = now
-          totalBytesAfterWarmup = 0
-          return
-        }
-
-        totalBytesAfterWarmup += bytesThisEvent
-        const measureElapsed = (now - measurementStart) / 1000
-        if (measureElapsed > 0.1) {
-          const currentSpeed = (totalBytesAfterWarmup * 8) / measureElapsed / 1_000_000
-          onProgress(currentSpeed)
-        }
-
-        if (elapsed >= durationMs) finish()
+        if ((now - testStart) < graceMs) return
+        if (!graceEnded) { graceEnded = true; measureStart = now }
+        totalBytes += bytes
       }
 
       xhr.onload = () => {
-        if (finished || abortRef.current) return
-        const now = performance.now()
-        const bytesThisEvent = xhr.response?.byteLength || 0
-        const remaining = bytesThisEvent - lastLoaded
-        if (remaining > 0 && (now - testStart) >= WARMUP_MS) {
-          if (measurementStart === null) measurementStart = now
-          totalBytesAfterWarmup += remaining
-        }
-        if ((now - testStart) < durationMs) {
-          launchStream(index)
-        } else {
-          finish()
-        }
+        if (done || abortRef.current) return
+        if ((performance.now() - testStart) < durationMs) launch(i)
       }
 
       xhr.onerror = () => {
-        if (!finished && !abortRef.current && (performance.now() - testStart) < durationMs) {
-          setTimeout(() => launchStream(index), 200)
+        if (!done && !abortRef.current && (performance.now() - testStart) < durationMs) {
+          setTimeout(() => launch(i), 200)
         }
       }
 
       xhr.send()
     }
 
-    for (let i = 0; i < STREAMS; i++) {
-      launchStream(i)
-    }
-
-    setTimeout(() => { if (!finished) finish(); clearTimeout(timeout) }, durationMs)
+    for (let i = 0; i < DL_STREAMS; i++) setTimeout(() => launch(i), i * STREAM_DELAY)
+    setTimeout(finish, durationMs)
   })
 }
 
 function measureUpload(
   durationMs: number,
+  graceMs: number,
   onProgress: (speed: number) => void,
   abortRef: React.MutableRefObject<boolean>
-): Promise<MeasureResult> {
+): Promise<number> {
   return new Promise((resolve) => {
-    const xhrs: XMLHttpRequest[] = []
     const testStart = performance.now()
-    let measurementStart: number | null = null
-    let totalBytesAfterWarmup = 0
-    let finished = false
+    let graceEnded = false
+    let measureStart = 0
+    let totalBytes = 0
+    let done = false
+    const xhrs: XMLHttpRequest[] = []
 
-    const uploadData = new Uint8Array(UPLOAD_CHUNK_SIZE)
-
-    const finish = () => {
-      if (finished) return
-      finished = true
-      xhrs.forEach(xhr => { try { xhr.abort() } catch {} })
-      if (measurementStart !== null) {
-        const elapsed = (performance.now() - measurementStart) / 1000
-        const speed = elapsed > 0 ? (totalBytesAfterWarmup * 8) / elapsed / 1_000_000 : 0
-        resolve({ speed: Math.round(speed * 10) / 10 })
-      } else {
-        resolve({ speed: 0 })
+    const blob = new Uint8Array(UL_BLOB_SIZE)
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      for (let off = 0; off < UL_BLOB_SIZE; off += 65536) {
+        crypto.getRandomValues(blob.subarray(off, Math.min(off + 65536, UL_BLOB_SIZE)))
       }
     }
 
-    const timeout = setTimeout(finish, durationMs + 500)
+    const tick = setInterval(() => {
+      if (!graceEnded || done) return
+      const elapsed = (performance.now() - measureStart) / 1000
+      if (elapsed > 0) {
+        onProgress((totalBytes * 8 * OVERHEAD) / elapsed / 1e6)
+      }
+    }, 200)
 
-    const launchStream = (index: number) => {
-      if (finished || abortRef.current) return
+    const finish = () => {
+      if (done) return
+      done = true
+      clearInterval(tick)
+      xhrs.forEach(x => { try { x.abort() } catch {} })
+      if (graceEnded) {
+        const elapsed = (performance.now() - measureStart) / 1000
+        resolve(elapsed > 0 ? Math.round(((totalBytes * 8 * OVERHEAD) / elapsed / 1e6) * 10) / 10 : 0)
+      } else {
+        resolve(0)
+      }
+    }
+
+    const launch = (i: number) => {
+      if (done || abortRef.current) return
       const xhr = new XMLHttpRequest()
-      xhrs[index] = xhr
+      xhrs[i] = xhr
       let lastLoaded = 0
 
-      xhr.open('POST', '/api/speedtest/upload?t=' + Math.random() + '&s=' + index, true)
+      xhr.open('POST', '/api/speedtest/upload?r=' + Math.random(), true)
 
       xhr.upload.onprogress = (e) => {
-        if (finished || abortRef.current) return
+        if (done || abortRef.current) return
         const now = performance.now()
-        const elapsed = now - testStart
-        const bytesThisEvent = e.loaded - lastLoaded
+        const bytes = e.loaded - lastLoaded
         lastLoaded = e.loaded
-
-        if (elapsed < WARMUP_MS) return
-
-        if (measurementStart === null) {
-          measurementStart = now
-          totalBytesAfterWarmup = 0
-          return
-        }
-
-        totalBytesAfterWarmup += bytesThisEvent
-        const measureElapsed = (now - measurementStart) / 1000
-        if (measureElapsed > 0.1) {
-          const currentSpeed = (totalBytesAfterWarmup * 8) / measureElapsed / 1_000_000
-          onProgress(currentSpeed)
-        }
-
-        if (elapsed >= durationMs) finish()
+        if ((now - testStart) < graceMs) return
+        if (!graceEnded) { graceEnded = true; measureStart = now }
+        totalBytes += bytes
       }
 
       xhr.onload = () => {
-        if (finished || abortRef.current) return
-        if ((performance.now() - testStart) < durationMs) {
-          launchStream(index)
-        } else {
-          finish()
-        }
+        if (done || abortRef.current) return
+        if ((performance.now() - testStart) < durationMs) launch(i)
       }
 
       xhr.onerror = () => {
-        if (!finished && !abortRef.current && (performance.now() - testStart) < durationMs) {
-          setTimeout(() => launchStream(index), 200)
+        if (!done && !abortRef.current && (performance.now() - testStart) < durationMs) {
+          setTimeout(() => launch(i), 200)
         }
       }
 
-      xhr.send(uploadData)
+      xhr.send(blob)
     }
 
-    for (let i = 0; i < STREAMS; i++) {
-      launchStream(i)
-    }
-
-    setTimeout(() => { if (!finished) finish(); clearTimeout(timeout) }, durationMs)
+    for (let i = 0; i < UL_STREAMS; i++) setTimeout(() => launch(i), i * STREAM_DELAY)
+    setTimeout(finish, durationMs)
   })
 }
 
@@ -278,31 +257,23 @@ export default function InternetSpeedTestPage() {
     setUploadResult(null)
     setLog([])
 
-    addLog(`Starting download test (${STREAMS} streams, ${DOWNLOAD_DURATION_MS / 1000}s, ${WARMUP_MS / 1000}s warmup)...`)
+    addLog(`Download: ${DL_STREAMS} streams, ${DL_DURATION_MS / 1000}s, ${DL_GRACE_MS / 1000}s grace, overhead x${OVERHEAD}`)
 
-    const dlResult = await measureDownload(
-      DOWNLOAD_DURATION_MS,
-      (speed) => setLiveSpeed(speed),
-      abortRef
-    )
-    setDownloadResult(dlResult.speed)
-    setLiveSpeed(dlResult.speed)
-    addLog(`Download complete: ${dlResult.speed} Mbps`)
+    const dl = await measureDownload(DL_DURATION_MS, DL_GRACE_MS, (s) => setLiveSpeed(s), abortRef)
+    setDownloadResult(dl)
+    setLiveSpeed(dl)
+    addLog(`Download complete: ${dl} Mbps`)
 
     if (abortRef.current) return
 
     setPhase('upload')
     setLiveSpeed(0)
-    addLog(`Starting upload test (${STREAMS} streams, ${UPLOAD_DURATION_MS / 1000}s, ${WARMUP_MS / 1000}s warmup)...`)
+    addLog(`Upload: ${UL_STREAMS} streams, ${UL_DURATION_MS / 1000}s, ${UL_GRACE_MS / 1000}s grace, overhead x${OVERHEAD}`)
 
-    const ulResult = await measureUpload(
-      UPLOAD_DURATION_MS,
-      (speed) => setLiveSpeed(speed),
-      abortRef
-    )
-    setUploadResult(ulResult.speed)
-    setLiveSpeed(ulResult.speed)
-    addLog(`Upload complete: ${ulResult.speed} Mbps`)
+    const ul = await measureUpload(UL_DURATION_MS, UL_GRACE_MS, (s) => setLiveSpeed(s), abortRef)
+    setUploadResult(ul)
+    setLiveSpeed(ul)
+    addLog(`Upload complete: ${ul} Mbps`)
 
     setPhase('done')
   }
@@ -318,17 +289,14 @@ export default function InternetSpeedTestPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-2 text-center">Internet Speed Test</h1>
         <p className="text-gray-400 text-center mb-6 text-sm">
-          Standalone test page -- {STREAMS} parallel XHR streams, {WARMUP_MS / 1000}s warmup, progress-event based measurement
+          LibreSpeed-aligned measurement &mdash; random payloads, overhead compensation, staggered streams
         </p>
 
         <div className="bg-gray-900 rounded-2xl p-6 mb-6">
           {phase === 'idle' ? (
             <div className="text-center">
               <SpeedGauge speed={0} label="Ready" />
-              <button
-                onClick={runTest}
-                className="mt-4 px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-lg transition-all"
-              >
+              <button onClick={runTest} className="mt-4 px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-lg transition-all">
                 Start Test
               </button>
             </div>
@@ -346,26 +314,17 @@ export default function InternetSpeedTestPage() {
                   <p className="text-sm text-gray-400">Mbps</p>
                 </div>
               </div>
-              <button
-                onClick={runTest}
-                className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-lg transition-all"
-              >
+              <button onClick={runTest} className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-lg transition-all">
                 Run Again
               </button>
             </div>
           ) : (
             <div className="text-center">
-              <SpeedGauge
-                speed={liveSpeed}
-                label={phase === 'download' ? 'Downloading...' : 'Uploading...'}
-              />
+              <SpeedGauge speed={liveSpeed} label={phase === 'download' ? 'Downloading...' : 'Uploading...'} />
               {downloadResult !== null && phase === 'upload' && (
                 <p className="text-sm text-gray-400 mt-2">Download: {downloadResult} Mbps</p>
               )}
-              <button
-                onClick={stopTest}
-                className="mt-4 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg text-sm transition-all"
-              >
+              <button onClick={stopTest} className="mt-4 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg text-sm transition-all">
                 Stop
               </button>
             </div>
@@ -375,23 +334,23 @@ export default function InternetSpeedTestPage() {
         <div className="bg-gray-900 rounded-2xl p-4">
           <h3 className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Debug Log</h3>
           <div className="font-mono text-xs text-gray-500 space-y-0.5 max-h-48 overflow-y-auto">
-            {log.length === 0 ? (
-              <p>Press "Start Test" to begin...</p>
-            ) : (
-              log.map((entry, i) => <p key={i}>{entry}</p>)
-            )}
+            {log.length === 0 ? <p>Press &ldquo;Start Test&rdquo; to begin...</p> : log.map((entry, i) => <p key={i}>{entry}</p>)}
           </div>
         </div>
 
         <div className="mt-6 bg-gray-900 rounded-2xl p-4">
-          <h3 className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Configuration</h3>
+          <h3 className="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">Configuration (LibreSpeed-aligned)</h3>
           <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
-            <p>Parallel streams: {STREAMS}</p>
-            <p>Warmup: {WARMUP_MS}ms</p>
-            <p>Download duration: {DOWNLOAD_DURATION_MS / 1000}s</p>
-            <p>Upload duration: {UPLOAD_DURATION_MS / 1000}s</p>
-            <p>Download payload: 25 MB/stream</p>
-            <p>Upload payload: {UPLOAD_CHUNK_SIZE / 1024 / 1024} MB/stream</p>
+            <p>DL streams: {DL_STREAMS}</p>
+            <p>UL streams: {UL_STREAMS}</p>
+            <p>DL grace time: {DL_GRACE_MS}ms</p>
+            <p>UL grace time: {UL_GRACE_MS}ms</p>
+            <p>DL duration: {DL_DURATION_MS / 1000}s</p>
+            <p>UL duration: {UL_DURATION_MS / 1000}s</p>
+            <p>UL blob size: {UL_BLOB_SIZE / 1024 / 1024} MB</p>
+            <p>Overhead factor: {OVERHEAD}</p>
+            <p>Stream stagger: {STREAM_DELAY}ms</p>
+            <p>Payload: random (incompressible)</p>
           </div>
         </div>
       </div>

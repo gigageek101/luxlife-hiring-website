@@ -3,21 +3,25 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const CHUNK_SIZE = 256 * 1024 // 256 KB per chunk
-const TOTAL_SIZE = 25 * 1024 * 1024 // 25 MB total
+const CHUNK_SIZE = 1024 * 1024 // 1 MB
+const TOTAL_CHUNKS = 25 // 25 MB total
+
+let randomChunk: Uint8Array | null = null
 
 export async function GET(request: NextRequest) {
+  if (!randomChunk) {
+    randomChunk = new Uint8Array(CHUNK_SIZE)
+    for (let i = 0; i < CHUNK_SIZE; i++) {
+      randomChunk[i] = Math.floor(Math.random() * 256)
+    }
+  }
+
+  const totalSize = CHUNK_SIZE * TOTAL_CHUNKS
+
   const stream = new ReadableStream({
     start(controller) {
-      let sent = 0
-      const chunk = new Uint8Array(CHUNK_SIZE)
-      for (let i = 0; i < CHUNK_SIZE; i++) chunk[i] = i & 0xff
-
-      while (sent < TOTAL_SIZE) {
-        const remaining = TOTAL_SIZE - sent
-        const size = Math.min(CHUNK_SIZE, remaining)
-        controller.enqueue(size === CHUNK_SIZE ? chunk : chunk.slice(0, size))
-        sent += size
+      for (let i = 0; i < TOTAL_CHUNKS; i++) {
+        controller.enqueue(randomChunk!)
       }
       controller.close()
     },
@@ -26,7 +30,7 @@ export async function GET(request: NextRequest) {
   return new NextResponse(stream, {
     headers: {
       'Content-Type': 'application/octet-stream',
-      'Content-Length': TOTAL_SIZE.toString(),
+      'Content-Length': totalSize.toString(),
       'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
     },
   })
