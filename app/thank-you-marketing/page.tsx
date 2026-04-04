@@ -194,6 +194,12 @@ export default function ThankYouMarketingPage() {
 
                 {/* Agreement Buttons */}
                 <div className="rounded-xl p-6 md:p-8 mt-8" style={{ background: 'var(--bg-soft)', border: '2px solid var(--accent)' }}>
+                  <div className="rounded-lg p-3 mb-5 flex items-start gap-3" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444' }}>
+                    <span className="text-lg mt-0.5">⚠️</span>
+                    <p className="text-sm font-medium" style={{ color: '#ef4444' }}>
+                      Please read <strong>every term above carefully</strong> before pressing the green button. Make sure you fully understand and accept all conditions.
+                    </p>
+                  </div>
                   <h3 className="text-lg md:text-xl font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>
                     Do you agree to all the terms above?
                   </h3>
@@ -273,9 +279,16 @@ export default function ThankYouMarketingPage() {
                     📅 Schedule Your Call Now
                     <ExternalLink className="w-6 h-6" />
                   </a>
-                  <p className="mt-4 text-sm" style={{ color: 'var(--text-muted)' }}>
-                    When booking your call, please always mention what position you are applying for (e.g. Marketing, Backend, etc.)
-                  </p>
+                  <div className="mt-6 rounded-lg p-4 text-left" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
+                    <p className="text-sm font-bold mb-2" style={{ color: 'var(--accent)' }}>
+                      When booking, fill in the "Additional Notes" section on Cal.com:
+                    </p>
+                    <div className="rounded-md p-3 text-sm space-y-1 font-mono" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+                      <p><strong style={{ color: 'var(--text-primary)' }}>Telegram username:</strong> @your_username</p>
+                      <p><strong style={{ color: 'var(--text-primary)' }}>Job:</strong> Marketing / AI Reels / etc.</p>
+                      <p><strong style={{ color: 'var(--text-primary)' }}>Why you are a good fit:</strong> (2-3 sentences)</p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="rounded-lg p-6" style={{ background: 'var(--bg-soft)' }}>
