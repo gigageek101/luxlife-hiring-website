@@ -225,72 +225,64 @@ export default function ApplyForMarketingPage() {
 
   if (!hasAcknowledgedWarning) {
     return (
-      <div className="min-h-screen pt-24 md:pt-32 pb-8" style={{ background: 'var(--bg-primary)' }}>
-        <div className="mx-auto max-w-2xl px-4 md:px-6">
-          <div className="rounded-xl shadow-lg p-6 md:p-10" style={{ background: 'var(--surface)' }}>
-            <div className="text-center mb-8">
-              <img src="/images/warning-focus.png" alt="Focus" className="w-36 h-36 mx-auto mb-5 rounded-2xl object-cover" />
-              <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+      <div className="min-h-screen flex items-center justify-center px-4 py-20" style={{ background: 'var(--bg-primary)' }}>
+        <div className="w-full max-w-lg">
+          <div className="rounded-xl shadow-lg p-5 md:p-8" style={{ background: 'var(--surface)' }}>
+            <div className="text-center mb-5">
+              <img src="/images/warning-focus.png" alt="Focus" className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-3 rounded-2xl object-cover" />
+              <h1 className="text-xl md:text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                 Before You Begin
               </h1>
-              <p className="text-sm md:text-base" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-xs md:text-sm" style={{ color: 'var(--text-muted)' }}>
                 Please read the following carefully
               </p>
             </div>
 
-            <div className="space-y-4 mb-8">
-              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: '#ef4444' }}>
-                <div className="flex items-start gap-3">
-                  <span className="text-xl mt-0.5">1️⃣</span>
-                  <div>
-                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#ef4444' }}>You only have ONE attempt</h3>
-                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
-                      This application cannot be retaken. Make sure you are fully prepared before starting.
-                    </p>
-                  </div>
+            <div className="space-y-2.5 mb-5">
+              <div className="rounded-lg p-3 border-l-4 flex items-start gap-2.5" style={{ background: 'rgba(239, 68, 68, 0.08)', borderColor: '#ef4444' }}>
+                <span className="text-base mt-0.5 shrink-0">1️⃣</span>
+                <div>
+                  <h3 className="font-bold text-sm md:text-base" style={{ color: '#ef4444' }}>You only have ONE attempt</h3>
+                  <p className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                    This application cannot be retaken. Make sure you are fully prepared.
+                  </p>
                 </div>
               </div>
 
-              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(255, 107, 0, 0.1)', borderColor: 'var(--accent)' }}>
-                <div className="flex items-start gap-3">
-                  <span className="text-xl mt-0.5">🤫</span>
-                  <div>
-                    <h3 className="font-bold text-base md:text-lg" style={{ color: 'var(--accent)' }}>Find a quiet, focused space</h3>
-                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
-                      Sit somewhere calm with no distractions. Close unnecessary tabs and put your phone on silent.
-                    </p>
-                  </div>
+              <div className="rounded-lg p-3 border-l-4 flex items-start gap-2.5" style={{ background: 'rgba(255, 107, 0, 0.08)', borderColor: 'var(--accent)' }}>
+                <span className="text-base mt-0.5 shrink-0">🤫</span>
+                <div>
+                  <h3 className="font-bold text-sm md:text-base" style={{ color: 'var(--accent)' }}>Find a quiet, focused space</h3>
+                  <p className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                    No distractions. Close extra tabs and put your phone on silent.
+                  </p>
                 </div>
               </div>
 
-              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(59, 130, 246, 0.1)', borderColor: '#3b82f6' }}>
-                <div className="flex items-start gap-3">
-                  <span className="text-xl mt-0.5">⏱️</span>
-                  <div>
-                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#3b82f6' }}>You have approximately 11 minutes</h3>
-                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
-                      The entire application includes questions and timed skill tests. Stay focused throughout and give it your best effort.
-                    </p>
-                  </div>
+              <div className="rounded-lg p-3 border-l-4 flex items-start gap-2.5" style={{ background: 'rgba(59, 130, 246, 0.08)', borderColor: '#3b82f6' }}>
+                <span className="text-base mt-0.5 shrink-0">⏱️</span>
+                <div>
+                  <h3 className="font-bold text-sm md:text-base" style={{ color: '#3b82f6' }}>You have approximately 11 minutes</h3>
+                  <p className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                    Includes questions and timed skill tests. Stay focused throughout.
+                  </p>
                 </div>
               </div>
 
-              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: '#10b981' }}>
-                <div className="flex items-start gap-3">
-                  <span className="text-xl mt-0.5">💻</span>
-                  <div>
-                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#10b981' }}>Stable internet required</h3>
-                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
-                      Part of this application includes an internet speed test. Make sure you have a reliable connection.
-                    </p>
-                  </div>
+              <div className="rounded-lg p-3 border-l-4 flex items-start gap-2.5" style={{ background: 'rgba(16, 185, 129, 0.08)', borderColor: '#10b981' }}>
+                <span className="text-base mt-0.5 shrink-0">💻</span>
+                <div>
+                  <h3 className="font-bold text-sm md:text-base" style={{ color: '#10b981' }}>Stable internet required</h3>
+                  <p className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                    Includes a speed test. Make sure you have a reliable connection.
+                  </p>
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => setHasAcknowledgedWarning(true)}
-              className="w-full py-4 rounded-xl text-white font-bold text-base md:text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+              className="w-full py-3.5 rounded-xl text-white font-bold text-sm md:text-base transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
               style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', boxShadow: '0 4px 15px rgba(255, 107, 0, 0.4)' }}
             >
               I understand — Start Application
