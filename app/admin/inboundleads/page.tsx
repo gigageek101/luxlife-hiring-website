@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, ChevronDown, ChevronUp, ArrowLeft, RefreshCw, Users, CheckCircle, XCircle, TrendingUp } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, ArrowLeft, RefreshCw, Users, CheckCircle, XCircle, TrendingUp, Trash2 } from 'lucide-react'
 import AdminWrapper from '../admin-wrapper'
 
 interface QuizAnswer {
@@ -113,6 +113,22 @@ function InboundLeadsContent() {
   const handleRefresh = () => {
     setRefreshing(true)
     fetchData()
+  }
+
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete lead "${name}"? This cannot be undone.`)) return
+    try {
+      const res = await fetch('/api/admin/inbound-leads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      if (res.ok) {
+        setLeads(prev => prev.filter(l => l.id !== id))
+      }
+    } catch (error) {
+      console.error('Error deleting lead:', error)
+    }
   }
 
   const toggleRow = (id: number) => {
@@ -301,53 +317,65 @@ function InboundLeadsContent() {
             {filteredLeads.map((lead) => (
               <div key={lead.id} className="rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface)' }}>
                 {/* Row header */}
-                <button
-                  onClick={() => toggleRow(lead.id)}
-                  className="w-full flex items-center justify-between p-4 md:p-5 text-left transition-colors hover:opacity-90"
-                >
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 flex-1 min-w-0">
-                    <div className="min-w-0">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Name</p>
-                      <p className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{lead.full_name || 'N/A'}</p>
-                      {lead.telegram_username && (
-                        <p className="text-xs truncate" style={{ color: 'var(--accent)' }}>@{lead.telegram_username}</p>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
-                      <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{lead.email || 'N/A'}</p>
-                      <span className={`inline-block mt-0.5 px-2 py-0.5 rounded text-xs font-medium capitalize ${lead.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                        {lead.position_type}
-                      </span>
-                    </div>
-                    <div className="hidden md:block">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Tests</p>
-                      <div className="flex flex-wrap gap-1 mt-0.5">
-                        <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: '#10b981' + '22', color: '#10b981' }}>EN {lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</span>
-                        {lead.typing_wpm != null && (
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: (lead.typing_passed ? '#10b981' : '#ef4444') + '22', color: lead.typing_passed ? '#10b981' : '#ef4444' }}>{lead.typing_wpm} WPM</span>
-                        )}
+                <div className="flex items-center p-4 md:p-5">
+                  <button
+                    onClick={() => toggleRow(lead.id)}
+                    className="flex-1 flex items-center text-left transition-colors hover:opacity-90 min-w-0"
+                  >
+                    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-4 flex-1 min-w-0">
+                      <div className="min-w-0">
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Name</p>
+                        <p className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{lead.full_name || 'N/A'}</p>
+                        <span className={`inline-block mt-0.5 px-2 py-0.5 rounded text-xs font-medium capitalize ${lead.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                          {lead.position_type}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Telegram</p>
+                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--accent)' }}>
+                          {lead.telegram_username ? `@${lead.telegram_username}` : '—'}
+                        </p>
+                      </div>
+                      <div className="hidden md:block min-w-0">
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
+                        <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{lead.email || 'N/A'}</p>
+                      </div>
+                      <div className="hidden md:block">
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Tests</p>
+                        <div className="flex flex-wrap gap-1 mt-0.5">
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: '#10b981' + '22', color: '#10b981' }}>EN {lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</span>
+                          {lead.typing_wpm != null && (
+                            <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: (lead.typing_passed ? '#10b981' : '#ef4444') + '22', color: lead.typing_passed ? '#10b981' : '#ef4444' }}>{lead.typing_wpm} WPM</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="hidden md:block">
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Speed</p>
+                        <p className="text-sm font-medium" style={{ color: lead.speed_passed ? '#10b981' : lead.download_speed != null ? '#ef4444' : 'var(--text-muted)' }}>
+                          {lead.download_speed != null ? `↓${lead.download_speed} Mbps` : '—'}
+                        </p>
+                      </div>
+                      <div className="hidden md:block">
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Date</p>
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                          {new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </p>
                       </div>
                     </div>
-                    <div className="hidden md:block">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Speed</p>
-                      <p className="text-sm font-medium" style={{ color: lead.speed_passed ? '#10b981' : lead.download_speed != null ? '#ef4444' : 'var(--text-muted)' }}>
-                        {lead.download_speed != null ? `↓${lead.download_speed} Mbps` : '—'}
-                      </p>
-                    </div>
-                    <div className="hidden md:block">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Date</p>
-                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </p>
-                    </div>
-                  </div>
-                  {expandedRows.has(lead.id) ? (
-                    <ChevronUp className="w-5 h-5 flex-shrink-0 ml-2" style={{ color: 'var(--text-muted)' }} />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 flex-shrink-0 ml-2" style={{ color: 'var(--text-muted)' }} />
-                  )}
-                </button>
+                    {expandedRows.has(lead.id) ? (
+                      <ChevronUp className="w-5 h-5 flex-shrink-0 ml-2" style={{ color: 'var(--text-muted)' }} />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 flex-shrink-0 ml-2" style={{ color: 'var(--text-muted)' }} />
+                    )}
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(lead.id, lead.full_name || 'this lead') }}
+                    className="ml-3 p-2 rounded-lg hover:bg-red-500/20 transition-colors flex-shrink-0"
+                    title="Delete lead"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-400" />
+                  </button>
+                </div>
 
                 {/* Expanded details */}
                 {expandedRows.has(lead.id) && (

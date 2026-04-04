@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
@@ -65,5 +65,19 @@ export async function GET() {
       { error: 'Internal server error' },
       { status: 500 }
     )
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { id } = await request.json()
+    if (!id) {
+      return NextResponse.json({ error: 'Lead ID is required' }, { status: 400 })
+    }
+    await sql`DELETE FROM inbound_leads WHERE id = ${id}`
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting lead:', error)
+    return NextResponse.json({ error: 'Failed to delete lead' }, { status: 500 })
   }
 }
