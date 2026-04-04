@@ -919,17 +919,6 @@ function AdminPanelContent() {
     <div className="min-h-screen relative">
       <DynamicBackground />
 
-      {/* Inbound Leads Button */}
-      <div className="fixed top-20 left-4 z-50">
-        <button
-          onClick={() => router.push('/admin/inboundleads')}
-          className="card bg-white shadow-lg p-2 md:p-3 flex items-center gap-2 hover:bg-blue-50 transition-colors"
-        >
-          <Users className="w-5 h-5 text-blue-600" />
-          <span className="text-sm font-semibold text-blue-600 hidden sm:inline">Inbound Leads</span>
-        </button>
-      </div>
-
       {/* Logout Button */}
       <div className="fixed top-20 right-4 z-50">
         <button
@@ -948,6 +937,17 @@ function AdminPanelContent() {
             <p className="text-base md:text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
               Training & Simulation Dashboard
             </p>
+          </div>
+
+          {/* Inbound Leads Button */}
+          <div className="flex justify-center mb-4">
+            <button
+              onClick={() => router.push('/admin/inboundleads')}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+            >
+              <Users className="w-5 h-5" />
+              Inbound Leads
+            </button>
           </div>
 
           {/* Tab Switcher */}
