@@ -11,6 +11,9 @@ export interface ApplicantData {
   quizAnswers?: QuizAnswer[]
   memoryTestScore?: number
   memoryTestResult?: MemoryTestResult
+  typingTestResult?: TypingTestResult
+  speedTestResult?: SpeedTestResult
+  creativityTestResult?: CreativityTestResult
   currentStep: number
   isDisqualified: boolean
   disqualificationReason?: string
@@ -37,6 +40,29 @@ export interface QuizQuestion {
   question: string
   options: string[]
   correctAnswer: number
+}
+
+export interface TypingTestResult {
+  wpm: number
+  accuracy: number
+  totalCharacters: number
+  correctCharacters: number
+  passed: boolean
+}
+
+export interface SpeedTestResult {
+  downloadSpeed: number
+  uploadSpeed: number
+  passed: boolean
+}
+
+export interface CreativityTestResult {
+  object: string
+  alternateUses: string[]
+  fluencyScore: number
+  scenario: string
+  captions: string[]
+  passed: boolean
 }
 
 export const educationTypes = [

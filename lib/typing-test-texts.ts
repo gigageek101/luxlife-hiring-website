@@ -1,0 +1,8 @@
+export const typingTestTexts = [
+  "Customer service is about making people feel valued and heard. A great response shows empathy, addresses the concern directly, and offers a clear solution. Every interaction is a chance to build trust and loyalty with someone who chose to reach out.",
+  "Working remotely requires strong communication skills and self discipline. You need to manage your time effectively, stay focused during work hours, and respond to messages promptly. Being reliable and consistent is what sets great remote workers apart from the rest.",
+  "Social media marketing is all about creating content that grabs attention and drives engagement. The best posts tell a story, spark emotion, and encourage people to take action. Understanding your audience is the key to crafting messages that truly resonate.",
+  "Effective teamwork depends on clear communication and mutual respect. When everyone understands their role and contributes their best effort, the results speak for themselves. Great teams celebrate wins together and learn from challenges without placing blame.",
+  "Building a strong online presence takes patience and consistency. You need to post regularly, engage with your audience, and stay up to date with the latest trends. Quality content that provides real value will always outperform quantity alone.",
+  "Professional communication means being clear, concise, and respectful in every message you send. Whether you are writing an email, a chat message, or a report, always proofread your work before hitting send. Small details make a big difference in how others perceive you.",
+]

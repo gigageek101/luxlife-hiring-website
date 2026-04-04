@@ -61,6 +61,35 @@ export async function initDatabase() {
       )
     `
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS inbound_leads (
+        id SERIAL PRIMARY KEY,
+        full_name VARCHAR(255),
+        email VARCHAR(255),
+        city VARCHAR(255),
+        age INTEGER,
+        position_type VARCHAR(50) NOT NULL,
+        english_quiz_score INTEGER,
+        english_quiz_total INTEGER,
+        memory_test_score INTEGER,
+        memory_test_total INTEGER,
+        education_type VARCHAR(100),
+        english_rating VARCHAR(50),
+        quiz_answers JSONB,
+        qualified BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS application_stats (
+        id SERIAL PRIMARY KEY,
+        position_type VARCHAR(50) NOT NULL,
+        qualified BOOLEAN NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `
+
     // Create indexes for faster lookups
     try {
       await sql`
@@ -84,6 +113,35 @@ export async function initDatabase() {
       await sql`
         CREATE INDEX IF NOT EXISTS idx_simulation_user
         ON simulation_reports(telegram_username, email)
+      `
+    } catch (e) {
+      // Index might already exist
+    }
+
+    // Add new columns to inbound_leads for typing/speed/creativity tests (non-destructive)
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS typing_wpm DECIMAL(5,1)` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS typing_accuracy DECIMAL(5,2)` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS typing_passed BOOLEAN` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS download_speed DECIMAL(8,2)` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS upload_speed DECIMAL(8,2)` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS speed_passed BOOLEAN` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_score INTEGER` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_data JSONB` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_passed BOOLEAN` } catch (e) {}
+
+    try {
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_inbound_leads_position
+        ON inbound_leads(position_type)
+      `
+    } catch (e) {
+      // Index might already exist
+    }
+
+    try {
+      await sql`
+        CREATE INDEX IF NOT EXISTS idx_application_stats_position
+        ON application_stats(position_type, qualified)
       `
     } catch (e) {
       // Index might already exist

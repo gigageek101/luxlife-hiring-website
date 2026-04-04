@@ -147,8 +147,11 @@ export default function ThankYouMarketingPage() {
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                           3. Compensation Structure
                         </h3>
+                        <p className="text-sm md:text-base mb-3" style={{ color: 'var(--text-secondary)' }}>
+                          <strong style={{ color: 'var(--text-primary)' }}>$2/hour + success bonus based on views.</strong> We will individually calculate what we can offer in terms of views growth.
+                        </p>
                         <p className="text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                          Compensation details will be discussed during your introduction call. Payment is bi-weekly to your Philippine bank account or in crypto to Binance (you will receive a setup guide on how to setup Binance).
+                          Payment is bi-weekly to your Philippine bank account or in crypto to Binance (you will receive a setup guide on how to setup Binance).
                         </p>
                       </div>
                     </div>
@@ -261,7 +264,7 @@ export default function ThankYouMarketingPage() {
             </ul>
                   
                   <a 
-                    href="https://cal.com/luxlifeagency/15min" 
+                    href="https://cal.com/luxlife-agency-ddefis/15min" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="inline-flex items-center text-white text-xl font-bold px-12 py-5 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl gap-3"
@@ -270,6 +273,9 @@ export default function ThankYouMarketingPage() {
                     📅 Schedule Your Call Now
                     <ExternalLink className="w-6 h-6" />
                   </a>
+                  <p className="mt-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+                    When booking your call, please always mention what position you are applying for (e.g. Marketing, Backend, etc.)
+                  </p>
                 </div>
 
                 <div className="rounded-lg p-6" style={{ background: 'var(--bg-soft)' }}>

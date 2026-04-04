@@ -313,6 +313,9 @@ export default function ThankYouPage() {
                     📅 Schedule Your Call Now
                     <ExternalLink className="w-6 h-6" />
                   </a>
+                  <p className="mt-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+                    When booking your call, please always mention what position you are applying for (e.g. Marketing, Backend, etc.)
+                  </p>
                 </div>
 
                 <div className="rounded-lg p-6" style={{ background: 'var(--bg-soft)' }}>

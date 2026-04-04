@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
 
-// Telegram Bot Configuration (same as Poste Media)
-const TELEGRAM_BOT_TOKEN = '8491965924:AAHBz28OuBgEKIXZywBENwl2xe-y1rVNQfk'
-const TELEGRAM_CHAT_ID = '2108767741'
+// Telegram Bot Configuration for Backend Applications
+const TELEGRAM_BOT_TOKEN = '8596760228:AAH9R77vvMcRAAtPGhwUhD9qc-or4ZRMQww'
+const TELEGRAM_CHAT_ID = '8603718832'
 
 async function sendTelegramNotification(applicantData: any) {
   try {
@@ -40,6 +41,8 @@ async function sendTelegramNotification(applicantData: any) {
 
 📚 *English Quiz:* ${englishScore} ✅
 🧠 *Memory Test:* ${memoryScore} ✅
+⌨️ *Typing Speed:* ${applicantData.typingTestResult?.wpm || 'N/A'} WPM ✅
+🌐 *Download Speed:* ${applicantData.speedTestResult?.downloadSpeed || 'N/A'} Mbps ✅
 🎓 *Education:* ${applicantData.educationType || 'N/A'} ✅
 💻 *Equipment:* Has PC ✅
 🗣️ *English Level:* ${applicantData.englishRating || 'N/A'}
@@ -94,6 +97,49 @@ async function sendTelegramNotification(applicantData: any) {
   }
 }
 
+async function saveLeadToDatabase(applicantData: any) {
+  try {
+    const englishScore = applicantData.quizAnswers
+      ? applicantData.quizAnswers.filter((a: any) => a.isCorrect).length
+      : null
+    const memoryScore = applicantData.memoryTestResult?.correctCount ?? null
+
+    await sql`
+      INSERT INTO inbound_leads (
+        full_name, email, city, age, position_type,
+        english_quiz_score, english_quiz_total,
+        memory_test_score, memory_test_total,
+        education_type, english_rating, quiz_answers, qualified,
+        typing_wpm, typing_accuracy, typing_passed,
+        download_speed, upload_speed, speed_passed
+      ) VALUES (
+        ${applicantData.fullName || null},
+        ${applicantData.email || null},
+        ${applicantData.city || null},
+        ${applicantData.age || null},
+        ${'backend'},
+        ${englishScore},
+        ${8},
+        ${memoryScore},
+        ${6},
+        ${applicantData.educationType || null},
+        ${applicantData.englishRating || null},
+        ${JSON.stringify(applicantData.quizAnswers || [])},
+        ${true},
+        ${applicantData.typingTestResult?.wpm ?? null},
+        ${applicantData.typingTestResult?.accuracy ?? null},
+        ${applicantData.typingTestResult?.passed ?? null},
+        ${applicantData.speedTestResult?.downloadSpeed ?? null},
+        ${applicantData.speedTestResult?.uploadSpeed ?? null},
+        ${applicantData.speedTestResult?.passed ?? null}
+      )
+    `
+    console.log('Lead saved to database')
+  } catch (error) {
+    console.error('Error saving lead to database:', error)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -101,6 +147,11 @@ export async function POST(request: NextRequest) {
     
     // Send Telegram notification (only if terms agreed)
     const sent = await sendTelegramNotification(body)
+    
+    // Save to database for admin dashboard
+    if (body.termsAgreed) {
+      await saveLeadToDatabase(body)
+    }
     
     if (sent) {
       return NextResponse.json(

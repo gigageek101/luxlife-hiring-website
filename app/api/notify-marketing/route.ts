@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sql } from '@/lib/db'
 
 // Telegram Bot Configuration for Marketing Applications
-const TELEGRAM_BOT_TOKEN = '8551143975:AAHzwcyRz01naNrYdWXbfGcd4VLOINDyiXM'
-const TELEGRAM_CHAT_ID = '2108767741'
+const TELEGRAM_BOT_TOKEN = '8719130340:AAHvEQNrDIuW4lypPPa3iG-gp0ldLyUptpw'
+const TELEGRAM_CHAT_ID = '8603718832'
 
 async function sendTelegramNotification(applicantData: any) {
   try {
@@ -40,6 +41,9 @@ async function sendTelegramNotification(applicantData: any) {
 
 📚 *English Quiz:* ${englishScore} ✅
 🧠 *Memory Test:* ${memoryScore} ✅
+⌨️ *Typing Speed:* ${applicantData.typingTestResult?.wpm || 'N/A'} WPM ✅
+🌐 *Download Speed:* ${applicantData.speedTestResult?.downloadSpeed || 'N/A'} Mbps ✅
+💡 *Creativity Score:* ${applicantData.creativityTestResult?.fluencyScore || 'N/A'} ideas ✅
 🎓 *Education:* ${applicantData.educationType || 'N/A'} ✅
 💻 *Equipment:* Has PC ✅
 🗣️ *English Level:* ${applicantData.englishRating || 'N/A'}
@@ -51,7 +55,7 @@ async function sendTelegramNotification(applicantData: any) {
 ✅ All Tests Passed
 ✅ Terms & Conditions Agreed
 ✅ Ready to Schedule Interview
-📅 Booking Link: https://cal.com/luxlifeagency/15min
+📅 Booking Link: https://cal.com/luxlife-agency-ddefis/15min
 
 ━━━━━━━━━━━━━━━━━━━━
 ⚡ *ACTION REQUIRED*
@@ -94,6 +98,60 @@ async function sendTelegramNotification(applicantData: any) {
   }
 }
 
+async function saveLeadToDatabase(applicantData: any) {
+  try {
+    const englishScore = applicantData.quizAnswers
+      ? applicantData.quizAnswers.filter((a: any) => a.isCorrect).length
+      : null
+    const memoryScore = applicantData.memoryTestResult?.correctCount ?? null
+
+    const creativityData = applicantData.creativityTestResult ? {
+      object: applicantData.creativityTestResult.object,
+      alternateUses: applicantData.creativityTestResult.alternateUses,
+      scenario: applicantData.creativityTestResult.scenario,
+      captions: applicantData.creativityTestResult.captions,
+    } : null
+
+    await sql`
+      INSERT INTO inbound_leads (
+        full_name, email, city, age, position_type,
+        english_quiz_score, english_quiz_total,
+        memory_test_score, memory_test_total,
+        education_type, english_rating, quiz_answers, qualified,
+        typing_wpm, typing_accuracy, typing_passed,
+        download_speed, upload_speed, speed_passed,
+        creativity_score, creativity_data, creativity_passed
+      ) VALUES (
+        ${applicantData.fullName || null},
+        ${applicantData.email || null},
+        ${applicantData.city || null},
+        ${applicantData.age || null},
+        ${'marketing'},
+        ${englishScore},
+        ${8},
+        ${memoryScore},
+        ${6},
+        ${applicantData.educationType || null},
+        ${applicantData.englishRating || null},
+        ${JSON.stringify(applicantData.quizAnswers || [])},
+        ${true},
+        ${applicantData.typingTestResult?.wpm ?? null},
+        ${applicantData.typingTestResult?.accuracy ?? null},
+        ${applicantData.typingTestResult?.passed ?? null},
+        ${applicantData.speedTestResult?.downloadSpeed ?? null},
+        ${applicantData.speedTestResult?.uploadSpeed ?? null},
+        ${applicantData.speedTestResult?.passed ?? null},
+        ${applicantData.creativityTestResult?.fluencyScore ?? null},
+        ${creativityData ? JSON.stringify(creativityData) : null},
+        ${applicantData.creativityTestResult?.passed ?? null}
+      )
+    `
+    console.log('Marketing lead saved to database')
+  } catch (error) {
+    console.error('Error saving marketing lead to database:', error)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -101,6 +159,11 @@ export async function POST(request: NextRequest) {
     
     // Send Telegram notification (only if terms agreed)
     const sent = await sendTelegramNotification(body)
+    
+    // Save to database for admin dashboard
+    if (body.termsAgreed) {
+      await saveLeadToDatabase(body)
+    }
     
     if (sent) {
       return NextResponse.json(

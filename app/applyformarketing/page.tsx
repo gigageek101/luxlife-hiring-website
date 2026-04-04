@@ -2,9 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ApplicantData, educationTypes, englishRatings, MemoryTestResult } from '@/lib/types'
+import { ApplicantData, educationTypes, englishRatings, MemoryTestResult, TypingTestResult, SpeedTestResult, CreativityTestResult } from '@/lib/types'
 import { quizQuestions } from '@/lib/quiz-questions'
 import { config } from '@/lib/config'
+import { typingTestTexts } from '@/lib/typing-test-texts'
+import { alternateUsesObjects, captionScenarios } from '@/lib/creativity-test-data'
+
+const TOTAL_STEPS = 11
 
 const initialData: ApplicantData = {
   currentStep: 1,
@@ -98,6 +102,21 @@ export default function ApplyForMarketingPage() {
           return { disqualified: true, reason: `You need to get at least ${config.memoryTestMinCorrect} out of ${data.memoryTestResult.totalCount} correct on the memory test.` }
         }
         break
+      case 8:
+        if (data.typingTestResult && data.typingTestResult.wpm < config.typingMinWpm) {
+          return { disqualified: true, reason: `You need at least ${config.typingMinWpm} WPM on the typing test. You got ${Math.round(data.typingTestResult.wpm)} WPM.` }
+        }
+        break
+      case 9:
+        if (data.speedTestResult && data.speedTestResult.downloadSpeed < config.speedMinDownload) {
+          return { disqualified: true, reason: `You need at least ${config.speedMinDownload} Mbps download speed. Your speed was ${data.speedTestResult.downloadSpeed.toFixed(1)} Mbps.` }
+        }
+        break
+      case 10:
+        if (data.creativityTestResult && !data.creativityTestResult.passed) {
+          return { disqualified: true, reason: `You need at least ${config.creativityMinUses} alternate uses and ${config.creativityMinCaptions} captions to pass the creativity test.` }
+        }
+        break
     }
     return { disqualified: false }
   }
@@ -105,7 +124,6 @@ export default function ApplyForMarketingPage() {
   const handleNext = async (stepData: Partial<ApplicantData>) => {
     const updatedData = { ...applicantData, ...stepData }
     
-    // Check for disqualification
     const disqualificationCheck = checkDisqualification(updatedData, updatedData.currentStep)
     
     if (disqualificationCheck.disqualified) {
@@ -113,26 +131,25 @@ export default function ApplyForMarketingPage() {
       updatedData.disqualificationReason = disqualificationCheck.reason
     }
     
-    // Always continue to next step
     updatedData.currentStep += 1
 
     setApplicantData(updatedData)
     saveToLocalStorage(updatedData)
 
-    if (updatedData.currentStep > 8) {
-      // Application completed
+    if (updatedData.currentStep > TOTAL_STEPS) {
       updatedData.isCompleted = true
       saveToLocalStorage(updatedData)
       
-      // Mark application as completed in localStorage
       const isQualified = !updatedData.isDisqualified
       localStorage.setItem('luxlife-marketing-application-completed', 'true')
       localStorage.setItem('luxlife-marketing-application-qualified', isQualified ? 'true' : 'false')
       
-      // Note: Telegram notification will be sent only when user agrees to terms
-      // This ensures we only get notified about serious applicants
+      fetch('/api/track-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ positionType: 'marketing', qualified: isQualified })
+      }).catch(() => {})
       
-      // Redirect to thank-you page
       router.push('/thank-you-marketing')
     }
   }
@@ -208,24 +225,24 @@ export default function ApplyForMarketingPage() {
         <div className="mb-6 md:mb-8 rounded-xl p-4 md:p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <span className="text-sm md:text-base font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>
-              📋 Step {applicantData.currentStep} of 8
+              📋 Step {applicantData.currentStep} of {TOTAL_STEPS}
             </span>
             <span className="px-3 py-1 rounded-full text-xs md:text-sm font-semibold inline-block w-fit whitespace-nowrap" style={{ background: 'var(--accent)', color: 'white' }}>
-              {Math.round((applicantData.currentStep / 8) * 100)}% Complete
+              {Math.round((applicantData.currentStep / TOTAL_STEPS) * 100)}% Complete
             </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-2 md:h-3 shadow-inner overflow-hidden">
             <div 
               className="h-2 md:h-3 rounded-full transition-all duration-500 shadow-lg"
               style={{ 
-                width: `${(applicantData.currentStep / 8) * 100}%`,
+                width: `${(applicantData.currentStep / TOTAL_STEPS) * 100}%`,
                 background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
                 boxShadow: '0 2px 8px rgba(255, 107, 0, 0.4)'
               }}
             ></div>
           </div>
           <div className="mt-2 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-            ⏱️ Time remaining: ~{Math.max(0, 5 - Math.round((applicantData.currentStep / 8) * 5))} min
+            ⏱️ Time remaining: ~{Math.max(0, 10 - Math.round((applicantData.currentStep / TOTAL_STEPS) * 10))} min
           </div>
         </div>
 
@@ -264,7 +281,10 @@ export default function ApplyForMarketingPage() {
             />
           )}
           {applicantData.currentStep === 7 && <Step7 onMemoryTestSubmit={handleMemoryTestSubmit} data={applicantData} />}
-          {applicantData.currentStep === 8 && <Step8 onNext={handleNext} data={applicantData} />}
+          {applicantData.currentStep === 8 && <StepTypingTest onNext={handleNext} data={applicantData} />}
+          {applicantData.currentStep === 9 && <StepInternetSpeed onNext={handleNext} data={applicantData} />}
+          {applicantData.currentStep === 10 && <StepCreativityTest onNext={handleNext} data={applicantData} />}
+          {applicantData.currentStep === TOTAL_STEPS && <StepResults onNext={handleNext} data={applicantData} />}
         </div>
       </div>
     </div>
@@ -964,103 +984,364 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
   return null
 }
 
-function Step8({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
-  // Calculate qualification status
+function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
+  const [phase, setPhase] = useState<'intro' | 'typing' | 'done'>('intro')
+  const [textToType] = useState(() => typingTestTexts[Math.floor(Math.random() * typingTestTexts.length)])
+  const [typed, setTyped] = useState('')
+  const [timeLeft, setTimeLeft] = useState(config.typingTestDuration)
+  const [startTime, setStartTime] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (phase !== 'typing' || timeLeft <= 0) return
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(timer); setPhase('done'); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [phase, timeLeft])
+
+  const startTest = () => { setPhase('typing'); setStartTime(Date.now()) }
+
+  const handleTyping = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (phase !== 'typing') return
+    const val = e.target.value
+    setTyped(val)
+    if (val.length >= textToType.length) setPhase('done')
+  }
+
+  useEffect(() => {
+    if (phase !== 'done') return
+    let correct = 0
+    const len = Math.min(typed.length, textToType.length)
+    for (let i = 0; i < len; i++) { if (typed[i] === textToType[i]) correct++ }
+    const elapsed = startTime ? (Date.now() - startTime) / 1000 : config.typingTestDuration
+    const minutes = Math.min(elapsed, config.typingTestDuration) / 60
+    const wpm = minutes > 0 ? (correct / 5) / minutes : 0
+    const accuracy = typed.length > 0 ? (correct / typed.length) * 100 : 0
+    const passed = wpm >= config.typingMinWpm
+    const result: TypingTestResult = { wpm: Math.round(wpm * 10) / 10, accuracy: Math.round(accuracy * 10) / 10, totalCharacters: typed.length, correctCharacters: correct, passed }
+    onNext({ typingTestResult: result })
+  }, [phase])
+
+  if (phase === 'intro') {
+    return (
+      <div className="text-center">
+        <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">⌨️</span></div>
+        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.</p>
+        <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
+          <p style={{ color: 'var(--text-secondary)' }}><strong>Instructions:</strong><br/>1. A paragraph of text will appear on screen<br/>2. Type it as fast and accurately as you can<br/>3. You have 60 seconds<br/>4. You need at least <strong>{config.typingMinWpm} words per minute</strong> to pass</p>
+        </div>
+        <button onClick={startTest} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Typing Test</button>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: timeLeft <= 10 ? '#ef4444' : 'var(--accent)' }}>
+          <span className="text-xl">⏱️</span><span className="text-xl font-bold text-white">{timeLeft}s</span>
+        </div>
+      </div>
+      <div className="rounded-lg p-4 mb-4 font-mono text-sm md:text-base leading-relaxed" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
+        {textToType.split('').map((char, i) => {
+          let color = 'var(--text-muted)'
+          if (i < typed.length) color = typed[i] === char ? '#10b981' : '#ef4444'
+          return <span key={i} style={{ color, background: i === typed.length ? 'rgba(255,107,0,0.3)' : 'transparent' }}>{char}</span>
+        })}
+      </div>
+      <textarea autoFocus value={typed} onChange={handleTyping} disabled={phase === 'done'} placeholder="Start typing here..." className="w-full p-4 rounded-lg text-sm md:text-base font-mono resize-none outline-none" style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: '2px solid var(--text-muted)', minHeight: '120px' }} onPaste={(e) => e.preventDefault()} />
+      <p className="text-xs mt-2 text-center" style={{ color: 'var(--text-muted)' }}>{typed.length} / {textToType.length} characters typed</p>
+    </div>
+  )
+}
+
+function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
+  const [phase, setPhase] = useState<'intro' | 'download' | 'upload' | 'done'>('intro')
+  const [downloadSpeed, setDownloadSpeed] = useState<number | null>(null)
+  const [uploadSpeed, setUploadSpeed] = useState<number | null>(null)
+  const [progress, setProgress] = useState(0)
+
+  const runTest = async () => {
+    setPhase('download'); setProgress(10)
+    try {
+      const dlStart = performance.now()
+      const response = await fetch('/api/speedtest/download?t=' + Date.now(), { cache: 'no-store' })
+      const blob = await response.blob()
+      const dlTime = (performance.now() - dlStart) / 1000
+      setDownloadSpeed(Math.round((blob.size * 8 / dlTime / 1_000_000) * 10) / 10)
+      setProgress(50)
+    } catch { setDownloadSpeed(0) }
+
+    setPhase('upload'); setProgress(60)
+    try {
+      const uploadData = new Uint8Array(2 * 1024 * 1024)
+      for (let i = 0; i < uploadData.length; i++) uploadData[i] = Math.floor(Math.random() * 256)
+      const ulStart = performance.now()
+      await fetch('/api/speedtest/upload', { method: 'POST', body: uploadData })
+      const ulTime = (performance.now() - ulStart) / 1000
+      setUploadSpeed(Math.round((uploadData.length * 8 / ulTime / 1_000_000) * 10) / 10)
+      setProgress(100)
+    } catch { setUploadSpeed(0) }
+    setPhase('done')
+  }
+
+  const handleContinue = () => {
+    const dl = downloadSpeed ?? 0, ul = uploadSpeed ?? 0
+    const result: SpeedTestResult = { downloadSpeed: dl, uploadSpeed: ul, passed: dl >= config.speedMinDownload }
+    onNext({ speedTestResult: result })
+  }
+
+  if (phase === 'intro') {
+    return (
+      <div className="text-center">
+        <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">🌐</span></div>
+        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>10-15 seconds</strong>.</p>
+        <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
+          <p style={{ color: 'var(--text-secondary)' }}><strong>Requirements:</strong><br/>• Minimum <strong>{config.speedMinDownload} Mbps</strong> download speed<br/>• Make sure no large downloads are running<br/>• Close other tabs using bandwidth for best results</p>
+        </div>
+        <button onClick={runTest} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Speed Test</button>
+      </div>
+    )
+  }
+  if (phase === 'done') {
+    const dlPassed = (downloadSpeed ?? 0) >= config.speedMinDownload
+    return (
+      <div className="text-center">
+        <h2 className="text-xl md:text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Speed Test Results</h2>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="rounded-xl p-5" style={{ background: 'var(--bg-primary)', border: `2px solid ${dlPassed ? '#10b981' : '#ef4444'}` }}>
+            <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Download</p>
+            <p className="text-3xl font-bold" style={{ color: dlPassed ? '#10b981' : '#ef4444' }}>{downloadSpeed}</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Mbps</p>
+          </div>
+          <div className="rounded-xl p-5" style={{ background: 'var(--bg-primary)', border: '2px solid var(--text-muted)' }}>
+            <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Upload</p>
+            <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{uploadSpeed}</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Mbps</p>
+          </div>
+        </div>
+        <button onClick={handleContinue} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Continue</button>
+      </div>
+    )
+  }
+  return (
+    <div className="text-center">
+      <h2 className="text-xl md:text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>{phase === 'download' ? 'Testing Download Speed...' : 'Testing Upload Speed...'}</h2>
+      <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse" style={{ background: 'var(--accent)' }}><span className="text-4xl">{phase === 'download' ? '⬇️' : '⬆️'}</span></div>
+      <div className="w-full bg-gray-700 rounded-full h-3 mb-4 overflow-hidden"><div className="h-3 rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}></div></div>
+      {downloadSpeed !== null && phase === 'upload' && <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Download: {downloadSpeed} Mbps</p>}
+    </div>
+  )
+}
+
+function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
+  const [phase, setPhase] = useState<'intro' | 'aut' | 'caption' | 'done'>('intro')
+  const [selectedObject] = useState(() => alternateUsesObjects[Math.floor(Math.random() * alternateUsesObjects.length)])
+  const [selectedScenario] = useState(() => captionScenarios[Math.floor(Math.random() * captionScenarios.length)])
+  const [uses, setUses] = useState<string[]>([])
+  const [currentUse, setCurrentUse] = useState('')
+  const [autTimeLeft, setAutTimeLeft] = useState(120)
+  const [captions, setCaptions] = useState(['', '', ''])
+  const [captionTimeLeft, setCaptionTimeLeft] = useState(120)
+
+  // AUT timer
+  useEffect(() => {
+    if (phase !== 'aut' || autTimeLeft <= 0) return
+    const timer = setInterval(() => {
+      setAutTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(timer); setPhase('caption'); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [phase, autTimeLeft])
+
+  // Caption timer
+  useEffect(() => {
+    if (phase !== 'caption' || captionTimeLeft <= 0) return
+    const timer = setInterval(() => {
+      setCaptionTimeLeft(prev => {
+        if (prev <= 1) { clearInterval(timer); setPhase('done'); return 0 }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [phase, captionTimeLeft])
+
+  useEffect(() => {
+    if (phase !== 'done') return
+    const validUses = uses.filter(u => u.trim().length >= 3)
+    const validCaptions = captions.filter(c => c.trim().length >= 15)
+    const passed = validUses.length >= config.creativityMinUses && validCaptions.length >= config.creativityMinCaptions
+    const result: CreativityTestResult = {
+      object: selectedObject.name,
+      alternateUses: uses,
+      fluencyScore: validUses.length,
+      scenario: selectedScenario.product,
+      captions,
+      passed,
+    }
+    onNext({ creativityTestResult: result })
+  }, [phase])
+
+  const addUse = () => {
+    const trimmed = currentUse.trim()
+    if (trimmed.length < 3) return
+    const lower = trimmed.toLowerCase()
+    if (uses.some(u => u.toLowerCase() === lower)) return
+    setUses(prev => [...prev, trimmed])
+    setCurrentUse('')
+  }
+
+  const removeUse = (index: number) => setUses(prev => prev.filter((_, i) => i !== index))
+
+  const handleUseKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') { e.preventDefault(); addUse() }
+  }
+
+  if (phase === 'intro') {
+    return (
+      <div className="text-center">
+        <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Creativity Test</h2>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">💡</span></div>
+        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>This test measures your creative thinking ability. It has <strong>two parts</strong> and takes about <strong>4 minutes</strong>.</p>
+        <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            <strong>Part 1 - Alternate Uses (2 min):</strong> Think of as many creative uses for a common object as you can.<br/><br/>
+            <strong>Part 2 - Caption Challenge (2 min):</strong> Write 3 creative social media captions for a product.<br/><br/>
+            You need at least <strong>{config.creativityMinUses} alternate uses</strong> and <strong>{config.creativityMinCaptions} captions</strong> (each 15+ characters) to pass.
+          </p>
+        </div>
+        <button onClick={() => setPhase('aut')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Creativity Test</button>
+      </div>
+    )
+  }
+
+  if (phase === 'aut') {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg md:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Part 1: Alternate Uses</h2>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: autTimeLeft <= 15 ? '#ef4444' : 'var(--accent)' }}>
+            <span className="text-lg">⏱️</span><span className="text-lg font-bold text-white">{Math.floor(autTimeLeft / 60)}:{String(autTimeLeft % 60).padStart(2, '0')}</span>
+          </div>
+        </div>
+        <div className="rounded-xl p-5 mb-4 text-center" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
+          <span className="text-5xl mb-2 block">{selectedObject.emoji}</span>
+          <p className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{selectedObject.name}</p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{selectedObject.hint}</p>
+        </div>
+        <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>List as many <strong>creative and unusual uses</strong> for a <strong>{selectedObject.name.toLowerCase()}</strong> as you can think of:</p>
+        <div className="flex gap-2 mb-4">
+          <input type="text" value={currentUse} onChange={(e) => setCurrentUse(e.target.value)} onKeyDown={handleUseKeyDown} placeholder="Type a creative use and press Enter..." className="flex-1 p-3 rounded-lg text-sm outline-none" style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: '2px solid var(--text-muted)' }} autoFocus />
+          <button onClick={addUse} className="px-4 py-3 rounded-lg text-white font-semibold text-sm" style={{ background: 'var(--accent)' }}>Add</button>
+        </div>
+        {uses.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {uses.map((use, i) => (
+              <span key={i} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm" style={{ background: 'var(--accent)', color: 'white' }}>
+                {use}
+                <button onClick={() => removeUse(i)} className="ml-1 hover:opacity-70">×</button>
+              </span>
+            ))}
+          </div>
+        )}
+        <div className="flex items-center justify-between">
+          <p className="text-sm" style={{ color: uses.length >= config.creativityMinUses ? '#10b981' : 'var(--text-muted)' }}>{uses.length} idea{uses.length !== 1 ? 's' : ''} (need {config.creativityMinUses}+)</p>
+          <button onClick={() => setPhase('caption')} className="px-6 py-2 rounded-lg text-white font-semibold text-sm" style={{ background: 'var(--accent)' }}>Next Part →</button>
+        </div>
+      </div>
+    )
+  }
+
+  if (phase === 'caption') {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg md:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Part 2: Caption Challenge</h2>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: captionTimeLeft <= 15 ? '#ef4444' : 'var(--accent)' }}>
+            <span className="text-lg">⏱️</span><span className="text-lg font-bold text-white">{Math.floor(captionTimeLeft / 60)}:{String(captionTimeLeft % 60).padStart(2, '0')}</span>
+          </div>
+        </div>
+        <div className="rounded-xl p-5 mb-4" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
+          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>Product: {selectedScenario.product}</p>
+          <p className="text-base mb-2" style={{ color: 'var(--text-primary)' }}>{selectedScenario.description}</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Target audience: {selectedScenario.targetAudience}</p>
+        </div>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>Write <strong>3 creative social media captions/hooks</strong> for this product:</p>
+        <div className="space-y-3 mb-4">
+          {captions.map((cap, i) => (
+            <div key={i}>
+              <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--text-muted)' }}>Caption {i + 1} {cap.trim().length >= 15 ? '✓' : `(${Math.max(0, 15 - cap.trim().length)} more chars needed)`}</label>
+              <textarea value={cap} onChange={(e) => { const next = [...captions]; next[i] = e.target.value; setCaptions(next) }} placeholder={`Write caption ${i + 1}...`} className="w-full p-3 rounded-lg text-sm outline-none resize-none" style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: `2px solid ${cap.trim().length >= 15 ? '#10b981' : 'var(--text-muted)'}`, minHeight: '70px' }} />
+            </div>
+          ))}
+        </div>
+        <button onClick={() => setPhase('done')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Submit Creativity Test</button>
+      </div>
+    )
+  }
+
+  return null
+}
+
+function StepResults({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
   const englishCorrect = data.quizAnswers ? data.quizAnswers.filter((answer: any) => answer.isCorrect).length : 0
   const englishTotal = config.englishTotalQuestions
   const englishPassed = englishCorrect >= config.englishMinCorrect
-  
   const memoryCorrect = data.memoryTestResult ? data.memoryTestResult.correctCount : 0
   const memoryTotal = config.memoryTestTotalItems
   const memoryPassed = memoryCorrect >= config.memoryTestMinCorrect
-  
-  // Check all disqualification criteria
+  const typingWpm = data.typingTestResult?.wpm ?? 0
+  const typingPassed = typingWpm >= config.typingMinWpm
+  const dlSpeed = data.speedTestResult?.downloadSpeed ?? 0
+  const speedPassed = dlSpeed >= config.speedMinDownload
+  const creativityPassed = data.creativityTestResult?.passed ?? false
+  const creativityScore = data.creativityTestResult?.fluencyScore ?? 0
+
   const ageQualified = data.age ? (data.age >= config.minAge && data.age <= config.maxAge) : false
   const educationQualified = data.hasFinishedEducation === true && data.educationType !== 'Student'
   const englishRatingQualified = data.englishRating !== 'Very Bad' && data.englishRating !== 'Bad'
   const equipmentQualified = data.hasWorkingPc === true
-  
-  // Final qualification: ALL criteria must pass
-  const isQualified = ageQualified && educationQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed
+
+  const isQualified = ageQualified && educationQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed && typingPassed && speedPassed && creativityPassed
 
   return (
     <div className="text-center">
       <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: isQualified ? '#10b981' : '#ef4444' }}>
         {isQualified ? (
-          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
         ) : (
-          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         )}
       </div>
-      
-      <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-        {isQualified ? '🎉 Congratulations!' : '❌ Application Not Approved'}
-      </h2>
-      
-      <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
-        {isQualified 
-          ? 'You have successfully passed all qualification requirements!' 
-          : 'Unfortunately, you did not meet all the qualification requirements.'}
-      </p>
-      
-      {/* Show detailed results */}
+      <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{isQualified ? '🎉 Congratulations!' : '❌ Application Not Approved'}</h2>
+      <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>{isQualified ? 'You have successfully passed all qualification requirements!' : 'Unfortunately, you did not meet all the qualification requirements.'}</p>
       <div className="rounded-lg p-6 mb-6 text-left" style={{ background: 'var(--bg-primary)', border: '2px solid ' + (isQualified ? '#10b981' : '#ef4444') }}>
-        <h3 className="font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>
-          📊 Your Results:
-        </h3>
+        <h3 className="font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>📊 Your Results:</h3>
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span style={{ color: 'var(--text-secondary)' }}>English Quiz:</span>
-            <span className={`font-semibold ${englishPassed ? 'text-green-500' : 'text-red-500'}`}>
-              {englishCorrect}/{englishTotal} {englishPassed ? '✓ Passed' : '✗ Failed'}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span style={{ color: 'var(--text-secondary)' }}>Memory Test:</span>
-            <span className={`font-semibold ${memoryPassed ? 'text-green-500' : 'text-red-500'}`}>
-              {memoryCorrect}/{memoryTotal} {memoryPassed ? '✓ Passed' : '✗ Failed'}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span style={{ color: 'var(--text-secondary)' }}>Age Requirement:</span>
-            <span className={`font-semibold ${ageQualified ? 'text-green-500' : 'text-red-500'}`}>
-              {ageQualified ? '✓ Met' : '✗ Not Met'}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span style={{ color: 'var(--text-secondary)' }}>Education:</span>
-            <span className={`font-semibold ${educationQualified ? 'text-green-500' : 'text-red-500'}`}>
-              {educationQualified ? '✓ Met' : '✗ Not Met'}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span style={{ color: 'var(--text-secondary)' }}>Equipment:</span>
-            <span className={`font-semibold ${equipmentQualified ? 'text-green-500' : 'text-red-500'}`}>
-              {equipmentQualified ? '✓ Met' : '✗ Not Met'}
-            </span>
-          </div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>English Quiz:</span><span className={`font-semibold ${englishPassed ? 'text-green-500' : 'text-red-500'}`}>{englishCorrect}/{englishTotal} {englishPassed ? '✓ Passed' : '✗ Failed'}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Memory Test:</span><span className={`font-semibold ${memoryPassed ? 'text-green-500' : 'text-red-500'}`}>{memoryCorrect}/{memoryTotal} {memoryPassed ? '✓ Passed' : '✗ Failed'}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Typing Speed:</span><span className={`font-semibold ${typingPassed ? 'text-green-500' : 'text-red-500'}`}>{typingWpm} WPM {typingPassed ? '✓ Passed' : `✗ Failed (need ${config.typingMinWpm})`}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Internet Speed:</span><span className={`font-semibold ${speedPassed ? 'text-green-500' : 'text-red-500'}`}>{dlSpeed} Mbps {speedPassed ? '✓ Passed' : `✗ Failed (need ${config.speedMinDownload})`}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Creativity Test:</span><span className={`font-semibold ${creativityPassed ? 'text-green-500' : 'text-red-500'}`}>{creativityScore} ideas {creativityPassed ? '✓ Passed' : '✗ Failed'}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Age Requirement:</span><span className={`font-semibold ${ageQualified ? 'text-green-500' : 'text-red-500'}`}>{ageQualified ? '✓ Met' : '✗ Not Met'}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Education:</span><span className={`font-semibold ${educationQualified ? 'text-green-500' : 'text-red-500'}`}>{educationQualified ? '✓ Met' : '✗ Not Met'}</span></div>
+          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Equipment:</span><span className={`font-semibold ${equipmentQualified ? 'text-green-500' : 'text-red-500'}`}>{equipmentQualified ? '✓ Met' : '✗ Not Met'}</span></div>
         </div>
       </div>
-      
       {!isQualified && (
         <div className="rounded-lg p-6 mb-6" style={{ background: 'var(--bg-soft)' }}>
-          <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
-            <strong>Note:</strong> The course is currently full. We appreciate your interest and encourage you to improve your skills and try again in the future.
-          </p>
+          <p className="text-base" style={{ color: 'var(--text-secondary)' }}><strong>Note:</strong> The course is currently full. We appreciate your interest and encourage you to improve your skills and try again in the future.</p>
         </div>
       )}
-      
-      <button
-        onClick={() => onNext({ isCompleted: true, isDisqualified: !isQualified })}
-        className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200"
-        style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
-      >
-        {isQualified ? 'Continue to Booking' : 'Finish'}
-      </button>
+      <button onClick={() => onNext({ isCompleted: true, isDisqualified: !isQualified })} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>{isQualified ? 'Continue to Booking' : 'Finish'}</button>
     </div>
   )
 }
