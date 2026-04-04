@@ -455,6 +455,19 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
             placeholder="Enter your city"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+            Country
+          </label>
+          <div className="w-full px-3 md:px-4 py-2.5 md:py-3 border rounded-lg text-base font-medium flex items-center gap-2"
+            style={{ background: 'var(--bg-primary)', borderColor: 'var(--text-muted)', color: 'var(--text-primary)' }}>
+            <span className="text-xl">🇵🇭</span> Philippines
+          </div>
+          <p className="text-xs mt-1.5 font-medium" style={{ color: '#ef4444' }}>
+            Please only apply if you are currently living in the Philippines.
+          </p>
+        </div>
       </div>
       
       <button
