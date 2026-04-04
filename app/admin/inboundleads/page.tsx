@@ -89,7 +89,7 @@ function InboundLeadsContent() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/inbound-leads')
+      const res = await fetch('/api/admin/inbound-leads?t=' + Date.now(), { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setLeads(data.leads || [])
