@@ -1250,12 +1250,13 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
       let totalBytes = 0
       let done = false
 
-      let uploadBlob: Uint8Array | null = null
+      let uploadBlob: Blob | null = null
       if (direction === 'upload') {
-        uploadBlob = new Uint8Array(UL_BLOB)
+        const buf = new Uint8Array(UL_BLOB)
         if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-          for (let o = 0; o < UL_BLOB; o += 65536) crypto.getRandomValues(uploadBlob.subarray(o, Math.min(o + 65536, UL_BLOB)))
+          for (let o = 0; o < UL_BLOB; o += 65536) crypto.getRandomValues(buf.subarray(o, Math.min(o + 65536, UL_BLOB)))
         }
+        uploadBlob = new Blob([buf])
       }
 
       const tick = setInterval(() => {
