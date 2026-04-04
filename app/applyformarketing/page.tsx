@@ -1006,9 +1006,7 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
 
   const handleTyping = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (phase !== 'typing') return
-    const val = e.target.value
-    setTyped(val)
-    if (val.length >= textToType.length) setPhase('done')
+    setTyped(e.target.value)
   }
 
   useEffect(() => {
@@ -1016,8 +1014,7 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
     let correct = 0
     const len = Math.min(typed.length, textToType.length)
     for (let i = 0; i < len; i++) { if (typed[i] === textToType[i]) correct++ }
-    const elapsed = startTime ? (Date.now() - startTime) / 1000 : config.typingTestDuration
-    const minutes = Math.min(elapsed, config.typingTestDuration) / 60
+    const minutes = config.typingTestDuration / 60
     const wpm = minutes > 0 ? (correct / 5) / minutes : 0
     const accuracy = typed.length > 0 ? (correct / typed.length) * 100 : 0
     const passed = wpm >= config.typingMinWpm
