@@ -147,34 +147,42 @@ export default function ThankYouPage() {
                         <h3 className="text-base md:text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                           3. Performance-Based Salary Structure
                         </h3>
-                        <p className="mb-4 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                          Your hourly rate is based on the revenue you generate per shift. The more successful you are, the higher your earnings. Payment is bi-weekly to your Philippine bank account or in crypto to binance (you will receive a setup guide on how to setup binance).
+                        <p className="mb-3 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
+                          Your shift payment will depend on the amount of sales you make. Let&apos;s explain it in an example:
+                        </p>
+                        <div className="rounded-lg p-3 md:p-4 mb-4" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
+                          <p className="text-sm md:text-base font-semibold" style={{ color: 'var(--accent)' }}>
+                            💡 Example: You make $1,000 per shift in 8 hours = you will get <strong>₱2,272</strong> for that day
+                          </p>
+                        </div>
+                        <p className="mb-4 text-xs md:text-sm" style={{ color: 'var(--text-muted)' }}>
+                          Please don&apos;t compare it to your previous work since our systems will teach you things you never thought would be possible. If you make it through, this job will teach you everything you need to know on how to get to the highest point of the salary table. Clear systems make it possible.
                         </p>
                         <div className="overflow-x-auto -mx-2 md:mx-0">
                           <table className="w-full text-xs md:text-sm border-collapse min-w-[500px]">
                             <thead>
                               <tr style={{ background: 'var(--accent)' }}>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Revenue Generated</th>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Hourly Rate</th>
-                                <th className="p-2 md:p-3 text-left text-white font-semibold">Monthly (160h)</th>
+                                <th className="p-2 md:p-3 text-left text-white font-semibold">Revenue Range ($)</th>
+                                <th className="p-2 md:p-3 text-left text-white font-semibold">Hourly Rate (PHP)</th>
+                                <th className="p-2 md:p-3 text-left text-white font-semibold">Monthly (160h) PHP</th>
                               </tr>
                             </thead>
                             <tbody>
                               {[
-                                ['$0–499', '₱85.29/hr', '₱13,646'],
-                                ['$500–999', '₱113.72/hr', '₱18,195'],
-                                ['$1000–1499', '₱170.58/hr', '₱27,293'],
-                                ['$1500–1999', '₱199.01/hr', '₱31,842'],
-                                ['$2000–2499', '₱227.44/hr', '₱36,390'],
-                                ['$2500–2999', '₱284.30/hr', '₱45,488'],
-                                ['$3000–3499', '₱369.59/hr', '₱59,134'],
-                                ['$3500–3999', '₱454.88/hr', '₱72,781'],
-                                ['$4000–4499', '₱568.60/hr', '₱90,976'],
-                                ['$4500–4999', '₱625.46/hr', '₱100,074'],
-                                ['$5000–5499', '₱682.32/hr', '₱109,171'],
-                                ['$5500–5999', '₱824.47/hr', '₱131,939'],
-                                ['$6000–6499', '₱966.62/hr', '₱154,707'],
-                                ['$6500+', '₱1,108.77/hr', '₱177,475'],
+                                ['$0–199', '₱85.29/hr', '₱13,646.40'],
+                                ['$199–299', '₱113.72/hr', '₱18,195.20'],
+                                ['$299–499', '₱170.58/hr', '₱27,292.80'],
+                                ['$499–799', '₱199.01/hr', '₱31,841.60'],
+                                ['$799–999', '₱227.44/hr', '₱36,390.40'],
+                                ['$999–1200', '₱284.30/hr', '₱45,488.00'],
+                                ['$1200–1400', '₱369.59/hr', '₱59,134.40'],
+                                ['$1400–1600', '₱454.88/hr', '₱72,780.80'],
+                                ['$1600–1900', '₱568.60/hr', '₱90,976.00'],
+                                ['$1900–2100', '₱625.46/hr', '₱100,073.60'],
+                                ['$2100–2300', '₱682.32/hr', '₱109,171.20'],
+                                ['$2300–2500', '₱824.47/hr', '₱131,939.20'],
+                                ['$2500–2700', '₱966.62/hr', '₱154,707.20'],
+                                ['$2700+', '₱1,108.77/hr', '₱177,475.20'],
                               ].map((row, i) => (
                                 <tr key={i} style={{ background: i % 2 === 0 ? 'var(--surface)' : 'var(--bg-soft)' }}>
                                   <td className="p-2 md:p-3 whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>{row[0]}</td>
@@ -187,10 +195,10 @@ export default function ThankYouPage() {
                         </div>
                         <div className="mt-4 p-3 md:p-4 rounded-lg" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
                           <p className="text-sm md:text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-                            🎁 Team Success Bonus
+                            🎁 Extra 20% Revenue Boost
                           </p>
                           <p className="text-xs md:text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            When the whole team works together and meets the monthly revenue goals (set fairly according to each creator), everyone receives an additional success bonus! This encourages teamwork and rewards collective achievement.
+                            Additionally we always agree on bimonthly goals which are only possible to reach when all the chatters work together and don&apos;t hard-sell but actually build relationships with the subscribers and do aftercare and care about them. This will give you an <strong style={{ color: 'var(--accent)' }}>EXTRA 20% revenue boost</strong> for every day you worked.
                           </p>
                         </div>
                       </div>
