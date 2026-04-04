@@ -7,7 +7,7 @@ export const config = {
   memoryTestTotalItems: 6,
   typingMinWpm: 45,
   typingTestDuration: 60,
-  speedMinDownload: 35,
+  speedMinDownload: 20,
   creativityMinUses: 2,
   creativityMinCaptions: 3,
 }
