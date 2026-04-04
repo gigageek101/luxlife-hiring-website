@@ -155,9 +155,8 @@ export default function ApplyPage() {
     }
   }
 
-  const handleQuizSubmit = () => {
-    // Ensure we have all 8 questions answered
-    const finalAnswers = [...quizAnswers]
+  const handleQuizSubmit = (passedAnswers?: any[]) => {
+    const finalAnswers = [...(passedAnswers || quizAnswers)]
     
     // Fill any missing questions as incorrect
     for (let i = finalAnswers.length; i < quizQuestions.length; i++) {
@@ -723,7 +722,7 @@ function Step6({
   setCurrentQuestionIndex: (index: number) => void
   quizAnswers: any[]
   setQuizAnswers: (answers: any[]) => void
-  onQuizSubmit: () => void
+  onQuizSubmit: (finalAnswers?: any[]) => void
 }) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [timeLeft, setTimeLeft] = useState(90) // 90 seconds timer
@@ -756,7 +755,7 @@ function Step6({
         })
       }
       setQuizAnswers(remainingAnswers)
-      onQuizSubmit()
+      onQuizSubmit(remainingAnswers)
     }
   }, [timerStarted, timeLeft, currentQuestionIndex, onQuizSubmit, quizAnswers, setQuizAnswers])
 
@@ -788,7 +787,7 @@ function Step6({
     setQuizAnswers(updatedAnswers)
 
     if (isLastQuestion) {
-      onQuizSubmit()
+      onQuizSubmit(updatedAnswers)
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1)
     }
