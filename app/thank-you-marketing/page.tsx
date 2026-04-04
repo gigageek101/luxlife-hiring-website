@@ -80,33 +80,33 @@ export default function ThankYouMarketingPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 md:pt-32 pb-8 px-4" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-20 md:pt-24 pb-6 px-4" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-5xl mx-auto">
-        <div className="rounded-xl shadow-lg p-6 md:p-8 mb-8" style={{ background: 'var(--surface)' }}>
+        <div className="rounded-xl shadow-lg p-5 md:p-6 mb-6" style={{ background: 'var(--surface)' }}>
           {isQualified ? (
             showTerms ? (
               // SHOW TERMS AGREEMENT FIRST
-              <div className="space-y-6">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: '#10b981' }}>
+              <div className="space-y-4">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#10b981' }}>
                   <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 
-                <h1 className="text-2xl md:text-4xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>
+                <h1 className="text-xl md:text-3xl font-bold text-center" style={{ color: 'var(--text-primary)' }}>
                   🎉 Congratulations! You Qualified!
                 </h1>
                 
-                <p className="text-lg md:text-xl text-center mb-8" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-base md:text-lg text-center mb-4" style={{ color: 'var(--text-secondary)' }}>
                   Before scheduling your call, please review and agree to the following terms:
                 </p>
 
                 {/* Terms Section */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {/* Term 1 */}
-                  <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                  <div className="rounded-xl p-3 md:p-4 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+                    <div className="flex items-start gap-2.5 md:gap-3">
+                      <div className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
                         <span className="text-xl md:text-2xl">📝</span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -121,9 +121,9 @@ export default function ThankYouMarketingPage() {
                   </div>
 
                   {/* Term 2 */}
-                  <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                  <div className="rounded-xl p-3 md:p-4 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+                    <div className="flex items-start gap-2.5 md:gap-3">
+                      <div className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
                         <span className="text-xl md:text-2xl">🤐</span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -138,9 +138,9 @@ export default function ThankYouMarketingPage() {
                   </div>
 
                   {/* Term 3 - Salary */}
-                  <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                  <div className="rounded-xl p-3 md:p-4 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+                    <div className="flex items-start gap-2.5 md:gap-3">
+                      <div className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
                         <span className="text-xl md:text-2xl">💰</span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -158,9 +158,9 @@ export default function ThankYouMarketingPage() {
                   </div>
 
                   {/* Term 4 */}
-                  <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                  <div className="rounded-xl p-3 md:p-4 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+                    <div className="flex items-start gap-2.5 md:gap-3">
+                      <div className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
                         <span className="text-xl md:text-2xl">⏱️</span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -175,9 +175,9 @@ export default function ThankYouMarketingPage() {
                   </div>
 
                   {/* Term 5 */}
-                  <div className="rounded-xl p-4 md:p-6 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
+                  <div className="rounded-xl p-3 md:p-4 border-2" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+                    <div className="flex items-start gap-2.5 md:gap-3">
+                      <div className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
                         <span className="text-xl md:text-2xl">⚡</span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -193,8 +193,8 @@ export default function ThankYouMarketingPage() {
                 </div>
 
                 {/* Agreement Buttons */}
-                <div className="rounded-xl p-6 md:p-8 mt-8" style={{ background: 'var(--bg-soft)', border: '2px solid var(--accent)' }}>
-                  <div className="rounded-lg p-3 mb-5 flex items-start gap-3" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444' }}>
+                <div className="rounded-xl p-5 md:p-6 mt-6" style={{ background: 'var(--bg-soft)', border: '2px solid var(--accent)' }}>
+                  <div className="rounded-lg p-3 mb-4 flex items-start gap-3" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444' }}>
                     <span className="text-lg mt-0.5">⚠️</span>
                     <p className="text-sm font-medium" style={{ color: '#ef4444' }}>
                       Please read <strong>every term above carefully</strong> before pressing the green button. Make sure you fully understand and accept all conditions.

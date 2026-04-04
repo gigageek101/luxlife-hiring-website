@@ -294,21 +294,21 @@ export default function ApplyForMarketingPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 md:pt-32 pb-8" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen pt-20 md:pt-24 pb-6" style={{ background: 'var(--bg-primary)' }}>
       <div className="mx-auto max-w-2xl px-4 md:px-6">
         {/* Progress Bar */}
-        <div className="mb-6 md:mb-8 rounded-xl p-4 md:p-6" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-            <span className="text-sm md:text-base font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>
+        <div className="mb-4 rounded-xl p-3 md:p-4" style={{ background: 'var(--surface)', border: '2px solid var(--accent)' }}>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className="text-xs md:text-sm font-semibold whitespace-nowrap" style={{ color: 'var(--text-primary)' }}>
               📋 Step {applicantData.currentStep} of {TOTAL_STEPS}
             </span>
-            <span className="px-3 py-1 rounded-full text-xs md:text-sm font-semibold inline-block w-fit whitespace-nowrap" style={{ background: 'var(--accent)', color: 'white' }}>
-              {Math.round((applicantData.currentStep / TOTAL_STEPS) * 100)}% Complete
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap" style={{ background: 'var(--accent)', color: 'white' }}>
+              {Math.round((applicantData.currentStep / TOTAL_STEPS) * 100)}%
             </span>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-2 md:h-3 shadow-inner overflow-hidden">
+          <div className="w-full bg-gray-700 rounded-full h-2 shadow-inner overflow-hidden">
             <div 
-              className="h-2 md:h-3 rounded-full transition-all duration-500 shadow-lg"
+              className="h-2 rounded-full transition-all duration-500 shadow-lg"
               style={{ 
                 width: `${(applicantData.currentStep / TOTAL_STEPS) * 100}%`,
                 background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))',
@@ -316,29 +316,9 @@ export default function ApplyForMarketingPage() {
               }}
             ></div>
           </div>
-          <div className="mt-2 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-            ⏱️ Time remaining: ~{Math.max(0, 10 - Math.round((applicantData.currentStep / TOTAL_STEPS) * 10))} min
-          </div>
         </div>
 
-        {/* Purpose Statement */}
-        <div className="rounded-xl border p-4 md:p-6 mb-4 md:mb-6" style={{ background: 'var(--surface)', borderColor: 'var(--accent)' }}>
-          <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-base md:text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Why we need this information</h3>
-              <p className="mt-1 text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
-                We use these details to find the <span className="font-medium" style={{ color: 'var(--accent)' }}>perfectly fitting opportunity</span> for your skills and preferences.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl shadow-lg p-4 md:p-8" style={{ background: 'var(--surface)' }}>
+        <div className="rounded-xl shadow-lg p-4 md:p-6" style={{ background: 'var(--surface)' }}>
           {applicantData.currentStep === 1 && <Step1 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 2 && <Step2 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 3 && <Step3 onNext={handleNext} data={applicantData} />}
@@ -831,7 +811,7 @@ function Step6({
         )}
       </div>
       
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex justify-between text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
           <span>Question {currentQuestionIndex + 1} of {quizQuestions.length}</span>
           <span>Need {config.englishMinCorrect}/{quizQuestions.length} correct</span>
@@ -847,14 +827,14 @@ function Step6({
         </div>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-5">
         <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
           {currentQuestion.question}
         </h3>
         
         <div className="space-y-3">
           {currentQuestion.options.map((option, index) => (
-            <label key={index} className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-opacity-50 transition-colors" style={{ borderColor: 'var(--text-muted)', background: selectedAnswer === index ? 'var(--accent-dark)' : 'transparent' }}>
+            <label key={index} className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-opacity-50 transition-colors" style={{ borderColor: 'var(--text-muted)', background: selectedAnswer === index ? 'var(--accent-dark)' : 'transparent' }}>
               <input
                 type="radio"
                 name="quiz-answer"
@@ -970,15 +950,15 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Memory Test</h2>
         
-        <div className="mb-8">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
+        <div className="mb-5">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
             🧠
           </div>
-          <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-base mb-4" style={{ color: 'var(--text-secondary)' }}>
             We'll now test your short-term memory. You'll see a sequence of colored circles for 4 seconds, 
             then you'll need to repeat the sequence in the correct order.
           </p>
-          <div className="rounded-lg p-4 mb-6" style={{ background: 'var(--bg-primary)' }}>
+          <div className="rounded-lg p-3 mb-4" style={{ background: 'var(--bg-primary)' }}>
             <p style={{ color: 'var(--text-secondary)' }}>
               <strong>Instructions:</strong><br/>
               1. Memorize the sequence of {sequenceLength} colored circles<br/>
@@ -992,7 +972,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
         
         <button
           onClick={startMemoryTest}
-          className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200"
+          className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200"
           style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}
         >
           Start Memory Test
@@ -1006,8 +986,8 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Memorize This Sequence</h2>
         
-        <div className="border-2 rounded-lg p-6 mb-8" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
-          <div className="mb-6">
+        <div className="border-2 rounded-lg p-4 mb-5" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+          <div className="mb-4">
             <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full mb-4" style={{ background: 'var(--accent)', boxShadow: '0 4px 12px rgba(255, 107, 0, 0.3)' }}>
               <span className="text-2xl">⏱️</span>
               <span className="text-3xl font-bold text-white">{memorizeCountdown}</span>
@@ -1040,7 +1020,7 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6" style={{ color: 'var(--text-primary)' }}>Get Ready!</h2>
         
-        <div className="border-2 rounded-lg p-8 mb-8" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
+        <div className="border-2 rounded-lg p-6 mb-5" style={{ background: 'var(--bg-primary)', borderColor: 'var(--accent)' }}>
           <div className="text-6xl font-bold mb-4" style={{ color: 'var(--accent)' }}>{countdown}</div>
           <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>Get ready to repeat the sequence...</p>
         </div>
@@ -1055,10 +1035,10 @@ function Step7({ onMemoryTestSubmit, data }: { onMemoryTestSubmit: (result: Memo
           Repeat the Sequence ({userAnswers.length}/{sequenceLength})
         </h2>
         
-        <div className="mb-8">
+        <div className="mb-5">
           <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>Click the circles in the same order you saw them:</p>
           
-          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto mb-6">
+          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto mb-4">
             {memoryItems.map((item, index) => (
               <button
                 key={index}
@@ -1136,12 +1116,12 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
-        <img src="/images/test-typing.png" alt="Typing Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
-        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.</p>
-        <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
+        <img src="/images/test-typing.png" alt="Typing Test" className="w-20 h-20 mx-auto mb-3 rounded-2xl object-cover" />
+        <p className="text-base mb-4" style={{ color: 'var(--text-secondary)' }}>You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.</p>
+        <div className="rounded-lg p-3 mb-4 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Instructions:</strong><br/>1. A paragraph of text will appear on screen<br/>2. Type it as fast and accurately as you can<br/>3. You have 60 seconds<br/>4. You need at least <strong>{config.typingMinWpm} words per minute</strong> to pass</p>
         </div>
-        <button onClick={startTest} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Typing Test</button>
+        <button onClick={startTest} className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Typing Test</button>
       </div>
     )
   }
@@ -1324,12 +1304,12 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
-        <img src="/images/test-speed.png" alt="Speed Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
-        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.</p>
-        <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
+        <img src="/images/test-speed.png" alt="Speed Test" className="w-20 h-20 mx-auto mb-3 rounded-2xl object-cover" />
+        <p className="text-base mb-4" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.</p>
+        <div className="rounded-lg p-3 mb-4 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Requirements:</strong><br/>• Minimum <strong>{config.speedMinDownload} Mbps</strong> download speed<br/>• Make sure no large downloads are running<br/>• Close other tabs using bandwidth for best results</p>
         </div>
-        <button onClick={runTest} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Speed Test</button>
+        <button onClick={runTest} className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Speed Test</button>
       </div>
     )
   }
@@ -1339,18 +1319,18 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Speed Test Results</h2>
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="rounded-xl p-5" style={{ background: 'var(--bg-primary)', border: `2px solid ${dlPassed ? '#10b981' : '#ef4444'}` }}>
+          <div className="rounded-xl p-4" style={{ background: 'var(--bg-primary)', border: `2px solid ${dlPassed ? '#10b981' : '#ef4444'}` }}>
             <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Download</p>
             <p className="text-3xl font-bold" style={{ color: dlPassed ? '#10b981' : '#ef4444' }}>{downloadSpeed}</p>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Mbps</p>
           </div>
-          <div className="rounded-xl p-5" style={{ background: 'var(--bg-primary)', border: '2px solid var(--text-muted)' }}>
+          <div className="rounded-xl p-4" style={{ background: 'var(--bg-primary)', border: '2px solid var(--text-muted)' }}>
             <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Upload</p>
             <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{uploadSpeed}</p>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Mbps</p>
           </div>
         </div>
-        <button onClick={handleContinue} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Continue</button>
+        <button onClick={handleContinue} className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Continue</button>
       </div>
     )
   }
@@ -1458,16 +1438,16 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Creativity Test</h2>
-        <img src="/images/test-creativity.png" alt="Creativity Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
-        <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>This test measures your creative thinking ability. It has <strong>two parts</strong> and takes about <strong>4 minutes</strong>.</p>
-        <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
+        <img src="/images/test-creativity.png" alt="Creativity Test" className="w-20 h-20 mx-auto mb-3 rounded-2xl object-cover" />
+        <p className="text-base mb-4" style={{ color: 'var(--text-secondary)' }}>This test measures your creative thinking ability. It has <strong>two parts</strong> and takes about <strong>4 minutes</strong>.</p>
+        <div className="rounded-lg p-3 mb-4 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}>
             <strong>Part 1 - Creative Uses (2 min):</strong> Look at a picture and find 2 unusual uses for an everyday object.<br/><br/>
             <strong>Part 2 - Caption Challenge (2 min):</strong> Write 3 creative social media captions for a product.<br/><br/>
             Both parts must be completed to pass.
           </p>
         </div>
-        <button onClick={() => setPhase('aut')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Creativity Test</button>
+        <button onClick={() => setPhase('aut')} className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Creativity Test</button>
       </div>
     )
   }
@@ -1485,7 +1465,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
         </div>
 
         <div className="rounded-xl p-4 mb-4 text-center" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
-          <img src={selectedObject.image} alt={selectedObject.name} className="w-36 h-36 mx-auto mb-3 rounded-xl object-cover" />
+          <img src={selectedObject.image} alt={selectedObject.name} className="w-28 h-28 mx-auto mb-3 rounded-xl object-cover" />
           <p className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{selectedObject.emoji} {selectedObject.name}</p>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
             Find <strong>2 unusual things</strong> you can use a {selectedObject.name.toLowerCase()} for.
@@ -1544,8 +1524,8 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
             <span className="text-lg">⏱️</span><span className="text-lg font-bold text-white">{Math.floor(captionTimeLeft / 60)}:{String(captionTimeLeft % 60).padStart(2, '0')}</span>
           </div>
         </div>
-        <img src="/images/test-captions.png" alt="Caption Challenge" className="w-24 h-24 mx-auto mb-3 rounded-xl object-cover" />
-        <div className="rounded-xl p-5 mb-4" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
+        <img src="/images/test-captions.png" alt="Caption Challenge" className="w-16 h-16 mx-auto mb-3 rounded-xl object-cover" />
+        <div className="rounded-xl p-4 mb-3" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
           <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>Product: {selectedScenario.product}</p>
           <p className="text-base mb-2" style={{ color: 'var(--text-primary)' }}>{selectedScenario.description}</p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Target audience: {selectedScenario.targetAudience}</p>
@@ -1555,11 +1535,11 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
           {captions.map((cap, i) => (
             <div key={i}>
               <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--text-muted)' }}>Caption {i + 1} {cap.trim().length >= 15 ? '✓' : `(${Math.max(0, 15 - cap.trim().length)} more chars needed)`}</label>
-              <textarea value={cap} onChange={(e) => { const next = [...captions]; next[i] = e.target.value; setCaptions(next) }} placeholder={`Write caption ${i + 1}...`} className="w-full p-3 rounded-lg text-sm outline-none resize-none" style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: `2px solid ${cap.trim().length >= 15 ? '#10b981' : 'var(--text-muted)'}`, minHeight: '70px' }} />
+              <textarea value={cap} onChange={(e) => { const next = [...captions]; next[i] = e.target.value; setCaptions(next) }} placeholder={`Write caption ${i + 1}...`} className="w-full p-3 rounded-lg text-sm outline-none resize-none" style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: `2px solid ${cap.trim().length >= 15 ? '#10b981' : 'var(--text-muted)'}`, minHeight: '60px' }} />
             </div>
           ))}
         </div>
-        <button onClick={() => setPhase('evaluating')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Submit Creativity Test</button>
+        <button onClick={() => setPhase('evaluating')} className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Submit Creativity Test</button>
       </div>
     )
   }
@@ -1600,16 +1580,16 @@ function StepResults({ onNext, data }: { onNext: (data: any) => void, data: Appl
 
   return (
     <div className="text-center">
-      <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: isQualified ? '#10b981' : '#ef4444' }}>
+      <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: isQualified ? '#10b981' : '#ef4444' }}>
         {isQualified ? (
-          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
         ) : (
-          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         )}
       </div>
-      <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{isQualified ? '🎉 Congratulations!' : '❌ Application Not Approved'}</h2>
-      <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>{isQualified ? 'You have successfully passed all qualification requirements!' : 'Unfortunately, you did not meet all the qualification requirements.'}</p>
-      <div className="rounded-lg p-6 mb-6 text-left" style={{ background: 'var(--bg-primary)', border: '2px solid ' + (isQualified ? '#10b981' : '#ef4444') }}>
+      <h2 className="text-xl md:text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{isQualified ? '🎉 Congratulations!' : '❌ Application Not Approved'}</h2>
+      <p className="text-base mb-4" style={{ color: 'var(--text-secondary)' }}>{isQualified ? 'You have successfully passed all qualification requirements!' : 'Unfortunately, you did not meet all the qualification requirements.'}</p>
+      <div className="rounded-lg p-4 mb-4 text-left" style={{ background: 'var(--bg-primary)', border: '2px solid ' + (isQualified ? '#10b981' : '#ef4444') }}>
         <h3 className="font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>📊 Your Results:</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>English Quiz:</span><span className={`font-semibold ${englishPassed ? 'text-green-500' : 'text-red-500'}`}>{englishCorrect}/{englishTotal} {englishPassed ? '✓ Passed' : '✗ Failed'}</span></div>
@@ -1623,11 +1603,11 @@ function StepResults({ onNext, data }: { onNext: (data: any) => void, data: Appl
         </div>
       </div>
       {!isQualified && (
-        <div className="rounded-lg p-6 mb-6" style={{ background: 'var(--bg-soft)' }}>
+        <div className="rounded-lg p-4 mb-4" style={{ background: 'var(--bg-soft)' }}>
           <p className="text-base" style={{ color: 'var(--text-secondary)' }}><strong>Note:</strong> The course is currently full. We appreciate your interest and encourage you to improve your skills and try again in the future.</p>
         </div>
       )}
-      <button onClick={() => onNext({ isCompleted: true, isDisqualified: !isQualified })} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>{isQualified ? 'Continue to Booking' : 'Finish'}</button>
+      <button onClick={() => onNext({ isCompleted: true, isDisqualified: !isQualified })} className="w-full text-white text-base font-semibold py-3 px-6 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>{isQualified ? 'Continue to Booking' : 'Finish'}</button>
     </div>
   )
 }
