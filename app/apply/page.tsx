@@ -131,6 +131,7 @@ export default function ApplyPage() {
 
     setApplicantData(updatedData)
     saveToLocalStorage(updatedData)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 
     // Track attempt as soon as results page is reached (before user can close tab)
     if (updatedData.currentStep === TOTAL_STEPS) {
@@ -224,7 +225,7 @@ export default function ApplyPage() {
         <div className="mx-auto max-w-2xl px-4 md:px-6">
           <div className="rounded-xl shadow-lg p-6 md:p-10" style={{ background: 'var(--surface)' }}>
             <div className="text-center mb-8">
-              <img src="/images/warning-focus.png" alt="Focus" className="w-48 h-48 mx-auto mb-6 rounded-2xl object-cover" />
+              <img src="/images/warning-focus.png" alt="Focus" className="w-36 h-36 mx-auto mb-5 rounded-2xl object-cover" />
               <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Before You Begin
               </h1>
@@ -1113,7 +1114,7 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
-        <img src="/images/test-typing.png" alt="Typing Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
+        <img src="/images/test-typing.png" alt="Typing Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
           You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.
         </p>
@@ -1202,7 +1203,7 @@ function SpeedGauge({ speed, maxSpeed = 200, label }: { speed: number, maxSpeed?
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 280 200" className="w-full max-w-xs">
+      <svg viewBox="0 0 280 200" className="w-full max-w-[260px]">
         <defs>
           <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ef4444" />
@@ -1321,7 +1322,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
-        <img src="/images/test-speed.png" alt="Speed Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
+        <img src="/images/test-speed.png" alt="Speed Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
           We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.
         </p>

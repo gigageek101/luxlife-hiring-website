@@ -136,6 +136,7 @@ export default function ApplyForMarketingPage() {
 
     setApplicantData(updatedData)
     saveToLocalStorage(updatedData)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 
     if (updatedData.currentStep === TOTAL_STEPS) {
       const isQualified = !updatedData.isDisqualified
@@ -228,7 +229,7 @@ export default function ApplyForMarketingPage() {
         <div className="mx-auto max-w-2xl px-4 md:px-6">
           <div className="rounded-xl shadow-lg p-6 md:p-10" style={{ background: 'var(--surface)' }}>
             <div className="text-center mb-8">
-              <img src="/images/warning-focus.png" alt="Focus" className="w-48 h-48 mx-auto mb-6 rounded-2xl object-cover" />
+              <img src="/images/warning-focus.png" alt="Focus" className="w-36 h-36 mx-auto mb-5 rounded-2xl object-cover" />
               <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Before You Begin
               </h1>
@@ -1108,7 +1109,7 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
-        <img src="/images/test-typing.png" alt="Typing Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
+        <img src="/images/test-typing.png" alt="Typing Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Instructions:</strong><br/>1. A paragraph of text will appear on screen<br/>2. Type it as fast and accurately as you can<br/>3. You have 60 seconds<br/>4. You need at least <strong>{config.typingMinWpm} words per minute</strong> to pass</p>
@@ -1173,7 +1174,7 @@ function SpeedGauge({ speed, maxSpeed = 200, label }: { speed: number, maxSpeed?
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 280 200" className="w-full max-w-xs">
+      <svg viewBox="0 0 280 200" className="w-full max-w-[260px]">
         <defs>
           <linearGradient id="gaugeGradM" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ef4444" />
@@ -1288,7 +1289,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
-        <img src="/images/test-speed.png" alt="Speed Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
+        <img src="/images/test-speed.png" alt="Speed Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Requirements:</strong><br/>• Minimum <strong>{config.speedMinDownload} Mbps</strong> download speed<br/>• Make sure no large downloads are running<br/>• Close other tabs using bandwidth for best results</p>
@@ -1419,7 +1420,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Creativity Test</h2>
-        <img src="/images/test-creativity.png" alt="Creativity Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
+        <img src="/images/test-creativity.png" alt="Creativity Test" className="w-28 h-28 mx-auto mb-3 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>This test measures your creative thinking ability. It has <strong>two parts</strong> and takes about <strong>4 minutes</strong>.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}>
@@ -1446,7 +1447,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
         </div>
 
         <div className="rounded-xl p-4 mb-4 text-center" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
-          <img src={selectedObject.image} alt={selectedObject.name} className="w-48 h-48 mx-auto mb-3 rounded-xl object-cover" />
+          <img src={selectedObject.image} alt={selectedObject.name} className="w-36 h-36 mx-auto mb-3 rounded-xl object-cover" />
           <p className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{selectedObject.emoji} {selectedObject.name}</p>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
             Find <strong>2 unusual things</strong> you can use a {selectedObject.name.toLowerCase()} for.
@@ -1505,7 +1506,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
             <span className="text-lg">⏱️</span><span className="text-lg font-bold text-white">{Math.floor(captionTimeLeft / 60)}:{String(captionTimeLeft % 60).padStart(2, '0')}</span>
           </div>
         </div>
-        <img src="/images/test-captions.png" alt="Caption Challenge" className="w-32 h-32 mx-auto mb-4 rounded-xl object-cover" />
+        <img src="/images/test-captions.png" alt="Caption Challenge" className="w-24 h-24 mx-auto mb-3 rounded-xl object-cover" />
         <div className="rounded-xl p-5 mb-4" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
           <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>Product: {selectedScenario.product}</p>
           <p className="text-base mb-2" style={{ color: 'var(--text-primary)' }}>{selectedScenario.description}</p>
