@@ -1231,63 +1231,88 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
   const [downloadSpeed, setDownloadSpeed] = useState<number | null>(null)
   const [uploadSpeed, setUploadSpeed] = useState<number | null>(null)
   const [liveSpeed, setLiveSpeed] = useState(0)
-  const [sampleCount, setSampleCount] = useState(0)
 
-  const runSamplesFor = async (direction: 'download' | 'upload', durationMs: number) => {
-    const speeds: number[] = []
-    const deadline = performance.now() + durationMs
-    const PARALLEL = 3
+  const STREAMS = 6
+  const WARMUP_MS = 2000
+  const TEST_DURATION = 15000
+  const UPLOAD_CHUNK = 10 * 1024 * 1024
 
-    while (performance.now() < deadline) {
-      try {
-        const batch = Array.from({ length: PARALLEL }, async () => {
-          if (direction === 'download') {
-            const start = performance.now()
-            const res = await fetch('/api/speedtest/download?t=' + Math.random(), { cache: 'no-store' })
-            const blob = await res.blob()
-            const elapsed = (performance.now() - start) / 1000
-            return elapsed > 0 ? (blob.size * 8) / elapsed / 1_000_000 : 0
-          } else {
-            const payload = new Uint8Array(5 * 1024 * 1024)
-            const start = performance.now()
-            await fetch('/api/speedtest/upload', { method: 'POST', body: payload })
-            const elapsed = (performance.now() - start) / 1000
-            return elapsed > 0 ? (payload.length * 8) / elapsed / 1_000_000 : 0
-          }
-        })
+  const xhrMeasure = (direction: 'download' | 'upload', durationMs: number, onProgress: (speed: number) => void): Promise<number> => {
+    return new Promise((resolve) => {
+      const xhrs: XMLHttpRequest[] = []
+      const testStart = performance.now()
+      let mStart: number | null = null
+      let totalBytes = 0
+      let done = false
+      const uploadData = direction === 'upload' ? new Uint8Array(UPLOAD_CHUNK) : null
 
-        const start = performance.now()
-        const results = await Promise.all(batch)
-        const elapsed = (performance.now() - start) / 1000
-        const totalBytes = direction === 'download' ? 10 * 1024 * 1024 * PARALLEL : 5 * 1024 * 1024 * PARALLEL
-        const combinedMbps = elapsed > 0 ? (totalBytes * 8) / elapsed / 1_000_000 : 0
+      const end = () => {
+        if (done) return
+        done = true
+        xhrs.forEach(x => { try { x.abort() } catch {} })
+        if (mStart !== null) {
+          const elapsed = (performance.now() - mStart) / 1000
+          resolve(elapsed > 0 ? Math.round((totalBytes * 8 / elapsed / 1_000_000) * 10) / 10 : 0)
+        } else { resolve(0) }
+      }
 
-        if (combinedMbps > 0) {
-          speeds.push(combinedMbps)
-          setLiveSpeed(combinedMbps)
+      const launch = (i: number) => {
+        if (done) return
+        const xhr = new XMLHttpRequest()
+        xhrs[i] = xhr
+        let last = 0
+
+        const handleProgress = (e: ProgressEvent) => {
+          if (done) return
+          const now = performance.now()
+          const elapsed = now - testStart
+          const bytes = e.loaded - last
+          last = e.loaded
+          if (elapsed < WARMUP_MS) return
+          if (mStart === null) { mStart = now; totalBytes = 0; return }
+          totalBytes += bytes
+          const mElapsed = (now - mStart) / 1000
+          if (mElapsed > 0.1) onProgress(totalBytes * 8 / mElapsed / 1_000_000)
+          if (elapsed >= durationMs) end()
         }
-        setSampleCount(speeds.length)
-      } catch { break }
-    }
 
-    if (speeds.length === 0) return 0
-    return Math.round((speeds.reduce((a, b) => a + b, 0) / speeds.length) * 10) / 10
+        if (direction === 'download') {
+          xhr.open('GET', '/api/speedtest/download?t=' + Math.random() + '&s=' + i, true)
+          xhr.responseType = 'arraybuffer'
+          xhr.onprogress = handleProgress
+        } else {
+          xhr.open('POST', '/api/speedtest/upload?t=' + Math.random() + '&s=' + i, true)
+          xhr.upload.onprogress = handleProgress
+        }
+
+        xhr.onload = () => {
+          if (!done && (performance.now() - testStart) < durationMs) launch(i)
+          else end()
+        }
+        xhr.onerror = () => {
+          if (!done && (performance.now() - testStart) < durationMs) setTimeout(() => launch(i), 200)
+        }
+
+        direction === 'upload' ? xhr.send(uploadData) : xhr.send()
+      }
+
+      for (let i = 0; i < STREAMS; i++) launch(i)
+      setTimeout(end, durationMs)
+    })
   }
 
   const runTest = async () => {
     setPhase('download')
     setLiveSpeed(0)
-    setSampleCount(0)
 
-    const dl = await runSamplesFor('download', 15000)
+    const dl = await xhrMeasure('download', TEST_DURATION, (s) => setLiveSpeed(s))
     setDownloadSpeed(dl)
     setLiveSpeed(dl)
 
     setPhase('upload')
     setLiveSpeed(0)
-    setSampleCount(0)
 
-    const ul = await runSamplesFor('upload', 15000)
+    const ul = await xhrMeasure('upload', TEST_DURATION, (s) => setLiveSpeed(s))
     setUploadSpeed(ul)
     setLiveSpeed(ul)
 
@@ -1341,7 +1366,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
       </h2>
       <SpeedGauge
         speed={liveSpeed}
-        label={phase === 'download' ? `⬇ Download — Sample ${sampleCount}` : `⬆ Upload — Sample ${sampleCount}`}
+        label={phase === 'download' ? '⬇ Measuring Download...' : '⬆ Measuring Upload...'}
       />
       {downloadSpeed !== null && phase === 'upload' && (
         <p className="text-sm mt-2 font-medium" style={{ color: 'var(--text-muted)' }}>Download result: {downloadSpeed} Mbps</p>

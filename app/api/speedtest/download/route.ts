@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const PAYLOAD_SIZE = 10 * 1024 * 1024 // 10MB
+const PAYLOAD_SIZE = 25 * 1024 * 1024 // 25MB
 
 const buffer = new Uint8Array(PAYLOAD_SIZE)
 for (let i = 0; i < PAYLOAD_SIZE; i++) {
