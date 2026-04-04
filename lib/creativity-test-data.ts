@@ -1,10 +1,10 @@
 export const alternateUsesObjects = [
-  { name: 'Paperclip', emoji: '📎', hint: 'Think beyond holding papers together!' },
-  { name: 'Brick', emoji: '🧱', hint: 'A brick can be so much more than a building block!' },
-  { name: 'Shoe', emoji: '👟', hint: 'A shoe has interesting shape, material, and structure!' },
-  { name: 'Empty Bottle', emoji: '🍾', hint: 'A container, a shape, a material — get creative!' },
-  { name: 'Rubber Band', emoji: '🔗', hint: 'Stretchy, loopy, and surprisingly versatile!' },
-  { name: 'Spoon', emoji: '🥄', hint: 'Not just for eating — what else could it do?' },
+  { name: 'Paperclip', emoji: '📎', image: '/images/creativity-paperclip.png', pictureUse: 'a tiny picture frame' },
+  { name: 'Brick', emoji: '🧱', image: '/images/creativity-brick.png', pictureUse: 'a bookend' },
+  { name: 'Shoe', emoji: '👟', image: '/images/creativity-shoe.png', pictureUse: 'a flower pot' },
+  { name: 'Empty Bottle', emoji: '🍾', image: '/images/creativity-bottle.png', pictureUse: 'a rolling pin for dough' },
+  { name: 'Rubber Band', emoji: '🔗', image: '/images/creativity-rubberband.png', pictureUse: 'grip for opening a jar lid' },
+  { name: 'Spoon', emoji: '🥄', image: '/images/creativity-spoon.png', pictureUse: 'a tiny catapult' },
 ]
 
 export const captionScenarios = [

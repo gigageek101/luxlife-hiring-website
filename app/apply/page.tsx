@@ -22,6 +22,7 @@ export default function ApplyPage() {
   const [quizAnswers, setQuizAnswers] = useState<any[]>([])
   const [memoryTestResult, setMemoryTestResult] = useState<MemoryTestResult | null>(null)
   const [isClient, setIsClient] = useState(false)
+  const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false)
   const router = useRouter()
 
   // Ensure we're on the client side to avoid hydration mismatch
@@ -212,6 +213,84 @@ export default function ApplyPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--accent)' }}></div>
           <p style={{ color: 'var(--text-primary)' }}>Loading your application...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!hasAcknowledgedWarning) {
+    return (
+      <div className="min-h-screen pt-24 md:pt-32 pb-8" style={{ background: 'var(--bg-primary)' }}>
+        <div className="mx-auto max-w-2xl px-4 md:px-6">
+          <div className="rounded-xl shadow-lg p-6 md:p-10" style={{ background: 'var(--surface)' }}>
+            <div className="text-center mb-8">
+              <img src="/images/warning-focus.png" alt="Focus" className="w-48 h-48 mx-auto mb-6 rounded-2xl object-cover" />
+              <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Before You Begin
+              </h1>
+              <p className="text-sm md:text-base" style={{ color: 'var(--text-muted)' }}>
+                Please read the following carefully
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: '#ef4444' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">1️⃣</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#ef4444' }}>You only have ONE attempt</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      This application cannot be retaken. Make sure you are fully prepared before starting.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(255, 107, 0, 0.1)', borderColor: 'var(--accent)' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">🤫</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: 'var(--accent)' }}>Find a quiet, focused space</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      Sit somewhere calm with no distractions. Close unnecessary tabs and put your phone on silent.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(59, 130, 246, 0.1)', borderColor: '#3b82f6' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">⏱️</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#3b82f6' }}>You have approximately 11 minutes</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      The entire application includes questions and timed skill tests. Stay focused throughout and give it your best effort.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: '#10b981' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">💻</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#10b981' }}>Stable internet required</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      Part of this application includes an internet speed test. Make sure you have a reliable connection.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setHasAcknowledgedWarning(true)}
+              className="w-full py-4 rounded-xl text-white font-bold text-base md:text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+              style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', boxShadow: '0 4px 15px rgba(255, 107, 0, 0.4)' }}
+            >
+              I understand — Start Application
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -1034,9 +1113,7 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
-          <span className="text-3xl">⌨️</span>
-        </div>
+        <img src="/images/test-typing.png" alt="Typing Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
           You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.
         </p>
@@ -1091,11 +1168,90 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
   )
 }
 
+function SpeedGauge({ speed, maxSpeed = 200, label }: { speed: number, maxSpeed?: number, label: string }) {
+  const clampedSpeed = Math.min(speed, maxSpeed)
+  const angle = -135 + (clampedSpeed / maxSpeed) * 270
+  const cx = 140, cy = 140, r = 110
+
+  const ticks = [0, 25, 50, 75, 100, 150, 200]
+  const getTickPos = (val: number) => {
+    const a = (-135 + (Math.min(val, maxSpeed) / maxSpeed) * 270) * (Math.PI / 180)
+    return {
+      x1: cx + (r - 12) * Math.cos(a),
+      y1: cy + (r - 12) * Math.sin(a),
+      x2: cx + (r - 2) * Math.cos(a),
+      y2: cy + (r - 2) * Math.sin(a),
+      lx: cx + (r - 28) * Math.cos(a),
+      ly: cy + (r - 28) * Math.sin(a),
+    }
+  }
+
+  const arcPath = (startAngle: number, endAngle: number) => {
+    const s = (startAngle * Math.PI) / 180
+    const e = (endAngle * Math.PI) / 180
+    const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s)
+    const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e)
+    const large = endAngle - startAngle > 180 ? 1 : 0
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`
+  }
+
+  const needleAngle = angle * (Math.PI / 180)
+  const needleLen = r - 25
+  const nx = cx + needleLen * Math.cos(needleAngle)
+  const ny = cy + needleLen * Math.sin(needleAngle)
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 280 200" className="w-full max-w-xs">
+        <defs>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="30%" stopColor="#f59e0b" />
+            <stop offset="60%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="#06b6d4" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <path d={arcPath(-135, 135)} fill="none" stroke="#2a2a3a" strokeWidth="14" strokeLinecap="round" />
+        <path d={arcPath(-135, 135)} fill="none" stroke="url(#gaugeGrad)" strokeWidth="8" strokeLinecap="round" opacity="0.9" />
+
+        {ticks.map(val => {
+          const t = getTickPos(val)
+          return (
+            <g key={val}>
+              <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#9ca3af" strokeWidth="2" />
+              <text x={t.lx} y={t.ly} fill="#9ca3af" fontSize="10" textAnchor="middle" dominantBaseline="middle">{val}</text>
+            </g>
+          )
+        })}
+
+        <line
+          x1={cx} y1={cy} x2={nx} y2={ny}
+          stroke="var(--accent, #ff6b00)" strokeWidth="3" strokeLinecap="round"
+          filter="url(#glow)"
+          style={{ transition: 'x2 0.8s cubic-bezier(0.34,1.56,0.64,1), y2 0.8s cubic-bezier(0.34,1.56,0.64,1)' }}
+        />
+
+        <circle cx={cx} cy={cy} r="8" fill="var(--accent, #ff6b00)" />
+        <circle cx={cx} cy={cy} r="4" fill="#1a1a2e" />
+
+        <text x={cx} y={cy + 35} fill="var(--accent, #ff6b00)" fontSize="28" fontWeight="bold" textAnchor="middle">{speed.toFixed(1)}</text>
+        <text x={cx} y={cy + 52} fill="#9ca3af" fontSize="12" textAnchor="middle">Mbps</text>
+      </svg>
+      <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
+    </div>
+  )
+}
+
 function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
   const [phase, setPhase] = useState<'intro' | 'download' | 'upload' | 'done'>('intro')
   const [downloadSpeed, setDownloadSpeed] = useState<number | null>(null)
   const [uploadSpeed, setUploadSpeed] = useState<number | null>(null)
-  const [progress, setProgress] = useState(0)
+  const [liveSpeed, setLiveSpeed] = useState(0)
   const [sampleCount, setSampleCount] = useState(0)
 
   const runSamplesFor = async (direction: 'download' | 'upload', durationMs: number) => {
@@ -1109,13 +1265,21 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
           const res = await fetch('/api/speedtest/download?t=' + Date.now(), { cache: 'no-store' })
           const blob = await res.blob()
           const elapsed = (performance.now() - start) / 1000
-          if (elapsed > 0) speeds.push((blob.size * 8) / elapsed / 1_000_000)
+          if (elapsed > 0) {
+            const mbps = (blob.size * 8) / elapsed / 1_000_000
+            speeds.push(mbps)
+            setLiveSpeed(mbps)
+          }
         } else {
           const payload = new Uint8Array(2 * 1024 * 1024)
           const start = performance.now()
           await fetch('/api/speedtest/upload', { method: 'POST', body: payload })
           const elapsed = (performance.now() - start) / 1000
-          if (elapsed > 0) speeds.push((payload.length * 8) / elapsed / 1_000_000)
+          if (elapsed > 0) {
+            const mbps = (payload.length * 8) / elapsed / 1_000_000
+            speeds.push(mbps)
+            setLiveSpeed(mbps)
+          }
         }
         setSampleCount(speeds.length)
       } catch { break }
@@ -1128,19 +1292,20 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
 
   const runTest = async () => {
     setPhase('download')
-    setProgress(5)
+    setLiveSpeed(0)
     setSampleCount(0)
 
     const dl = await runSamplesFor('download', 15000)
     setDownloadSpeed(dl)
-    setProgress(50)
+    setLiveSpeed(dl)
 
     setPhase('upload')
+    setLiveSpeed(0)
     setSampleCount(0)
 
     const ul = await runSamplesFor('upload', 15000)
     setUploadSpeed(ul)
-    setProgress(100)
+    setLiveSpeed(ul)
 
     setPhase('done')
   }
@@ -1156,9 +1321,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}>
-          <span className="text-3xl">🌐</span>
-        </div>
+        <img src="/images/test-speed.png" alt="Speed Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>
           We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.
         </p>
@@ -1203,20 +1366,15 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
 
   return (
     <div className="text-center">
-      <h2 className="text-xl md:text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+      <h2 className="text-xl md:text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
         {phase === 'download' ? 'Testing Download Speed...' : 'Testing Upload Speed...'}
       </h2>
-      <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse" style={{ background: 'var(--accent)' }}>
-        <span className="text-4xl">{phase === 'download' ? '⬇️' : '⬆️'}</span>
-      </div>
-      <div className="w-full bg-gray-700 rounded-full h-3 mb-4 overflow-hidden">
-        <div className="h-3 rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}></div>
-      </div>
-      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-        Sample {sampleCount}... measuring average speed
-      </p>
+      <SpeedGauge
+        speed={liveSpeed}
+        label={phase === 'download' ? `⬇ Download — Sample ${sampleCount}` : `⬆ Upload — Sample ${sampleCount}`}
+      />
       {downloadSpeed !== null && phase === 'upload' && (
-        <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Download: {downloadSpeed} Mbps (avg)</p>
+        <p className="text-sm mt-2 font-medium" style={{ color: 'var(--text-muted)' }}>Download result: {downloadSpeed} Mbps</p>
       )}
     </div>
   )

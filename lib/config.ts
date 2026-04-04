@@ -8,7 +8,7 @@ export const config = {
   typingMinWpm: 45,
   typingTestDuration: 60,
   speedMinDownload: 35,
-  creativityMinUses: 5,
+  creativityMinUses: 2,
   creativityMinCaptions: 3,
 }
 

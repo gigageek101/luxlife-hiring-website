@@ -23,6 +23,7 @@ export default function ApplyForMarketingPage() {
   const [quizAnswers, setQuizAnswers] = useState<any[]>([])
   const [memoryTestResult, setMemoryTestResult] = useState<MemoryTestResult | null>(null)
   const [isClient, setIsClient] = useState(false)
+  const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false)
   const router = useRouter()
 
   // Ensure we're on the client side to avoid hydration mismatch
@@ -114,7 +115,7 @@ export default function ApplyForMarketingPage() {
         break
       case 10:
         if (data.creativityTestResult && !data.creativityTestResult.passed) {
-          return { disqualified: true, reason: `You need at least ${config.creativityMinUses} alternate uses and ${config.creativityMinCaptions} captions to pass the creativity test.` }
+          return { disqualified: true, reason: `You need at least ${config.creativityMinUses} valid creative uses and ${config.creativityMinCaptions} captions to pass the creativity test.` }
         }
         break
     }
@@ -216,6 +217,84 @@ export default function ApplyForMarketingPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--accent)' }}></div>
           <p style={{ color: 'var(--text-primary)' }}>Loading your application...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!hasAcknowledgedWarning) {
+    return (
+      <div className="min-h-screen pt-24 md:pt-32 pb-8" style={{ background: 'var(--bg-primary)' }}>
+        <div className="mx-auto max-w-2xl px-4 md:px-6">
+          <div className="rounded-xl shadow-lg p-6 md:p-10" style={{ background: 'var(--surface)' }}>
+            <div className="text-center mb-8">
+              <img src="/images/warning-focus.png" alt="Focus" className="w-48 h-48 mx-auto mb-6 rounded-2xl object-cover" />
+              <h1 className="text-2xl md:text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Before You Begin
+              </h1>
+              <p className="text-sm md:text-base" style={{ color: 'var(--text-muted)' }}>
+                Please read the following carefully
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: '#ef4444' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">1️⃣</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#ef4444' }}>You only have ONE attempt</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      This application cannot be retaken. Make sure you are fully prepared before starting.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(255, 107, 0, 0.1)', borderColor: 'var(--accent)' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">🤫</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: 'var(--accent)' }}>Find a quiet, focused space</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      Sit somewhere calm with no distractions. Close unnecessary tabs and put your phone on silent.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(59, 130, 246, 0.1)', borderColor: '#3b82f6' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">⏱️</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#3b82f6' }}>You have approximately 11 minutes</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      The entire application includes questions and timed skill tests. Stay focused throughout and give it your best effort.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg p-4 border-l-4" style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: '#10b981' }}>
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">💻</span>
+                  <div>
+                    <h3 className="font-bold text-base md:text-lg" style={{ color: '#10b981' }}>Stable internet required</h3>
+                    <p className="text-sm md:text-base mt-1" style={{ color: 'var(--text-secondary)' }}>
+                      Part of this application includes an internet speed test. Make sure you have a reliable connection.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setHasAcknowledgedWarning(true)}
+              className="w-full py-4 rounded-xl text-white font-bold text-base md:text-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+              style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))', boxShadow: '0 4px 15px rgba(255, 107, 0, 0.4)' }}
+            >
+              I understand — Start Application
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -1029,7 +1108,7 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Typing Speed Test</h2>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">⌨️</span></div>
+        <img src="/images/test-typing.png" alt="Typing Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>You will have <strong>60 seconds</strong> to type the paragraph shown on screen as quickly and accurately as possible.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Instructions:</strong><br/>1. A paragraph of text will appear on screen<br/>2. Type it as fast and accurately as you can<br/>3. You have 60 seconds<br/>4. You need at least <strong>{config.typingMinWpm} words per minute</strong> to pass</p>
@@ -1060,11 +1139,90 @@ function StepTypingTest({ onNext, data }: { onNext: (data: any) => void, data: A
   )
 }
 
+function SpeedGauge({ speed, maxSpeed = 200, label }: { speed: number, maxSpeed?: number, label: string }) {
+  const clampedSpeed = Math.min(speed, maxSpeed)
+  const angle = -135 + (clampedSpeed / maxSpeed) * 270
+  const cx = 140, cy = 140, r = 110
+
+  const ticks = [0, 25, 50, 75, 100, 150, 200]
+  const getTickPos = (val: number) => {
+    const a = (-135 + (Math.min(val, maxSpeed) / maxSpeed) * 270) * (Math.PI / 180)
+    return {
+      x1: cx + (r - 12) * Math.cos(a),
+      y1: cy + (r - 12) * Math.sin(a),
+      x2: cx + (r - 2) * Math.cos(a),
+      y2: cy + (r - 2) * Math.sin(a),
+      lx: cx + (r - 28) * Math.cos(a),
+      ly: cy + (r - 28) * Math.sin(a),
+    }
+  }
+
+  const arcPath = (startAngle: number, endAngle: number) => {
+    const s = (startAngle * Math.PI) / 180
+    const e = (endAngle * Math.PI) / 180
+    const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s)
+    const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e)
+    const large = endAngle - startAngle > 180 ? 1 : 0
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`
+  }
+
+  const needleAngle = angle * (Math.PI / 180)
+  const needleLen = r - 25
+  const nx = cx + needleLen * Math.cos(needleAngle)
+  const ny = cy + needleLen * Math.sin(needleAngle)
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 280 200" className="w-full max-w-xs">
+        <defs>
+          <linearGradient id="gaugeGradM" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="30%" stopColor="#f59e0b" />
+            <stop offset="60%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="#06b6d4" />
+          </linearGradient>
+          <filter id="glowM">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <path d={arcPath(-135, 135)} fill="none" stroke="#2a2a3a" strokeWidth="14" strokeLinecap="round" />
+        <path d={arcPath(-135, 135)} fill="none" stroke="url(#gaugeGradM)" strokeWidth="8" strokeLinecap="round" opacity="0.9" />
+
+        {ticks.map(val => {
+          const t = getTickPos(val)
+          return (
+            <g key={val}>
+              <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="#9ca3af" strokeWidth="2" />
+              <text x={t.lx} y={t.ly} fill="#9ca3af" fontSize="10" textAnchor="middle" dominantBaseline="middle">{val}</text>
+            </g>
+          )
+        })}
+
+        <line
+          x1={cx} y1={cy} x2={nx} y2={ny}
+          stroke="var(--accent, #ff6b00)" strokeWidth="3" strokeLinecap="round"
+          filter="url(#glowM)"
+          style={{ transition: 'x2 0.8s cubic-bezier(0.34,1.56,0.64,1), y2 0.8s cubic-bezier(0.34,1.56,0.64,1)' }}
+        />
+
+        <circle cx={cx} cy={cy} r="8" fill="var(--accent, #ff6b00)" />
+        <circle cx={cx} cy={cy} r="4" fill="#1a1a2e" />
+
+        <text x={cx} y={cy + 35} fill="var(--accent, #ff6b00)" fontSize="28" fontWeight="bold" textAnchor="middle">{speed.toFixed(1)}</text>
+        <text x={cx} y={cy + 52} fill="#9ca3af" fontSize="12" textAnchor="middle">Mbps</text>
+      </svg>
+      <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
+    </div>
+  )
+}
+
 function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data: ApplicantData }) {
   const [phase, setPhase] = useState<'intro' | 'download' | 'upload' | 'done'>('intro')
   const [downloadSpeed, setDownloadSpeed] = useState<number | null>(null)
   const [uploadSpeed, setUploadSpeed] = useState<number | null>(null)
-  const [progress, setProgress] = useState(0)
+  const [liveSpeed, setLiveSpeed] = useState(0)
   const [sampleCount, setSampleCount] = useState(0)
 
   const runSamplesFor = async (direction: 'download' | 'upload', durationMs: number) => {
@@ -1077,13 +1235,21 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
           const res = await fetch('/api/speedtest/download?t=' + Date.now(), { cache: 'no-store' })
           const blob = await res.blob()
           const elapsed = (performance.now() - start) / 1000
-          if (elapsed > 0) speeds.push((blob.size * 8) / elapsed / 1_000_000)
+          if (elapsed > 0) {
+            const mbps = (blob.size * 8) / elapsed / 1_000_000
+            speeds.push(mbps)
+            setLiveSpeed(mbps)
+          }
         } else {
           const payload = new Uint8Array(2 * 1024 * 1024)
           const start = performance.now()
           await fetch('/api/speedtest/upload', { method: 'POST', body: payload })
           const elapsed = (performance.now() - start) / 1000
-          if (elapsed > 0) speeds.push((payload.length * 8) / elapsed / 1_000_000)
+          if (elapsed > 0) {
+            const mbps = (payload.length * 8) / elapsed / 1_000_000
+            speeds.push(mbps)
+            setLiveSpeed(mbps)
+          }
         }
         setSampleCount(speeds.length)
       } catch { break }
@@ -1093,12 +1259,22 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
   }
 
   const runTest = async () => {
-    setPhase('download'); setProgress(5); setSampleCount(0)
+    setPhase('download')
+    setLiveSpeed(0)
+    setSampleCount(0)
+
     const dl = await runSamplesFor('download', 15000)
-    setDownloadSpeed(dl); setProgress(50)
-    setPhase('upload'); setSampleCount(0)
+    setDownloadSpeed(dl)
+    setLiveSpeed(dl)
+
+    setPhase('upload')
+    setLiveSpeed(0)
+    setSampleCount(0)
+
     const ul = await runSamplesFor('upload', 15000)
-    setUploadSpeed(ul); setProgress(100)
+    setUploadSpeed(ul)
+    setLiveSpeed(ul)
+
     setPhase('done')
   }
 
@@ -1112,7 +1288,7 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Internet Speed Test</h2>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">🌐</span></div>
+        <img src="/images/test-speed.png" alt="Speed Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>We'll now measure your internet connection speed. This takes about <strong>30 seconds</strong>.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}><strong>Requirements:</strong><br/>• Minimum <strong>{config.speedMinDownload} Mbps</strong> download speed<br/>• Make sure no large downloads are running<br/>• Close other tabs using bandwidth for best results</p>
@@ -1144,11 +1320,16 @@ function StepInternetSpeed({ onNext, data }: { onNext: (data: any) => void, data
   }
   return (
     <div className="text-center">
-      <h2 className="text-xl md:text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>{phase === 'download' ? 'Testing Download Speed...' : 'Testing Upload Speed...'}</h2>
-      <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse" style={{ background: 'var(--accent)' }}><span className="text-4xl">{phase === 'download' ? '⬇️' : '⬆️'}</span></div>
-      <div className="w-full bg-gray-700 rounded-full h-3 mb-4 overflow-hidden"><div className="h-3 rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}></div></div>
-      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Sample {sampleCount}... measuring average speed</p>
-      {downloadSpeed !== null && phase === 'upload' && <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Download: {downloadSpeed} Mbps (avg)</p>}
+      <h2 className="text-xl md:text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+        {phase === 'download' ? 'Testing Download Speed...' : 'Testing Upload Speed...'}
+      </h2>
+      <SpeedGauge
+        speed={liveSpeed}
+        label={phase === 'download' ? `⬇ Download — Sample ${sampleCount}` : `⬆ Upload — Sample ${sampleCount}`}
+      />
+      {downloadSpeed !== null && phase === 'upload' && (
+        <p className="text-sm mt-2 font-medium" style={{ color: 'var(--text-muted)' }}>Download result: {downloadSpeed} Mbps</p>
+      )}
     </div>
   )
 }
@@ -1157,8 +1338,8 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
   const [phase, setPhase] = useState<'intro' | 'aut' | 'caption' | 'evaluating' | 'done'>('intro')
   const [selectedObject] = useState(() => alternateUsesObjects[Math.floor(Math.random() * alternateUsesObjects.length)])
   const [selectedScenario] = useState(() => captionScenarios[Math.floor(Math.random() * captionScenarios.length)])
-  const [uses, setUses] = useState<string[]>([])
-  const [currentUse, setCurrentUse] = useState('')
+  const [pictureAnswer, setPictureAnswer] = useState('')
+  const [ownAnswer, setOwnAnswer] = useState('')
   const [autTimeLeft, setAutTimeLeft] = useState(120)
   const [captions, setCaptions] = useState(['', '', ''])
   const [captionTimeLeft, setCaptionTimeLeft] = useState(120)
@@ -1189,9 +1370,11 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
     if (phase !== 'evaluating') return
     let cancelled = false
 
+    const uses = [pictureAnswer, ownAnswer].filter(u => u.trim().length >= 3)
+
     const evaluate = async () => {
       let passed = false
-      let validUses = uses.filter(u => u.trim().length >= 3).length
+      let validUses = uses.length
 
       try {
         const res = await fetch('/api/evaluate-creativity', {
@@ -1199,6 +1382,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             object: selectedObject.name,
+            pictureUse: selectedObject.pictureUse,
             alternateUses: uses,
             product: selectedScenario.product,
             productDescription: selectedScenario.description,
@@ -1231,32 +1415,17 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
     return () => { cancelled = true }
   }, [phase])
 
-  const addUse = () => {
-    const trimmed = currentUse.trim()
-    if (trimmed.length < 3) return
-    const lower = trimmed.toLowerCase()
-    if (uses.some(u => u.toLowerCase() === lower)) return
-    setUses(prev => [...prev, trimmed])
-    setCurrentUse('')
-  }
-
-  const removeUse = (index: number) => setUses(prev => prev.filter((_, i) => i !== index))
-
-  const handleUseKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') { e.preventDefault(); addUse() }
-  }
-
   if (phase === 'intro') {
     return (
       <div className="text-center">
         <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Creativity Test</h2>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent)' }}><span className="text-3xl">💡</span></div>
+        <img src="/images/test-creativity.png" alt="Creativity Test" className="w-40 h-40 mx-auto mb-4 rounded-2xl object-cover" />
         <p className="text-lg mb-6" style={{ color: 'var(--text-secondary)' }}>This test measures your creative thinking ability. It has <strong>two parts</strong> and takes about <strong>4 minutes</strong>.</p>
         <div className="rounded-lg p-4 mb-6 text-left" style={{ background: 'var(--bg-primary)' }}>
           <p style={{ color: 'var(--text-secondary)' }}>
-            <strong>Part 1 - Alternate Uses (2 min):</strong> Think of as many creative uses for a common object as you can.<br/><br/>
+            <strong>Part 1 - Creative Uses (2 min):</strong> Look at a picture and find 2 unusual uses for an everyday object.<br/><br/>
             <strong>Part 2 - Caption Challenge (2 min):</strong> Write 3 creative social media captions for a product.<br/><br/>
-            You need at least <strong>{config.creativityMinUses} alternate uses</strong> and <strong>{config.creativityMinCaptions} captions</strong> (each 15+ characters) to pass.
+            Both parts must be completed to pass.
           </p>
         </div>
         <button onClick={() => setPhase('aut')} className="w-full text-white text-lg font-semibold py-4 px-8 rounded-lg transition-all duration-200" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-hover))' }}>Start Creativity Test</button>
@@ -1265,36 +1434,62 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
   }
 
   if (phase === 'aut') {
+    const pictureOk = pictureAnswer.trim().length >= 3
+    const ownOk = ownAnswer.trim().length >= 3
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg md:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Part 1: Alternate Uses</h2>
+          <h2 className="text-lg md:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Part 1: Creative Uses</h2>
           <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: autTimeLeft <= 15 ? '#ef4444' : 'var(--accent)' }}>
             <span className="text-lg">⏱️</span><span className="text-lg font-bold text-white">{Math.floor(autTimeLeft / 60)}:{String(autTimeLeft % 60).padStart(2, '0')}</span>
           </div>
         </div>
-        <div className="rounded-xl p-5 mb-4 text-center" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
-          <span className="text-5xl mb-2 block">{selectedObject.emoji}</span>
-          <p className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{selectedObject.name}</p>
-          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{selectedObject.hint}</p>
+
+        <div className="rounded-xl p-4 mb-4 text-center" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
+          <img src={selectedObject.image} alt={selectedObject.name} className="w-48 h-48 mx-auto mb-3 rounded-xl object-cover" />
+          <p className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{selectedObject.emoji} {selectedObject.name}</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            Find <strong>2 unusual things</strong> you can use a {selectedObject.name.toLowerCase()} for.
+          </p>
+          <p className="text-sm mt-1" style={{ color: 'var(--accent)' }}>
+            One creative use is already shown in the picture above!
+          </p>
         </div>
-        <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>List as many <strong>creative and unusual uses</strong> for a <strong>{selectedObject.name.toLowerCase()}</strong> as you can think of:</p>
-        <div className="flex gap-2 mb-4">
-          <input type="text" value={currentUse} onChange={(e) => setCurrentUse(e.target.value)} onKeyDown={handleUseKeyDown} placeholder="Type a creative use and press Enter..." className="flex-1 p-3 rounded-lg text-sm outline-none" style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: '2px solid var(--text-muted)' }} autoFocus />
-          <button onClick={addUse} className="px-4 py-3 rounded-lg text-white font-semibold text-sm" style={{ background: 'var(--accent)' }}>Add</button>
-        </div>
-        {uses.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {uses.map((use, i) => (
-              <span key={i} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm" style={{ background: 'var(--accent)', color: 'white' }}>
-                {use}
-                <button onClick={() => removeUse(i)} className="ml-1 hover:opacity-70">×</button>
-              </span>
-            ))}
+
+        <div className="space-y-4 mb-4">
+          <div>
+            <label className="text-sm font-semibold mb-1.5 block" style={{ color: 'var(--text-primary)' }}>
+              1. What unusual use do you see in the picture? {pictureOk && <span style={{ color: '#10b981' }}>✓</span>}
+            </label>
+            <input
+              type="text"
+              value={pictureAnswer}
+              onChange={(e) => setPictureAnswer(e.target.value)}
+              placeholder={`What is the ${selectedObject.name.toLowerCase()} being used for in the picture?`}
+              className="w-full p-3 rounded-lg text-sm outline-none"
+              style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: `2px solid ${pictureOk ? '#10b981' : 'var(--text-muted)'}` }}
+              autoFocus
+            />
           </div>
-        )}
+          <div>
+            <label className="text-sm font-semibold mb-1.5 block" style={{ color: 'var(--text-primary)' }}>
+              2. Think of one more unusual use yourself! {ownOk && <span style={{ color: '#10b981' }}>✓</span>}
+            </label>
+            <input
+              type="text"
+              value={ownAnswer}
+              onChange={(e) => setOwnAnswer(e.target.value)}
+              placeholder={`Come up with your own creative use for a ${selectedObject.name.toLowerCase()}...`}
+              className="w-full p-3 rounded-lg text-sm outline-none"
+              style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: `2px solid ${ownOk ? '#10b981' : 'var(--text-muted)'}` }}
+            />
+          </div>
+        </div>
+
         <div className="flex items-center justify-between">
-          <p className="text-sm" style={{ color: uses.length >= config.creativityMinUses ? '#10b981' : 'var(--text-muted)' }}>{uses.length} idea{uses.length !== 1 ? 's' : ''} (need {config.creativityMinUses}+)</p>
+          <p className="text-sm" style={{ color: pictureOk && ownOk ? '#10b981' : 'var(--text-muted)' }}>
+            {(pictureOk ? 1 : 0) + (ownOk ? 1 : 0)}/2 answers filled
+          </p>
           <button onClick={() => setPhase('caption')} className="px-6 py-2 rounded-lg text-white font-semibold text-sm" style={{ background: 'var(--accent)' }}>Next Part →</button>
         </div>
       </div>
@@ -1310,6 +1505,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
             <span className="text-lg">⏱️</span><span className="text-lg font-bold text-white">{Math.floor(captionTimeLeft / 60)}:{String(captionTimeLeft % 60).padStart(2, '0')}</span>
           </div>
         </div>
+        <img src="/images/test-captions.png" alt="Caption Challenge" className="w-32 h-32 mx-auto mb-4 rounded-xl object-cover" />
         <div className="rounded-xl p-5 mb-4" style={{ background: 'var(--bg-primary)', border: '2px solid var(--accent)' }}>
           <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>Product: {selectedScenario.product}</p>
           <p className="text-base mb-2" style={{ color: 'var(--text-primary)' }}>{selectedScenario.description}</p>
