@@ -1583,6 +1583,11 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
           <p className="text-base mb-2" style={{ color: 'var(--text-primary)' }}>{selectedScenario.description}</p>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Target audience: {selectedScenario.targetAudience}</p>
         </div>
+        <div className="rounded-lg p-3 mb-3" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981' }}>
+          <p className="text-xs font-medium" style={{ color: '#10b981' }}>
+            💡 <strong>Tip:</strong> Think about the benefits of buying this product and which problems it solves for the customer. This will help you write better captions!
+          </p>
+        </div>
         <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>Write <strong>3 creative social media captions/hooks</strong> for this product:</p>
         <div className="space-y-3 mb-4">
           {captions.map((cap, i) => (
