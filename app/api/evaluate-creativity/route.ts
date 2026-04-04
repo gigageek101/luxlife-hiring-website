@@ -32,8 +32,10 @@ Return ONLY valid JSON, no other text:
 {
   "validUses": <number of answers that are genuine>,
   "totalUses": <total answers submitted>,
+  "usesFeedback": "<1-2 sentence explanation of why uses are valid or not>",
   "validCaptions": <number of captions that make sense>,
   "totalCaptions": <total captions submitted>,
+  "captionsFeedback": "<1-2 sentence explanation of why captions are valid or not>",
   "passed": <true if validUses >= 2 AND validCaptions >= 3>
 }`
 

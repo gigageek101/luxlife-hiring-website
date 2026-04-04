@@ -379,8 +379,10 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
   const [formData, setFormData] = useState({
     fullName: data.fullName || '',
     email: data.email || '',
+    telegramUsername: data.telegramUsername || '',
     city: data.city || '',
   })
+  const [showTgHelp, setShowTgHelp] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -428,6 +430,39 @@ function Step1({ onNext, data }: { onNext: (data: any) => void, data: ApplicantD
             }}
             placeholder="Enter your email address"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+            Telegram Username *
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.telegramUsername}
+            onChange={(e) => setFormData({ ...formData, telegramUsername: e.target.value.replace(/^@/, '') })}
+            className="w-full px-3 md:px-4 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:border-transparent text-base"
+            style={{ 
+              background: 'var(--bg-primary)', 
+              borderColor: 'var(--text-muted)',
+              color: 'var(--text-primary)'
+            }}
+            placeholder="Your Telegram username (without @)"
+          />
+          <button type="button" onClick={() => setShowTgHelp(!showTgHelp)} className="mt-1.5 text-xs font-medium underline" style={{ color: 'var(--accent)' }}>
+            {showTgHelp ? 'Hide instructions' : "Don't have a username yet? Click here"}
+          </button>
+          {showTgHelp && (
+            <div className="mt-2 rounded-lg p-3 text-xs space-y-1" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+              <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>How to set a Telegram username:</p>
+              <p>1. Open Telegram and go to <strong>Settings</strong></p>
+              <p>2. Tap on your profile at the top</p>
+              <p>3. Tap <strong>Username</strong></p>
+              <p>4. Enter your desired username (min. 5 characters)</p>
+              <p>5. If it shows a green checkmark, tap <strong>Save</strong></p>
+              <p className="pt-1" style={{ color: 'var(--text-muted)' }}>Your username will be accessible via t.me/yourusername</p>
+            </div>
+          )}
         </div>
         
         <div>
@@ -1384,6 +1419,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
     const evaluate = async () => {
       let passed = false
       let validUses = uses.length
+      let claudeEval: any = null
 
       try {
         const res = await fetch('/api/evaluate-creativity', {
@@ -1402,6 +1438,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
           const evaluation = await res.json()
           validUses = evaluation.validUses ?? validUses
           passed = evaluation.passed ?? false
+          claudeEval = evaluation
         }
       } catch {
         const validCaptions = captions.filter(c => c.trim().length >= 15).length
@@ -1416,6 +1453,7 @@ function StepCreativityTest({ onNext, data }: { onNext: (data: any) => void, dat
         scenario: selectedScenario.product,
         captions,
         passed,
+        claudeEvaluation: claudeEval || undefined,
       }
       onNext({ creativityTestResult: result })
     }

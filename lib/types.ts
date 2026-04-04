@@ -1,6 +1,7 @@
 export interface ApplicantData {
   fullName?: string
   email?: string
+  telegramUsername?: string
   city?: string
   age?: number
   hasFinishedEducation?: boolean
@@ -63,6 +64,15 @@ export interface CreativityTestResult {
   scenario: string
   captions: string[]
   passed: boolean
+  claudeEvaluation?: {
+    validUses: number
+    totalUses: number
+    usesFeedback: string
+    validCaptions: number
+    totalCaptions: number
+    captionsFeedback: string
+    passed: boolean
+  }
 }
 
 export const educationTypes = [

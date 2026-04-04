@@ -32,6 +32,7 @@ async function sendTelegramNotification(applicantData: any) {
 
 📝 *Name:* ${applicantData.fullName || 'N/A'}
 📧 *Email:* ${applicantData.email || 'N/A'}
+💬 *Telegram:* @${applicantData.telegramUsername || 'N/A'}
 🏙️ *City:* ${applicantData.city || 'N/A'}
 🎂 *Age:* ${applicantData.age || 'N/A'} years
 
@@ -112,18 +113,22 @@ async function saveLeadToDatabase(applicantData: any) {
       captions: applicantData.creativityTestResult.captions,
     } : null
 
+    const claudeEvaluation = applicantData.creativityTestResult?.claudeEvaluation || null
+
     await sql`
       INSERT INTO inbound_leads (
-        full_name, email, city, age, position_type,
+        full_name, email, telegram_username, city, age, position_type,
         english_quiz_score, english_quiz_total,
         memory_test_score, memory_test_total,
         education_type, english_rating, quiz_answers, qualified,
         typing_wpm, typing_accuracy, typing_passed,
         download_speed, upload_speed, speed_passed,
-        creativity_score, creativity_data, creativity_passed
+        creativity_score, creativity_data, creativity_passed,
+        claude_evaluation
       ) VALUES (
         ${applicantData.fullName || null},
         ${applicantData.email || null},
+        ${applicantData.telegramUsername || null},
         ${applicantData.city || null},
         ${applicantData.age || null},
         ${'marketing'},
@@ -143,7 +148,8 @@ async function saveLeadToDatabase(applicantData: any) {
         ${applicantData.speedTestResult?.passed ?? null},
         ${applicantData.creativityTestResult?.fluencyScore ?? null},
         ${creativityData ? JSON.stringify(creativityData) : null},
-        ${applicantData.creativityTestResult?.passed ?? null}
+        ${applicantData.creativityTestResult?.passed ?? null},
+        ${claudeEvaluation ? JSON.stringify(claudeEvaluation) : null}
       )
     `
     console.log('Marketing lead saved to database')

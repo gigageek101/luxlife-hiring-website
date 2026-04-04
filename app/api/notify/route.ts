@@ -32,6 +32,7 @@ async function sendTelegramNotification(applicantData: any) {
 
 📝 *Name:* ${applicantData.fullName || 'N/A'}
 📧 *Email:* ${applicantData.email || 'N/A'}
+💬 *Telegram:* @${applicantData.telegramUsername || 'N/A'}
 🏙️ *City:* ${applicantData.city || 'N/A'}
 🎂 *Age:* ${applicantData.age || 'N/A'} years
 
@@ -106,7 +107,7 @@ async function saveLeadToDatabase(applicantData: any) {
 
     await sql`
       INSERT INTO inbound_leads (
-        full_name, email, city, age, position_type,
+        full_name, email, telegram_username, city, age, position_type,
         english_quiz_score, english_quiz_total,
         memory_test_score, memory_test_total,
         education_type, english_rating, quiz_answers, qualified,
@@ -115,6 +116,7 @@ async function saveLeadToDatabase(applicantData: any) {
       ) VALUES (
         ${applicantData.fullName || null},
         ${applicantData.email || null},
+        ${applicantData.telegramUsername || null},
         ${applicantData.city || null},
         ${applicantData.age || null},
         ${'backend'},

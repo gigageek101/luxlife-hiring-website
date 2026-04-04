@@ -22,10 +22,21 @@ interface CreativityData {
   captions?: string[]
 }
 
+interface ClaudeEvaluation {
+  validUses?: number
+  totalUses?: number
+  usesFeedback?: string
+  validCaptions?: number
+  totalCaptions?: number
+  captionsFeedback?: string
+  passed?: boolean
+}
+
 interface Lead {
   id: number
   full_name: string
   email: string
+  telegram_username: string | null
   city: string
   age: number
   position_type: string
@@ -47,6 +58,7 @@ interface Lead {
   creativity_score: number | null
   creativity_data: CreativityData | null
   creativity_passed: boolean | null
+  claude_evaluation: ClaudeEvaluation | null
 }
 
 interface PositionStats {
@@ -116,10 +128,12 @@ function InboundLeadsContent() {
   }
 
   const filteredLeads = leads.filter(lead => {
+    const q = searchQuery.toLowerCase()
     const matchesSearch =
       !searchQuery ||
-      (lead.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (lead.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+      (lead.full_name || '').toLowerCase().includes(q) ||
+      (lead.email || '').toLowerCase().includes(q) ||
+      (lead.telegram_username || '').toLowerCase().includes(q)
 
     const matchesPosition =
       positionFilter === 'all' || lead.position_type === positionFilter
@@ -291,43 +305,40 @@ function InboundLeadsContent() {
                   onClick={() => toggleRow(lead.id)}
                   className="w-full flex items-center justify-between p-4 md:p-5 text-left transition-colors hover:opacity-90"
                 >
-                  <div className="grid grid-cols-2 md:grid-cols-7 gap-3 md:gap-3 flex-1 min-w-0">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 flex-1 min-w-0">
                     <div className="min-w-0">
                       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Name</p>
-                      <p className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>{lead.full_name || 'N/A'}</p>
+                      <p className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{lead.full_name || 'N/A'}</p>
+                      {lead.telegram_username && (
+                        <p className="text-xs truncate" style={{ color: 'var(--accent)' }}>@{lead.telegram_username}</p>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
                       <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{lead.email || 'N/A'}</p>
-                    </div>
-                    <div className="hidden md:block">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Position</p>
-                      <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium capitalize ${lead.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                      <span className={`inline-block mt-0.5 px-2 py-0.5 rounded text-xs font-medium capitalize ${lead.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
                         {lead.position_type}
                       </span>
                     </div>
                     <div className="hidden md:block">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Typing</p>
-                      <p className="text-sm font-medium" style={{ color: lead.typing_passed ? '#10b981' : lead.typing_wpm != null ? '#ef4444' : 'var(--text-muted)' }}>
-                        {lead.typing_wpm != null ? `${lead.typing_wpm} WPM` : '—'}
-                      </p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Tests</p>
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: '#10b981' + '22', color: '#10b981' }}>EN {lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</span>
+                        {lead.typing_wpm != null && (
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: (lead.typing_passed ? '#10b981' : '#ef4444') + '22', color: lead.typing_passed ? '#10b981' : '#ef4444' }}>{lead.typing_wpm} WPM</span>
+                        )}
+                      </div>
                     </div>
                     <div className="hidden md:block">
                       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Speed</p>
                       <p className="text-sm font-medium" style={{ color: lead.speed_passed ? '#10b981' : lead.download_speed != null ? '#ef4444' : 'var(--text-muted)' }}>
-                        {lead.download_speed != null ? `${lead.download_speed} Mbps` : '—'}
-                      </p>
-                    </div>
-                    <div className="hidden md:block">
-                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>English</p>
-                      <p className="text-sm font-medium" style={{ color: '#10b981' }}>
-                        {lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}
+                        {lead.download_speed != null ? `↓${lead.download_speed} Mbps` : '—'}
                       </p>
                     </div>
                     <div className="hidden md:block">
                       <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Date</p>
                       <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
                     </div>
                   </div>
@@ -341,77 +352,113 @@ function InboundLeadsContent() {
                 {/* Expanded details */}
                 {expandedRows.has(lead.id) && (
                   <div className="px-4 md:px-5 pb-5 pt-0 border-t" style={{ borderColor: 'var(--border, #333)' }}>
-                    {/* Basic info + test results grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4">
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>City</p>
-                        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.city || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Age</p>
-                        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.age || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Education</p>
-                        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.education_type || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>English Rating</p>
-                        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.english_rating || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>English Quiz</p>
-                        <p className="text-sm font-medium" style={{ color: '#10b981' }}>{lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Memory Test</p>
-                        <p className="text-sm font-medium" style={{ color: '#10b981' }}>{lead.memory_test_score ?? '?'}/{lead.memory_test_total ?? '?'}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Typing Speed</p>
-                        <p className="text-sm font-medium" style={{ color: lead.typing_passed ? '#10b981' : lead.typing_wpm != null ? '#ef4444' : 'var(--text-muted)' }}>
-                          {lead.typing_wpm != null ? `${lead.typing_wpm} WPM (${lead.typing_accuracy}% acc)` : '—'}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Internet Speed</p>
-                        <p className="text-sm font-medium" style={{ color: lead.speed_passed ? '#10b981' : lead.download_speed != null ? '#ef4444' : 'var(--text-muted)' }}>
-                          {lead.download_speed != null ? `↓${lead.download_speed} / ↑${lead.upload_speed} Mbps` : '—'}
-                        </p>
-                      </div>
-                      {lead.position_type === 'marketing' && (
+                    {/* Contact info */}
+                    <div className="rounded-lg p-4 mt-4 mb-4" style={{ background: 'var(--bg-primary)', border: '1px solid var(--accent)' }}>
+                      <h4 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--accent)' }}>Contact Info</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div>
-                          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Creativity</p>
-                          <p className="text-sm font-medium" style={{ color: lead.creativity_passed ? '#10b981' : lead.creativity_score != null ? '#ef4444' : 'var(--text-muted)' }}>
-                            {lead.creativity_score != null ? `${lead.creativity_score} ideas` : '—'}
+                          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Telegram</p>
+                          <p className="text-sm font-semibold" style={{ color: 'var(--accent)' }}>
+                            {lead.telegram_username ? (
+                              <a href={`https://t.me/${lead.telegram_username}`} target="_blank" rel="noopener noreferrer" className="hover:underline">@{lead.telegram_username}</a>
+                            ) : '—'}
                           </p>
                         </div>
-                      )}
+                        <div>
+                          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>City</p>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.city || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Age</p>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.age || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Education</p>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{lead.education_type || 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Test results */}
+                    <div className="rounded-lg p-4 mb-4" style={{ background: 'var(--bg-primary)' }}>
+                      <h4 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Test Results</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: '1px solid #10b981' + '44' }}>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>English</p>
+                          <p className="text-lg font-bold" style={{ color: '#10b981' }}>{lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</p>
+                        </div>
+                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: '1px solid #10b981' + '44' }}>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Memory</p>
+                          <p className="text-lg font-bold" style={{ color: '#10b981' }}>{lead.memory_test_score ?? '?'}/{lead.memory_test_total ?? '?'}</p>
+                        </div>
+                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: `1px solid ${lead.typing_passed ? '#10b981' : '#ef4444'}44` }}>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Typing</p>
+                          <p className="text-lg font-bold" style={{ color: lead.typing_passed ? '#10b981' : lead.typing_wpm != null ? '#ef4444' : 'var(--text-muted)' }}>
+                            {lead.typing_wpm != null ? `${lead.typing_wpm}` : '—'}
+                          </p>
+                          {lead.typing_accuracy != null && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{lead.typing_accuracy}% acc</p>}
+                        </div>
+                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: `1px solid ${lead.speed_passed ? '#10b981' : '#ef4444'}44` }}>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Download</p>
+                          <p className="text-lg font-bold" style={{ color: lead.speed_passed ? '#10b981' : lead.download_speed != null ? '#ef4444' : 'var(--text-muted)' }}>
+                            {lead.download_speed != null ? `${lead.download_speed}` : '—'}
+                          </p>
+                          {lead.upload_speed != null && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>↑{lead.upload_speed} Mbps</p>}
+                        </div>
+                        {lead.position_type === 'marketing' && (
+                          <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: `1px solid ${lead.creativity_passed ? '#10b981' : '#ef4444'}44` }}>
+                            <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Creativity</p>
+                            <p className="text-lg font-bold" style={{ color: lead.creativity_passed ? '#10b981' : lead.creativity_score != null ? '#ef4444' : 'var(--text-muted)' }}>
+                              {lead.creativity_passed ? 'Pass' : lead.creativity_score != null ? 'Fail' : '—'}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Creativity Details (marketing only) */}
                     {lead.creativity_data && (
-                      <div className="mt-2 mb-4">
-                        <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Creativity Test Results</h4>
+                      <div className="rounded-lg p-4 mb-4" style={{ background: 'var(--bg-primary)' }}>
+                        <h4 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Creativity Test Details</h4>
                         {lead.creativity_data.object && (
-                          <div className="rounded-lg p-3 mb-2" style={{ background: 'var(--bg-primary)' }}>
-                            <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Object: {lead.creativity_data.object}</p>
-                            <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>Alternate Uses ({lead.creativity_data.alternateUses?.length || 0}):</p>
+                          <div className="rounded-lg p-3 mb-3" style={{ background: 'var(--surface)' }}>
+                            <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Object: {lead.creativity_data.object}</p>
                             <div className="flex flex-wrap gap-1.5">
                               {lead.creativity_data.alternateUses?.map((use, i) => (
-                                <span key={i} className="px-2 py-1 rounded text-xs" style={{ background: 'var(--surface)', color: 'var(--text-primary)' }}>{use}</span>
+                                <span key={i} className="px-2.5 py-1 rounded-full text-xs font-medium" style={{ background: 'var(--accent)' + '22', color: 'var(--accent)' }}>{use}</span>
                               ))}
                             </div>
                           </div>
                         )}
                         {lead.creativity_data.captions && lead.creativity_data.captions.some(c => c.trim()) && (
-                          <div className="rounded-lg p-3" style={{ background: 'var(--bg-primary)' }}>
-                            <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>Captions (Product: {lead.creativity_data.scenario || 'N/A'}):</p>
+                          <div className="rounded-lg p-3 mb-3" style={{ background: 'var(--surface)' }}>
+                            <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Captions — {lead.creativity_data.scenario || 'N/A'}</p>
                             <div className="space-y-2">
                               {lead.creativity_data.captions.filter(c => c.trim()).map((cap, i) => (
                                 <p key={i} className="text-sm italic pl-3" style={{ color: 'var(--text-secondary)', borderLeft: '2px solid var(--accent)' }}>"{cap}"</p>
                               ))}
                             </div>
+                          </div>
+                        )}
+                        {lead.claude_evaluation && (
+                          <div className="rounded-lg p-3" style={{ background: 'var(--surface)', border: '1px solid #a855f7' + '44' }}>
+                            <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#a855f7' }}>AI Evaluation</p>
+                            <div className="grid grid-cols-2 gap-3 mb-2">
+                              <div>
+                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Valid Uses</p>
+                                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{lead.claude_evaluation.validUses ?? '?'}/{lead.claude_evaluation.totalUses ?? '?'}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Valid Captions</p>
+                                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{lead.claude_evaluation.validCaptions ?? '?'}/{lead.claude_evaluation.totalCaptions ?? '?'}</p>
+                              </div>
+                            </div>
+                            {lead.claude_evaluation.usesFeedback && (
+                              <p className="text-xs mb-1.5 pl-2" style={{ color: 'var(--text-secondary)', borderLeft: '2px solid #a855f7' }}>{lead.claude_evaluation.usesFeedback}</p>
+                            )}
+                            {lead.claude_evaluation.captionsFeedback && (
+                              <p className="text-xs pl-2" style={{ color: 'var(--text-secondary)', borderLeft: '2px solid #a855f7' }}>{lead.claude_evaluation.captionsFeedback}</p>
+                            )}
                           </div>
                         )}
                       </div>

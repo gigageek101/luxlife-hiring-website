@@ -119,6 +119,8 @@ export async function initDatabase() {
     }
 
     // Add new columns to inbound_leads for typing/speed/creativity tests (non-destructive)
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS telegram_username VARCHAR(255)` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS claude_evaluation JSONB` } catch (e) {}
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS typing_wpm DECIMAL(5,1)` } catch (e) {}
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS typing_accuracy DECIMAL(5,2)` } catch (e) {}
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS typing_passed BOOLEAN` } catch (e) {}
