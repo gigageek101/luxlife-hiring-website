@@ -3,7 +3,7 @@ import { sql } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const { positionType, qualified } = await request.json()
+    const { positionType, qualified, fullName, email, failedStep, failedReason } = await request.json()
 
     if (!positionType || typeof qualified !== 'boolean') {
       return NextResponse.json(
@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
     }
 
     await sql`
-      INSERT INTO application_stats (position_type, qualified)
-      VALUES (${positionType}, ${qualified})
+      INSERT INTO application_stats (position_type, qualified, full_name, email, failed_step, failed_reason)
+      VALUES (${positionType}, ${qualified}, ${fullName || null}, ${email || null}, ${failedStep || null}, ${failedReason || null})
     `
 
     return NextResponse.json({ success: true }, { status: 200 })

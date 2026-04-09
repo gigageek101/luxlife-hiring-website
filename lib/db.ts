@@ -131,6 +131,12 @@ export async function initDatabase() {
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_data JSONB` } catch (e) {}
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_passed BOOLEAN` } catch (e) {}
 
+    // Add failure tracking columns to application_stats (non-destructive)
+    try { await sql`ALTER TABLE application_stats ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)` } catch (e) {}
+    try { await sql`ALTER TABLE application_stats ADD COLUMN IF NOT EXISTS email VARCHAR(255)` } catch (e) {}
+    try { await sql`ALTER TABLE application_stats ADD COLUMN IF NOT EXISTS failed_step VARCHAR(100)` } catch (e) {}
+    try { await sql`ALTER TABLE application_stats ADD COLUMN IF NOT EXISTS failed_reason TEXT` } catch (e) {}
+
     try {
       await sql`
         CREATE INDEX IF NOT EXISTS idx_inbound_leads_position

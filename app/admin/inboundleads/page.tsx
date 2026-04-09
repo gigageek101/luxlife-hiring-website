@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, ChevronDown, ChevronUp, ArrowLeft, RefreshCw, Users, CheckCircle, XCircle, TrendingUp, Trash2 } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, ArrowLeft, RefreshCw, Users, CheckCircle, XCircle, TrendingUp, Trash2, AlertTriangle, Eye } from 'lucide-react'
 import AdminWrapper from '../admin-wrapper'
 
 interface QuizAnswer {
@@ -77,6 +77,16 @@ interface StatsData {
   }
 }
 
+interface FailedAttempt {
+  id: number
+  position_type: string
+  full_name: string
+  email: string
+  failed_step: string
+  failed_reason: string
+  created_at: string
+}
+
 function InboundLeadsContent() {
   const router = useRouter()
   const [leads, setLeads] = useState<Lead[]>([])
@@ -86,6 +96,9 @@ function InboundLeadsContent() {
   const [positionFilter, setPositionFilter] = useState<'all' | 'marketing' | 'backend'>('all')
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
   const [refreshing, setRefreshing] = useState(false)
+  const [showFailedAttempts, setShowFailedAttempts] = useState(false)
+  const [failedAttempts, setFailedAttempts] = useState<FailedAttempt[]>([])
+  const [loadingFailed, setLoadingFailed] = useState(false)
 
   const fetchData = useCallback(async () => {
     try {
@@ -102,6 +115,20 @@ function InboundLeadsContent() {
     }
   }, [])
 
+  const fetchFailedAttempts = useCallback(async () => {
+    setLoadingFailed(true)
+    try {
+      const res = await fetch('/api/admin/inbound-leads?type=failed&t=' + Date.now(), { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = await res.json()
+      setFailedAttempts(data.failedAttempts || [])
+    } catch (error) {
+      console.error('Error fetching failed attempts:', error)
+    } finally {
+      setLoadingFailed(false)
+    }
+  }, [])
+
   useEffect(() => {
     fetchData()
     const interval = setInterval(() => {
@@ -113,6 +140,7 @@ function InboundLeadsContent() {
   const handleRefresh = () => {
     setRefreshing(true)
     fetchData()
+    if (showFailedAttempts) fetchFailedAttempts()
   }
 
   const handleDelete = async (id: number, name: string) => {
@@ -124,11 +152,37 @@ function InboundLeadsContent() {
         body: JSON.stringify({ id }),
       })
       if (res.ok) {
+        const data = await res.json()
         setLeads(prev => prev.filter(l => l.id !== id))
+        if (data.stats) setStats(data.stats)
       }
     } catch (error) {
       console.error('Error deleting lead:', error)
     }
+  }
+
+  const handleDeleteFailed = async (id: number, name: string) => {
+    if (!confirm(`Delete failed attempt for "${name}"? This cannot be undone.`)) return
+    try {
+      const res = await fetch('/api/admin/inbound-leads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, source: 'failed' }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setFailedAttempts(prev => prev.filter(a => a.id !== id))
+        if (data.stats) setStats(data.stats)
+      }
+    } catch (error) {
+      console.error('Error deleting failed attempt:', error)
+    }
+  }
+
+  const toggleFailedView = () => {
+    const next = !showFailedAttempts
+    setShowFailedAttempts(next)
+    if (next && failedAttempts.length === 0) fetchFailedAttempts()
   }
 
   const toggleRow = (id: number) => {
@@ -223,15 +277,24 @@ function InboundLeadsContent() {
               <p className="text-3xl font-bold" style={{ color: '#10b981' }}>{stats.total.qualified}</p>
             </div>
 
-            <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
+            <button
+              onClick={toggleFailedView}
+              className="rounded-xl p-5 shadow-sm text-left transition-all"
+              style={{
+                background: 'var(--surface)',
+                outline: showFailedAttempts ? '2px solid #ef4444' : 'none',
+                outlineOffset: '-2px',
+              }}
+            >
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)' }}>
                   <XCircle className="w-5 h-5" style={{ color: '#ef4444' }} />
                 </div>
                 <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Failed</span>
+                <Eye className="w-3.5 h-3.5 ml-auto" style={{ color: showFailedAttempts ? '#ef4444' : 'var(--text-muted)' }} />
               </div>
               <p className="text-3xl font-bold" style={{ color: '#ef4444' }}>{stats.total.failed}</p>
-            </div>
+            </button>
 
             <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
               <div className="flex items-center gap-3 mb-2">
@@ -269,6 +332,85 @@ function InboundLeadsContent() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Failed Attempts Panel */}
+        {showFailedAttempts && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5" style={{ color: '#ef4444' }} />
+                <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Failed Attempts</h2>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
+                  {failedAttempts.length}
+                </span>
+              </div>
+              <button
+                onClick={toggleFailedView}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
+              >
+                Close
+              </button>
+            </div>
+            {loadingFailed ? (
+              <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)' }}>
+                <div className="w-8 h-8 border-3 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: '#ef4444' }}></div>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading failed attempts...</p>
+              </div>
+            ) : failedAttempts.length === 0 ? (
+              <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)' }}>
+                <p style={{ color: 'var(--text-secondary)' }}>No detailed failed attempts recorded yet.</p>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>New failures will appear here automatically.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {failedAttempts.map((attempt) => (
+                  <div key={attempt.id} className="rounded-xl p-4 md:p-5 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #ef4444' }}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{attempt.full_name || 'Unknown'}</p>
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${attempt.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                            {attempt.position_type}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
+                            <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{attempt.email || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Failed At</p>
+                            <p className="text-sm font-medium" style={{ color: '#ef4444' }}>{attempt.failed_step || 'Unknown step'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Date</p>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              {new Date(attempt.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </p>
+                          </div>
+                        </div>
+                        {attempt.failed_reason && (
+                          <div className="rounded-lg p-3" style={{ background: 'var(--bg-primary)' }}>
+                            <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Reason</p>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{attempt.failed_reason}</p>
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteFailed(attempt.id, attempt.full_name || 'this attempt')}
+                        className="p-2 rounded-lg hover:bg-red-500/20 transition-colors flex-shrink-0"
+                        title="Delete failed attempt"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-400" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

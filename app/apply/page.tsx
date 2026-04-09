@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ApplicantData, educationTypes, englishRatings, MemoryTestResult, TypingTestResult, SpeedTestResult } from '@/lib/types'
 import { quizQuestions } from '@/lib/quiz-questions'
@@ -23,6 +23,7 @@ export default function ApplyPage() {
   const [memoryTestResult, setMemoryTestResult] = useState<MemoryTestResult | null>(null)
   const [isClient, setIsClient] = useState(false)
   const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false)
+  const failedStepRef = useRef<string>('')
   const router = useRouter()
 
   // Ensure we're on the client side to avoid hydration mismatch
@@ -64,52 +65,63 @@ export default function ApplyPage() {
     }
   }
 
-  const checkDisqualification = (data: ApplicantData, step: number): { disqualified: boolean, reason?: string } => {
+  const stepNames: Record<number, string> = {
+    2: 'Age Verification',
+    3: 'Education',
+    4: 'English Self-Rating',
+    5: 'Equipment Check',
+    6: 'English Quiz',
+    7: 'Memory Test',
+    8: 'Typing Test',
+    9: 'Internet Speed Test',
+  }
+
+  const checkDisqualification = (data: ApplicantData, step: number): { disqualified: boolean, reason?: string, stepName?: string } => {
     switch (step) {
       case 2:
         if (data.age && (data.age < config.minAge || data.age > config.maxAge)) {
-          return { disqualified: true, reason: `Age must be between ${config.minAge} and ${config.maxAge} years old.` }
+          return { disqualified: true, reason: `Age must be between ${config.minAge} and ${config.maxAge} years old.`, stepName: stepNames[step] }
         }
         break
       case 3:
         if (data.hasFinishedEducation === false) {
-          return { disqualified: true, reason: 'You must have finished your education to apply.' }
+          return { disqualified: true, reason: 'You must have finished your education to apply.', stepName: stepNames[step] }
         }
         if (data.educationType === 'Student') {
-          return { disqualified: true, reason: 'Current students are not eligible to apply.' }
+          return { disqualified: true, reason: 'Current students are not eligible to apply.', stepName: stepNames[step] }
         }
         break
       case 4:
         if (data.englishRating === 'Very Bad' || data.englishRating === 'Bad') {
-          return { disqualified: true, reason: 'Good English skills are required for this position.' }
+          return { disqualified: true, reason: 'Good English skills are required for this position.', stepName: stepNames[step] }
         }
         break
       case 5:
         if (data.hasWorkingPc === false) {
-          return { disqualified: true, reason: 'A working PC or laptop is required for this position.' }
+          return { disqualified: true, reason: 'A working PC or laptop is required for this position.', stepName: stepNames[step] }
         }
         break
       case 6:
         if (data.quizAnswers && data.quizAnswers.length > 0) {
           const correctAnswers = data.quizAnswers.filter((answer: any) => answer.isCorrect).length
           if (correctAnswers < config.englishMinCorrect) {
-            return { disqualified: true, reason: `You need to answer at least ${config.englishMinCorrect} out of ${data.quizAnswers.length} questions correctly on the English quiz.` }
+            return { disqualified: true, reason: `You need to answer at least ${config.englishMinCorrect} out of ${data.quizAnswers.length} questions correctly on the English quiz.`, stepName: stepNames[step] }
           }
         }
         break
       case 7:
         if (data.memoryTestResult && data.memoryTestResult.correctCount < config.memoryTestMinCorrect) {
-          return { disqualified: true, reason: `You need to get at least ${config.memoryTestMinCorrect} out of ${data.memoryTestResult.totalCount} correct on the memory test.` }
+          return { disqualified: true, reason: `You need to get at least ${config.memoryTestMinCorrect} out of ${data.memoryTestResult.totalCount} correct on the memory test.`, stepName: stepNames[step] }
         }
         break
       case 8:
         if (data.typingTestResult && data.typingTestResult.wpm < config.typingMinWpm) {
-          return { disqualified: true, reason: `You need at least ${config.typingMinWpm} WPM on the typing test. You got ${Math.round(data.typingTestResult.wpm)} WPM.` }
+          return { disqualified: true, reason: `You need at least ${config.typingMinWpm} WPM on the typing test. You got ${Math.round(data.typingTestResult.wpm)} WPM.`, stepName: stepNames[step] }
         }
         break
       case 9:
         if (data.speedTestResult && data.speedTestResult.downloadSpeed < config.speedMinDownload) {
-          return { disqualified: true, reason: `You need at least ${config.speedMinDownload} Mbps download speed. Your speed was ${data.speedTestResult.downloadSpeed.toFixed(1)} Mbps.` }
+          return { disqualified: true, reason: `You need at least ${config.speedMinDownload} Mbps download speed. Your speed was ${data.speedTestResult.downloadSpeed.toFixed(1)} Mbps.`, stepName: stepNames[step] }
         }
         break
     }
@@ -123,8 +135,13 @@ export default function ApplyPage() {
     const disqualificationCheck = checkDisqualification(updatedData, updatedData.currentStep)
     
     if (disqualificationCheck.disqualified) {
+      if (!updatedData.isDisqualified) {
+        updatedData.disqualificationReason = disqualificationCheck.reason
+      }
       updatedData.isDisqualified = true
-      updatedData.disqualificationReason = disqualificationCheck.reason
+      if (disqualificationCheck.stepName && !failedStepRef.current) {
+        failedStepRef.current = disqualificationCheck.stepName
+      }
     }
     
     updatedData.currentStep += 1
@@ -136,10 +153,17 @@ export default function ApplyPage() {
     // Track attempt as soon as results page is reached (before user can close tab)
     if (updatedData.currentStep === TOTAL_STEPS) {
       const isQualified = !updatedData.isDisqualified
+      const trackBody: Record<string, unknown> = { positionType: 'backend', qualified: isQualified }
+      if (!isQualified) {
+        trackBody.fullName = updatedData.fullName || null
+        trackBody.email = updatedData.email || null
+        trackBody.failedStep = failedStepRef.current || 'Unknown'
+        trackBody.failedReason = updatedData.disqualificationReason || null
+      }
       fetch('/api/track-application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ positionType: 'backend', qualified: isQualified })
+        body: JSON.stringify(trackBody)
       }).catch(() => {})
     }
 
