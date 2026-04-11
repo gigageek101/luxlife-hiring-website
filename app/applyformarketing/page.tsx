@@ -163,6 +163,7 @@ export default function ApplyForMarketingPage() {
         qualified: isQualified,
         fullName: updatedData.fullName || null,
         email: updatedData.email || null,
+        telegramUsername: updatedData.telegramUsername || null,
       }
       if (!isQualified) {
         trackBody.failedStep = failedStepRef.current || 'Unknown'

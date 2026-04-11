@@ -65,14 +65,7 @@ interface PositionStats {
   attempted: number
   qualified: number
   failed: number
-}
-
-interface OrphanedQualified {
-  id: number
-  position_type: string
-  full_name: string | null
-  email: string | null
-  created_at: string
+  termsNotAccepted: number
 }
 
 interface StatsData {
@@ -81,9 +74,9 @@ interface StatsData {
     attempted: number
     qualified: number
     failed: number
+    termsNotAccepted: number
     passRate: number
   }
-  orphanedQualified?: OrphanedQualified[]
 }
 
 interface FailedAttempt {
@@ -93,6 +86,15 @@ interface FailedAttempt {
   email: string
   failed_step: string
   failed_reason: string
+  created_at: string
+}
+
+interface TermsNotAcceptedEntry {
+  id: number
+  position_type: string
+  full_name: string | null
+  email: string | null
+  telegram_username: string | null
   created_at: string
 }
 
@@ -108,6 +110,9 @@ function InboundLeadsContent() {
   const [showFailedAttempts, setShowFailedAttempts] = useState(false)
   const [failedAttempts, setFailedAttempts] = useState<FailedAttempt[]>([])
   const [loadingFailed, setLoadingFailed] = useState(false)
+  const [showTermsNotAccepted, setShowTermsNotAccepted] = useState(false)
+  const [termsNotAccepted, setTermsNotAccepted] = useState<TermsNotAcceptedEntry[]>([])
+  const [loadingTermsNA, setLoadingTermsNA] = useState(false)
 
   const fetchData = useCallback(async () => {
     try {
@@ -138,6 +143,20 @@ function InboundLeadsContent() {
     }
   }, [])
 
+  const fetchTermsNotAccepted = useCallback(async () => {
+    setLoadingTermsNA(true)
+    try {
+      const res = await fetch('/api/admin/inbound-leads?type=terms-not-accepted&t=' + Date.now(), { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = await res.json()
+      setTermsNotAccepted(data.termsNotAccepted || [])
+    } catch (error) {
+      console.error('Error fetching terms not accepted:', error)
+    } finally {
+      setLoadingTermsNA(false)
+    }
+  }, [])
+
   useEffect(() => {
     fetchData()
     const interval = setInterval(() => {
@@ -150,6 +169,7 @@ function InboundLeadsContent() {
     setRefreshing(true)
     fetchData()
     if (showFailedAttempts) fetchFailedAttempts()
+    if (showTermsNotAccepted) fetchTermsNotAccepted()
   }
 
   const handleDelete = async (id: number, name: string) => {
@@ -188,10 +208,34 @@ function InboundLeadsContent() {
     }
   }
 
+  const handleDeleteTermsNA = async (id: number, name: string) => {
+    if (!confirm(`Delete entry for "${name || 'Unknown'}"? This cannot be undone.`)) return
+    try {
+      const res = await fetch('/api/admin/inbound-leads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, source: 'terms-not-accepted' }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setTermsNotAccepted(prev => prev.filter(a => a.id !== id))
+        if (data.stats) setStats(data.stats)
+      }
+    } catch (error) {
+      console.error('Error deleting terms-not-accepted entry:', error)
+    }
+  }
+
   const toggleFailedView = () => {
     const next = !showFailedAttempts
     setShowFailedAttempts(next)
     if (next && failedAttempts.length === 0) fetchFailedAttempts()
+  }
+
+  const toggleTermsNAView = () => {
+    const next = !showTermsNotAccepted
+    setShowTermsNotAccepted(next)
+    if (next && termsNotAccepted.length === 0) fetchTermsNotAccepted()
   }
 
   const toggleRow = (id: number) => {
@@ -305,48 +349,36 @@ function InboundLeadsContent() {
               <p className="text-3xl font-bold" style={{ color: '#ef4444' }}>{stats.total.failed}</p>
             </button>
 
-            <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(168,85,247,0.15)' }}>
-                  <TrendingUp className="w-5 h-5" style={{ color: '#a855f7' }} />
+            {stats.total.termsNotAccepted > 0 ? (
+              <button
+                onClick={toggleTermsNAView}
+                className="rounded-xl p-5 shadow-sm text-left transition-all"
+                style={{
+                  background: 'var(--surface)',
+                  outline: showTermsNotAccepted ? '2px solid #f59e0b' : 'none',
+                  outlineOffset: '-2px',
+                }}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(245,158,11,0.15)' }}>
+                    <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} />
+                  </div>
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Terms Not Accepted</span>
+                  <Eye className="w-3.5 h-3.5 ml-auto" style={{ color: showTermsNotAccepted ? '#f59e0b' : 'var(--text-muted)' }} />
                 </div>
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Pass Rate</span>
+                <p className="text-3xl font-bold" style={{ color: '#f59e0b' }}>{stats.total.termsNotAccepted}</p>
+              </button>
+            ) : (
+              <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(168,85,247,0.15)' }}>
+                    <TrendingUp className="w-5 h-5" style={{ color: '#a855f7' }} />
+                  </div>
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Pass Rate</span>
+                </div>
+                <p className="text-3xl font-bold" style={{ color: '#a855f7' }}>{stats.total.passRate}%</p>
               </div>
-              <p className="text-3xl font-bold" style={{ color: '#a855f7' }}>{stats.total.passRate}%</p>
-            </div>
-          </div>
-        )}
-
-        {/* Orphaned Qualified Warning */}
-        {stats?.orphanedQualified && stats.orphanedQualified.length > 0 && (
-          <div className="rounded-xl p-5 mb-8 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #f59e0b' }}>
-            <div className="flex items-center gap-3 mb-3">
-              <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} />
-              <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {stats.orphanedQualified.length} qualified applicant{stats.orphanedQualified.length !== 1 ? 's' : ''} passed all tests but never completed terms agreement
-              </h3>
-            </div>
-            <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
-              These people qualified but either closed the page before agreeing to terms, or the save failed. Their data was not fully captured.
-            </p>
-            <div className="space-y-2">
-              {stats.orphanedQualified.map((o) => (
-                <div key={o.id} className="flex items-center gap-4 rounded-lg p-3" style={{ background: 'var(--bg-primary)' }}>
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${o.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                    {o.position_type}
-                  </span>
-                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
-                    {o.full_name || 'Unknown name'}
-                  </span>
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {o.email || 'No email'}
-                  </span>
-                  <span className="text-xs ml-auto" style={{ color: 'var(--text-muted)' }}>
-                    {new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
         )}
 
@@ -358,7 +390,7 @@ function InboundLeadsContent() {
                 <h3 className="text-lg font-semibold mb-3 capitalize" style={{ color: 'var(--text-primary)' }}>
                   {position}
                 </h3>
-                <div className="flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-6 text-sm flex-wrap">
                   <span style={{ color: 'var(--text-secondary)' }}>
                     Attempted: <strong style={{ color: 'var(--text-primary)' }}>{p.attempted}</strong>
                   </span>
@@ -368,6 +400,11 @@ function InboundLeadsContent() {
                   <span style={{ color: 'var(--text-secondary)' }}>
                     Failed: <strong style={{ color: '#ef4444' }}>{p.failed}</strong>
                   </span>
+                  {p.termsNotAccepted > 0 && (
+                    <span style={{ color: 'var(--text-secondary)' }}>
+                      Terms Pending: <strong style={{ color: '#f59e0b' }}>{p.termsNotAccepted}</strong>
+                    </span>
+                  )}
                   <span style={{ color: 'var(--text-secondary)' }}>
                     Rate: <strong style={{ color: '#a855f7' }}>{getPassRate(p)}%</strong>
                   </span>
@@ -445,6 +482,93 @@ function InboundLeadsContent() {
                         onClick={() => handleDeleteFailed(attempt.id, attempt.full_name || 'this attempt')}
                         className="p-2 rounded-lg hover:bg-red-500/20 transition-colors flex-shrink-0"
                         title="Delete failed attempt"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-400" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Terms Not Accepted Panel */}
+        {showTermsNotAccepted && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} />
+                <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Terms Not Accepted</h2>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ background: 'rgba(245,158,11,0.15)', color: '#f59e0b' }}>
+                  {termsNotAccepted.length}
+                </span>
+              </div>
+              <button
+                onClick={toggleTermsNAView}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
+              >
+                Close
+              </button>
+            </div>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
+              These applicants passed all qualification tests but left before agreeing to the terms &amp; conditions.
+            </p>
+            {loadingTermsNA ? (
+              <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)' }}>
+                <div className="w-8 h-8 border-3 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: '#f59e0b' }}></div>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading...</p>
+              </div>
+            ) : termsNotAccepted.length === 0 ? (
+              <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)' }}>
+                <p style={{ color: 'var(--text-secondary)' }}>No pending entries.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {termsNotAccepted.map((entry) => (
+                  <div key={entry.id} className="rounded-xl p-4 md:p-5 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #f59e0b' }}>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{entry.full_name || 'Unknown name'}</p>
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${entry.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                            {entry.position_type}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Telegram</p>
+                            {entry.telegram_username ? (
+                              <a
+                                href={`https://t.me/${entry.telegram_username.replace('@', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium hover:underline"
+                                style={{ color: '#3b82f6' }}
+                              >
+                                @{entry.telegram_username.replace('@', '')}
+                              </a>
+                            ) : (
+                              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Not captured</p>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
+                            <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{entry.email || 'Not captured'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Date</p>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteTermsNA(entry.id, entry.full_name || 'this entry')}
+                        className="p-2 rounded-lg hover:bg-red-500/20 transition-colors flex-shrink-0"
+                        title="Delete entry"
                       >
                         <Trash2 className="w-4 h-4 text-red-400" />
                       </button>

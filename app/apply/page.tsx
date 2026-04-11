@@ -158,6 +158,7 @@ export default function ApplyPage() {
         qualified: isQualified,
         fullName: updatedData.fullName || null,
         email: updatedData.email || null,
+        telegramUsername: updatedData.telegramUsername || null,
       }
       if (!isQualified) {
         trackBody.failedStep = failedStepRef.current || 'Unknown'

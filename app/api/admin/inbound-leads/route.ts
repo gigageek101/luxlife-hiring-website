@@ -22,11 +22,29 @@ async function computeStats() {
     qualifiedLeadMap[row.position_type] = row.count
   }
 
-  const statsMap: Record<string, { attempted: number; qualified: number; failed: number }> = {}
+  const qualifiedStatCounts = await sql`
+    SELECT position_type, COUNT(*)::int as cnt
+    FROM application_stats
+    WHERE qualified = true
+    GROUP BY position_type
+  `
+
+  let totalTermsNotAccepted = 0
+  const termsNotAcceptedByPosition: Record<string, number> = {}
+  for (const stat of qualifiedStatCounts) {
+    const leadCount = qualifiedLeadMap[stat.position_type] || 0
+    const excess = stat.cnt - leadCount
+    if (excess > 0) {
+      termsNotAcceptedByPosition[stat.position_type] = excess
+      totalTermsNotAccepted += excess
+    }
+  }
+
+  const statsMap: Record<string, { attempted: number; qualified: number; failed: number; termsNotAccepted: number }> = {}
 
   for (const row of allStats) {
     if (!statsMap[row.position_type]) {
-      statsMap[row.position_type] = { attempted: 0, qualified: 0, failed: 0 }
+      statsMap[row.position_type] = { attempted: 0, qualified: 0, failed: 0, termsNotAccepted: 0 }
     }
     statsMap[row.position_type].attempted += row.count
     if (!row.qualified) {
@@ -36,9 +54,15 @@ async function computeStats() {
 
   for (const [pos, count] of Object.entries(qualifiedLeadMap)) {
     if (!statsMap[pos]) {
-      statsMap[pos] = { attempted: count, qualified: 0, failed: 0 }
+      statsMap[pos] = { attempted: count, qualified: 0, failed: 0, termsNotAccepted: 0 }
     }
     statsMap[pos].qualified = count
+  }
+
+  for (const [pos, count] of Object.entries(termsNotAcceptedByPosition)) {
+    if (statsMap[pos]) {
+      statsMap[pos].termsNotAccepted = count
+    }
   }
 
   let totalAttempted = 0
@@ -50,46 +74,54 @@ async function computeStats() {
     totalFailed += statsMap[key].failed
   }
 
-  const qualifiedStatCounts = await sql`
-    SELECT position_type, COUNT(*)::int as cnt
-    FROM application_stats
-    WHERE qualified = true
-    GROUP BY position_type
-  `
-
-  const orphanedPositions: { position_type: string; count: number }[] = []
-  for (const stat of qualifiedStatCounts) {
-    const leadCount = qualifiedLeadMap[stat.position_type] || 0
-    const excess = stat.cnt - leadCount
-    if (excess > 0) {
-      orphanedPositions.push({ position_type: stat.position_type, count: excess })
-    }
-  }
-
-  let orphanedQualified: { id: number; position_type: string; full_name: string | null; email: string | null; created_at: string }[] = []
-  for (const op of orphanedPositions) {
-    const rows = await sql`
-      SELECT id, position_type, full_name, email, created_at
-      FROM application_stats
-      WHERE qualified = true AND position_type = ${op.position_type}
-      ORDER BY created_at DESC
-      LIMIT ${op.count}
-    `
-    orphanedQualified = orphanedQualified.concat(rows as typeof orphanedQualified)
-  }
-
   return {
     byPosition: statsMap,
     total: {
       attempted: totalAttempted,
       qualified: totalQualified,
       failed: totalFailed,
+      termsNotAccepted: totalTermsNotAccepted,
       passRate: totalAttempted > 0
         ? Math.round((totalQualified / totalAttempted) * 100)
         : 0
-    },
-    orphanedQualified: orphanedQualified.length > 0 ? orphanedQualified : undefined
+    }
   }
+}
+
+async function getTermsNotAccepted() {
+  const qualifiedLeadMap: Record<string, number> = {}
+  const leads = await sql`
+    SELECT position_type, COUNT(*)::int as count FROM inbound_leads GROUP BY position_type
+  `
+  for (const row of leads) {
+    qualifiedLeadMap[row.position_type] = row.count
+  }
+
+  const qualifiedStatCounts = await sql`
+    SELECT position_type, COUNT(*)::int as cnt
+    FROM application_stats WHERE qualified = true GROUP BY position_type
+  `
+
+  const results: { id: number; position_type: string; full_name: string | null; email: string | null; telegram_username: string | null; created_at: string }[] = []
+
+  for (const stat of qualifiedStatCounts) {
+    const leadCount = qualifiedLeadMap[stat.position_type] || 0
+    const excess = stat.cnt - leadCount
+    if (excess > 0) {
+      const rows = await sql`
+        SELECT id, position_type, full_name, email, telegram_username, created_at
+        FROM application_stats
+        WHERE qualified = true AND position_type = ${stat.position_type}
+        ORDER BY created_at ASC
+        LIMIT ${excess}
+      `
+      for (const r of rows) {
+        results.push(r as typeof results[0])
+      }
+    }
+  }
+
+  return results
 }
 
 export async function GET(request: NextRequest) {
@@ -105,6 +137,11 @@ export async function GET(request: NextRequest) {
         ORDER BY created_at DESC
       `
       return NextResponse.json({ failedAttempts })
+    }
+
+    if (type === 'terms-not-accepted') {
+      const entries = await getTermsNotAccepted()
+      return NextResponse.json({ termsNotAccepted: entries })
     }
 
     const leads = await sql`
@@ -133,7 +170,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
-    if (source === 'failed') {
+    if (source === 'failed' || source === 'terms-not-accepted') {
       await sql`DELETE FROM application_stats WHERE id = ${id}`
       const stats = await computeStats()
       return NextResponse.json({ success: true, stats })
