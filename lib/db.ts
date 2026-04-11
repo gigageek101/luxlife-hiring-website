@@ -130,6 +130,7 @@ export async function initDatabase() {
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_score INTEGER` } catch (e) {}
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_data JSONB` } catch (e) {}
     try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS creativity_passed BOOLEAN` } catch (e) {}
+    try { await sql`ALTER TABLE inbound_leads ADD COLUMN IF NOT EXISTS terms_accepted BOOLEAN NOT NULL DEFAULT true` } catch (e) {}
 
     // Add tracking columns to application_stats (non-destructive)
     try { await sql`ALTER TABLE application_stats ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)` } catch (e) {}

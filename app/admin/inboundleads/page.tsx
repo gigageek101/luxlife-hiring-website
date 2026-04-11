@@ -89,14 +89,7 @@ interface FailedAttempt {
   created_at: string
 }
 
-interface TermsNotAcceptedEntry {
-  id: number
-  position_type: string
-  full_name: string | null
-  email: string | null
-  telegram_username: string | null
-  created_at: string
-}
+type TermsNotAcceptedEntry = Lead
 
 function InboundLeadsContent() {
   const router = useRouter()
@@ -530,13 +523,13 @@ function InboundLeadsContent() {
                   <div key={entry.id} className="rounded-xl p-4 md:p-5 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #f59e0b' }}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-2 flex-wrap">
-                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{entry.full_name || 'Unknown name'}</p>
+                        <div className="flex items-center gap-3 mb-3 flex-wrap">
+                          <p className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>{entry.full_name || 'Unknown name'}</p>
                           <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${entry.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
                             {entry.position_type}
                           </span>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
                           <div>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Telegram</p>
                             {entry.telegram_username ? (
@@ -550,19 +543,50 @@ function InboundLeadsContent() {
                                 @{entry.telegram_username.replace('@', '')}
                               </a>
                             ) : (
-                              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Not captured</p>
+                              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>N/A</p>
                             )}
                           </div>
                           <div>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
-                            <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{entry.email || 'Not captured'}</p>
+                            <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{entry.email || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>City</p>
+                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{entry.city || 'N/A'}</p>
                           </div>
                           <div>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Date</p>
                             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                              {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </p>
                           </div>
+                        </div>
+                        <div className="flex items-center gap-4 flex-wrap text-xs">
+                          {entry.english_quiz_score != null && (
+                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+                              EN {entry.english_quiz_score}/{entry.english_quiz_total}
+                            </span>
+                          )}
+                          {entry.typing_wpm != null && (
+                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+                              {Number(entry.typing_wpm).toFixed(0)} WPM
+                            </span>
+                          )}
+                          {entry.download_speed != null && (
+                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+                              {Number(entry.download_speed).toFixed(0)} Mbps
+                            </span>
+                          )}
+                          {entry.memory_test_score != null && (
+                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+                              Memory {entry.memory_test_score}/{entry.memory_test_total}
+                            </span>
+                          )}
+                          {entry.creativity_score != null && (
+                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
+                              Creativity {entry.creativity_score}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <button

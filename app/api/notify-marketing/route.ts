@@ -99,62 +99,64 @@ async function sendTelegramNotification(applicantData: any) {
   }
 }
 
-async function saveLeadToDatabase(applicantData: any) {
+async function markTermsAccepted(applicantData: any) {
   try {
-    const englishScore = applicantData.quizAnswers
-      ? applicantData.quizAnswers.filter((a: any) => a.isCorrect).length
-      : null
-    const memoryScore = applicantData.memoryTestResult?.correctCount ?? null
+    const email = applicantData.email || null
+    const fullName = applicantData.fullName || null
 
-    const creativityData = applicantData.creativityTestResult ? {
-      object: applicantData.creativityTestResult.object,
-      alternateUses: applicantData.creativityTestResult.alternateUses,
-      scenario: applicantData.creativityTestResult.scenario,
-      captions: applicantData.creativityTestResult.captions,
-    } : null
-
-    const claudeEvaluation = applicantData.creativityTestResult?.claudeEvaluation || null
-
-    await sql`
-      INSERT INTO inbound_leads (
-        full_name, email, telegram_username, city, age, position_type,
-        english_quiz_score, english_quiz_total,
-        memory_test_score, memory_test_total,
-        education_type, english_rating, quiz_answers, qualified,
-        typing_wpm, typing_accuracy, typing_passed,
-        download_speed, upload_speed, speed_passed,
-        creativity_score, creativity_data, creativity_passed,
-        claude_evaluation
-      ) VALUES (
-        ${applicantData.fullName || null},
-        ${applicantData.email || null},
-        ${applicantData.telegramUsername || null},
-        ${applicantData.city || null},
-        ${applicantData.age || null},
-        ${'marketing'},
-        ${englishScore},
-        ${8},
-        ${memoryScore},
-        ${6},
-        ${applicantData.educationType || null},
-        ${applicantData.englishRating || null},
-        ${JSON.stringify(applicantData.quizAnswers || [])},
-        ${true},
-        ${applicantData.typingTestResult?.wpm ?? null},
-        ${applicantData.typingTestResult?.accuracy ?? null},
-        ${applicantData.typingTestResult?.passed ?? null},
-        ${applicantData.speedTestResult?.downloadSpeed ?? null},
-        ${applicantData.speedTestResult?.uploadSpeed ?? null},
-        ${applicantData.speedTestResult?.passed ?? null},
-        ${applicantData.creativityTestResult?.fluencyScore ?? null},
-        ${creativityData ? JSON.stringify(creativityData) : null},
-        ${applicantData.creativityTestResult?.passed ?? null},
-        ${claudeEvaluation ? JSON.stringify(claudeEvaluation) : null}
-      )
+    const updated = await sql`
+      UPDATE inbound_leads SET terms_accepted = true
+      WHERE position_type = 'marketing' AND terms_accepted = false
+        AND (email = ${email} OR full_name = ${fullName})
     `
-    console.log('Marketing lead saved to database')
+
+    if (updated.length === 0) {
+      console.log('No pending marketing lead found to update, inserting fresh row')
+      const englishScore = applicantData.quizAnswers
+        ? applicantData.quizAnswers.filter((a: any) => a.isCorrect).length
+        : null
+      const memoryScore = applicantData.memoryTestResult?.correctCount ?? null
+      const creativityData = applicantData.creativityTestResult ? {
+        object: applicantData.creativityTestResult.object,
+        alternateUses: applicantData.creativityTestResult.alternateUses,
+        scenario: applicantData.creativityTestResult.scenario,
+        captions: applicantData.creativityTestResult.captions,
+      } : null
+      const claudeEvaluation = applicantData.creativityTestResult?.claudeEvaluation || null
+      await sql`
+        INSERT INTO inbound_leads (
+          full_name, email, telegram_username, city, age, position_type,
+          english_quiz_score, english_quiz_total,
+          memory_test_score, memory_test_total,
+          education_type, english_rating, quiz_answers, qualified,
+          typing_wpm, typing_accuracy, typing_passed,
+          download_speed, upload_speed, speed_passed,
+          creativity_score, creativity_data, creativity_passed,
+          claude_evaluation, terms_accepted
+        ) VALUES (
+          ${fullName}, ${email},
+          ${applicantData.telegramUsername || null},
+          ${applicantData.city || null}, ${applicantData.age || null},
+          ${'marketing'}, ${englishScore}, ${8}, ${memoryScore}, ${6},
+          ${applicantData.educationType || null}, ${applicantData.englishRating || null},
+          ${JSON.stringify(applicantData.quizAnswers || [])}, ${true},
+          ${applicantData.typingTestResult?.wpm ?? null},
+          ${applicantData.typingTestResult?.accuracy ?? null},
+          ${applicantData.typingTestResult?.passed ?? null},
+          ${applicantData.speedTestResult?.downloadSpeed ?? null},
+          ${applicantData.speedTestResult?.uploadSpeed ?? null},
+          ${applicantData.speedTestResult?.passed ?? null},
+          ${applicantData.creativityTestResult?.fluencyScore ?? null},
+          ${creativityData ? JSON.stringify(creativityData) : null},
+          ${applicantData.creativityTestResult?.passed ?? null},
+          ${claudeEvaluation ? JSON.stringify(claudeEvaluation) : null},
+          ${true}
+        )
+      `
+    }
+    console.log('Marketing lead terms accepted')
   } catch (error) {
-    console.error('Error saving marketing lead to database:', error)
+    console.error('Error updating marketing lead:', error)
   }
 }
 
@@ -166,9 +168,8 @@ export async function POST(request: NextRequest) {
     // Send Telegram notification (only if terms agreed)
     const sent = await sendTelegramNotification(body)
     
-    // Save to database for admin dashboard
     if (body.termsAgreed) {
-      await saveLeadToDatabase(body)
+      await markTermsAccepted(body)
     }
     
     if (sent) {

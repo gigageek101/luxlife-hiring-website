@@ -164,6 +164,16 @@ export default function ApplyPage() {
         trackBody.failedStep = failedStepRef.current || 'Unknown'
         trackBody.failedReason = updatedData.disqualificationReason || null
       }
+      if (isQualified) {
+        trackBody.city = updatedData.city || null
+        trackBody.age = updatedData.age || null
+        trackBody.educationType = updatedData.educationType || null
+        trackBody.englishRating = updatedData.englishRating || null
+        trackBody.quizAnswers = updatedData.quizAnswers || []
+        trackBody.memoryTestResult = updatedData.memoryTestResult || null
+        trackBody.typingTestResult = updatedData.typingTestResult || null
+        trackBody.speedTestResult = updatedData.speedTestResult || null
+      }
       fetch('/api/track-application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
