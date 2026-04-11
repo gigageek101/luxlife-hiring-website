@@ -155,34 +155,6 @@ export async function initDatabase() {
       // Index might already exist
     }
 
-    // Sync orphaned qualified stats: remove application_stats qualified=true rows
-    // that exceed the actual inbound_leads count per position_type.
-    // This fixes stats left behind by deletions made before the sync fix.
-    try {
-      const qualifiedLeadCounts = await sql`
-        SELECT position_type, COUNT(*)::int as cnt FROM inbound_leads GROUP BY position_type
-      `
-      const qualifiedStatCounts = await sql`
-        SELECT position_type, COUNT(*)::int as cnt FROM application_stats WHERE qualified = true GROUP BY position_type
-      `
-      for (const stat of qualifiedStatCounts) {
-        const leadCount = qualifiedLeadCounts.find((l: any) => l.position_type === stat.position_type)?.cnt || 0
-        const excess = stat.cnt - leadCount
-        if (excess > 0) {
-          await sql`
-            DELETE FROM application_stats WHERE id IN (
-              SELECT id FROM application_stats
-              WHERE position_type = ${stat.position_type} AND qualified = true
-              ORDER BY created_at ASC
-              LIMIT ${excess}
-            )
-          `
-        }
-      }
-    } catch (e) {
-      console.error('Error syncing orphaned stats:', e)
-    }
-
     console.log('Database initialized successfully')
     return true
   } catch (error) {

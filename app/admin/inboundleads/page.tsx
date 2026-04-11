@@ -67,6 +67,14 @@ interface PositionStats {
   failed: number
 }
 
+interface OrphanedQualified {
+  id: number
+  position_type: string
+  full_name: string | null
+  email: string | null
+  created_at: string
+}
+
 interface StatsData {
   byPosition: Record<string, PositionStats>
   total: {
@@ -75,6 +83,7 @@ interface StatsData {
     failed: number
     passRate: number
   }
+  orphanedQualified?: OrphanedQualified[]
 }
 
 interface FailedAttempt {
@@ -304,6 +313,39 @@ function InboundLeadsContent() {
                 <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Pass Rate</span>
               </div>
               <p className="text-3xl font-bold" style={{ color: '#a855f7' }}>{stats.total.passRate}%</p>
+            </div>
+          </div>
+        )}
+
+        {/* Orphaned Qualified Warning */}
+        {stats?.orphanedQualified && stats.orphanedQualified.length > 0 && (
+          <div className="rounded-xl p-5 mb-8 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #f59e0b' }}>
+            <div className="flex items-center gap-3 mb-3">
+              <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} />
+              <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                {stats.orphanedQualified.length} qualified applicant{stats.orphanedQualified.length !== 1 ? 's' : ''} passed all tests but never completed terms agreement
+              </h3>
+            </div>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
+              These people qualified but either closed the page before agreeing to terms, or the save failed. Their data was not fully captured.
+            </p>
+            <div className="space-y-2">
+              {stats.orphanedQualified.map((o) => (
+                <div key={o.id} className="flex items-center gap-4 rounded-lg p-3" style={{ background: 'var(--bg-primary)' }}>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${o.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                    {o.position_type}
+                  </span>
+                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                    {o.full_name || 'Unknown name'}
+                  </span>
+                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    {o.email || 'No email'}
+                  </span>
+                  <span className="text-xs ml-auto" style={{ color: 'var(--text-muted)' }}>
+                    {new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         )}

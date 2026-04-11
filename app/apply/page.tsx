@@ -153,10 +153,13 @@ export default function ApplyPage() {
     // Track attempt as soon as results page is reached (before user can close tab)
     if (updatedData.currentStep === TOTAL_STEPS) {
       const isQualified = !updatedData.isDisqualified
-      const trackBody: Record<string, unknown> = { positionType: 'backend', qualified: isQualified }
+      const trackBody: Record<string, unknown> = {
+        positionType: 'backend',
+        qualified: isQualified,
+        fullName: updatedData.fullName || null,
+        email: updatedData.email || null,
+      }
       if (!isQualified) {
-        trackBody.fullName = updatedData.fullName || null
-        trackBody.email = updatedData.email || null
         trackBody.failedStep = failedStepRef.current || 'Unknown'
         trackBody.failedReason = updatedData.disqualificationReason || null
       }

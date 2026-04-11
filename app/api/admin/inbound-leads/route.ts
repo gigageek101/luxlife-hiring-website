@@ -5,27 +5,40 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 async function computeStats() {
-  const stats = await sql`
-    SELECT
-      position_type,
-      qualified,
-      COUNT(*)::int as count
+  const allStats = await sql`
+    SELECT position_type, qualified, COUNT(*)::int as count
     FROM application_stats
     GROUP BY position_type, qualified
   `
 
+  const qualifiedLeads = await sql`
+    SELECT position_type, COUNT(*)::int as count
+    FROM inbound_leads
+    GROUP BY position_type
+  `
+
+  const qualifiedLeadMap: Record<string, number> = {}
+  for (const row of qualifiedLeads) {
+    qualifiedLeadMap[row.position_type] = row.count
+  }
+
   const statsMap: Record<string, { attempted: number; qualified: number; failed: number }> = {}
 
-  for (const row of stats) {
+  for (const row of allStats) {
     if (!statsMap[row.position_type]) {
       statsMap[row.position_type] = { attempted: 0, qualified: 0, failed: 0 }
     }
-    if (row.qualified) {
-      statsMap[row.position_type].qualified += row.count
-    } else {
+    statsMap[row.position_type].attempted += row.count
+    if (!row.qualified) {
       statsMap[row.position_type].failed += row.count
     }
-    statsMap[row.position_type].attempted += row.count
+  }
+
+  for (const [pos, count] of Object.entries(qualifiedLeadMap)) {
+    if (!statsMap[pos]) {
+      statsMap[pos] = { attempted: count, qualified: 0, failed: 0 }
+    }
+    statsMap[pos].qualified = count
   }
 
   let totalAttempted = 0
@@ -37,6 +50,34 @@ async function computeStats() {
     totalFailed += statsMap[key].failed
   }
 
+  const qualifiedStatCounts = await sql`
+    SELECT position_type, COUNT(*)::int as cnt
+    FROM application_stats
+    WHERE qualified = true
+    GROUP BY position_type
+  `
+
+  const orphanedPositions: { position_type: string; count: number }[] = []
+  for (const stat of qualifiedStatCounts) {
+    const leadCount = qualifiedLeadMap[stat.position_type] || 0
+    const excess = stat.cnt - leadCount
+    if (excess > 0) {
+      orphanedPositions.push({ position_type: stat.position_type, count: excess })
+    }
+  }
+
+  let orphanedQualified: { id: number; position_type: string; full_name: string | null; email: string | null; created_at: string }[] = []
+  for (const op of orphanedPositions) {
+    const rows = await sql`
+      SELECT id, position_type, full_name, email, created_at
+      FROM application_stats
+      WHERE qualified = true AND position_type = ${op.position_type}
+      ORDER BY created_at DESC
+      LIMIT ${op.count}
+    `
+    orphanedQualified = orphanedQualified.concat(rows as typeof orphanedQualified)
+  }
+
   return {
     byPosition: statsMap,
     total: {
@@ -46,7 +87,8 @@ async function computeStats() {
       passRate: totalAttempted > 0
         ? Math.round((totalQualified / totalAttempted) * 100)
         : 0
-    }
+    },
+    orphanedQualified: orphanedQualified.length > 0 ? orphanedQualified : undefined
   }
 }
 
