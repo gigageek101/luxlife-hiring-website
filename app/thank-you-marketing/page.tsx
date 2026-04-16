@@ -148,7 +148,10 @@ export default function ThankYouMarketingPage() {
                           3. Compensation Structure
                         </h3>
                         <p className="text-sm md:text-base mb-3" style={{ color: 'var(--text-secondary)' }}>
-                          <strong style={{ color: 'var(--text-primary)' }}>$2/hour + success bonus based on views.</strong> We will individually calculate what we can offer in terms of views growth.
+                          <strong style={{ color: 'var(--text-primary)' }}>25,000 Philippine Pesos per month</strong> plus massive bonuses when you understand the viral concept and make videos go viral. The bonus pay system will be based on the views you bring per video.
+                        </p>
+                        <p className="text-sm md:text-base mb-3" style={{ color: 'var(--text-secondary)' }}>
+                          You will learn everything in an extended training and coaching program.
                         </p>
                         <p className="text-sm md:text-base" style={{ color: 'var(--text-secondary)' }}>
                           Payment is bi-weekly to your Philippine bank account or in crypto to Binance (you will receive a setup guide on how to setup Binance).
