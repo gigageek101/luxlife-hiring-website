@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ExternalLink, CheckCircle, XCircle } from 'lucide-react'
+import { trackMarketingQualifiedLead } from '@/utils/analytics'
 
 export default function ThankYouMarketingPage() {
   const router = useRouter()
@@ -20,17 +21,20 @@ export default function ThankYouMarketingPage() {
       return
     }
 
-    // Check if user is qualified
     const qualified = localStorage.getItem('luxlife-marketing-application-qualified')
-    setIsQualified(qualified === 'true')
+    const isQual = qualified === 'true'
+    setIsQualified(isQual)
     
-    // Check if already agreed to terms
     const termsAgreed = localStorage.getItem('luxlife-marketing-terms-agreed')
     if (termsAgreed === 'true') {
       setShowTerms(false)
       setAgreedToTerms(true)
     }
     
+    if (isQual) {
+      trackMarketingQualifiedLead()
+    }
+
     setLoading(false)
   }, [router])
 
@@ -39,7 +43,6 @@ export default function ThankYouMarketingPage() {
     setAgreedToTerms(true)
     setShowTerms(false)
     
-    // Send notification that user agreed to terms and is ready to book
     try {
       const applicantData = JSON.parse(localStorage.getItem('luxlife-marketing-application-data') || '{}')
       console.log('Sending notification with data:', applicantData)

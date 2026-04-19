@@ -1,4 +1,3 @@
-// Analytics utility for tracking Apply button clicks
 declare global {
   interface Window {
     gtag: (command: string, targetId: string, config?: any) => void;
@@ -6,19 +5,29 @@ declare global {
   }
 }
 
+const AW_ID = 'AW-17447817661';
+
+// Replace with your conversion label from Google Ads (see instructions below)
+const MARKETING_QUALIFIED_LABEL = 'ykWMCM_Y7J4cEL2j4v9A';
+
 export const trackDiscordClick = () => {
-  // Only track if gtag is available (client-side)
   if (typeof window !== 'undefined' && window.gtag) {
-    // Initialize Google Analytics with config when Apply button is clicked
-    window.gtag('config', 'AW-17447817661');
-    
-    // Track the specific Apply button click event
+    window.gtag('config', AW_ID);
     window.gtag('event', 'click', {
       event_category: 'engagement',
       event_label: 'apply_button_click',
       value: 1
     });
-    
     console.log('Apply button click tracked');
+  }
+};
+
+export const trackMarketingQualifiedLead = () => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('config', AW_ID);
+    window.gtag('event', 'conversion', {
+      send_to: `${AW_ID}/${MARKETING_QUALIFIED_LABEL}`,
+    });
+    console.log('Marketing qualified lead conversion tracked');
   }
 };
