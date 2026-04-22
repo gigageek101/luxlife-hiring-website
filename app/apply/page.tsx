@@ -6,6 +6,7 @@ import { ApplicantData, educationTypes, englishRatings, MemoryTestResult, Typing
 import { quizQuestions } from '@/lib/quiz-questions'
 import { config } from '@/lib/config'
 import { typingTestTexts } from '@/lib/typing-test-texts'
+import PositionClosedNotice from '@/components/PositionClosedNotice'
 
 const TOTAL_STEPS = 10
 
@@ -23,12 +24,30 @@ export default function ApplyPage() {
   const [memoryTestResult, setMemoryTestResult] = useState<MemoryTestResult | null>(null)
   const [isClient, setIsClient] = useState(false)
   const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false)
+  const [positionStatus, setPositionStatus] = useState<{ backend: boolean; marketing: boolean } | null>(null)
   const failedStepRef = useRef<string>('')
   const router = useRouter()
 
   // Ensure we're on the client side to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true)
+  }, [])
+
+  // Check if the backend position is currently open
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/position-status', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => {
+        if (cancelled) return
+        setPositionStatus({ backend: !!data.backend, marketing: !!data.marketing })
+      })
+      .catch(err => {
+        console.error('Could not load position status:', err)
+        // Fail open — let the applicant through rather than blocking wrongly
+        if (!cancelled) setPositionStatus({ backend: true, marketing: true })
+      })
+    return () => { cancelled = true }
   }, [])
 
   // Load existing application data on mount (client-side only)
@@ -245,7 +264,7 @@ export default function ApplyPage() {
     handleNext(updatedData)
   }
 
-  if (loading || !isClient) {
+  if (loading || !isClient || positionStatus === null) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
         <div className="text-center">
@@ -253,6 +272,17 @@ export default function ApplyPage() {
           <p style={{ color: 'var(--text-primary)' }}>Loading your application...</p>
         </div>
       </div>
+    )
+  }
+
+  // If the backend (customer satisfaction) role is currently closed, show a
+  // notice and redirect applicants to the other open position (if any).
+  if (!positionStatus.backend) {
+    return (
+      <PositionClosedNotice
+        closedPosition="backend"
+        otherPositionOpen={positionStatus.marketing}
+      />
     )
   }
 

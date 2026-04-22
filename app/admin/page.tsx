@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { useRouter } from 'next/navigation'
@@ -98,6 +98,55 @@ function AdminPanelContent() {
   const [expandedPerUserCats, setExpandedPerUserCats] = useState<Set<string>>(new Set())
   const reportContentRefs = useRef<Record<number, HTMLDivElement | null>>({})
   const [grantingRetry, setGrantingRetry] = useState<string | null>(null)
+  const [positionStatus, setPositionStatus] = useState<{ backend: boolean; marketing: boolean } | null>(null)
+  const [togglingPosition, setTogglingPosition] = useState<'backend' | 'marketing' | null>(null)
+
+  const fetchPositionStatus = useCallback(async () => {
+    try {
+      const res = await fetch('/api/position-status', { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = await res.json()
+      setPositionStatus({ backend: !!data.backend, marketing: !!data.marketing })
+    } catch (err) {
+      console.error('Failed to fetch position status:', err)
+    }
+  }, [])
+
+  const togglePosition = async (position: 'backend' | 'marketing') => {
+    if (!positionStatus) return
+    const currentlyOpen = positionStatus[position]
+    const nextOpen = !currentlyOpen
+    const label = position === 'backend' ? 'Backend (Customer Satisfaction)' : 'Frontend (Marketing)'
+    const action = nextOpen ? 'OPEN' : 'CLOSE'
+    if (!confirm(`${action} the ${label} position?\n\n${nextOpen
+      ? 'Applicants will be able to apply again immediately.'
+      : 'New applicants will see a "not hiring" notice and be redirected to the other position (if open).'}`)) {
+      return
+    }
+    setTogglingPosition(position)
+    try {
+      const token = localStorage.getItem('admin_token')
+      const res = await fetch('/api/admin/position-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token || ''}`,
+        },
+        body: JSON.stringify({ position, isOpen: nextOpen }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'Failed to update position status')
+      }
+      const data = await res.json()
+      setPositionStatus({ backend: !!data.backend, marketing: !!data.marketing })
+    } catch (err) {
+      console.error('Toggle position error:', err)
+      alert(`Failed to update position. ${err instanceof Error ? err.message : ''}`)
+    } finally {
+      setTogglingPosition(null)
+    }
+  }
 
   const grantRetry = async (user: User, day: number) => {
     const key = `${user.id}-day${day}`
@@ -573,7 +622,8 @@ function AdminPanelContent() {
   useEffect(() => {
     fetchUsers()
     fetchSimReports()
-  }, [])
+    fetchPositionStatus()
+  }, [fetchPositionStatus])
 
   useEffect(() => {
     if (!autoRefresh) return
@@ -948,6 +998,130 @@ function AdminPanelContent() {
               <Users className="w-5 h-5" />
               Inbound Leads
             </button>
+          </div>
+
+          {/* Position Status Controls */}
+          <div className="card bg-white border-2 border-orange-200 p-4 md:p-5 mb-5 md:mb-6 max-w-3xl mx-auto">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-orange-600" />
+                <h3 className="font-bold text-base md:text-lg text-gray-800">Hiring Status</h3>
+              </div>
+              <button
+                onClick={fetchPositionStatus}
+                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                title="Refresh status"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <p className="text-xs md:text-sm text-gray-600 mb-4">
+              Close a position to instantly stop new applications for it. Closed-position applicants will see a notice and be redirected to the other open role.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Backend toggle */}
+              <div className={`rounded-lg border-2 p-3 md:p-4 transition-colors ${
+                positionStatus?.backend
+                  ? 'bg-green-50 border-green-300'
+                  : 'bg-red-50 border-red-300'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
+                  <div className="font-bold text-sm md:text-base text-gray-800">Backend</div>
+                  <span className="text-xs text-gray-500">(Customer Satisfaction)</span>
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  {positionStatus === null ? (
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin" /> Loading…
+                    </span>
+                  ) : positionStatus.backend ? (
+                    <span className="inline-flex items-center gap-1 text-xs md:text-sm font-semibold text-green-700">
+                      <Unlock className="w-3.5 h-3.5" /> Open for applications
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs md:text-sm font-semibold text-red-700">
+                      <Lock className="w-3.5 h-3.5" /> Closed — not hiring
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => togglePosition('backend')}
+                  disabled={positionStatus === null || togglingPosition !== null}
+                  className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md font-semibold text-xs md:text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    positionStatus?.backend
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  {togglingPosition === 'backend' ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Saving…
+                    </>
+                  ) : positionStatus?.backend ? (
+                    <>
+                      <Lock className="w-4 h-4" /> Close Backend Position
+                    </>
+                  ) : (
+                    <>
+                      <Unlock className="w-4 h-4" /> Open Backend Position
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Marketing toggle */}
+              <div className={`rounded-lg border-2 p-3 md:p-4 transition-colors ${
+                positionStatus?.marketing
+                  ? 'bg-green-50 border-green-300'
+                  : 'bg-red-50 border-red-300'
+              }`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Megaphone className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
+                  <div className="font-bold text-sm md:text-base text-gray-800">Frontend</div>
+                  <span className="text-xs text-gray-500">(Marketing)</span>
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  {positionStatus === null ? (
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin" /> Loading…
+                    </span>
+                  ) : positionStatus.marketing ? (
+                    <span className="inline-flex items-center gap-1 text-xs md:text-sm font-semibold text-green-700">
+                      <Unlock className="w-3.5 h-3.5" /> Open for applications
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs md:text-sm font-semibold text-red-700">
+                      <Lock className="w-3.5 h-3.5" /> Closed — not hiring
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => togglePosition('marketing')}
+                  disabled={positionStatus === null || togglingPosition !== null}
+                  className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md font-semibold text-xs md:text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    positionStatus?.marketing
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  {togglingPosition === 'marketing' ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Saving…
+                    </>
+                  ) : positionStatus?.marketing ? (
+                    <>
+                      <Lock className="w-4 h-4" /> Close Marketing Position
+                    </>
+                  ) : (
+                    <>
+                      <Unlock className="w-4 h-4" /> Open Marketing Position
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Tab Switcher */}

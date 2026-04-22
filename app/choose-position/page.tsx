@@ -1,9 +1,27 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Lock } from 'lucide-react'
 
 export default function ChoosePositionPage() {
   const router = useRouter()
+  const [positionStatus, setPositionStatus] = useState<{ backend: boolean; marketing: boolean } | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/position-status', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => {
+        if (cancelled) return
+        setPositionStatus({ backend: !!data.backend, marketing: !!data.marketing })
+      })
+      .catch(err => {
+        console.error('Could not load position status:', err)
+        if (!cancelled) setPositionStatus({ backend: true, marketing: true })
+      })
+    return () => { cancelled = true }
+  }, [])
 
   const handleJobSelect = (jobType: 'backend' | 'frontend') => {
     if (jobType === 'backend') {
@@ -12,6 +30,9 @@ export default function ChoosePositionPage() {
       router.push('/applyformarketing')
     }
   }
+
+  const backendOpen = positionStatus?.backend ?? true
+  const marketingOpen = positionStatus?.marketing ?? true
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4" style={{ background: 'var(--bg-primary)' }}>
@@ -33,13 +54,25 @@ export default function ChoosePositionPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {/* Backend Position */}
           <button
-            onClick={() => handleJobSelect('backend')}
-            className="text-left p-6 sm:p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-2xl group"
+            onClick={() => backendOpen && handleJobSelect('backend')}
+            disabled={!backendOpen}
+            aria-disabled={!backendOpen}
+            className={`relative text-left p-6 sm:p-8 rounded-2xl border-2 transition-all duration-300 group ${
+              backendOpen
+                ? 'hover:scale-105 hover:shadow-2xl'
+                : 'opacity-60 cursor-not-allowed grayscale'
+            }`}
             style={{ 
               borderColor: '#ff6b00',
               background: 'var(--surface)'
             }}
           >
+            {!backendOpen && (
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-md" style={{ background: '#dc2626' }}>
+                <Lock className="w-3 h-3" />
+                Currently Closed
+              </div>
+            )}
             <div className="flex flex-col h-full">
               <div className="flex items-center gap-4 mb-6">
                 <div 
@@ -95,8 +128,8 @@ export default function ChoosePositionPage() {
               </div>
 
               <div className="mt-6 pt-6 border-t" style={{ borderColor: '#ff6b00' }}>
-                <div className="text-center font-bold text-lg" style={{ color: '#ff6b00' }}>
-                  Click to Apply →
+                <div className="text-center font-bold text-lg" style={{ color: backendOpen ? '#ff6b00' : '#dc2626' }}>
+                  {backendOpen ? 'Click to Apply →' : 'Not Hiring Right Now'}
                 </div>
               </div>
             </div>
@@ -104,13 +137,25 @@ export default function ChoosePositionPage() {
 
           {/* Frontend Position */}
           <button
-            onClick={() => handleJobSelect('frontend')}
-            className="text-left p-6 sm:p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-2xl group"
+            onClick={() => marketingOpen && handleJobSelect('frontend')}
+            disabled={!marketingOpen}
+            aria-disabled={!marketingOpen}
+            className={`relative text-left p-6 sm:p-8 rounded-2xl border-2 transition-all duration-300 group ${
+              marketingOpen
+                ? 'hover:scale-105 hover:shadow-2xl'
+                : 'opacity-60 cursor-not-allowed grayscale'
+            }`}
             style={{ 
               borderColor: '#ff6b00',
               background: 'var(--surface)'
             }}
           >
+            {!marketingOpen && (
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-md" style={{ background: '#dc2626' }}>
+                <Lock className="w-3 h-3" />
+                Currently Closed
+              </div>
+            )}
             <div className="flex flex-col h-full">
               <div className="flex items-center gap-4 mb-6">
                 <div 
@@ -166,8 +211,8 @@ export default function ChoosePositionPage() {
               </div>
 
               <div className="mt-6 pt-6 border-t" style={{ borderColor: '#ff6b00' }}>
-                <div className="text-center font-bold text-lg" style={{ color: '#ff6b00' }}>
-                  Click to Apply →
+                <div className="text-center font-bold text-lg" style={{ color: marketingOpen ? '#ff6b00' : '#dc2626' }}>
+                  {marketingOpen ? 'Click to Apply →' : 'Not Hiring Right Now'}
                 </div>
               </div>
             </div>
@@ -177,7 +222,13 @@ export default function ChoosePositionPage() {
         {/* Footer Note */}
         <div className="mt-8 p-6 rounded-xl text-center" style={{ background: 'var(--surface)', border: '2px solid #ff6b00' }}>
           <p className="text-base sm:text-lg" style={{ color: 'var(--text-secondary)' }}>
-            💡 <strong style={{ color: '#ff6b00' }}>Both positions are beginner-friendly!</strong> We provide full training and support. Choose based on your interests and strengths.
+            {(!backendOpen && !marketingOpen) ? (
+              <>🚧 <strong style={{ color: '#ff6b00' }}>Hiring is currently paused.</strong> Please check back with us soon — we&apos;d love to hear from you when positions reopen.</>
+            ) : (!backendOpen || !marketingOpen) ? (
+              <>💡 <strong style={{ color: '#ff6b00' }}>One position is closed right now</strong>, but the other is still actively hiring. Click the open role to apply!</>
+            ) : (
+              <>💡 <strong style={{ color: '#ff6b00' }}>Both positions are beginner-friendly!</strong> We provide full training and support. Choose based on your interests and strengths.</>
+            )}
           </p>
         </div>
       </div>

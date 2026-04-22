@@ -7,6 +7,7 @@ import { quizQuestions } from '@/lib/quiz-questions'
 import { config } from '@/lib/config'
 import { typingTestTexts } from '@/lib/typing-test-texts'
 import { alternateUsesObjects, captionScenarios } from '@/lib/creativity-test-data'
+import PositionClosedNotice from '@/components/PositionClosedNotice'
 
 const TOTAL_STEPS = 11
 
@@ -24,12 +25,29 @@ export default function ApplyForMarketingPage() {
   const [memoryTestResult, setMemoryTestResult] = useState<MemoryTestResult | null>(null)
   const [isClient, setIsClient] = useState(false)
   const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false)
+  const [positionStatus, setPositionStatus] = useState<{ backend: boolean; marketing: boolean } | null>(null)
   const failedStepRef = useRef<string>('')
   const router = useRouter()
 
   // Ensure we're on the client side to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true)
+  }, [])
+
+  // Check if the marketing position is currently open
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/position-status', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => {
+        if (cancelled) return
+        setPositionStatus({ backend: !!data.backend, marketing: !!data.marketing })
+      })
+      .catch(err => {
+        console.error('Could not load position status:', err)
+        if (!cancelled) setPositionStatus({ backend: true, marketing: true })
+      })
+    return () => { cancelled = true }
   }, [])
 
   // Load existing application data on mount (client-side only)
@@ -251,7 +269,7 @@ export default function ApplyForMarketingPage() {
     handleNext(updatedData)
   }
 
-  if (loading || !isClient) {
+  if (loading || !isClient || positionStatus === null) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-primary)' }}>
         <div className="text-center">
@@ -259,6 +277,17 @@ export default function ApplyForMarketingPage() {
           <p style={{ color: 'var(--text-primary)' }}>Loading your application...</p>
         </div>
       </div>
+    )
+  }
+
+  // If the marketing role is currently closed, show a notice and redirect
+  // applicants to the backend position (if it is still open).
+  if (!positionStatus.marketing) {
+    return (
+      <PositionClosedNotice
+        closedPosition="marketing"
+        otherPositionOpen={positionStatus.backend}
+      />
     )
   }
 

@@ -90,6 +90,26 @@ export async function initDatabase() {
       )
     `
 
+    // Tracks whether each position is currently open for applications
+    await sql`
+      CREATE TABLE IF NOT EXISTS position_status (
+        position_type VARCHAR(50) PRIMARY KEY,
+        is_open BOOLEAN NOT NULL DEFAULT TRUE,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `
+
+    // Seed default rows if missing (both positions open by default)
+    try {
+      await sql`
+        INSERT INTO position_status (position_type, is_open)
+        VALUES ('backend', TRUE), ('marketing', TRUE)
+        ON CONFLICT (position_type) DO NOTHING
+      `
+    } catch (e) {
+      // ignore
+    }
+
     // Create indexes for faster lookups
     try {
       await sql`
