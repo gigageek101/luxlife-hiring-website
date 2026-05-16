@@ -14,6 +14,12 @@ export default function ThankYouMarketingPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [showTerms])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+
     // Check if user completed the application
     const completed = localStorage.getItem('luxlife-marketing-application-completed')
     if (!completed) {
