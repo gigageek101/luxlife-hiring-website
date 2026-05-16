@@ -9,7 +9,7 @@ import { typingTestTexts } from '@/lib/typing-test-texts'
 import { alternateUsesObjects, captionScenarios } from '@/lib/creativity-test-data'
 import PositionClosedNotice from '@/components/PositionClosedNotice'
 
-const TOTAL_STEPS = 11
+const TOTAL_STEPS = 10
 
 const initialData: ApplicantData = {
   currentStep: 1,
@@ -93,7 +93,19 @@ export default function ApplyForMarketingPage() {
     7: 'Memory Test',
     8: 'Typing Test',
     9: 'Internet Speed Test',
-    10: 'Creativity Test',
+    // 10: 'Creativity Test', // temporarily disabled
+  }
+
+  const timeEstimates: Record<number, string> = {
+    1: '~4 min left',
+    2: '~3 min left',
+    3: '~3 min left',
+    4: '~2 min left',
+    5: '~2 min left',
+    6: '~2 min left',
+    7: '~2 min left',
+    8: '~1 min left',
+    9: 'Almost done!',
   }
 
   const checkDisqualification = (data: ApplicantData, step: number): { disqualified: boolean, reason?: string, stepName?: string } => {
@@ -144,11 +156,11 @@ export default function ApplyForMarketingPage() {
           return { disqualified: true, reason: `You need at least ${config.speedMinDownload} Mbps download speed. Your speed was ${data.speedTestResult.downloadSpeed.toFixed(1)} Mbps.`, stepName: stepNames[step] }
         }
         break
-      case 10:
-        if (data.creativityTestResult && !data.creativityTestResult.passed) {
-          return { disqualified: true, reason: `You need at least ${config.creativityMinUses} valid creative uses and ${config.creativityMinCaptions} captions to pass the creativity test.`, stepName: stepNames[step] }
-        }
-        break
+      // case 10: // creativity test temporarily disabled
+      //   if (data.creativityTestResult && !data.creativityTestResult.passed) {
+      //     return { disqualified: true, reason: `You need at least ${config.creativityMinUses} valid creative uses and ${config.creativityMinCaptions} captions to pass the creativity test.`, stepName: stepNames[step] }
+      //   }
+      //   break
     }
     return { disqualified: false }
   }
@@ -196,7 +208,7 @@ export default function ApplyForMarketingPage() {
         trackBody.memoryTestResult = updatedData.memoryTestResult || null
         trackBody.typingTestResult = updatedData.typingTestResult || null
         trackBody.speedTestResult = updatedData.speedTestResult || null
-        trackBody.creativityTestResult = updatedData.creativityTestResult || null
+        // trackBody.creativityTestResult = updatedData.creativityTestResult || null // temporarily disabled
       }
       fetch('/api/track-application', {
         method: 'POST',
@@ -330,9 +342,9 @@ export default function ApplyForMarketingPage() {
               <div className="rounded-lg p-3 border-l-4 flex items-start gap-2.5" style={{ background: 'rgba(59, 130, 246, 0.08)', borderColor: '#3b82f6' }}>
                 <span className="text-base mt-0.5 shrink-0">⏱️</span>
                 <div>
-                  <h3 className="font-bold text-sm md:text-base" style={{ color: '#3b82f6' }}>You have approximately 11 minutes</h3>
+                  <h3 className="font-bold text-sm md:text-base" style={{ color: '#3b82f6' }}>Takes only about 5 minutes</h3>
                   <p className="text-xs md:text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-                    Includes questions and timed skill tests. Stay focused throughout.
+                    A few quick questions and short skill checks. Faster than you think!
                   </p>
                 </div>
               </div>
@@ -384,6 +396,11 @@ export default function ApplyForMarketingPage() {
               }}
             ></div>
           </div>
+          {timeEstimates[applicantData.currentStep] && (
+            <p className="text-xs mt-1.5 text-center font-medium" style={{ color: 'var(--accent)' }}>
+              ⚡ {timeEstimates[applicantData.currentStep]}
+            </p>
+          )}
         </div>
 
         <div className="rounded-xl shadow-lg p-4 md:p-6" style={{ background: 'var(--surface)' }}>
@@ -406,7 +423,8 @@ export default function ApplyForMarketingPage() {
           {applicantData.currentStep === 7 && <Step7 onMemoryTestSubmit={handleMemoryTestSubmit} data={applicantData} />}
           {applicantData.currentStep === 8 && <StepTypingTest onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 9 && <StepInternetSpeed onNext={handleNext} data={applicantData} />}
-          {applicantData.currentStep === 10 && <StepCreativityTest onNext={handleNext} data={applicantData} />}
+          {/* Creativity test temporarily disabled — uncomment to re-enable */}
+          {/* {applicantData.currentStep === 10 && <StepCreativityTest onNext={handleNext} data={applicantData} />} */}
           {applicantData.currentStep === TOTAL_STEPS && <StepResults onNext={handleNext} data={applicantData} />}
         </div>
       </div>
@@ -1694,15 +1712,15 @@ function StepResults({ onNext, data }: { onNext: (data: any) => void, data: Appl
   const typingPassed = typingWpm >= config.typingMinWpm
   const dlSpeed = data.speedTestResult?.downloadSpeed ?? 0
   const speedPassed = dlSpeed >= config.speedMinDownload
-  const creativityPassed = data.creativityTestResult?.passed ?? false
-  const creativityScore = data.creativityTestResult?.fluencyScore ?? 0
+  // const creativityPassed = data.creativityTestResult?.passed ?? false // temporarily disabled
+  // const creativityScore = data.creativityTestResult?.fluencyScore ?? 0
 
   const ageQualified = data.age ? (data.age >= config.minAge && data.age <= config.maxAge) : false
   const educationQualified = data.hasFinishedEducation === true && data.educationType !== 'Student'
   const englishRatingQualified = data.englishRating !== 'Very Bad' && data.englishRating !== 'Bad'
   const equipmentQualified = data.hasWorkingPc === true
 
-  const isQualified = ageQualified && educationQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed && typingPassed && speedPassed && creativityPassed
+  const isQualified = ageQualified && educationQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed && typingPassed && speedPassed
 
   return (
     <div className="text-center">
@@ -1722,7 +1740,7 @@ function StepResults({ onNext, data }: { onNext: (data: any) => void, data: Appl
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Memory Test:</span><span className={`font-semibold ${memoryPassed ? 'text-green-500' : 'text-red-500'}`}>{memoryCorrect}/{memoryTotal} {memoryPassed ? '✓ Passed' : '✗ Failed'}</span></div>
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Typing Speed:</span><span className={`font-semibold ${typingPassed ? 'text-green-500' : 'text-red-500'}`}>{typingWpm} WPM {typingPassed ? '✓ Passed' : `✗ Failed (need ${config.typingMinWpm})`}</span></div>
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Internet Speed:</span><span className={`font-semibold ${speedPassed ? 'text-green-500' : 'text-red-500'}`}>{dlSpeed} Mbps {speedPassed ? '✓ Passed' : `✗ Failed (need ${config.speedMinDownload})`}</span></div>
-          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Creativity Test:</span><span className={`font-semibold ${creativityPassed ? 'text-green-500' : 'text-red-500'}`}>{creativityScore} ideas {creativityPassed ? '✓ Passed' : '✗ Failed'}</span></div>
+          {/* Creativity row temporarily disabled */}
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Age Requirement:</span><span className={`font-semibold ${ageQualified ? 'text-green-500' : 'text-red-500'}`}>{ageQualified ? '✓ Met' : '✗ Not Met'}</span></div>
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Education:</span><span className={`font-semibold ${educationQualified ? 'text-green-500' : 'text-red-500'}`}>{educationQualified ? '✓ Met' : '✗ Not Met'}</span></div>
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Equipment:</span><span className={`font-semibold ${equipmentQualified ? 'text-green-500' : 'text-red-500'}`}>{equipmentQualified ? '✓ Met' : '✗ Not Met'}</span></div>

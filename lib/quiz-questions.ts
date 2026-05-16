@@ -36,14 +36,14 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: 4,
-    question: "Choose the sentence that uses correct punctuation:",
+    question: "Fill in the blank: 'She is the _____ person I know.'",
     options: [
-      "Its a beautiful day, isn't it?",
-      "It's a beautiful day, isn't it?",
-      "It's a beautiful day isnt it?",
-      "Its a beautiful day isn't it?"
+      "most kindest",
+      "more kind",
+      "kindest",
+      "most kind than"
     ],
-    correctAnswer: 1
+    correctAnswer: 2
   },
   {
     id: 5,
