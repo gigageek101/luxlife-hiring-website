@@ -76,7 +76,7 @@ export default function RootLayout({
       <head>
         {/* Google Analytics - Only loads script, doesn't auto-track */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17447817661"
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18076661811"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -84,7 +84,7 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            // Note: We don't call gtag('config') here - only on Apply button clicks
+            gtag('config', 'AW-18076661811');
           `}
         </Script>
       </head>

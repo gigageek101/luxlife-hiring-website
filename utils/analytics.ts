@@ -5,14 +5,13 @@ declare global {
   }
 }
 
-const AW_ID = 'AW-17447817661';
+const AW_ID = 'AW-18076661811';
 
-// Replace with your conversion label from Google Ads (see instructions below)
-const MARKETING_QUALIFIED_LABEL = 'ykWMCM_Y7J4cEL2j4v9A';
+// Set this to the conversion label from the new Google Ads account once created
+const MARKETING_QUALIFIED_LABEL = '';
 
 export const trackDiscordClick = () => {
   if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', AW_ID);
     window.gtag('event', 'click', {
       event_category: 'engagement',
       event_label: 'apply_button_click',
@@ -24,10 +23,10 @@ export const trackDiscordClick = () => {
 
 export const trackMarketingQualifiedLead = () => {
   if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', AW_ID);
-    window.gtag('event', 'conversion', {
-      send_to: `${AW_ID}/${MARKETING_QUALIFIED_LABEL}`,
-    });
+    const params: Record<string, string> = MARKETING_QUALIFIED_LABEL
+      ? { send_to: `${AW_ID}/${MARKETING_QUALIFIED_LABEL}` }
+      : { send_to: AW_ID };
+    window.gtag('event', 'conversion', params);
     console.log('Marketing qualified lead conversion tracked');
   }
 };
