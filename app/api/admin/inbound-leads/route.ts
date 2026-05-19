@@ -4,17 +4,31 @@ import { sql } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-async function computeStats() {
+function parseDateParams(searchParams: URLSearchParams) {
+  const from = searchParams.get('from')
+  const to = searchParams.get('to')
+  const position = searchParams.get('position')
+  return { from, to, position }
+}
+
+async function computeStats(from?: string | null, to?: string | null, position?: string | null) {
   const failedStats = await sql`
     SELECT position_type, COUNT(*)::int as count
     FROM application_stats
     WHERE qualified = false
+      ${from ? sql`AND created_at >= ${from}::date` : sql``}
+      ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+      ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
     GROUP BY position_type
   `
 
   const qualifiedLeads = await sql`
     SELECT position_type, terms_accepted, COUNT(*)::int as count
     FROM inbound_leads
+    WHERE 1=1
+      ${from ? sql`AND created_at >= ${from}::date` : sql``}
+      ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+      ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
     GROUP BY position_type, terms_accepted
   `
 
@@ -69,12 +83,48 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
+    const { from, to, position } = parseDateParams(searchParams)
+
+    if (type === 'funnel') {
+      const stepBreakdown = await sql`
+        SELECT
+          COALESCE(failed_step, 'Unknown') as step,
+          COUNT(*)::int as count
+        FROM application_stats
+        WHERE qualified = false
+          ${from ? sql`AND created_at >= ${from}::date` : sql``}
+          ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+          ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
+        GROUP BY failed_step
+        ORDER BY count DESC
+      `
+
+      const dailyVolume = await sql`
+        SELECT
+          created_at::date as date,
+          COUNT(*)::int as total,
+          SUM(CASE WHEN qualified THEN 1 ELSE 0 END)::int as passed,
+          SUM(CASE WHEN NOT qualified THEN 1 ELSE 0 END)::int as failed
+        FROM application_stats
+        WHERE 1=1
+          ${from ? sql`AND created_at >= ${from}::date` : sql``}
+          ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+          ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
+        GROUP BY created_at::date
+        ORDER BY date DESC
+      `
+
+      return NextResponse.json({ stepBreakdown, dailyVolume })
+    }
 
     if (type === 'failed') {
       const failedAttempts = await sql`
         SELECT id, position_type, full_name, email, failed_step, failed_reason, created_at
         FROM application_stats
         WHERE qualified = false AND full_name IS NOT NULL
+          ${from ? sql`AND created_at >= ${from}::date` : sql``}
+          ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+          ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
         ORDER BY created_at DESC
       `
       return NextResponse.json({ failedAttempts })
@@ -84,6 +134,9 @@ export async function GET(request: NextRequest) {
       const entries = await sql`
         SELECT * FROM inbound_leads
         WHERE terms_accepted = false
+          ${from ? sql`AND created_at >= ${from}::date` : sql``}
+          ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+          ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
         ORDER BY created_at DESC
       `
       return NextResponse.json({ termsNotAccepted: entries })
@@ -92,10 +145,13 @@ export async function GET(request: NextRequest) {
     const leads = await sql`
       SELECT * FROM inbound_leads
       WHERE terms_accepted = true
+        ${from ? sql`AND created_at >= ${from}::date` : sql``}
+        ${to ? sql`AND created_at < (${to}::date + interval '1 day')` : sql``}
+        ${position && position !== 'all' ? sql`AND position_type = ${position}` : sql``}
       ORDER BY created_at DESC
     `
 
-    const statsData = await computeStats()
+    const statsData = await computeStats(from, to, position)
 
     const response = NextResponse.json({ leads, stats: statsData })
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')

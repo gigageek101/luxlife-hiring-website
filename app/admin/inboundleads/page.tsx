@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, ChevronDown, ChevronUp, ArrowLeft, RefreshCw, Users, CheckCircle, XCircle, TrendingUp, Trash2, AlertTriangle, Eye } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, ArrowLeft, RefreshCw, Users, CheckCircle, XCircle, TrendingUp, Trash2, AlertTriangle, Eye, Calendar, BarChart3, Filter } from 'lucide-react'
 import AdminWrapper from '../admin-wrapper'
 
 interface QuizAnswer {
@@ -89,7 +89,52 @@ interface FailedAttempt {
   created_at: string
 }
 
+interface StepBreakdownItem {
+  step: string
+  count: number
+}
+
+interface DailyVolumeItem {
+  date: string
+  total: number
+  passed: number
+  failed: number
+}
+
 type TermsNotAcceptedEntry = Lead
+
+type DatePreset = 'today' | 'yesterday' | '7d' | '30d' | 'all'
+
+function getDateRange(preset: DatePreset): { from: string | null; to: string | null } {
+  if (preset === 'all') return { from: null, to: null }
+  const today = new Date()
+  const fmt = (d: Date) => d.toISOString().split('T')[0]
+  const todayStr = fmt(today)
+
+  if (preset === 'today') return { from: todayStr, to: todayStr }
+  if (preset === 'yesterday') {
+    const y = new Date(today)
+    y.setDate(y.getDate() - 1)
+    return { from: fmt(y), to: fmt(y) }
+  }
+  if (preset === '7d') {
+    const d = new Date(today)
+    d.setDate(d.getDate() - 6)
+    return { from: fmt(d), to: todayStr }
+  }
+  // 30d
+  const d = new Date(today)
+  d.setDate(d.getDate() - 29)
+  return { from: fmt(d), to: todayStr }
+}
+
+function buildParams(from: string | null, to: string | null, position: string) {
+  const p = new URLSearchParams({ t: Date.now().toString() })
+  if (from) p.set('from', from)
+  if (to) p.set('to', to)
+  if (position !== 'all') p.set('position', position)
+  return p.toString()
+}
 
 function InboundLeadsContent() {
   const router = useRouter()
@@ -107,9 +152,20 @@ function InboundLeadsContent() {
   const [termsNotAccepted, setTermsNotAccepted] = useState<TermsNotAcceptedEntry[]>([])
   const [loadingTermsNA, setLoadingTermsNA] = useState(false)
 
-  const fetchData = useCallback(async () => {
+  const [datePreset, setDatePreset] = useState<DatePreset>('all')
+  const [dateRange, setDateRange] = useState<{ from: string | null; to: string | null }>({ from: null, to: null })
+
+  const [stepBreakdown, setStepBreakdown] = useState<StepBreakdownItem[]>([])
+  const [dailyVolume, setDailyVolume] = useState<DailyVolumeItem[]>([])
+  const [showDailyVolume, setShowDailyVolume] = useState(false)
+
+  const [stepFilter, setStepFilter] = useState<string>('')
+
+  const qp = useMemo(() => buildParams(dateRange.from, dateRange.to, positionFilter), [dateRange, positionFilter])
+
+  const fetchData = useCallback(async (params: string) => {
     try {
-      const res = await fetch('/api/admin/inbound-leads?t=' + Date.now(), { cache: 'no-store' })
+      const res = await fetch('/api/admin/inbound-leads?' + params, { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setLeads(data.leads || [])
@@ -122,10 +178,22 @@ function InboundLeadsContent() {
     }
   }, [])
 
-  const fetchFailedAttempts = useCallback(async () => {
+  const fetchFunnel = useCallback(async (params: string) => {
+    try {
+      const res = await fetch('/api/admin/inbound-leads?type=funnel&' + params, { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed to fetch funnel')
+      const data = await res.json()
+      setStepBreakdown(data.stepBreakdown || [])
+      setDailyVolume(data.dailyVolume || [])
+    } catch (error) {
+      console.error('Error fetching funnel:', error)
+    }
+  }, [])
+
+  const fetchFailedAttempts = useCallback(async (params: string) => {
     setLoadingFailed(true)
     try {
-      const res = await fetch('/api/admin/inbound-leads?type=failed&t=' + Date.now(), { cache: 'no-store' })
+      const res = await fetch('/api/admin/inbound-leads?type=failed&' + params, { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setFailedAttempts(data.failedAttempts || [])
@@ -136,10 +204,10 @@ function InboundLeadsContent() {
     }
   }, [])
 
-  const fetchTermsNotAccepted = useCallback(async () => {
+  const fetchTermsNotAccepted = useCallback(async (params: string) => {
     setLoadingTermsNA(true)
     try {
-      const res = await fetch('/api/admin/inbound-leads?type=terms-not-accepted&t=' + Date.now(), { cache: 'no-store' })
+      const res = await fetch('/api/admin/inbound-leads?type=terms-not-accepted&' + params, { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setTermsNotAccepted(data.termsNotAccepted || [])
@@ -151,18 +219,27 @@ function InboundLeadsContent() {
   }, [])
 
   useEffect(() => {
-    fetchData()
-    const interval = setInterval(() => {
-      fetchData()
-    }, 10000)
-    return () => clearInterval(interval)
-  }, [fetchData])
+    fetchData(qp)
+    fetchFunnel(qp)
+    if (showFailedAttempts) fetchFailedAttempts(qp)
+    if (showTermsNotAccepted) fetchTermsNotAccepted(qp)
+  }, [qp, fetchData, fetchFunnel, fetchFailedAttempts, fetchTermsNotAccepted, showFailedAttempts, showTermsNotAccepted])
+
+  const handleDatePreset = (preset: DatePreset) => {
+    setDatePreset(preset)
+    setDateRange(getDateRange(preset))
+  }
+
+  const handlePositionChange = (pos: 'all' | 'marketing' | 'backend') => {
+    setPositionFilter(pos)
+  }
 
   const handleRefresh = () => {
     setRefreshing(true)
-    fetchData()
-    if (showFailedAttempts) fetchFailedAttempts()
-    if (showTermsNotAccepted) fetchTermsNotAccepted()
+    fetchData(qp)
+    fetchFunnel(qp)
+    if (showFailedAttempts) fetchFailedAttempts(qp)
+    if (showTermsNotAccepted) fetchTermsNotAccepted(qp)
   }
 
   const handleDelete = async (id: number, name: string) => {
@@ -222,25 +299,34 @@ function InboundLeadsContent() {
   const toggleFailedView = () => {
     const next = !showFailedAttempts
     setShowFailedAttempts(next)
-    if (next && failedAttempts.length === 0) fetchFailedAttempts()
+    if (next && failedAttempts.length === 0) fetchFailedAttempts(qp)
   }
 
   const toggleTermsNAView = () => {
     const next = !showTermsNotAccepted
     setShowTermsNotAccepted(next)
-    if (next && termsNotAccepted.length === 0) fetchTermsNotAccepted()
+    if (next && termsNotAccepted.length === 0) fetchTermsNotAccepted(qp)
   }
 
   const toggleRow = (id: number) => {
     setExpandedRows(prev => {
       const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
+  }
+
+  const handleStepClick = (step: string) => {
+    if (stepFilter === step) {
+      setStepFilter('')
+    } else {
+      setStepFilter(step)
+      if (!showFailedAttempts) {
+        setShowFailedAttempts(true)
+        if (failedAttempts.length === 0) fetchFailedAttempts(qp)
+      }
+    }
   }
 
   const filteredLeads = leads.filter(lead => {
@@ -250,15 +336,28 @@ function InboundLeadsContent() {
       (lead.full_name || '').toLowerCase().includes(q) ||
       (lead.email || '').toLowerCase().includes(q) ||
       (lead.telegram_username || '').toLowerCase().includes(q)
-
     const matchesPosition =
       positionFilter === 'all' || lead.position_type === positionFilter
-
     return matchesSearch && matchesPosition
   })
 
+  const filteredFailed = useMemo(() => {
+    if (!stepFilter) return failedAttempts
+    return failedAttempts.filter(a => a.failed_step === stepFilter)
+  }, [failedAttempts, stepFilter])
+
+  const uniqueSteps = useMemo(() => {
+    const s = new Set(failedAttempts.map(a => a.failed_step).filter(Boolean))
+    return Array.from(s).sort()
+  }, [failedAttempts])
+
+  const totalFailedInFunnel = useMemo(() => stepBreakdown.reduce((s, i) => s + i.count, 0), [stepBreakdown])
+  const maxStepCount = useMemo(() => stepBreakdown.length > 0 ? stepBreakdown[0].count : 1, [stepBreakdown])
+
   const getPassRate = (p: PositionStats) =>
     p.attempted > 0 ? Math.round((p.qualified / p.attempted) * 100) : 0
+
+  const todayStr = new Date().toISOString().split('T')[0]
 
   if (loading) {
     return (
@@ -275,7 +374,7 @@ function InboundLeadsContent() {
     <div className="min-h-screen pt-24 md:pt-28 px-4 md:px-8 pb-8" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push('/admin')}
@@ -300,90 +399,118 @@ function InboundLeadsContent() {
           </button>
         </div>
 
+        {/* Date Range + Position Filter Bar */}
+        <div className="rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3" style={{ background: 'var(--surface)' }}>
+          <div className="flex items-center gap-2 mr-2">
+            <Calendar className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Period:</span>
+          </div>
+          <div className="flex gap-1.5 flex-wrap">
+            {([
+              ['today', 'Today'],
+              ['yesterday', 'Yesterday'],
+              ['7d', '7 Days'],
+              ['30d', '30 Days'],
+              ['all', 'All Time'],
+            ] as [DatePreset, string][]).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => handleDatePreset(key)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                style={{
+                  background: datePreset === key ? 'var(--accent)' : 'var(--bg-primary)',
+                  color: datePreset === key ? '#fff' : 'var(--text-secondary)',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="sm:ml-auto flex gap-1.5">
+            {(['all', 'marketing', 'backend'] as const).map(val => (
+              <button
+                key={val}
+                onClick={() => handlePositionChange(val)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize"
+                style={{
+                  background: positionFilter === val ? 'var(--accent)' : 'var(--bg-primary)',
+                  color: positionFilter === val ? '#fff' : 'var(--text-secondary)',
+                }}
+              >
+                {val}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.15)' }}>
-                  <Users className="w-5 h-5" style={{ color: '#3b82f6' }} />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div className="rounded-xl p-4 shadow-sm" style={{ background: 'var(--surface)' }}>
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.15)' }}>
+                  <Users className="w-4 h-4" style={{ color: '#3b82f6' }} />
                 </div>
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Total Attempted</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Total Attempted</span>
               </div>
               <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{stats.total.attempted}</p>
             </div>
 
-            <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.15)' }}>
-                  <CheckCircle className="w-5 h-5" style={{ color: '#10b981' }} />
+            <div className="rounded-xl p-4 shadow-sm" style={{ background: 'var(--surface)' }}>
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.15)' }}>
+                  <CheckCircle className="w-4 h-4" style={{ color: '#10b981' }} />
                 </div>
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Qualified</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Qualified</span>
               </div>
               <p className="text-3xl font-bold" style={{ color: '#10b981' }}>{stats.total.qualified}</p>
             </div>
 
             <button
               onClick={toggleFailedView}
-              className="rounded-xl p-5 shadow-sm text-left transition-all"
+              className="rounded-xl p-4 shadow-sm text-left transition-all"
               style={{
                 background: 'var(--surface)',
                 outline: showFailedAttempts ? '2px solid #ef4444' : 'none',
                 outlineOffset: '-2px',
               }}
             >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)' }}>
-                  <XCircle className="w-5 h-5" style={{ color: '#ef4444' }} />
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.15)' }}>
+                  <XCircle className="w-4 h-4" style={{ color: '#ef4444' }} />
                 </div>
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Failed</span>
-                <Eye className="w-3.5 h-3.5 ml-auto" style={{ color: showFailedAttempts ? '#ef4444' : 'var(--text-muted)' }} />
+                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Failed</span>
+                <Eye className="w-3 h-3 ml-auto" style={{ color: showFailedAttempts ? '#ef4444' : 'var(--text-muted)' }} />
               </div>
               <p className="text-3xl font-bold" style={{ color: '#ef4444' }}>{stats.total.failed}</p>
             </button>
 
-            {stats.total.termsNotAccepted > 0 ? (
-              <button
-                onClick={toggleTermsNAView}
-                className="rounded-xl p-5 shadow-sm text-left transition-all"
-                style={{
-                  background: 'var(--surface)',
-                  outline: showTermsNotAccepted ? '2px solid #f59e0b' : 'none',
-                  outlineOffset: '-2px',
-                }}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(245,158,11,0.15)' }}>
-                    <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} />
-                  </div>
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Terms Not Accepted</span>
-                  <Eye className="w-3.5 h-3.5 ml-auto" style={{ color: showTermsNotAccepted ? '#f59e0b' : 'var(--text-muted)' }} />
+            <div className="rounded-xl p-4 shadow-sm" style={{ background: 'var(--surface)' }}>
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(168,85,247,0.15)' }}>
+                  <TrendingUp className="w-4 h-4" style={{ color: '#a855f7' }} />
                 </div>
-                <p className="text-3xl font-bold" style={{ color: '#f59e0b' }}>{stats.total.termsNotAccepted}</p>
-              </button>
-            ) : (
-              <div className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(168,85,247,0.15)' }}>
-                    <TrendingUp className="w-5 h-5" style={{ color: '#a855f7' }} />
-                  </div>
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Pass Rate</span>
-                </div>
-                <p className="text-3xl font-bold" style={{ color: '#a855f7' }}>{stats.total.passRate}%</p>
+                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Pass Rate</span>
               </div>
-            )}
+              <p className="text-3xl font-bold" style={{ color: '#a855f7' }}>{stats.total.passRate}%</p>
+              {stats.total.termsNotAccepted > 0 && (
+                <button onClick={toggleTermsNAView} className="text-xs mt-1 font-medium hover:underline" style={{ color: '#f59e0b' }}>
+                  {stats.total.termsNotAccepted} terms pending
+                </button>
+              )}
+            </div>
           </div>
         )}
 
         {/* Per-position breakdown */}
         {stats && Object.keys(stats.byPosition).length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
             {Object.entries(stats.byPosition).map(([position, p]) => (
-              <div key={position} className="rounded-xl p-5 shadow-sm" style={{ background: 'var(--surface)' }}>
-                <h3 className="text-lg font-semibold mb-3 capitalize" style={{ color: 'var(--text-primary)' }}>
+              <div key={position} className="rounded-xl p-4 shadow-sm" style={{ background: 'var(--surface)' }}>
+                <h3 className="text-base font-semibold mb-2 capitalize" style={{ color: 'var(--text-primary)' }}>
                   {position}
                 </h3>
-                <div className="flex items-center gap-6 text-sm flex-wrap">
+                <div className="flex items-center gap-4 text-sm flex-wrap">
                   <span style={{ color: 'var(--text-secondary)' }}>
                     Attempted: <strong style={{ color: 'var(--text-primary)' }}>{p.attempted}</strong>
                   </span>
@@ -407,39 +534,180 @@ function InboundLeadsContent() {
           </div>
         )}
 
+        {/* Step Failure Funnel */}
+        {stepBreakdown.length > 0 && (
+          <div className="rounded-xl p-5 shadow-sm mb-6" style={{ background: 'var(--surface)' }}>
+            <div className="flex items-center gap-3 mb-4">
+              <BarChart3 className="w-5 h-5" style={{ color: '#ef4444' }} />
+              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Where Applicants Fail</h2>
+              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
+                {totalFailedInFunnel} total failures
+              </span>
+              {stepFilter && (
+                <button
+                  onClick={() => setStepFilter('')}
+                  className="ml-auto text-xs px-2.5 py-1 rounded-lg font-medium"
+                  style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}
+                >
+                  Clear filter: {stepFilter} ✕
+                </button>
+              )}
+            </div>
+            <div className="space-y-2">
+              {stepBreakdown.map(item => {
+                const pct = totalFailedInFunnel > 0 ? Math.round((item.count / totalFailedInFunnel) * 100) : 0
+                const barWidth = maxStepCount > 0 ? Math.max((item.count / maxStepCount) * 100, 2) : 2
+                const isActive = stepFilter === item.step
+                return (
+                  <button
+                    key={item.step}
+                    onClick={() => handleStepClick(item.step)}
+                    className="w-full flex items-center gap-3 rounded-lg p-2.5 transition-all text-left"
+                    style={{
+                      background: isActive ? 'rgba(239,68,68,0.12)' : 'var(--bg-primary)',
+                      outline: isActive ? '2px solid #ef4444' : 'none',
+                      outlineOffset: '-2px',
+                    }}
+                  >
+                    <span className="text-xs font-medium w-36 md:w-44 flex-shrink-0 truncate" style={{ color: 'var(--text-primary)' }}>
+                      {item.step || 'Unknown'}
+                    </span>
+                    <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ background: 'var(--surface)' }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${barWidth}%`,
+                          background: 'linear-gradient(90deg, #ef4444, #f97316)',
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-bold w-10 text-right flex-shrink-0" style={{ color: '#ef4444' }}>
+                      {item.count}
+                    </span>
+                    <span className="text-xs w-10 text-right flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+                      {pct}%
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Daily Volume */}
+        {dailyVolume.length > 0 && (
+          <div className="rounded-xl shadow-sm mb-6 overflow-hidden" style={{ background: 'var(--surface)' }}>
+            <button
+              onClick={() => setShowDailyVolume(!showDailyVolume)}
+              className="w-full flex items-center justify-between p-4 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5" style={{ color: '#3b82f6' }} />
+                <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Daily Breakdown</h2>
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: 'rgba(59,130,246,0.15)', color: '#3b82f6' }}>
+                  {dailyVolume.length} day{dailyVolume.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              {showDailyVolume
+                ? <ChevronUp className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+                : <ChevronDown className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+              }
+            </button>
+            {showDailyVolume && (
+              <div className="px-4 pb-4">
+                <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border, #333)' }}>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ background: 'var(--bg-primary)' }}>
+                        <th className="text-left px-4 py-2.5 font-semibold" style={{ color: 'var(--text-secondary)' }}>Date</th>
+                        <th className="text-right px-4 py-2.5 font-semibold" style={{ color: 'var(--text-secondary)' }}>Total</th>
+                        <th className="text-right px-4 py-2.5 font-semibold" style={{ color: '#10b981' }}>Passed</th>
+                        <th className="text-right px-4 py-2.5 font-semibold" style={{ color: '#ef4444' }}>Failed</th>
+                        <th className="text-right px-4 py-2.5 font-semibold" style={{ color: '#a855f7' }}>Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dailyVolume.map(day => {
+                        const isToday = day.date === todayStr
+                        const rate = day.total > 0 ? Math.round((day.passed / day.total) * 100) : 0
+                        const dateObj = new Date(day.date + 'T12:00:00')
+                        return (
+                          <tr
+                            key={day.date}
+                            style={{
+                              background: isToday ? 'rgba(255,107,0,0.06)' : 'transparent',
+                              borderTop: '1px solid var(--border, #333)',
+                            }}
+                          >
+                            <td className="px-4 py-2.5 font-medium" style={{ color: isToday ? 'var(--accent)' : 'var(--text-primary)' }}>
+                              {dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                              {isToday && <span className="ml-2 text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--accent)', color: '#fff' }}>Today</span>}
+                            </td>
+                            <td className="px-4 py-2.5 text-right font-bold" style={{ color: 'var(--text-primary)' }}>{day.total}</td>
+                            <td className="px-4 py-2.5 text-right font-semibold" style={{ color: '#10b981' }}>{day.passed}</td>
+                            <td className="px-4 py-2.5 text-right font-semibold" style={{ color: '#ef4444' }}>{day.failed}</td>
+                            <td className="px-4 py-2.5 text-right font-semibold" style={{ color: '#a855f7' }}>{rate}%</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Failed Attempts Panel */}
         {showFailedAttempts && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <div className="flex items-center gap-3">
                 <AlertTriangle className="w-5 h-5" style={{ color: '#ef4444' }} />
                 <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Failed Attempts</h2>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
-                  {failedAttempts.length}
+                  {filteredFailed.length}
                 </span>
               </div>
-              <button
-                onClick={toggleFailedView}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-2">
+                {uniqueSteps.length > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <Filter className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
+                    <select
+                      value={stepFilter}
+                      onChange={e => setStepFilter(e.target.value)}
+                      className="text-xs px-2.5 py-1.5 rounded-lg outline-none"
+                      style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border, #333)' }}
+                    >
+                      <option value="">All Steps</option>
+                      {uniqueSteps.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                )}
+                <button
+                  onClick={toggleFailedView}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
             {loadingFailed ? (
               <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)' }}>
                 <div className="w-8 h-8 border-3 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: '#ef4444' }}></div>
                 <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Loading failed attempts...</p>
               </div>
-            ) : failedAttempts.length === 0 ? (
+            ) : filteredFailed.length === 0 ? (
               <div className="rounded-xl p-8 text-center" style={{ background: 'var(--surface)' }}>
-                <p style={{ color: 'var(--text-secondary)' }}>No detailed failed attempts recorded yet.</p>
-                <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>New failures will appear here automatically.</p>
+                <p style={{ color: 'var(--text-secondary)' }}>
+                  {stepFilter ? `No failures at "${stepFilter}" step.` : 'No detailed failed attempts recorded yet.'}
+                </p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {failedAttempts.map((attempt) => (
-                  <div key={attempt.id} className="rounded-xl p-4 md:p-5 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #ef4444' }}>
+              <div className="space-y-2">
+                {filteredFailed.map(attempt => (
+                  <div key={attempt.id} className="rounded-xl p-4 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #ef4444' }}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -447,8 +715,11 @@ function InboundLeadsContent() {
                           <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${attempt.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
                             {attempt.position_type}
                           </span>
+                          <span className="px-2 py-0.5 rounded text-xs font-semibold" style={{ background: 'rgba(239,68,68,0.15)', color: '#ef4444' }}>
+                            {attempt.failed_step || 'Unknown step'}
+                          </span>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
                           <div>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
                             <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>{attempt.email || 'N/A'}</p>
@@ -465,8 +736,8 @@ function InboundLeadsContent() {
                           </div>
                         </div>
                         {attempt.failed_reason && (
-                          <div className="rounded-lg p-3" style={{ background: 'var(--bg-primary)' }}>
-                            <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Reason</p>
+                          <div className="rounded-lg p-2.5" style={{ background: 'var(--bg-primary)' }}>
+                            <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-muted)' }}>Reason</p>
                             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{attempt.failed_reason}</p>
                           </div>
                         )}
@@ -488,7 +759,7 @@ function InboundLeadsContent() {
 
         {/* Terms Not Accepted Panel */}
         {showTermsNotAccepted && (
-          <div className="mb-8">
+          <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <AlertTriangle className="w-5 h-5" style={{ color: '#f59e0b' }} />
@@ -518,33 +789,25 @@ function InboundLeadsContent() {
                 <p style={{ color: 'var(--text-secondary)' }}>No pending entries.</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {termsNotAccepted.map((entry) => (
-                  <div key={entry.id} className="rounded-xl p-4 md:p-5 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #f59e0b' }}>
+              <div className="space-y-2">
+                {termsNotAccepted.map(entry => (
+                  <div key={entry.id} className="rounded-xl p-4 shadow-sm" style={{ background: 'var(--surface)', borderLeft: '3px solid #f59e0b' }}>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-3 flex-wrap">
-                          <p className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>{entry.full_name || 'Unknown name'}</p>
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{entry.full_name || 'Unknown'}</p>
                           <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${entry.position_type === 'marketing' ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
                             {entry.position_type}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
                           <div>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Telegram</p>
                             {entry.telegram_username ? (
-                              <a
-                                href={`https://t.me/${entry.telegram_username.replace('@', '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm font-medium hover:underline"
-                                style={{ color: '#3b82f6' }}
-                              >
+                              <a href={`https://t.me/${entry.telegram_username.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium hover:underline" style={{ color: '#3b82f6' }}>
                                 @{entry.telegram_username.replace('@', '')}
                               </a>
-                            ) : (
-                              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>N/A</p>
-                            )}
+                            ) : <p className="text-sm" style={{ color: 'var(--text-muted)' }}>N/A</p>}
                           </div>
                           <div>
                             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Email</p>
@@ -560,33 +823,6 @@ function InboundLeadsContent() {
                               {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </p>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-4 flex-wrap text-xs">
-                          {entry.english_quiz_score != null && (
-                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
-                              EN {entry.english_quiz_score}/{entry.english_quiz_total}
-                            </span>
-                          )}
-                          {entry.typing_wpm != null && (
-                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
-                              {Number(entry.typing_wpm).toFixed(0)} WPM
-                            </span>
-                          )}
-                          {entry.download_speed != null && (
-                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
-                              {Number(entry.download_speed).toFixed(0)} Mbps
-                            </span>
-                          )}
-                          {entry.memory_test_score != null && (
-                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
-                              Memory {entry.memory_test_score}/{entry.memory_test_total}
-                            </span>
-                          )}
-                          {entry.creativity_score != null && (
-                            <span className="px-2 py-1 rounded" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
-                              Creativity {entry.creativity_score}
-                            </span>
-                          )}
                         </div>
                       </div>
                       <button
@@ -604,34 +840,17 @@ function InboundLeadsContent() {
           </div>
         )}
 
-        {/* Search and Filter */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm outline-none"
-              style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border, #333)' }}
-            />
-          </div>
-          <div className="flex gap-2">
-            {(['all', 'marketing', 'backend'] as const).map((val) => (
-              <button
-                key={val}
-                onClick={() => setPositionFilter(val)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors capitalize"
-                style={{
-                  background: positionFilter === val ? 'var(--accent)' : 'var(--surface)',
-                  color: positionFilter === val ? '#fff' : 'var(--text-secondary)',
-                }}
-              >
-                {val}
-              </button>
-            ))}
-          </div>
+        {/* Search */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm outline-none"
+            style={{ background: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border, #333)' }}
+          />
         </div>
 
         {/* Leads count */}
@@ -646,9 +865,8 @@ function InboundLeadsContent() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredLeads.map((lead) => (
+            {filteredLeads.map(lead => (
               <div key={lead.id} className="rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface)' }}>
-                {/* Row header */}
                 <div className="flex items-center p-4 md:p-5">
                   <button
                     onClick={() => toggleRow(lead.id)}
@@ -675,7 +893,7 @@ function InboundLeadsContent() {
                       <div className="hidden md:block">
                         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Tests</p>
                         <div className="flex flex-wrap gap-1 mt-0.5">
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: '#10b981' + '22', color: '#10b981' }}>EN {lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</span>
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: '#10b98122', color: '#10b981' }}>EN {lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</span>
                           {lead.typing_wpm != null && (
                             <span className="px-1.5 py-0.5 rounded text-xs font-medium" style={{ background: (lead.typing_passed ? '#10b981' : '#ef4444') + '22', color: lead.typing_passed ? '#10b981' : '#ef4444' }}>{lead.typing_wpm} WPM</span>
                           )}
@@ -701,7 +919,7 @@ function InboundLeadsContent() {
                     )}
                   </button>
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(lead.id, lead.full_name || 'this lead') }}
+                    onClick={e => { e.stopPropagation(); handleDelete(lead.id, lead.full_name || 'this lead') }}
                     className="ml-3 p-2 rounded-lg hover:bg-red-500/20 transition-colors flex-shrink-0"
                     title="Delete lead"
                   >
@@ -709,10 +927,8 @@ function InboundLeadsContent() {
                   </button>
                 </div>
 
-                {/* Expanded details */}
                 {expandedRows.has(lead.id) && (
                   <div className="px-4 md:px-5 pb-5 pt-0 border-t" style={{ borderColor: 'var(--border, #333)' }}>
-                    {/* Contact info */}
                     <div className="rounded-lg p-4 mt-4 mb-4" style={{ background: 'var(--bg-primary)', border: '1px solid var(--accent)' }}>
                       <h4 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--accent)' }}>Contact Info</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -739,15 +955,14 @@ function InboundLeadsContent() {
                       </div>
                     </div>
 
-                    {/* Test results */}
                     <div className="rounded-lg p-4 mb-4" style={{ background: 'var(--bg-primary)' }}>
                       <h4 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Test Results</h4>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: '1px solid #10b981' + '44' }}>
+                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: '1px solid #10b98144' }}>
                           <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>English</p>
                           <p className="text-lg font-bold" style={{ color: '#10b981' }}>{lead.english_quiz_score ?? '?'}/{lead.english_quiz_total ?? '?'}</p>
                         </div>
-                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: '1px solid #10b981' + '44' }}>
+                        <div className="rounded-lg p-3 text-center" style={{ background: 'var(--surface)', border: '1px solid #10b98144' }}>
                           <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Memory</p>
                           <p className="text-lg font-bold" style={{ color: '#10b981' }}>{lead.memory_test_score ?? '?'}/{lead.memory_test_total ?? '?'}</p>
                         </div>
@@ -776,7 +991,6 @@ function InboundLeadsContent() {
                       </div>
                     </div>
 
-                    {/* Creativity Details (marketing only) */}
                     {lead.creativity_data && (
                       <div className="rounded-lg p-4 mb-4" style={{ background: 'var(--bg-primary)' }}>
                         <h4 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Creativity Test Details</h4>
@@ -801,7 +1015,7 @@ function InboundLeadsContent() {
                           </div>
                         )}
                         {lead.claude_evaluation && (
-                          <div className="rounded-lg p-3" style={{ background: 'var(--surface)', border: '1px solid #a855f7' + '44' }}>
+                          <div className="rounded-lg p-3" style={{ background: 'var(--surface)', border: '1px solid #a855f744' }}>
                             <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#a855f7' }}>AI Evaluation</p>
                             <div className="grid grid-cols-2 gap-3 mb-2">
                               <div>
@@ -824,25 +1038,17 @@ function InboundLeadsContent() {
                       </div>
                     )}
 
-                    {/* Quiz Answers */}
                     {lead.quiz_answers && lead.quiz_answers.length > 0 && (
                       <div className="mt-2">
-                        <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-                          Quiz Answers
-                        </h4>
+                        <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Quiz Answers</h4>
                         <div className="space-y-2">
                           {lead.quiz_answers.map((qa, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-start gap-3 p-3 rounded-lg text-sm"
-                              style={{ background: 'var(--bg-primary)' }}
-                            >
+                            <div key={idx} className="flex items-start gap-3 p-3 rounded-lg text-sm" style={{ background: 'var(--bg-primary)' }}>
                               <div className="flex-shrink-0 mt-0.5">
-                                {qa.isCorrect ? (
-                                  <CheckCircle className="w-4 h-4" style={{ color: '#10b981' }} />
-                                ) : (
-                                  <XCircle className="w-4 h-4" style={{ color: '#ef4444' }} />
-                                )}
+                                {qa.isCorrect
+                                  ? <CheckCircle className="w-4 h-4" style={{ color: '#10b981' }} />
+                                  : <XCircle className="w-4 h-4" style={{ color: '#ef4444' }} />
+                                }
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
@@ -852,9 +1058,7 @@ function InboundLeadsContent() {
                                   Their answer: {qa.answer || 'Not answered'}
                                 </p>
                                 {!qa.isCorrect && qa.correctAnswer && (
-                                  <p style={{ color: 'var(--text-muted)' }}>
-                                    Correct answer: {qa.correctAnswer}
-                                  </p>
+                                  <p style={{ color: 'var(--text-muted)' }}>Correct answer: {qa.correctAnswer}</p>
                                 )}
                               </div>
                             </div>
