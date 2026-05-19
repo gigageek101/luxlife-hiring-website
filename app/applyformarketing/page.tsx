@@ -86,7 +86,7 @@ export default function ApplyForMarketingPage() {
 
   const stepNames: Record<number, string> = {
     2: 'Age Verification',
-    3: 'Education',
+    // 3: 'Education', // temporarily disabled
     4: 'English Self-Rating',
     5: 'Equipment Check',
     6: 'English Quiz',
@@ -99,7 +99,7 @@ export default function ApplyForMarketingPage() {
   const timeEstimates: Record<number, string> = {
     1: '~4 min left',
     2: '~3 min left',
-    3: '~3 min left',
+    // 3 is skipped (education disabled)
     4: '~2 min left',
     5: '~2 min left',
     6: '~2 min left',
@@ -115,14 +115,14 @@ export default function ApplyForMarketingPage() {
           return { disqualified: true, reason: `Age must be between ${config.minAge} and ${config.maxAge} years old.`, stepName: stepNames[step] }
         }
         break
-      case 3:
-        if (data.hasFinishedEducation === false) {
-          return { disqualified: true, reason: 'You must have finished your education to apply.', stepName: stepNames[step] }
-        }
-        if (data.educationType === 'Student') {
-          return { disqualified: true, reason: 'Current students are not eligible to apply.', stepName: stepNames[step] }
-        }
-        break
+      // case 3: // education step temporarily disabled
+      //   if (data.hasFinishedEducation === false) {
+      //     return { disqualified: true, reason: 'You must have finished your education to apply.', stepName: stepNames[step] }
+      //   }
+      //   if (data.educationType === 'Student') {
+      //     return { disqualified: true, reason: 'Current students are not eligible to apply.', stepName: stepNames[step] }
+      //   }
+      //   break
       case 4:
         if (data.englishRating === 'Very Bad' || data.englishRating === 'Bad') {
           return { disqualified: true, reason: 'Good English skills are required for this position.', stepName: stepNames[step] }
@@ -181,6 +181,7 @@ export default function ApplyForMarketingPage() {
     }
     
     updatedData.currentStep += 1
+    if (updatedData.currentStep === 3) updatedData.currentStep += 1 // skip disabled education step
 
     setApplicantData(updatedData)
     saveToLocalStorage(updatedData)
@@ -406,7 +407,8 @@ export default function ApplyForMarketingPage() {
         <div className="rounded-xl shadow-lg p-4 md:p-6" style={{ background: 'var(--surface)' }}>
           {applicantData.currentStep === 1 && <Step1 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 2 && <Step2 onNext={handleNext} data={applicantData} />}
-          {applicantData.currentStep === 3 && <Step3 onNext={handleNext} data={applicantData} />}
+          {/* Education step temporarily disabled */}
+          {/* {applicantData.currentStep === 3 && <Step3 onNext={handleNext} data={applicantData} />} */}
           {applicantData.currentStep === 4 && <Step4 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 5 && <Step5 onNext={handleNext} data={applicantData} />}
           {applicantData.currentStep === 6 && (
@@ -1716,11 +1718,11 @@ function StepResults({ onNext, data }: { onNext: (data: any) => void, data: Appl
   // const creativityScore = data.creativityTestResult?.fluencyScore ?? 0
 
   const ageQualified = data.age ? (data.age >= config.minAge && data.age <= config.maxAge) : false
-  const educationQualified = data.hasFinishedEducation === true && data.educationType !== 'Student'
+  // const educationQualified = data.hasFinishedEducation === true && data.educationType !== 'Student' // temporarily disabled
   const englishRatingQualified = data.englishRating !== 'Very Bad' && data.englishRating !== 'Bad'
   const equipmentQualified = data.hasWorkingPc === true
 
-  const isQualified = ageQualified && educationQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed && typingPassed && speedPassed
+  const isQualified = ageQualified && englishRatingQualified && equipmentQualified && englishPassed && memoryPassed && typingPassed && speedPassed
 
   return (
     <div className="text-center">
@@ -1742,7 +1744,7 @@ function StepResults({ onNext, data }: { onNext: (data: any) => void, data: Appl
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Internet Speed:</span><span className={`font-semibold ${speedPassed ? 'text-green-500' : 'text-red-500'}`}>{dlSpeed} Mbps {speedPassed ? '✓ Passed' : `✗ Failed (need ${config.speedMinDownload})`}</span></div>
           {/* Creativity row temporarily disabled */}
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Age Requirement:</span><span className={`font-semibold ${ageQualified ? 'text-green-500' : 'text-red-500'}`}>{ageQualified ? '✓ Met' : '✗ Not Met'}</span></div>
-          <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Education:</span><span className={`font-semibold ${educationQualified ? 'text-green-500' : 'text-red-500'}`}>{educationQualified ? '✓ Met' : '✗ Not Met'}</span></div>
+          {/* Education row temporarily disabled */}
           <div className="flex items-center justify-between"><span style={{ color: 'var(--text-secondary)' }}>Equipment:</span><span className={`font-semibold ${equipmentQualified ? 'text-green-500' : 'text-red-500'}`}>{equipmentQualified ? '✓ Met' : '✗ Not Met'}</span></div>
         </div>
       </div>
