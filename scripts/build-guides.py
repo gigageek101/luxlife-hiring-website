@@ -13,14 +13,19 @@ import sys
 from pathlib import Path
 
 LINKS = json.loads(Path("content/guides/notion-links.json").read_text())
-OPENER_CALLOUT = (
-    '<div class="callout update"><span class="icon">📍</span><div><p><strong>UPDATE 30 Sep 2026 — the opener changed. '
-    'He stays SILENT, YOU open the chat.</strong></p><p>The scenarios below still teach you how to read him, but the first '
-    'messages are now fixed:</p><ol><li>You: <em>"heyy wait are u living close to me??"</em></li><li>He tells you where he is '
-    'from (<em>"im from houston, u?"</em>)</li><li>You: <em>"damn I\'m from dallas!"</em> + something warm about HIS place: '
-    '<em>"omg i love to visit there!! my auntie lives there"</em></li><li>You: <em>"btw how old are u and what do u do for '
-    'work?"</em></li><li>Then Phase 2 onwards exactly as written here.</li></ol></div></div>'
-)
+# Written in the converter's source style so design-guides.py renders it like Scenarios A-E.
+SCENARIO_ZERO = """<h2>Scenario 0 — He stays SILENT (the default now) → you open with the location hook</h2>
+<p><strong>New since 30 Sep 2026:</strong> he does not write first anymore. He subscribed, he is looking at your page, he says nothing. YOU open, and the first messages are fixed:</p>
+<p>(he subscribed and is looking at your page, but he hasn't written anything)</p>
+<p><code>heyy wait are u living close to me??</code></p>
+<p><strong>Him:</strong> im from houston, u?</p>
+<p><code>damn I'm from dallas!</code></p>
+<p><code>omg i love to visit there, my auntie lives there</code></p>
+<p><code>btw how old are u and what do u do for work?</code></p>
+<p><strong>Him:</strong> 42, electrician</p>
+<p>(now continue with Phase 2: react to his location, then his job, exactly as below)</p>
+<blockquote>💡 Pro Tip: Your city is dallas (add "but im at my dads in st louis like half the time lol" only if it fits). The warm line is always about HIS place, never yours. Age and job go in ONE message. Everything from Phase 2 on runs exactly as always.</blockquote>
+"""
 FLOWBOARD = Path("content/guides/flowboard.html")
 VIDEO = ('<video controls preload="metadata" src="/guides/sexting/screen-recording.mp4"></video>\n'
          '<p><em>Screen recording, 6 Feb 2026 (74 s)</em></p>')
@@ -43,13 +48,13 @@ def patch_relationship():
     h, n = re.subn(r'<div class="figure">\s*<span><img[^>]*></span>\s*</div>\s*<p>\(see the generated image above\)\s*</p>',
                    FLOWBOARD.read_text().strip(), h, count=1)
     assert n == 1, "relationship hero image not found"
-    m = re.search(r"<h2>[^<]*PHASE 1[^<]*</h2>", h)
+    m = re.search(r"<h2>[^<]*PHASE 1[^<]*</h2>\n?", h)
     assert m, "Phase 1 heading not found"
-    h = h[:m.end()] + "\n" + OPENER_CALLOUT + h[m.end():]
+    h = h[:m.end()] + SCENARIO_ZERO + h[m.end():]
     p.write_text(h)
     for img in Path("public/guides/relationship-building").glob("*"):
         img.unlink()
-    print("relationship-building: flow board + opener callout applied")
+    print("relationship-building: flow board + Scenario 0 applied")
 
 
 def patch_sexting():
