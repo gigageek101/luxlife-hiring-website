@@ -5,6 +5,9 @@ import { motion } from 'framer-motion'
 import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
+import AccountabilityTab from '@/components/admin/AccountabilityTab'
+import CostsTab from '@/components/admin/CostsTab'
+import ClaudeCreditBanner from '@/components/admin/ClaudeCreditBanner'
 import { useRouter } from 'next/navigation'
 
 interface AssessmentAnswer {
@@ -76,7 +79,7 @@ interface SimReport {
 
 function AdminPanelContent() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser'>('assessments')
+  const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser' | 'accountability' | 'costs'>('assessments')
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -982,6 +985,7 @@ function AdminPanelContent() {
       
       <section className="section pt-24 md:pt-40 px-3 md:px-6 relative z-10">
         <div className="container max-w-7xl">
+          <ClaudeCreditBanner />
           <div className="text-center mb-6 md:mb-8">
             <h1 className="mb-2 md:mb-4 text-2xl md:text-4xl">Admin Panel</h1>
             <p className="text-base md:text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
@@ -1125,7 +1129,7 @@ function AdminPanelContent() {
           </div>
 
           {/* Tab Switcher */}
-          <div className="flex gap-1.5 md:gap-2 mb-6 md:mb-8 max-w-2xl mx-auto">
+          <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8 max-w-4xl mx-auto">
             <button
               onClick={() => setActiveTab('assessments')}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
@@ -1172,7 +1176,34 @@ function AdminPanelContent() {
                 </span>
               )}
             </button>
+            <button
+              onClick={() => setActiveTab('accountability')}
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
+                activeTab === 'accountability'
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">Accountability</span>
+              <span className="sm:hidden">Account.</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('costs')}
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
+                activeTab === 'costs'
+                  ? 'bg-gradient-to-r from-gray-800 to-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">API Costs</span>
+              <span className="sm:hidden">Costs</span>
+            </button>
           </div>
+
+          {activeTab === 'accountability' && <AccountabilityTab />}
+          {activeTab === 'costs' && <CostsTab />}
 
           {/* ASSESSMENTS TAB */}
           {activeTab === 'assessments' && (<>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { CLAUDE_MODEL, claudeStopInfo, claudeText } from '@/lib/claude'
+import { callClaude } from '@/lib/claude-server'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -40,27 +41,19 @@ Return ONLY valid JSON, no other text:
   "passed": <true if validUses >= 2 AND validCaptions >= 3>
 }`
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
+    const response = await callClaude('evaluate-creativity', {
         model: CLAUDE_MODEL,
         output_config: { effort: 'low' },
         max_tokens: 8000,
         messages: [{ role: 'user', content: prompt }]
       })
-    })
 
     if (!response.ok) {
       console.error('Claude API error:', response.status)
       return NextResponse.json({ valid: true, score: 0 }, { status: 200 })
     }
 
-    const result = await response.json()
+    const result = response.data
     const text = claudeText(result)
     if (!text) console.error('Creativity evaluation: no text from Claude:', claudeStopInfo(result))
 

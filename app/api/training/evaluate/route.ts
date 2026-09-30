@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeStopInfo, claudeText } from '@/lib/claude'
+import { callClaude } from '@/lib/claude-server'
 
 // Disable caching for this route
 export const dynamic = 'force-dynamic'
@@ -51,14 +52,7 @@ For each answer, return an object with:
 Return ONLY a valid JSON array with ${answers.length} evaluation objects, no other text. Start your response with [ and end with ]`
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
+    const response = await callClaude('training-evaluate', {
         model: CLAUDE_MODEL,
         ...CLAUDE_GRADING_SETTINGS,
         max_tokens: 8000,
@@ -69,15 +63,14 @@ Return ONLY a valid JSON array with ${answers.length} evaluation objects, no oth
           }
         ]
       })
-    })
 
     if (!response.ok) {
-      const errorData = await response.text()
+      const errorData = response.errorText
       console.error('Claude API error:', errorData)
       throw new Error(`Claude API error: ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = response.data
     const content = claudeText(data).trim()
     if (!content) {
       console.error('Training evaluation: Claude returned no text:', claudeStopInfo(data))

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { CLAUDE_FALLBACK_MODEL, CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeRefused, claudeStopInfo, claudeText, claudeTruncated } from '@/lib/claude'
+import { callClaude } from '@/lib/claude-server'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -410,28 +411,6 @@ function extractJSON(text: string): object | null {
   }
 }
 
-async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Response> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': CLAUDE_API_KEY!,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-    if (response.ok) return response
-    const status = response.status
-    if ((status === 429 || status === 529 || status >= 500) && attempt < maxRetries - 1) {
-      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
-      await new Promise(r => setTimeout(r, delay))
-      continue
-    }
-    return response
-  }
-  throw new Error('Max retries exceeded')
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -462,12 +441,12 @@ export async function POST(request: NextRequest) {
     }
 
     for (let evalAttempt = 0; evalAttempt < 2; evalAttempt++) {
-      const response = await callClaudeWithRetry(requestBody)
+      const response = await callClaude('evaluate-combined', requestBody)
       if (!response.ok) {
         if (evalAttempt === 0) continue
         return NextResponse.json({ error: 'AI is temporarily busy. Please try again.' }, { status: 500 })
       }
-      const data = await response.json()
+      const data = response.data
       if (claudeRefused(data)) {
         console.error(`Evaluation declined by ${requestBody.model}:`, claudeStopInfo(data))
         if (evalAttempt === 0 && requestBody.model !== CLAUDE_FALLBACK_MODEL) {

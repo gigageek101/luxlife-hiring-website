@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { CLAUDE_MODEL, CLAUDE_CHAT_SETTINGS, claudeRefused, claudeStopInfo, claudeText } from '@/lib/claude'
+import { callClaude } from '@/lib/claude-server'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -123,32 +124,6 @@ IMPORTANT RULES:
 - The creator may reference things "from earlier" — play along with whatever your profile says.
 - If the creator nails the Personal Callback (Stage C) with a specific detail from your life AND your name, give a noticeably warmer response.`
 
-async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Response> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': CLAUDE_API_KEY!,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-
-    if (response.ok) return response
-
-    const status = response.status
-    if ((status === 429 || status === 529 || status >= 500) && attempt < maxRetries - 1) {
-      const delay = Math.min(1000 * Math.pow(2, attempt), 8000)
-      console.warn(`Claude API ${status}, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
-      await new Promise(r => setTimeout(r, delay))
-      continue
-    }
-
-    return response
-  }
-  throw new Error('Max retries exceeded')
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -180,7 +155,7 @@ export async function POST(request: NextRequest) {
       }))
     }
 
-    const response = await callClaudeWithRetry({
+    const response = await callClaude('chat-aftercare', {
       model: CLAUDE_MODEL,
       ...CLAUDE_CHAT_SETTINGS,
       max_tokens: 160,
@@ -189,7 +164,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
+      const errorText = response.errorText
       console.error('Claude API error after retries:', errorText)
       return NextResponse.json(
         { error: 'AI is temporarily busy. Please wait a moment and try again.' },
@@ -197,7 +172,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const data = await response.json()
+    const data = response.data
     if (claudeRefused(data)) {
       console.error('Chat aftercare API: Claude declined the request:', claudeStopInfo(data))
       return NextResponse.json(

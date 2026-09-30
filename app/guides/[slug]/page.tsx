@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { GUIDES, STEP_INFO, guideBySlug } from '@/lib/guides'
 import ReadingProgress from '@/components/ReadingProgress'
+import GuideGate from '@/components/GuideGate'
 import '../guide.css'
 
 export const dynamic = 'force-static'
@@ -41,7 +42,7 @@ export default function GuidePage({ params }: Params) {
           )}
         </nav>
         <h1 className="guide-title">{guide.emoji} {guide.title.replace(/^💖 /, '')}</h1>
-        <article className="guide" dangerouslySetInnerHTML={{ __html: html }} />
+        <GuideGate slug={guide.slug} html={html} />
         <nav className="guide-nav guide-nav-bottom">
           <Link href={`/guides#${step.anchor}`} className="guide-back">← All guides</Link>
           {guide.simulation && (
