@@ -36,3 +36,6 @@ next-env.d.ts
 
 # data
 /data
+
+# claude notes ledger (see ~/.claude/CLAUDE.md)
+/.claude/

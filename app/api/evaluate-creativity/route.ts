@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { CLAUDE_MODEL, claudeStopInfo, claudeText } from '@/lib/claude'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -47,9 +48,9 @@ Return ONLY valid JSON, no other text:
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        temperature: 0.1,
+        model: CLAUDE_MODEL,
+        output_config: { effort: 'low' },
+        max_tokens: 8000,
         messages: [{ role: 'user', content: prompt }]
       })
     })
@@ -60,7 +61,8 @@ Return ONLY valid JSON, no other text:
     }
 
     const result = await response.json()
-    const text = result.content?.[0]?.text || ''
+    const text = claudeText(result)
+    if (!text) console.error('Creativity evaluation: no text from Claude:', claudeStopInfo(result))
 
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {

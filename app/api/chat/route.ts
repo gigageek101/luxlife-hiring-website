@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { CLAUDE_MODEL, CLAUDE_CHAT_SETTINGS, claudeRefused, claudeStopInfo, claudeText } from '@/lib/claude'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -41,7 +42,17 @@ IMPORTANT RULES:
 - Stay in character the ENTIRE time
 - NEVER break character or acknowledge this is a simulation
 - Occasionally use "..." to trail off
-- NEVER proactively share your hobbies, height, relationship status, pets, or home ownership. Wait to be asked specifically.`
+- NEVER proactively share your hobbies, height, relationship status, pets, or home ownership. Wait to be asked specifically.
+
+HOW THE CHAT STARTS (fixed, follow it exactly):
+- You did NOT write first. You subscribed and stayed silent. The creator opens the chat.
+- Her opener is usually a location hook, in this order:
+  1. She asks something like "heyy wait are u living close to me??" -> reply short and low-effort WITHOUT giving your location yet: "lol idk where u at" or "depends where u at".
+  2. She says where she is from and asks you back -> reply with the city and state from your profile, short: "damn im from houston texas" or "houston tx".
+  3. She says something warm about your place (loves to visit, family there) -> react short and pleased: "haha small world" or "oh nice".
+  4. She asks your age and what you do for work -> answer both briefly from your profile: "42, electrician".
+- If she skips a step or asks in a different order, answer what she asked from your profile, still short. Never volunteer your city, age or job before she asks.
+- After this opener the ENGAGEMENT LEVELS above apply exactly as written: she still has to earn every level.`
 
 async function callClaudeWithRetry(body: object, maxRetries = 3): Promise<Response> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -86,32 +97,24 @@ export async function POST(request: NextRequest) {
       systemPrompt += `\n\nFor this session, your specific profile is: ${subscriberProfile}. Stay consistent with these details throughout.`
     }
 
-    const openerStyles = [
-      'Send your first message as "hey" or "sup" — just 1 word.',
-      'Send your first message as just your age and state, like "42 texas" or "38 ohio".',
-      'Send your first message with a casual compliment like "hey gorgeous" or "damn ur beautiful".',
-      'Send your first message with your name and a short greeting like "hey im mike" or "names brandon".',
-      'Send your first message with just "hi" — nothing else.',
-      'Send your first message as your name, age, and location like "mike 42 texas".',
-      'Send your first message as JUST your name — nothing else. Like "mike" or "brandon" or "tommy". One word only.',
-      'Send your first message as JUST your name — nothing else. Like "mike" or "brandon". One word only.',
-      'Send your first message as JUST your name — one word. Like "austin" or "scott".',
-    ]
-    const randomOpener = openerStyles[Math.floor(Math.random() * openerStyles.length)]
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json(
+        { error: 'The creator opens the conversation. Send at least one creator message.' },
+        { status: 400 }
+      )
+    }
 
-    const claudeMessages = messages.length === 0
-      ? [{ role: 'user' as const, content: `The creator has opened the chat. ${randomOpener} Keep it ultra short — Level 1 energy.` }]
-      : messages.map((m: { role: string; content: string }) => ({
-          role: m.role === 'creator' ? 'user' as const : 'assistant' as const,
-          content: m.content,
-        }))
+    const claudeMessages = messages.map((m: { role: string; content: string }) => ({
+      role: m.role === 'creator' ? 'user' as const : 'assistant' as const,
+      content: m.content,
+    }))
 
     const response = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 80,
+      model: CLAUDE_MODEL,
+      ...CLAUDE_CHAT_SETTINGS,
+      max_tokens: 120,
       system: systemPrompt,
       messages: claudeMessages,
-      temperature: 0.8,
     })
 
     if (!response.ok) {
@@ -124,7 +127,14 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
-    const reply = data.content?.[0]?.text || ''
+    if (claudeRefused(data)) {
+      console.error('Chat API: Claude declined the request:', claudeStopInfo(data))
+      return NextResponse.json(
+        { error: 'AI could not respond to that message. Please rephrase and try again.' },
+        { status: 500 }
+      )
+    }
+    const reply = claudeText(data)
 
     return NextResponse.json({ reply })
   } catch (error) {

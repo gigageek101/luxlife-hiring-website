@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, initMarketingDatabase } from '@/lib/marketing-db'
+import { CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeStopInfo, claudeText } from '@/lib/claude'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -55,9 +56,9 @@ Return ONLY a valid JSON array with ${answers.length} evaluation objects, no oth
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-        temperature: 0.3,
+        model: CLAUDE_MODEL,
+        ...CLAUDE_GRADING_SETTINGS,
+        max_tokens: 12000,
         messages: [
           {
             role: 'user',
@@ -74,7 +75,11 @@ Return ONLY a valid JSON array with ${answers.length} evaluation objects, no oth
     }
 
     const data = await response.json()
-    const content = data.content[0].text.trim()
+    const content = claudeText(data).trim()
+    if (!content) {
+      console.error('Marketing evaluation: Claude returned no text:', claudeStopInfo(data))
+      throw new Error('AI grader returned no result. Please submit again.')
+    }
 
     let evaluations: EvaluationResult[]
     try {

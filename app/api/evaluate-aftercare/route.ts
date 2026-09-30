@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { CLAUDE_FALLBACK_MODEL, CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeRefused, claudeStopInfo, claudeText, claudeTruncated } from '@/lib/claude'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -536,11 +537,11 @@ export async function POST(request: NextRequest) {
     const userContent = `Please evaluate the following AFTERCARE conversation between a Creator and a Subscriber (post-PPV/spicy exchange):${scenarioInfo}\n\n${conversationText}${notesSection}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
 
     const requestBody = {
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8000,
+      model: CLAUDE_MODEL,
+      ...CLAUDE_GRADING_SETTINGS,
+      max_tokens: 16000,
       system: EVALUATION_SYSTEM_PROMPT,
       messages: [{ role: 'user' as const, content: userContent }],
-      temperature: 0.3,
     }
 
     for (let evalAttempt = 0; evalAttempt < 2; evalAttempt++) {
@@ -557,10 +558,28 @@ export async function POST(request: NextRequest) {
       }
 
       const data = await response.json()
-      const evaluationText = data.content?.[0]?.text || ''
+      if (claudeRefused(data)) {
+        console.error(`Evaluation declined by ${requestBody.model}:`, claudeStopInfo(data))
+        if (evalAttempt === 0 && requestBody.model !== CLAUDE_FALLBACK_MODEL) {
+          requestBody.model = CLAUDE_FALLBACK_MODEL
+          continue
+        }
+        return NextResponse.json(
+          { error: 'The AI grader declined to score this conversation. Please contact the team.' },
+          { status: 500 }
+        )
+      }
+      if (claudeTruncated(data)) {
+        console.error('Evaluation hit max_tokens:', claudeStopInfo(data), 'output_tokens=', data.usage?.output_tokens)
+        return NextResponse.json(
+          { error: 'The evaluation ran out of room. Please try again with a shorter conversation.' },
+          { status: 500 }
+        )
+      }
+      const evaluationText = claudeText(data)
 
       if (!evaluationText.trim()) {
-        console.error('Empty evaluation response from Claude')
+        console.error('Empty evaluation response from Claude:', claudeStopInfo(data))
         if (evalAttempt === 0) continue
         return NextResponse.json(
           { error: 'AI returned an empty response. Please try again.' },
@@ -573,7 +592,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ evaluation })
       }
 
-      console.error(`Parse attempt ${evalAttempt + 1} failed. Raw text:`, evaluationText.slice(0, 500))
+      console.error(`Parse attempt ${evalAttempt + 1} failed (${claudeStopInfo(data)}). Raw text:`, evaluationText.slice(0, 500))
     }
 
     return NextResponse.json(

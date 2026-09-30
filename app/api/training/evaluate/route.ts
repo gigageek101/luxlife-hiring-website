@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
+import { CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeStopInfo, claudeText } from '@/lib/claude'
 
 // Disable caching for this route
 export const dynamic = 'force-dynamic'
@@ -58,9 +59,9 @@ Return ONLY a valid JSON array with ${answers.length} evaluation objects, no oth
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        temperature: 0.3,
+        model: CLAUDE_MODEL,
+        ...CLAUDE_GRADING_SETTINGS,
+        max_tokens: 8000,
         messages: [
           {
             role: 'user',
@@ -77,7 +78,11 @@ Return ONLY a valid JSON array with ${answers.length} evaluation objects, no oth
     }
 
     const data = await response.json()
-    const content = data.content[0].text.trim()
+    const content = claudeText(data).trim()
+    if (!content) {
+      console.error('Training evaluation: Claude returned no text:', claudeStopInfo(data))
+      throw new Error('AI grader returned no result. Please submit again.')
+    }
     
     // Parse the JSON response
     let evaluations: EvaluationResult[]

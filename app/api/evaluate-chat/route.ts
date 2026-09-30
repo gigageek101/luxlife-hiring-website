@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { CLAUDE_FALLBACK_MODEL, CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeRefused, claudeStopInfo, claudeText, claudeTruncated } from '@/lib/claude'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -20,8 +21,8 @@ CORE MESSAGING RULES:
 - Occasional typos are okay
 
 CONVERSATION FLOW:
-1. OPENER — Get his real name, make him feel welcomed
-2. GET TO KNOW — Age → Location → Job, react warmly to each
+1. OPENER — He stays silent, SHE opens with the location hook: asks if he lives close to her, says where she is from and asks him back, says something warm about his place (loves to visit, family there), then asks his age and what he does for work
+2. GET TO KNOW — Get his name naturally along the way, react warmly to his location, age and job
 3. JOB VALIDATION — Frame his job as masculine and desirable (this is the MOST important phase for blue-collar men)
 4. HOBBY MIRRORING — Fishing / Hunting / Cars / Range / Outdoors / Sports
 5. PHYSICAL VALIDATION — Height / Strength / Age — always position him bigger/better
@@ -42,8 +43,8 @@ PET NAMES RULE — THIS IS CRITICAL:
 - In the early conversation, use his ACTUAL NAME (stretched: mikeyyyy, tommmmm) instead of generic pet names
 - Using "babe" or "handsome" too early feels fake and generic — the opposite of what we want
 - When suggesting improved messages in your evaluation, NEVER include pet names like "babe" or "handsome" in early-conversation examples. Use his name or neutral language instead.
-- Good opener: "heyyy what should i call u" or "heyyy whats ur name"
-- Bad opener: "heyyy handsome" or "heyyy babe" — too generic, not earned yet
+- Good opener: "heyy wait are u living close to me??" followed by "I'm from dallas and u?", then something warm about his place, then "btw how old are u and what do u do for work?"
+- Bad opener: waiting for him to write first, or "heyyy handsome" / "heyyy babe" — too generic, not earned yet
 
 JOB VALIDATION EXAMPLES (what good responses look like):
 - Electrician: "oh so u r literally the reason people have lights on at night"
@@ -296,11 +297,11 @@ export async function POST(request: NextRequest) {
     const userContent = `Please evaluate the following conversation between a Creator and a Subscriber:\n\n${conversationText}${notesSection}\n\nProvide your evaluation as raw JSON only — no markdown, no code fences, no explanation outside the JSON.`
 
     const requestBody = {
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8000,
+      model: CLAUDE_MODEL,
+      ...CLAUDE_GRADING_SETTINGS,
+      max_tokens: 16000,
       system: EVALUATION_SYSTEM_PROMPT,
       messages: [{ role: 'user' as const, content: userContent }],
-      temperature: 0.3,
     }
 
     // Try up to 2 full evaluation attempts (API call + parse)
@@ -318,10 +319,28 @@ export async function POST(request: NextRequest) {
       }
 
       const data = await response.json()
-      const evaluationText = data.content?.[0]?.text || ''
+      if (claudeRefused(data)) {
+        console.error(`Evaluation declined by ${requestBody.model}:`, claudeStopInfo(data))
+        if (evalAttempt === 0 && requestBody.model !== CLAUDE_FALLBACK_MODEL) {
+          requestBody.model = CLAUDE_FALLBACK_MODEL
+          continue
+        }
+        return NextResponse.json(
+          { error: 'The AI grader declined to score this conversation. Please contact the team.' },
+          { status: 500 }
+        )
+      }
+      if (claudeTruncated(data)) {
+        console.error('Evaluation hit max_tokens:', claudeStopInfo(data), 'output_tokens=', data.usage?.output_tokens)
+        return NextResponse.json(
+          { error: 'The evaluation ran out of room. Please try again with a shorter conversation.' },
+          { status: 500 }
+        )
+      }
+      const evaluationText = claudeText(data)
 
       if (!evaluationText.trim()) {
-        console.error('Empty evaluation response from Claude')
+        console.error('Empty evaluation response from Claude:', claudeStopInfo(data))
         if (evalAttempt === 0) continue
         return NextResponse.json(
           { error: 'AI returned an empty response. Please try again.' },
@@ -334,7 +353,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ evaluation })
       }
 
-      console.error(`Parse attempt ${evalAttempt + 1} failed. Raw text:`, evaluationText.slice(0, 500))
+      console.error(`Parse attempt ${evalAttempt + 1} failed (${claudeStopInfo(data)}). Raw text:`, evaluationText.slice(0, 500))
     }
 
     return NextResponse.json(

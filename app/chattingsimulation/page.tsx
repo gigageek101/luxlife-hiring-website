@@ -6,7 +6,7 @@ import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles
 
 interface ChatMessage {
   id: string
-  role: 'creator' | 'subscriber'
+  role: 'creator' | 'subscriber' | 'system'
   content: string
   timestamp: Date
 }
@@ -58,15 +58,17 @@ const DURATION_OPTIONS = [
 ] as const
 
 const SUBSCRIBER_PROFILES = [
-  "Name: Mike, Age: 42, Job: Electrician/Lineman, Location: Texas, Hobbies: Fishing and watching football, Has a dog named Duke, Drives a lifted F-250, Height: 5'9\"",
-  "Name: Brandon, Age: 38, Job: Mechanic, Location: Ohio, Hobbies: Working on trucks and hunting, Divorced, has a 12-year-old son, Height: 5'8\"",
-  "Name: Tommy, Age: 47, Job: Truck Driver (long haul), Location: Kentucky, Hobbies: Fishing and camping, Owns his home, Has two dogs, Height: 5'10\"",
-  "Name: Austin, Age: 35, Job: Construction worker/Welder, Location: Florida, Hobbies: Going to the shooting range and working on his truck, Single, Height: 5'11\"",
-  "Name: Scott, Age: 44, Job: Plumber, Location: Indiana, Hobbies: Deer hunting and grilling steaks, Has two kids, Owns his home, Height: 5'7\"",
-  "Name: Jake, Age: 40, Job: Carpenter, Location: Montana, Hobbies: Hunting elk and camping, Has a German Shepherd, Height: 6'0\"",
-  "Name: Dustin, Age: 36, Job: HVAC Technician, Location: Georgia, Hobbies: Bass fishing and NASCAR, Recently divorced, Height: 5'8\"",
-  "Name: Travis, Age: 50, Job: Farmer/Rancher, Location: Oklahoma, Hobbies: Hunting and horseback riding, Has 3 kids, Owns 200 acres, Height: 5'9\"",
+  "Name: Mike, Age: 42, Job: Electrician/Lineman, Location: Houston, Texas, Hobbies: Fishing and watching football, Has a dog named Duke, Drives a lifted F-250, Height: 5'9\"",
+  "Name: Brandon, Age: 38, Job: Mechanic, Location: Dayton, Ohio, Hobbies: Working on trucks and hunting, Divorced, has a 12-year-old son, Height: 5'8\"",
+  "Name: Tommy, Age: 47, Job: Truck Driver (long haul), Location: Louisville, Kentucky, Hobbies: Fishing and camping, Owns his home, Has two dogs, Height: 5'10\"",
+  "Name: Austin, Age: 35, Job: Construction worker/Welder, Location: Tampa, Florida, Hobbies: Going to the shooting range and working on his truck, Single, Height: 5'11\"",
+  "Name: Scott, Age: 44, Job: Plumber, Location: Fort Wayne, Indiana, Hobbies: Deer hunting and grilling steaks, Has two kids, Owns his home, Height: 5'7\"",
+  "Name: Jake, Age: 40, Job: Carpenter, Location: Billings, Montana, Hobbies: Hunting elk and camping, Has a German Shepherd, Height: 6'0\"",
+  "Name: Dustin, Age: 36, Job: HVAC Technician, Location: Macon, Georgia, Hobbies: Bass fishing and NASCAR, Recently divorced, Height: 5'8\"",
+  "Name: Travis, Age: 50, Job: Farmer/Rancher, Location: Tulsa, Oklahoma, Hobbies: Hunting and horseback riding, Has 3 kids, Owns 200 acres, Height: 5'9\"",
 ]
+
+const SILENT_START_LABEL = "*he subscribed and is looking at your page, but he hasn't written anything. you open the chat*"
 
 const CATEGORY_WEIGHTS: Record<string, number> = {
   'Giving Him What He Wants to Hear': 25,
@@ -242,7 +244,7 @@ export default function ChattingSimulationPage() {
   }, [])
 
   const fetchAIReply = useCallback(async () => {
-    const currentMessages = messagesRef.current
+    const currentMessages = messagesRef.current.filter(m => m.role !== 'system')
     const lastMsg = currentMessages[currentMessages.length - 1]
     if (!lastMsg || lastMsg.role !== 'creator') return
 
@@ -354,46 +356,15 @@ export default function ChattingSimulationPage() {
       setTimerActive(false)
     }
 
-    setIsTyping(true)
-    recordEvent('y')
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [],
-          subscriberProfile: profile,
-        }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to start simulation')
-      }
-
-      const data = await response.json()
-      const subscriberLines = data.reply.split('\n').filter((l: string) => l.trim())
-
-      for (let i = 0; i < subscriberLines.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, i * 600))
-        const line = subscriberLines[i].trim()
-        recordEvent('r', line)
-        setMessages(prev => [...prev, {
-          id: `sub-init-${i}`,
-          role: 'subscriber',
-          content: line,
-          timestamp: new Date(),
-        }])
-      }
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Something went wrong'
-      setError(errorMessage)
-    } finally {
-      setIsTyping(false)
-      recordEvent('z')
-      typingStartRef.current = 0
-      setTimeout(() => inputRef.current?.focus(), 100)
-    }
+    setMessages([{
+      id: 'system-silent-start',
+      role: 'system',
+      content: SILENT_START_LABEL,
+      timestamp: new Date(),
+    }])
+    recordEvent('x', SILENT_START_LABEL)
+    typingStartRef.current = 0
+    setTimeout(() => inputRef.current?.focus(), 100)
   }
 
   const sendMessage = () => {
@@ -448,7 +419,8 @@ export default function ChattingSimulationPage() {
     resetReplyTimer()
     setWaitingForIdle(false)
 
-    if (messages.length < 4) {
+    const realMessages = messages.filter(m => m.role !== 'system')
+    if (realMessages.length < 4) {
       setError('Please exchange at least a few more messages before ending the conversation.')
       return
     }
@@ -457,7 +429,7 @@ export default function ChattingSimulationPage() {
     setError(null)
 
     try {
-      const allMessages = messages.map(m => ({
+      const allMessages = realMessages.map(m => ({
         role: m.role,
         content: m.content,
       }))
@@ -490,7 +462,7 @@ export default function ChattingSimulationPage() {
               categories: data.evaluation.categories,
               overallFeedback: data.evaluation.overallFeedback,
               notes,
-              conversation: messages.map(m => ({ role: m.role, content: m.content })),
+              conversation: realMessages.map(m => ({ role: m.role, content: m.content })),
               durationMode: selectedDuration === 0 ? 'free' : `${selectedDuration}min`,
               messageCount,
               typedCount,
@@ -866,7 +838,7 @@ export default function ChattingSimulationPage() {
               </h1>
               <p className="text-lg md:text-xl max-w-2xl mx-auto mb-3" style={{ color: 'var(--text-secondary)' }}>
                 Practice your subscriber relationship building skills in a realistic simulation. 
-                An AI subscriber will message you first — handle the conversation like a pro.
+                The AI subscriber stays silent — you open the conversation and handle it like a pro.
               </p>
               {simUser && (
                 <div className="flex items-center justify-center gap-3">
@@ -915,15 +887,15 @@ export default function ChattingSimulationPage() {
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>1</div>
                   <div>
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Subscriber Messages First</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>A random blue-collar subscriber will open the conversation. Respond as the creator.</p>
+                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>You Message First</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>A random blue-collar subscriber has subscribed but stays silent. Open the chat as Allison: ask if he lives close to you, tell him where you are from and say something warm about his place, then ask his age and what he does for work.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>2</div>
                   <div>
                     <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Chat Naturally — Send Quick, Short Messages</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>The AI subscriber will respond 2 seconds after you stop typing. Keep your messages short (one sentence each) and send them quickly one after another — just like real texting. Follow the flow: get his name, learn about his job, validate his work, and build a genuine connection.</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>The AI subscriber will respond 2 seconds after you stop typing. Keep your messages short (one sentence each) and send them quickly one after another — just like real texting. Follow the flow: location hook first, then his age and job, validate his work, and build a genuine connection.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -1075,7 +1047,13 @@ export default function ChattingSimulationPage() {
                 className="flex-1 overflow-y-auto px-4 py-4"
                 style={{ background: '#f0f0f0', overflowAnchor: 'none' }}
               >
-                {messages.map((message) => (
+                {messages.map((message) => message.role === 'system' ? (
+                  <div key={message.id} className="flex justify-center my-2">
+                    <span className="text-xs italic px-3 py-1 rounded-full text-center" style={{ background: 'rgba(0,0,0,0.06)', color: '#666' }}>
+                      {message.content}
+                    </span>
+                  </div>
+                ) : (
                   <div
                     key={message.id}
                     className={`flex ${message.role === 'creator' ? 'justify-end' : 'justify-start'} mb-1.5`}
@@ -1535,7 +1513,13 @@ export default function ChattingSimulationPage() {
             <div className="rounded-2xl p-6 mb-8" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Your Conversation</h3>
               <div className={`space-y-2 pr-2 ${exportingPdf ? '' : 'max-h-96 overflow-y-auto'}`}>
-                {messages.map((msg) => (
+                {messages.map((msg) => msg.role === 'system' ? (
+                  <div key={msg.id} className="flex justify-center my-1">
+                    <span className="text-xs italic px-3 py-1 rounded-full text-center" style={{ background: 'rgba(0,0,0,0.06)', color: '#666' }}>
+                      {msg.content}
+                    </span>
+                  </div>
+                ) : (
                   <div key={msg.id} className={`flex ${msg.role === 'creator' ? 'justify-end' : 'justify-start'}`}>
                     <div
                       className="max-w-[75%] px-4 py-2 rounded-2xl text-sm"

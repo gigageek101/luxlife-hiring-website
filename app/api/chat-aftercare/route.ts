@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { CLAUDE_MODEL, CLAUDE_CHAT_SETTINGS, claudeRefused, claudeStopInfo, claudeText } from '@/lib/claude'
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY
 
@@ -180,11 +181,11 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await callClaudeWithRetry({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 120,
+      model: CLAUDE_MODEL,
+      ...CLAUDE_CHAT_SETTINGS,
+      max_tokens: 160,
       system: systemPrompt,
       messages: claudeMessages,
-      temperature: 0.8,
     })
 
     if (!response.ok) {
@@ -197,7 +198,14 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
-    const reply = data.content?.[0]?.text || ''
+    if (claudeRefused(data)) {
+      console.error('Chat aftercare API: Claude declined the request:', claudeStopInfo(data))
+      return NextResponse.json(
+        { error: 'AI could not respond to that message. Please rephrase and try again.' },
+        { status: 500 }
+      )
+    }
+    const reply = claudeText(data)
 
     return NextResponse.json({ reply })
   } catch (error) {
