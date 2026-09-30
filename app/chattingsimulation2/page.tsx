@@ -1053,7 +1053,7 @@ export default function SextingSimulationPage() {
                     Do <strong>not</strong> start this simulation before reading the complete Sexting guide multiple times and taking notes. You won&apos;t remember the material without notes.
                   </p>
                   <a
-                    href="https://pentagonal-thief-156.notion.site/Sexting-Guide-303b6586b06d803183aede58dec11e4f?source=copy_link"
+                    href="/guides/sexting"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
@@ -2306,7 +2306,7 @@ export default function SextingSimulationPage() {
                       <p className="text-sm mt-1 mb-2" style={{ color: '#6b7280' }}>
                         Review the full sexting framework, examples, and best practices in our detailed guide:
                       </p>
-                      <a href="https://pentagonal-thief-156.notion.site/Sexting-Guide-303b6586b06d803183aede58dec11e4f?source=copy_link" target="_blank" rel="noopener noreferrer"
+                      <a href="/guides/sexting" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
                         style={{ background: '#e11d48', color: '#ffffff' }}>
                         <FileText className="w-4 h-4" /> Open Sexting Guide <ExternalLink className="w-3.5 h-3.5" />

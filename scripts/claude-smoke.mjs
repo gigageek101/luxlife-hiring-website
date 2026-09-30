@@ -101,10 +101,9 @@ async function directApiCheck() {
 // The subscriber stays silent; the creator opens with the location hook.
 const chatHistory = [
   { role: 'creator', content: 'heyy wait are u living close to me??' },
-  { role: 'subscriber', content: 'lol idk where u at' },
-  { role: 'creator', content: "I'm from dallas and u?" },
-  { role: 'subscriber', content: 'damn im from houston' },
-  { role: 'creator', content: 'omg i love to visit there!! my auntie lives there' },
+  { role: 'subscriber', content: 'im from houston, u?' },
+  { role: 'creator', content: "damn I'm from dallas! omg i love to visit houston, my auntie lives there" },
+  { role: 'subscriber', content: 'haha small world' },
   { role: 'creator', content: 'btw how old are u and what do u do for work?' },
   { role: 'subscriber', content: '42, electrician' },
   { role: 'creator', content: 'so u fix things with ur hands all day?? honestly thats so attractive lol. most guys cant even change a tire lol' },

@@ -864,7 +864,7 @@ export default function ChattingSimulationPage() {
                     Do <strong>not</strong> start this simulation before reading the complete Relationship Building guide multiple times and taking notes. You won&apos;t remember the material without notes.
                   </p>
                   <a
-                    href="https://pentagonal-thief-156.notion.site/Complete-PRACTICAL-Subscriber-Relationship-Building-Guide-30bb6586b06d80f7b8fadb7d46634fc4?source=copy_link"
+                    href="/guides/relationship-building"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"
@@ -888,7 +888,7 @@ export default function ChattingSimulationPage() {
                   <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'var(--accent)' }}>1</div>
                   <div>
                     <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>You Message First</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>A random blue-collar subscriber has subscribed but stays silent. Open the chat as Allison: ask if he lives close to you, tell him where you are from and say something warm about his place, then ask his age and what he does for work.</p>
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>A random blue-collar subscriber has subscribed but stays silent. Open the chat as Allison: ask if he lives close to you. He tells you where he is from. Tell him where you are from and say something warm about his place, then ask his age and what he does for work.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
