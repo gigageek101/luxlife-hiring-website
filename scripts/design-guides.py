@@ -421,7 +421,8 @@ def design(slug):
     nav = ""
     if len(toc) >= 3:
         pills = "".join(f'<a href="#{i}">{html.escape(t)}</a>' for i, t in toc)
-        nav = f'<nav class="toc"><span class="toc-title">Jump to</span>{pills}</nav>\n'
+        nav = (f'<details class="toc"><summary><span class="toc-title">Jump to</span> {len(toc)} sections</summary>'
+               f'<div class="toc-list">{pills}</div></details>\n')
     path.write_text("<!-- designed -->\n" + nav + body + "\n", encoding="utf-8")
     print(f"{slug}: {body.count('class=\"bubble\"')} bubbles, {body.count('class=\"chat\"')} chats, "
           f"{body.count('class=\"example ')} examples, {body.count('class=\"callout ')} callouts, {len(toc)} sections")

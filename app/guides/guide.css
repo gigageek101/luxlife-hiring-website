@@ -65,10 +65,15 @@
 @media (max-width: 640px) { .flowboard { padding: 1rem; } .flow-chat { margin-left: 0.6rem; } .flow-chat .msg { max-width: 92%; } }
 
 /* ===== Designed guides: bubbles, cards, callouts ===== */
-.guide .toc { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 0 0 2rem; padding: 0.9rem 1rem; border-radius: 16px; background: rgba(255, 107, 0, 0.06); border: 1px solid rgba(255, 107, 0, 0.18); }
-.guide .toc-title { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent, #ff6b00); margin-right: 0.3rem; }
-.guide .toc a { font-size: 0.82rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px; background: #fff; border: 1px solid var(--border, #e5e5e5); color: var(--text-primary, #222); text-decoration: none; }
-.guide .toc a:hover { border-color: var(--accent, #ff6b00); color: var(--accent, #ff6b00); }
+.guide .toc { margin: 0 0 1.5rem; padding: 0; border-radius: 12px; background: rgba(255, 107, 0, 0.06); border: 1px solid rgba(255, 107, 0, 0.18); }
+.guide .toc summary { cursor: pointer; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #222); list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+.guide .toc summary::-webkit-details-marker { display: none; }
+.guide .toc summary::after { content: "▾"; margin-left: auto; color: var(--accent, #ff6b00); }
+.guide .toc[open] summary::after { content: "▴"; }
+.guide .toc-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent, #ff6b00); }
+.guide .toc-list { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.25rem 0.6rem 0.7rem; max-height: 50vh; overflow-y: auto; }
+.guide .toc a { font-size: 0.82rem; font-weight: 500; padding: 0.25rem 0.5rem; border-radius: 8px; color: var(--text-primary, #222); text-decoration: none; }
+.guide .toc a:hover { background: #fff; color: var(--accent, #ff6b00); }
 .guide h2 { scroll-margin-top: 6rem; font-size: 1.6rem; display: flex; align-items: center; gap: 0.6rem; }
 .guide h3 { scroll-margin-top: 6rem; display: flex; align-items: center; gap: 0.5rem; }
 .guide .h-emoji { font-size: 1.35em; line-height: 1; }
