@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { GUIDES, STEP_INFO, guideBySlug } from '@/lib/guides'
+import ReadingProgress from '@/components/ReadingProgress'
 import '../guide.css'
 
 export const dynamic = 'force-static'
@@ -31,6 +32,7 @@ export default function GuidePage({ params }: Params) {
 
   return (
     <main className="guide-page">
+      <ReadingProgress />
       <div className="guide-container">
         <nav className="guide-nav">
           <Link href={`/guides#${step.anchor}`} className="guide-back">← All guides · {step.title}</Link>
