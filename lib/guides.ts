@@ -18,7 +18,7 @@ export interface Guide {
 
 export const STEP_INFO: Record<GuideStep, { title: string; subtitle: string; anchor: string }> = {
   simulation: { title: 'Step 1 — Simulation guides', subtitle: 'Read these before the matching simulation. The graders score you on exactly this material.', anchor: 'step-1' },
-  general: { title: 'Step 2 — General guides', subtitle: 'No simulation for these, but every chat uses them. Read them all.', anchor: 'step-2' },
+  general: { title: 'Step 2 — General guides', subtitle: 'Every chat uses these. Read them all; the Connection and Changing the Topic guides each have their own simulation.', anchor: 'step-2' },
   score: { title: 'Step 3 — How to reach a 100 score', subtitle: 'The MyChattersDream categories and their weight in your daily score.', anchor: 'step-3' },
   systems: { title: 'Systems', subtitle: 'Tools that make you faster.', anchor: 'systems' },
 }
@@ -33,8 +33,8 @@ export const GUIDES: Guide[] = [
   { slug: 'aftercare-full-guide', title: 'AFTERCARE - THE FULL GUIDE', emoji: '🔅', step: 'simulation', ...SIM_3 },
   { slug: 'aftercare-keywords', title: 'AFTERCARE KEYWORDS', emoji: '🆕', step: 'simulation', ...SIM_3 },
   { slug: 'complete-aftercare-keyword-guide', title: 'COMPLETE AFTERCARE KEYWORD GUIDE', emoji: '🫂', step: 'simulation', ...SIM_3 },
-  { slug: 'connection-guide', title: 'Connection Guide - How to Build an Emotional Connection with subs', emoji: '📶', step: 'general' },
-  { slug: 'changing-the-topic', title: 'Changing the Topic Guide', emoji: '👒', step: 'general' },
+  { slug: 'connection-guide', title: 'Connection Guide - How to Build an Emotional Connection with subs', emoji: '📶', step: 'general', simulation: '/chattingsimulation5', simulationLabel: 'Connection Simulation' },
+  { slug: 'changing-the-topic', title: 'Changing the Topic Guide', emoji: '👒', step: 'general', simulation: '/chattingsimulation6', simulationLabel: 'Changing the Topic Simulation' },
   { slug: 'stop-selling-ppvs', title: 'When to STOP selling PPVs after multiple purchases', emoji: '✋🏻', step: 'general' },
   { slug: 'not-pushing-to-sell', title: 'When to NOT push to selling content', emoji: '🙅🏻', step: 'general' },
   { slug: 'objection-handling', title: 'Objection Handling Guide', emoji: '📛', step: 'score', points: 5 },

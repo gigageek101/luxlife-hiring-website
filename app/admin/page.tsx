@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
+import { CONNECTION_WEIGHTS, TOPIC_WEIGHTS } from '@/lib/simulations'
 import AccountabilityTab from '@/components/admin/AccountabilityTab'
 import CostsTab from '@/components/admin/CostsTab'
 import ClaudeCreditBanner from '@/components/admin/ClaudeCreditBanner'
@@ -71,7 +72,7 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined'
+  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined' | 'connection' | 'topic-change'
   hasRecording?: boolean
   wpm: number
   completedAt: string
@@ -87,7 +88,7 @@ function AdminPanelContent() {
   const [simReports, setSimReports] = useState<SimReport[]>([])
   const [simLoading, setSimLoading] = useState(true)
   const [simSearch, setSimSearch] = useState('')
-  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined'>('all')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined' | 'connection' | 'topic-change'>('all')
   const [replayReport, setReplayReport] = useState<SimReport | null>(null)
   const [replayRecording, setReplayRecording] = useState<{t:number;e:string;d:string}[] | null>(null)
   const [replayLoading, setReplayLoading] = useState(false)
@@ -419,11 +420,13 @@ function AdminPanelContent() {
     if (report.simulationType === 'sexting' || report.simulationType === 'sexting-teacher') return SEXTING_CATEGORY_WEIGHTS
     if (report.simulationType === 'aftercare') return AFTERCARE_CATEGORY_WEIGHTS
     if (report.simulationType === 'combined') return COMBINED_CATEGORY_WEIGHTS
+    if (report.simulationType === 'connection') return CONNECTION_WEIGHTS
+    if (report.simulationType === 'topic-change') return TOPIC_WEIGHTS
     return CHATTING_CATEGORY_WEIGHTS
   }
 
   const calculateWeightedScore = (categories: SimCategory[], simType?: string): number => {
-    const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : simType === 'combined' ? COMBINED_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+    const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : simType === 'combined' ? COMBINED_CATEGORY_WEIGHTS : simType === 'connection' ? CONNECTION_WEIGHTS : simType === 'topic-change' ? TOPIC_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
     let total = 0
     for (const cat of categories) {
       const weight = weights[cat.name] || 0
@@ -618,6 +621,8 @@ function AdminPanelContent() {
       case 'sexting': return 'Sexting'
       case 'aftercare': return 'Aftercare'
       case 'combined': return 'Full Session'
+      case 'connection': return 'Connection'
+      case 'topic-change': return 'Changing the Topic'
       default: return type
     }
   }
@@ -1473,7 +1478,7 @@ function AdminPanelContent() {
             <>
               {/* Sim Type Filter */}
               <div className="flex flex-wrap gap-2 mb-6 max-w-4xl mx-auto justify-center">
-                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['combined', 'Full Session', Sparkles], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
+                {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['combined', 'Full Session', Sparkles], ['connection', 'Connection', MessageCircle], ['topic-change', 'Topic', MessageCircle], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
                   const count = key === 'all' ? simReports.length : simReports.filter(r => r.simulationType === key).length
                   return (
                     <button key={key} onClick={() => setSimTypeFilter(key as typeof simTypeFilter)}

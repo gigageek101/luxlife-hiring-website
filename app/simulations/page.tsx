@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Flame, Heart, ArrowLeft, Zap } from 'lucide-react'
+import { ArrowRight, MessageCircle, Flame, Heart, ArrowLeft, Zap, Wifi, Shuffle } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import Reveal from '@/components/Reveal'
 import Link from 'next/link'
@@ -91,6 +91,41 @@ const simulations = [
       'Objection Handling (10 pts)',
       'Stage Transitions (5 pts)',
       'Cross-Stage Consistency (3 pts)',
+    ],
+  },
+  {
+    id: 'connection',
+    emoji: '📶',
+    icon: Wifi,
+    title: 'Connection Building (Step 2 guide)',
+    description: 'A closed-off subscriber who answers with one word. Practice the Connection Guide: pull the thread of what he just said, dig into feeling, cause and impact, mirror his values, never jump topics. Find out what actually matters to him.',
+    path: '/chattingsimulation5',
+    color: '#0891b2',
+    gradient: 'linear-gradient(135deg, #0891b2, #0e7490)',
+    categories: [
+      'Pulling the Thread (Why / How / What) (25 pts)',
+      'Digging Into Feeling, Cause & Impact (25 pts)',
+      'Mirroring & Naming His Values (20 pts)',
+      'Staying on One Thread (No Topic Jumping) (15 pts)',
+      'Short Openers & One Question at a Time (10 pts)',
+      'What You Learned About Him (5 pts)',
+    ],
+  },
+  {
+    id: 'topic-change',
+    emoji: '👒',
+    icon: Shuffle,
+    title: 'Changing the Topic (Step 2 guide)',
+    description: 'A skeptical subscriber who keeps throwing objections: "are you a bot?", "why are you always online?", "send a video to prove it\'s you", "you only care about money". Practice the Changing the Topic Guide: acknowledge softly, add a human flaw, flip it and redirect with a question.',
+    path: '/chattingsimulation6',
+    color: '#7c3aed',
+    gradient: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+    categories: [
+      'Soft Acknowledgement, Never Defensive (25 pts)',
+      'Flip the Script & Redirect With a Question (25 pts)',
+      'Humanizing Detail or Flaw (20 pts)',
+      'Keeps the Vibe Flowing After Each Objection (15 pts)',
+      'Playful Tone, Emojis, Not Scripted (15 pts)',
     ],
   },
 ]

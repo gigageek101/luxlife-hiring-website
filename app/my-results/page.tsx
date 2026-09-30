@@ -6,6 +6,7 @@ import { ArrowLeft, MessageCircle, ChevronDown, ChevronUp, Sparkles, Keyboard, C
 import DynamicBackground from '@/components/DynamicBackground'
 import TrainingClientWrapper from '../training/client-wrapper'
 import Link from 'next/link'
+import { CONNECTION_WEIGHTS, TOPIC_WEIGHTS } from '@/lib/simulations'
 
 interface SimCategory {
   name: string
@@ -36,7 +37,7 @@ interface SimReport {
   messageCount: number
   typedCount: number
   pasteCount: number
-  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined'
+  simulationType: 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'combined' | 'connection' | 'topic-change'
   hasRecording?: boolean
   wpm: number
   completedAt: string
@@ -96,11 +97,13 @@ function getWeightsForReport(report: SimReport): Record<string, number> {
   if (report.simulationType === 'sexting' || report.simulationType === 'sexting-teacher') return SEXTING_CATEGORY_WEIGHTS
   if (report.simulationType === 'aftercare') return AFTERCARE_CATEGORY_WEIGHTS
   if (report.simulationType === 'combined') return COMBINED_CATEGORY_WEIGHTS
+  if (report.simulationType === 'connection') return CONNECTION_WEIGHTS
+  if (report.simulationType === 'topic-change') return TOPIC_WEIGHTS
   return CHATTING_CATEGORY_WEIGHTS
 }
 
 function calculateWeightedScore(categories: SimCategory[], simType?: string): number {
-  const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : simType === 'combined' ? COMBINED_CATEGORY_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
+  const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : simType === 'combined' ? COMBINED_CATEGORY_WEIGHTS : simType === 'connection' ? CONNECTION_WEIGHTS : simType === 'topic-change' ? TOPIC_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
   let total = 0
   for (const cat of categories) {
     const weight = weights[cat.name] || 0
@@ -246,6 +249,8 @@ function getSimTypeLabel(type: string) {
   if (type === 'chatting') return 'Relationship Building'
   if (type === 'sexting') return 'Sexting'
   if (type === 'aftercare') return 'Aftercare'
+  if (type === 'connection') return 'Connection'
+  if (type === 'topic-change') return 'Changing the Topic'
   return type
 }
 
@@ -254,7 +259,7 @@ function MyResultsContent() {
   const [loading, setLoading] = useState(true)
   const [expandedReport, setExpandedReport] = useState<number | null>(null)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
-  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher'>('all')
+  const [simTypeFilter, setSimTypeFilter] = useState<'all' | 'chatting' | 'sexting' | 'aftercare' | 'sexting-teacher' | 'chat-teacher' | 'aftercare-teacher' | 'connection' | 'topic-change'>('all')
   const [replayReport, setReplayReport] = useState<SimReport | null>(null)
   const [replayRecording, setReplayRecording] = useState<{t:number;e:string;d:string}[] | null>(null)
   const [replayLoading, setReplayLoading] = useState(false)
@@ -345,7 +350,7 @@ function MyResultsContent() {
 
           {/* Type Filter */}
           <div className="flex gap-1.5 md:gap-2 mb-6 max-w-3xl overflow-x-auto pb-1">
-            {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
+            {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['connection', 'Connection', MessageCircle], ['topic-change', 'Topic', MessageCircle], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
               const count = key === 'all' ? reports.length : reports.filter(r => r.simulationType === key).length
               return (
                 <button key={key} onClick={() => setSimTypeFilter(key as typeof simTypeFilter)}
