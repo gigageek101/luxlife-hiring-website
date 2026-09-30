@@ -1,5 +1,6 @@
 'use client'
 
+import GuideLinks from '@/components/GuideLinks'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2, Download, FileText, ExternalLink, Heart, GraduationCap, Brain, Pause, SkipForward, Eye, Play } from 'lucide-react'
@@ -1159,7 +1160,7 @@ export default function AfterCareSimulationPage() {
                     You <strong>must</strong> read the Complete Aftercare Keyword Guide <strong>MULTIPLE times</strong> and take notes before attempting this simulation. You won&apos;t remember the keyword triggers, the 4-stage response sequences, or the correct tone if you don&apos;t study first. This simulation will score you on keyword detection, correct stage flow (A→B→C→D), personal callbacks, and re-entry seeds — if you haven&apos;t read the guide, you will fail.
                   </p>
                   <a
-                    href="https://pentagonal-thief-156.notion.site/COMPLETE-AFTERCARE-KEYWORD-GUIDE-31ab6586b06d80a5add7ec26244b66a8?source=copy_link"
+                    href="/guides/complete-aftercare-keyword-guide"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
@@ -1172,6 +1173,8 @@ export default function AfterCareSimulationPage() {
                 </div>
               </div>
             </div>
+
+            <GuideLinks alsoRead={['aftercare-full-guide', 'aftercare-keywords']} />
 
             <div
               className="max-w-2xl mx-auto rounded-2xl p-8 mb-8 text-left"
@@ -1901,7 +1904,7 @@ export default function AfterCareSimulationPage() {
                       Go back to the full aftercare guide and re-read the stages where you scored lowest. Focus on the specific message variations for each stage.
                     </p>
                     <a
-                      href="https://pentagonal-thief-156.notion.site/COMPLETE-AFTERCARE-KEYWORD-GUIDE-31ab6586b06d80a5add7ec26244b66a8?source=copy_link"
+                      href="/guides/complete-aftercare-keyword-guide"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-[1.02]"

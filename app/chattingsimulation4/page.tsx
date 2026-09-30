@@ -1,5 +1,6 @@
 'use client'
 
+import GuideLinks from '@/components/GuideLinks'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -706,6 +707,8 @@ export default function CombinedSimulationPage() {
                 <Clock className="w-3.5 h-3.5" /> Total: 35 minutes &middot; 20 scoring categories across all stages
               </p>
             </div>
+
+            <GuideLinks alsoRead={['relationship-building', 'sexting', 'complete-aftercare-keyword-guide']} />
 
             <div className="rounded-2xl p-4 mb-6" style={{ background: '#fef3c7', border: '1px solid #fcd34d' }}>
               <p className="text-sm font-semibold text-amber-800 flex items-center gap-2">

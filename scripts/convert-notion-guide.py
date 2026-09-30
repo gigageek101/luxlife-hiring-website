@@ -5,6 +5,7 @@ Usage:  python3 scripts/convert-notion-guide.py "<export folder or .html>" <slug
 Writes: content/guides/<slug>.html and public/guides/<slug>/img-N.jpg (downsized with sips).
 """
 import html
+import json
 import re
 import subprocess
 import sys
@@ -17,12 +18,13 @@ KEEP = {"h1", "h2", "h3", "h4", "p", "ul", "ol", "li", "strong", "em", "b", "i",
         "mark", "sup", "sub", "span", "div"}
 VOID = {"hr", "br", "img"}
 BLOCK = r"h1|h2|h3|h4|p|ul|ol|li|table|thead|tbody|tr|blockquote|details|summary|hr|div"
+LINKS_FILE = Path("content/guides/notion-links.json")  # Notion page id -> our slug, for links between guides
 
 
 class Cleaner(HTMLParser):
-    def __init__(self, image_src):
+    def __init__(self, image_src, links):
         super().__init__(convert_charrefs=False)
-        self.out, self.skip, self.a_stack, self.image_src = [], 0, [], image_src
+        self.out, self.skip, self.a_stack, self.image_src, self.links = [], 0, [], image_src, links
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -37,16 +39,23 @@ class Cleaner(HTMLParser):
             self.out.append(f'<img src="{self.image_src(a.get("src") or "")}" alt="" loading="lazy">')
         elif tag == "a":
             href = a.get("href") or ""
-            external = href.startswith("http")
-            self.a_stack.append("a" if external else "span")
-            self.out.append(f'<a href="{html.escape(href)}" target="_blank" rel="noopener noreferrer">' if external else "<span>")
+            page_id = re.search(r"([0-9a-f]{32})\.html", unquote(href))
+            if href.startswith("http"):
+                self.a_stack.append("a")
+                self.out.append(f'<a href="{html.escape(href)}" target="_blank" rel="noopener noreferrer">')
+            elif page_id and page_id.group(1) in self.links:
+                self.a_stack.append("a")
+                self.out.append(f'<a href="/guides/{self.links[page_id.group(1)]}" class="guide-link">')
+            else:
+                self.a_stack.append("span")
+                self.out.append("<span>")
         elif tag == "ol":
             start = a.get("start")
             self.out.append(f'<ol start="{int(start)}">' if start and start.isdigit() else "<ol>")
         elif tag == "details":
             self.out.append("<details open>" if "open" in a else "<details>")
         elif tag == "span" and (a.get("class") or "") == "icon":
-            self.out.append('<span class="icon">')
+            self.out.append('<span class="icon">' + html.escape(a.get("data-emoji") or ""))
         elif tag in KEEP:
             self.out.append(f"<{tag}>")
 
@@ -107,7 +116,8 @@ def convert(export_html, slug):
     body = re.search(r'<div class="page-body">(.*)</div>\s*</article>', src, re.S)
     if not body:
         sys.exit("page-body not found; is this a Notion HTML export?")
-    cleaner = Cleaner(image_copier(export_html, slug))
+    links = json.loads(LINKS_FILE.read_text()) if LINKS_FILE.is_file() else {}
+    cleaner = Cleaner(image_copier(export_html, slug), links)
     cleaner.feed(body.group(1))
     out = "".join(cleaner.out)
     out = re.sub(r"\n\s*\n+", "\n", out)

@@ -1,5 +1,6 @@
 'use client'
 
+import GuideLinks from '@/components/GuideLinks'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -1066,6 +1067,8 @@ export default function SextingSimulationPage() {
                 </div>
               </div>
             </div>
+
+            <GuideLinks alsoRead={['stop-selling-ppvs', 'not-pushing-to-sell']} />
 
             <div className="max-w-2xl mx-auto rounded-2xl p-8 mb-8 text-left" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>The PPV Framework</h3>

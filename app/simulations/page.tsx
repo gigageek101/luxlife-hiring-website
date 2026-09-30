@@ -116,6 +116,11 @@ export default function SimulationsPortal() {
               <p className="text-lg md:text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary-on-white)' }}>
                 Practice against AI-powered subscribers. Each session is scored out of 100 with detailed feedback. Run as many rounds as you need — target is 80+.
               </p>
+              <p className="mt-4">
+                <Link href="/guides" className="inline-flex items-center gap-2 font-semibold underline" style={{ color: 'var(--accent)' }}>
+                  📚 Read the chatting guides first (Steps 1 to 3) →
+                </Link>
+              </p>
             </div>
           </Reveal>
 

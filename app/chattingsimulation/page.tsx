@@ -1,5 +1,6 @@
 'use client'
 
+import GuideLinks from '@/components/GuideLinks'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, RotateCcw, MessageCircle, Award, ChevronDown, ChevronUp, Sparkles, AlertCircle, Clock, Timer, StickyNote, X, LogIn, Loader2, Download, FileText, ExternalLink, GraduationCap, Brain, Pause, SkipForward, Eye, Play } from 'lucide-react'
@@ -877,6 +878,8 @@ export default function ChattingSimulationPage() {
                 </div>
               </div>
             </div>
+
+            <GuideLinks />
 
             <div
               className="max-w-2xl mx-auto rounded-2xl p-8 mb-8 text-left"
