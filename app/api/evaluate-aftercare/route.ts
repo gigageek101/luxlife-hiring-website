@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { SCRIPT_ADHERENCE_RULES } from '@/lib/grading'
 import { CLAUDE_FALLBACK_MODEL, CLAUDE_MODEL, CLAUDE_GRADING_SETTINGS, claudeRefused, claudeStopInfo, claudeText, claudeTruncated } from '@/lib/claude'
 import { callClaude } from '@/lib/claude-server'
 
@@ -515,7 +516,7 @@ export async function POST(request: NextRequest) {
       model: CLAUDE_MODEL,
       ...CLAUDE_GRADING_SETTINGS,
       max_tokens: 16000,
-      system: EVALUATION_SYSTEM_PROMPT,
+      system: EVALUATION_SYSTEM_PROMPT + SCRIPT_ADHERENCE_RULES,
       messages: [{ role: 'user' as const, content: userContent }],
     }
 

@@ -56,3 +56,8 @@ export async function gradeConversation(route: string, system: string, userConte
   }
   return NextResponse.json({ error: 'Failed to evaluate conversation. Please try ending the conversation again.' }, { status: 500 })
 }
+
+/** Appended to every grader prompt: did the trainee follow the method, independent of how good the result was? */
+export const SCRIPT_ADHERENCE_RULES = `
+
+SCRIPT ADHERENCE (mandatory): inside "overallFeedback" also add "scriptAdherence": {"score": <1-10>, "verdict": "<one of: on script | mostly on script | partly off script | off script>", "followed": ["<step or technique from the method above that the creator did as taught, with a short quote>"], "deviations": ["<step skipped, done out of order, or replaced by own improvisation: quote the creator's message and say what the method says to do instead>"]}. Score ONLY how closely the CREATOR followed the prescribed flow, order and techniques of the method described above, not how good the result was: 9-10 = followed every step in order, 7-8 = followed the flow with small gaps, 4-6 = used some techniques but skipped or reordered key steps, 1-3 = ignored the method and improvised. Give 2-4 items in "followed" and 2-4 in "deviations" (empty array only if there were none).`

@@ -1,13 +1,26 @@
-// Who may open the QA view (/qa): simulations + accountability only.
-// Extend without a deploy by setting QA_EMAILS="a@x.com,b@y.com" on Vercel.
+// QA accounts: log in on /admin/auth like the admin, but only see Simulations + Accountability.
+// Add more without a deploy: QA_ACCOUNTS="email:password,email2:password2" on Vercel.
 
-const DEFAULT_QA_EMAILS = ['andrewackz06@gmail.com']
+export interface QaAccount { email: string; password: string }
 
-export function qaEmails(): string[] {
-  const fromEnv = (process.env.QA_EMAILS || '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
-  return Array.from(new Set([...DEFAULT_QA_EMAILS, ...fromEnv]))
+const DEFAULT_QA_ACCOUNTS: QaAccount[] = [
+  { email: 'andrewackz06@gmail.com', password: 'Sims-Check-7281' },
+]
+
+export function qaAccounts(): QaAccount[] {
+  const fromEnv = (process.env.QA_ACCOUNTS || '')
+    .split(',')
+    .map((pair) => pair.trim())
+    .filter(Boolean)
+    .map((pair) => {
+      const idx = pair.indexOf(':')
+      return idx > 0 ? { email: pair.slice(0, idx).trim().toLowerCase(), password: pair.slice(idx + 1) } : null
+    })
+    .filter((a): a is QaAccount => a !== null)
+  return [...DEFAULT_QA_ACCOUNTS, ...fromEnv]
 }
 
-export function isQaEmail(email: string): boolean {
-  return qaEmails().includes(email.trim().toLowerCase())
+export function findQaAccount(email: string, password: string): QaAccount | null {
+  const mail = email.trim().toLowerCase()
+  return qaAccounts().find((a) => a.email === mail && a.password === password) || null
 }

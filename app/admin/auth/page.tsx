@@ -45,6 +45,7 @@ export default function AdminAuth() {
       
       localStorage.setItem('admin_token', data.token)
       localStorage.setItem('admin_expiry', expiryTime.toString())
+      localStorage.setItem('admin_role', data.role === 'qa' ? 'qa' : 'admin')
 
       // Redirect to admin panel
       router.push('/admin')

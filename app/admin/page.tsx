@@ -1,11 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Fragment } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone, BarChart3 } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
-import { CONNECTION_WEIGHTS, TOPIC_WEIGHTS } from '@/lib/simulations'
+import { SimCategory, OverallFeedback, calculateWeightedScore, getWeightsForReport, getScoreColor, getScoreLabel, getCategoryScoreColor, getSimTypeLabel } from '@/lib/sim-scoring'
+import { useAdminRole, clearAdminSession } from '@/lib/admin-role'
+import { DAY_BUCKETS, DAY_BUCKET_LABELS, DayBucket, dayBucket, relativeDateLabel } from '@/lib/dates'
+import ScriptAdherenceCard from '@/components/admin/ScriptAdherenceCard'
 import AccountabilityTab from '@/components/admin/AccountabilityTab'
 import CostsTab from '@/components/admin/CostsTab'
 import ClaudeCreditBanner from '@/components/admin/ClaudeCreditBanner'
@@ -43,22 +46,6 @@ interface User {
   }
 }
 
-interface SimCategory {
-  name: string
-  score: number
-  feedback: string
-  examples: { good: string[]; needsWork: string[] }
-  advice: string
-}
-
-interface OverallFeedback {
-  strengths: string[]
-  weaknesses: string[]
-  missedOpportunities: string[]
-  practiceScenarios: string[]
-  summary: string
-}
-
 interface SimReport {
   id: number
   telegramUsername: string
@@ -81,6 +68,9 @@ interface SimReport {
 function AdminPanelContent() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser' | 'accountability' | 'costs'>('assessments')
+  const role = useAdminRole()
+  const isQa = role === 'qa'
+  const [simDateFilter, setSimDateFilter] = useState<'all' | DayBucket>('all')
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -238,8 +228,7 @@ function AdminPanelContent() {
   }, [expandedReport, expandedSimCategories])
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token')
-    localStorage.removeItem('admin_expiry')
+    clearAdminSession()
     router.push('/admin/auth')
   }
 
@@ -364,98 +353,6 @@ function AdminPanelContent() {
     } finally {
       setReplayLoading(false)
     }
-  }
-
-  const CHATTING_CATEGORY_WEIGHTS: Record<string, number> = {
-    'Giving Him What He Wants to Hear': 25,
-    'Making the Subscriber Feel Special': 20,
-    'Caring About the Subscriber': 15,
-    'Asking the Right Questions': 15,
-    'American Accent & Texting Style': 10,
-    'Grammar & Natural Flow': 10,
-    'Note-Taking & Information Tracking': 5,
-  }
-
-  const SEXTING_CATEGORY_WEIGHTS: Record<string, number> = {
-    'Correct Framework Order': 35,
-    'Language Mirroring': 30,
-    'Tension Building Between PPVs': 25,
-    'Response Speed & Engagement': 10,
-  }
-
-  const AFTERCARE_CATEGORY_WEIGHTS: Record<string, number> = {
-    'Emotional Authenticity & Vulnerability': 25,
-    'Personalization Using His Notes': 22,
-    'Name Usage & Intimacy Anchoring': 18,
-    'Re-engagement Seed Planting': 15,
-    'Texting Style & Casual American Flow': 10,
-    'Pacing & Message Timing': 7,
-    'No Hard-Sell / No Desperation': 3,
-  }
-
-  const COMBINED_CATEGORY_WEIGHTS: Record<string, number> = {
-    'Giving Him What He Wants to Hear': 7,
-    'Making the Subscriber Feel Special': 6,
-    'Caring About the Subscriber': 5,
-    'Asking the Right Questions': 4,
-    'American Texting Style': 4,
-    'Grammar & Natural Flow': 2,
-    'Note-Taking & Information Tracking': 2,
-    'Correct Framework Order': 10,
-    'Language Mirroring': 8,
-    'Tension Building Between PPVs': 7,
-    'Response Speed & Engagement': 3,
-    'Emotional Authenticity & Vulnerability': 7,
-    'Personalization Using His Notes': 5,
-    'Name Usage & Intimacy Anchoring': 4,
-    'Re-engagement Seed Planting': 4,
-    'Pacing & Message Timing': 2,
-    'No Hard-Sell / No Desperation': 2,
-    'Objection Handling': 10,
-    'Stage Transitions': 5,
-    'Cross-Stage Consistency': 3,
-  }
-
-  const getWeightsForReport = (report: SimReport): Record<string, number> => {
-    if (report.simulationType === 'sexting' || report.simulationType === 'sexting-teacher') return SEXTING_CATEGORY_WEIGHTS
-    if (report.simulationType === 'aftercare') return AFTERCARE_CATEGORY_WEIGHTS
-    if (report.simulationType === 'combined') return COMBINED_CATEGORY_WEIGHTS
-    if (report.simulationType === 'connection') return CONNECTION_WEIGHTS
-    if (report.simulationType === 'topic-change') return TOPIC_WEIGHTS
-    return CHATTING_CATEGORY_WEIGHTS
-  }
-
-  const calculateWeightedScore = (categories: SimCategory[], simType?: string): number => {
-    const weights = (simType === 'sexting' || simType === 'sexting-teacher') ? SEXTING_CATEGORY_WEIGHTS : simType === 'aftercare' ? AFTERCARE_CATEGORY_WEIGHTS : simType === 'combined' ? COMBINED_CATEGORY_WEIGHTS : simType === 'connection' ? CONNECTION_WEIGHTS : simType === 'topic-change' ? TOPIC_WEIGHTS : CHATTING_CATEGORY_WEIGHTS
-    let total = 0
-    for (const cat of categories) {
-      const weight = weights[cat.name] || 0
-      total += (cat.score / 10) * weight
-    }
-    return Math.round(total * 10) / 10
-  }
-
-  const getCategoryScoreColor = (score: number): string => {
-    if (score >= 8) return '#10b981'
-    if (score >= 6) return '#f59e0b'
-    if (score >= 4) return '#f97316'
-    return '#ef4444'
-  }
-
-  const getScoreColor = (score: number): string => {
-    if (score >= 85) return '#10b981'
-    if (score >= 70) return '#f59e0b'
-    if (score >= 55) return '#f97316'
-    if (score >= 40) return '#ef4444'
-    return '#dc2626'
-  }
-
-  const getScoreLabel = (score: number): string => {
-    if (score >= 85) return 'Elite'
-    if (score >= 70) return 'Strong'
-    if (score >= 55) return 'Developing'
-    if (score >= 40) return 'Below Average'
-    return 'Needs Immediate Coaching'
   }
 
   interface CategoryDetail {
@@ -615,23 +512,16 @@ function AdminPanelContent() {
     return { chatting: top3Chatting, sexting: top3Sexting, aftercare: top3Aftercare, top3Ids }
   }
 
-  const getSimTypeLabel = (type: string) => {
-    switch (type) {
-      case 'chatting': return 'Relationship Building'
-      case 'sexting': return 'Sexting'
-      case 'aftercare': return 'Aftercare'
-      case 'combined': return 'Full Session'
-      case 'connection': return 'Connection'
-      case 'topic-change': return 'Changing the Topic'
-      default: return type
-    }
-  }
-
   useEffect(() => {
     fetchUsers()
     fetchSimReports()
     fetchPositionStatus()
   }, [fetchPositionStatus])
+
+  // QA accounts only get Simulations + Accountability
+  useEffect(() => {
+    if (isQa && activeTab !== 'simulations' && activeTab !== 'accountability') setActiveTab('simulations')
+  }, [isQa, activeTab])
 
   useEffect(() => {
     if (!autoRefresh) return
@@ -863,6 +753,9 @@ function AdminPanelContent() {
               {(report.overallFeedback as OverallFeedback).summary && (
                 <p className="text-sm leading-relaxed" style={{ color: '#64748b' }}>{(report.overallFeedback as OverallFeedback).summary}</p>
               )}
+              {(report.overallFeedback as OverallFeedback).scriptAdherence && (
+                <ScriptAdherenceCard data={(report.overallFeedback as OverallFeedback).scriptAdherence!} />
+              )}
               {(report.overallFeedback as OverallFeedback).strengths?.length > 0 && (
                 <div>
                   <h5 className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2" style={{ color: '#10b981' }}>
@@ -973,6 +866,16 @@ function AdminPanelContent() {
     )
   }
 
+  const visibleSimReports = simReports
+    .filter(r => simTypeFilter === 'all' || r.simulationType === simTypeFilter)
+    .filter(r => simDateFilter === 'all' || dayBucket(r.completedAt) === simDateFilter)
+    .filter(r =>
+      r.telegramUsername.toLowerCase().includes(simSearch.toLowerCase()) ||
+      r.email.toLowerCase().includes(simSearch.toLowerCase())
+    )
+
+  if (role === null) return null
+
   return (
     <div className="min-h-screen relative">
       <DynamicBackground />
@@ -998,6 +901,7 @@ function AdminPanelContent() {
             </p>
           </div>
 
+          {!isQa && (<>
           {/* Inbound Leads Button */}
           <div className="flex justify-center mb-4">
             <button
@@ -1133,8 +1037,11 @@ function AdminPanelContent() {
             </div>
           </div>
 
+          </>)}
+
           {/* Tab Switcher */}
           <div className="flex flex-wrap gap-1.5 md:gap-2 mb-6 md:mb-8 max-w-4xl mx-auto">
+            {!isQa && (
             <button
               onClick={() => setActiveTab('assessments')}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
@@ -1147,6 +1054,7 @@ function AdminPanelContent() {
               <span className="hidden sm:inline">Assessments</span>
               <span className="sm:hidden">Assess</span>
             </button>
+            )}
             <button
               onClick={() => { setActiveTab('simulations'); if (simReports.length === 0) fetchSimReports() }}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
@@ -1164,6 +1072,7 @@ function AdminPanelContent() {
                 </span>
               )}
             </button>
+            {!isQa && (
             <button
               onClick={() => { setActiveTab('peruser'); if (simReports.length === 0) fetchSimReports() }}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
@@ -1181,6 +1090,7 @@ function AdminPanelContent() {
                 </span>
               )}
             </button>
+            )}
             <button
               onClick={() => setActiveTab('accountability')}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
@@ -1193,6 +1103,7 @@ function AdminPanelContent() {
               <span className="hidden sm:inline">Accountability</span>
               <span className="sm:hidden">Account.</span>
             </button>
+            {!isQa && (
             <button
               onClick={() => setActiveTab('costs')}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
@@ -1205,6 +1116,7 @@ function AdminPanelContent() {
               <span className="hidden sm:inline">API Costs</span>
               <span className="sm:hidden">Costs</span>
             </button>
+            )}
           </div>
 
           {activeTab === 'accountability' && <AccountabilityTab />}
@@ -1476,6 +1388,20 @@ function AdminPanelContent() {
           {/* SIMULATIONS TAB */}
           {activeTab === 'simulations' && (
             <>
+              {/* Date filter: made today / yesterday / this week */}
+              <div className="flex flex-wrap gap-2 mb-3 max-w-4xl mx-auto justify-center">
+                {(['all', ...DAY_BUCKETS] as const).map((key) => {
+                  const count = key === 'all' ? simReports.length : simReports.filter(r => dayBucket(r.completedAt) === key).length
+                  return (
+                    <button key={key} onClick={() => setSimDateFilter(key)}
+                      className={`py-1.5 px-3.5 rounded-full font-semibold text-sm transition-all flex items-center gap-1.5 ${simDateFilter === key ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'}`}>
+                      <span>{key === 'all' ? 'All dates' : DAY_BUCKET_LABELS[key]}</span>
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${simDateFilter === key ? 'bg-white/25' : 'bg-gray-100 text-gray-500'}`}>{count}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
               {/* Sim Type Filter */}
               <div className="flex flex-wrap gap-2 mb-6 max-w-4xl mx-auto justify-center">
                 {([['all', 'All', null], ['chatting', 'Chatting', MessageCircle], ['sexting', 'Sexting', Flame], ['aftercare', 'Aftercare', Zap], ['combined', 'Full Session', Sparkles], ['connection', 'Connection', MessageCircle], ['topic-change', 'Topic', MessageCircle], ['sexting-teacher', 'Sexting Teacher', GraduationCap], ['chat-teacher', 'Chat Teacher', GraduationCap], ['aftercare-teacher', 'AC Teacher', GraduationCap]] as const).map(([key, label, Icon]) => {
@@ -1577,12 +1503,7 @@ function AdminPanelContent() {
                   <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                   <p style={{ color: 'var(--text-secondary-on-white)' }}>Loading simulation reports...</p>
                 </div>
-              ) : simReports
-                .filter(r => simTypeFilter === 'all' || r.simulationType === simTypeFilter)
-                .filter(r =>
-                  r.telegramUsername.toLowerCase().includes(simSearch.toLowerCase()) ||
-                  r.email.toLowerCase().includes(simSearch.toLowerCase())
-                ).length === 0 ? (
+              ) : visibleSimReports.length === 0 ? (
                 <div className="card glass-card text-center py-12">
                   <p className="text-xl" style={{ color: 'var(--text-secondary-on-white)' }}>
                     No {simTypeFilter !== 'all' ? simTypeFilter + ' ' : ''}simulation reports found
@@ -1590,20 +1511,23 @@ function AdminPanelContent() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {simReports
-                    .filter(r => simTypeFilter === 'all' || r.simulationType === simTypeFilter)
-                    .filter(r =>
-                      r.telegramUsername.toLowerCase().includes(simSearch.toLowerCase()) ||
-                      r.email.toLowerCase().includes(simSearch.toLowerCase())
-                    )
-                    .map((report, index) => {
+                  {visibleSimReports.map((report, index) => {
                       const isExpanded = expandedReport === report.id
+                      const bucket = dayBucket(report.completedAt)
+                      const showDayHeader = simDateFilter === 'all' && (index === 0 || dayBucket(visibleSimReports[index - 1].completedAt) !== bucket)
                       const weightedScore = calculateWeightedScore(report.categories, report.simulationType)
                       const reportWeights = getWeightsForReport(report)
 
                       return (
+                        <Fragment key={report.id}>
+                        {showDayHeader && (
+                          <h3 className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-gray-500 pt-2">
+                            <span className={`w-2.5 h-2.5 rounded-full ${bucket === 'today' ? 'bg-green-500' : bucket === 'yesterday' ? 'bg-amber-500' : 'bg-gray-400'}`} />
+                            {DAY_BUCKET_LABELS[bucket]}
+                            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500">{visibleSimReports.filter(r => dayBucket(r.completedAt) === bucket).length}</span>
+                          </h3>
+                        )}
                         <motion.div
-                          key={report.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: index * 0.03 }}
@@ -1647,8 +1571,8 @@ function AdminPanelContent() {
                                   )}
                                 </div>
                                 <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted-on-white)' }}>
-                                  <span className="hidden sm:inline">{new Date(report.completedAt).toLocaleString()}</span>
-                                  <span className="sm:hidden">{new Date(report.completedAt).toLocaleDateString()}</span>
+                                  <span className="hidden sm:inline">{relativeDateLabel(report.completedAt)}</span>
+                                  <span className="sm:hidden">{relativeDateLabel(report.completedAt, true)}</span>
                                 </p>
                               </div>
                             </div>
@@ -1661,6 +1585,13 @@ function AdminPanelContent() {
                                   {getScoreLabel(weightedScore)}
                                 </div>
                               </div>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); router.push(`/admin/user/${encodeURIComponent(report.telegramUsername.replace(/^@/, ''))}`) }}
+                                className="p-2 rounded-lg hover:bg-violet-50 transition-colors group flex-shrink-0"
+                                title="User analytics: progress over time"
+                              >
+                                <BarChart3 className="w-4 h-4 text-gray-400 group-hover:text-violet-600 transition-colors" />
+                              </button>
                               {report.hasRecording && (
                                 <button
                                   onClick={(e) => { e.stopPropagation(); openReplay(report) }}
@@ -1682,6 +1613,7 @@ function AdminPanelContent() {
                                   <Download className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
                                 )}
                               </button>
+                              {!isQa && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); deleteSimReport(report.id) }}
                                 className="p-2 rounded-lg hover:bg-red-50 transition-colors group flex-shrink-0"
@@ -1689,6 +1621,7 @@ function AdminPanelContent() {
                               >
                                 <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
                               </button>
+                              )}
                               {isExpanded ? (
                                 <ChevronUp className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
                               ) : (
@@ -1909,6 +1842,9 @@ function AdminPanelContent() {
                                         {(report.overallFeedback as OverallFeedback).summary}
                                       </p>
                                     )}
+                                    {(report.overallFeedback as OverallFeedback).scriptAdherence && (
+                                      <ScriptAdherenceCard data={(report.overallFeedback as OverallFeedback).scriptAdherence!} />
+                                    )}
 
                                     {(report.overallFeedback as OverallFeedback).strengths?.length > 0 && (
                                       <div>
@@ -2058,6 +1994,7 @@ function AdminPanelContent() {
                             </div>
                           )}
                         </motion.div>
+                        </Fragment>
                       )
                     })}
                 </div>
@@ -2252,6 +2189,13 @@ function AdminPanelContent() {
                               </div>
                             </div>
                             <div className="flex items-center gap-3 mt-3 md:mt-0">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); router.push(`/admin/user/${encodeURIComponent(mu.telegramUsername.replace(/^@/, ''))}`) }}
+                                className="px-3 py-2 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 text-xs font-bold inline-flex items-center gap-1.5 flex-shrink-0"
+                                title="User analytics: progress over time"
+                              >
+                                <BarChart3 className="w-4 h-4" /> Analytics
+                              </button>
                               {avgScore !== null && (
                                 <div className="text-right hidden md:block">
                                   <div className="text-2xl font-black" style={{ color: getScoreColor(avgScore) }}>
@@ -2704,8 +2648,8 @@ function AdminPanelContent() {
                                                   )}
                                                 </div>
                                                 <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted-on-white)' }}>
-                                                  <span className="hidden sm:inline">{new Date(report.completedAt).toLocaleString()}</span>
-                                                  <span className="sm:hidden">{new Date(report.completedAt).toLocaleDateString()}</span>
+                                                  <span className="hidden sm:inline">{relativeDateLabel(report.completedAt)}</span>
+                                                  <span className="sm:hidden">{relativeDateLabel(report.completedAt, true)}</span>
                                                 </p>
                                               </div>
                                             </div>
@@ -2714,6 +2658,13 @@ function AdminPanelContent() {
                                                 <div className="text-xl font-black" style={{ color: getScoreColor(weightedScore) }}>{weightedScore}/100</div>
                                                 <div className="text-xs font-semibold" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</div>
                                               </div>
+                                              <button
+                                                onClick={(e) => { e.stopPropagation(); router.push(`/admin/user/${encodeURIComponent(report.telegramUsername.replace(/^@/, ''))}`) }}
+                                                className="p-2 rounded-lg hover:bg-violet-50 transition-colors group flex-shrink-0"
+                                                title="User analytics: progress over time"
+                                              >
+                                                <BarChart3 className="w-4 h-4 text-gray-400 group-hover:text-violet-600 transition-colors" />
+                                              </button>
                                               {report.hasRecording && (
                                                 <button
                                                   onClick={(e) => { e.stopPropagation(); openReplay(report) }}
@@ -2735,6 +2686,7 @@ function AdminPanelContent() {
                                                   <Download className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
                                                 )}
                                               </button>
+                                              {!isQa && (
                                               <button
                                                 onClick={(e) => { e.stopPropagation(); deleteSimReport(report.id) }}
                                                 className="p-1.5 md:p-2 rounded-lg hover:bg-red-50 transition-colors group flex-shrink-0 hidden sm:block"
@@ -2742,6 +2694,7 @@ function AdminPanelContent() {
                                               >
                                                 <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
                                               </button>
+                                              )}
                                               {isReportOpen ? (
                                                 <ChevronUp className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" style={{ color: 'var(--text-muted-on-white)' }} />
                                               ) : (

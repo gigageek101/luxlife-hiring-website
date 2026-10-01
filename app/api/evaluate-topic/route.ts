@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { JSON_RESPONSE_RULES, gradeConversation, transcript } from '@/lib/grading'
+import { JSON_RESPONSE_RULES, SCRIPT_ADHERENCE_RULES, gradeConversation, transcript } from '@/lib/grading'
 import { TOPIC_WEIGHTS } from '@/lib/simulations'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +16,7 @@ Guide examples: "Why are you always online?" -> "I fell asleep with my phone in 
 Categories (grade each 1-10, in this order):
 ${Object.keys(TOPIC_WEIGHTS).map((name, i) => `${i + 1}. "${name}"`).join('\n')}
 
-${JSON_RESPONSE_RULES} Additionally add to "overallFeedback" an array "objectionsHandled": one object per objection the subscriber raised with "objection" (his exact words), "handled" ("good", "weak" or "missed") and "note" (one sentence: what she did and, if weak or missed, the better answer).`
+${JSON_RESPONSE_RULES}${SCRIPT_ADHERENCE_RULES} Additionally add to "overallFeedback" an array "objectionsHandled": one object per objection the subscriber raised with "objection" (his exact words), "handled" ("good", "weak" or "missed") and "note" (one sentence: what she did and, if weak or missed, the better answer).`
 
 export async function POST(request: NextRequest) {
   try {

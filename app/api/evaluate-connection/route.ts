@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getConnectionProfile } from '@/lib/connection-profiles'
-import { JSON_RESPONSE_RULES, gradeConversation, transcript } from '@/lib/grading'
+import { JSON_RESPONSE_RULES, SCRIPT_ADHERENCE_RULES, gradeConversation, transcript } from '@/lib/grading'
 import { CONNECTION_WEIGHTS } from '@/lib/simulations'
 
 export const dynamic = 'force-dynamic'
@@ -18,7 +18,7 @@ Categories (grade each 1-10, in this order):
 ${Object.keys(CONNECTION_WEIGHTS).map((name, i) => `${i + 1}. "${name}"`).join('\n')}
 "What You Learned About Him" compares her notes and her mirrors with his HIDDEN STORY and VALUES (given below). Score high only if she actually uncovered what matters to him.
 
-${JSON_RESPONSE_RULES}`
+${JSON_RESPONSE_RULES}${SCRIPT_ADHERENCE_RULES}`
 
 export async function POST(request: NextRequest) {
   try {
