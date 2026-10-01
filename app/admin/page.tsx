@@ -6,7 +6,8 @@ import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageC
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { SimCategory, OverallFeedback, calculateWeightedScore, getWeightsForReport, getScoreColor, getScoreLabel, getCategoryScoreColor, getSimTypeLabel } from '@/lib/sim-scoring'
-import { useAdminRole, clearAdminSession } from '@/lib/admin-role'
+import { useAdminRole, clearAdminSession, QA_TABS } from '@/lib/admin-role'
+import AnalyticsTab from '@/components/admin/AnalyticsTab'
 import { DAY_BUCKETS, DAY_BUCKET_LABELS, DayBucket, dayBucket, relativeDateLabel } from '@/lib/dates'
 import ScriptAdherenceCard from '@/components/admin/ScriptAdherenceCard'
 import AccountabilityTab from '@/components/admin/AccountabilityTab'
@@ -67,7 +68,8 @@ interface SimReport {
 
 function AdminPanelContent() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser' | 'accountability' | 'costs'>('assessments')
+  const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser' | 'accountability' | 'costs' | 'analytics'>('assessments')
+  const [analyticsUser, setAnalyticsUser] = useState<string | null>(null)
   const role = useAdminRole()
   const isQa = role === 'qa'
   const [simDateFilter, setSimDateFilter] = useState<'all' | DayBucket>('all')
@@ -520,7 +522,7 @@ function AdminPanelContent() {
 
   // QA accounts only get Simulations + Accountability
   useEffect(() => {
-    if (isQa && activeTab !== 'simulations' && activeTab !== 'accountability') setActiveTab('simulations')
+    if (isQa && !(QA_TABS as readonly string[]).includes(activeTab)) setActiveTab('simulations')
   }, [isQa, activeTab])
 
   useEffect(() => {
@@ -866,6 +868,12 @@ function AdminPanelContent() {
     )
   }
 
+  const openUserAnalytics = (name: string) => {
+    setAnalyticsUser(name.replace(/^@/, ''))
+    setActiveTab('analytics')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const visibleSimReports = simReports
     .filter(r => simTypeFilter === 'all' || r.simulationType === simTypeFilter)
     .filter(r => simDateFilter === 'all' || dayBucket(r.completedAt) === simDateFilter)
@@ -1103,6 +1111,18 @@ function AdminPanelContent() {
               <span className="hidden sm:inline">Accountability</span>
               <span className="sm:hidden">Account.</span>
             </button>
+            <button
+              onClick={() => { setActiveTab('analytics'); if (simReports.length === 0) fetchSimReports() }}
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
+                activeTab === 'analytics'
+                  ? 'bg-gradient-to-r from-violet-500 to-violet-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
+            </button>
             {!isQa && (
             <button
               onClick={() => setActiveTab('costs')}
@@ -1120,6 +1140,7 @@ function AdminPanelContent() {
           </div>
 
           {activeTab === 'accountability' && <AccountabilityTab />}
+          {activeTab === 'analytics' && <AnalyticsTab reports={simReports} users={users} selectedUser={analyticsUser} onSelectUser={setAnalyticsUser} />}
           {activeTab === 'costs' && <CostsTab />}
 
           {/* ASSESSMENTS TAB */}
@@ -1586,7 +1607,7 @@ function AdminPanelContent() {
                                 </div>
                               </div>
                               <button
-                                onClick={(e) => { e.stopPropagation(); router.push(`/admin/user/${encodeURIComponent(report.telegramUsername.replace(/^@/, ''))}`) }}
+                                onClick={(e) => { e.stopPropagation(); openUserAnalytics(report.telegramUsername) }}
                                 className="p-2 rounded-lg hover:bg-violet-50 transition-colors group flex-shrink-0"
                                 title="User analytics: progress over time"
                               >
@@ -2190,7 +2211,7 @@ function AdminPanelContent() {
                             </div>
                             <div className="flex items-center gap-3 mt-3 md:mt-0">
                               <button
-                                onClick={(e) => { e.stopPropagation(); router.push(`/admin/user/${encodeURIComponent(mu.telegramUsername.replace(/^@/, ''))}`) }}
+                                onClick={(e) => { e.stopPropagation(); openUserAnalytics(mu.telegramUsername) }}
                                 className="px-3 py-2 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 text-xs font-bold inline-flex items-center gap-1.5 flex-shrink-0"
                                 title="User analytics: progress over time"
                               >
@@ -2659,7 +2680,7 @@ function AdminPanelContent() {
                                                 <div className="text-xs font-semibold" style={{ color: getScoreColor(weightedScore) }}>{getScoreLabel(weightedScore)}</div>
                                               </div>
                                               <button
-                                                onClick={(e) => { e.stopPropagation(); router.push(`/admin/user/${encodeURIComponent(report.telegramUsername.replace(/^@/, ''))}`) }}
+                                                onClick={(e) => { e.stopPropagation(); openUserAnalytics(report.telegramUsername) }}
                                                 className="p-2 rounded-lg hover:bg-violet-50 transition-colors group flex-shrink-0"
                                                 title="User analytics: progress over time"
                                               >

@@ -1,11 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, RefreshCw, TrendingUp, TrendingDown, Minus, Sparkles, AlertTriangle, BookOpenCheck, Keyboard, ClipboardPaste, Zap } from 'lucide-react'
-import DynamicBackground from '@/components/DynamicBackground'
+import { RefreshCw, TrendingUp, TrendingDown, Minus, Sparkles, AlertTriangle, BookOpenCheck, Keyboard, ClipboardPaste, Zap } from 'lucide-react'
 import ScoreTrendChart from '@/components/admin/ScoreTrendChart'
 import ScriptAdherenceCard from '@/components/admin/ScriptAdherenceCard'
+import IssuesTimeline from '@/components/admin/IssuesTimeline'
 import { getCategoryScoreColor, getScoreColor, getScoreLabel, getSimTypeLabel, parseFeedback } from '@/lib/sim-scoring'
 import { AnalyticsReport, CategoryTrend, Direction, TypeAnalysis, analyzeType, typesWithData } from '@/lib/user-analytics'
 import { relativeDateLabel } from '@/lib/dates'
@@ -122,9 +121,8 @@ function AdherenceSection({ analysis }: { analysis: TypeAnalysis }) {
   )
 }
 
-/** The whole per-user analytics view. Same look as the admin panel. */
-export default function UserAnalytics({ username }: { username: string }) {
-  const router = useRouter()
+/** Per-user analytics cards. Used inside the admin Analytics tab and on /admin/user/<name>. */
+export default function UserAnalyticsView({ username }: { username: string }) {
   const [data, setData] = useState<Payload | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [type, setType] = useState<string | null>(null)
@@ -157,12 +155,7 @@ export default function UserAnalytics({ username }: { username: string }) {
   }, [data, types])
 
   return (
-    <div className="min-h-screen relative">
-      <DynamicBackground />
-      <section className="section pt-24 md:pt-32 px-3 md:px-6 relative z-10">
-        <div className="container max-w-6xl">
-          <button onClick={() => router.push('/admin')} className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 mb-4"><ArrowLeft className="w-4 h-4" /> Back to admin</button>
-
+    <div>
           {error && <div className="card glass-card text-red-600 font-semibold">Could not load analytics: {error}</div>}
           {!data && !error && <div className="card glass-card text-gray-500">Loading analytics…</div>}
 
@@ -224,6 +217,11 @@ export default function UserAnalytics({ username }: { username: string }) {
                         {analysis.categories.map((cat) => <CategoryRow key={cat.name} cat={cat} />)}
                       </div>
 
+                      <div className="card glass-card mb-6">
+                        <h2 className="text-xl font-bold mb-1">Common issues over time</h2>
+                        <IssuesTimeline reports={data.reports.filter((r) => r.simulationType === activeType)} />
+                      </div>
+
                       <div className="grid md:grid-cols-2 gap-6 mb-6">
                         <WeaknessCard analysis={analysis} />
                         <AdherenceSection analysis={analysis} />
@@ -255,8 +253,6 @@ export default function UserAnalytics({ username }: { username: string }) {
               )}
             </>
           )}
-        </div>
-      </section>
     </div>
   )
 }

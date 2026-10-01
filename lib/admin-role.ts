@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 // Role of the person logged into /admin. 'qa' sees Simulations + Accountability + user analytics only.
 export type AdminRole = 'admin' | 'qa'
 
-export const QA_TABS = ['simulations', 'accountability'] as const
+export const QA_TABS = ['simulations', 'accountability', 'analytics'] as const
 
 export function getAdminRole(): AdminRole {
   try {
