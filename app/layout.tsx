@@ -4,6 +4,8 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import Script from 'next/script'
+import { Suspense } from 'react'
+import QaActivityTracker from '@/components/QaActivityTracker'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -89,6 +91,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="antialiased">
+        <Suspense fallback={null}>
+          <QaActivityTracker />
+        </Suspense>
         <Navbar />
         <main>{children}</main>
         <Footer />

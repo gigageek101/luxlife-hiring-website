@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { clearAdminSession } from '@/lib/admin-role'
 
 export default function AdminWrapper({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -28,8 +29,20 @@ export default function AdminWrapper({ children }: { children: React.ReactNode }
       return
     }
 
-    setIsAuthenticated(true)
-    setIsChecking(false)
+    // Server check: the token must carry a valid signature; the role it carries wins over localStorage.
+    fetch('/api/admin/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({ ok: false }))
+        if (!res.ok || !data.ok || data.platform !== 'admin') {
+          clearAdminSession('admin')
+          router.push('/admin/auth')
+          return
+        }
+        localStorage.setItem('admin_role', data.role === 'qa' ? 'qa' : 'admin')
+        setIsAuthenticated(true)
+      })
+      .catch(() => setIsAuthenticated(true))
+      .finally(() => setIsChecking(false))
   }, [router])
 
   if (isChecking) {

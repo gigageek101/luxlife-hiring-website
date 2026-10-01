@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Users, ChevronDown, ChevronUp, Trash2, RefreshCw, LogOut, Megaphone, CheckCircle, XCircle, Search } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import MarketingAdminWrapper from './admin-wrapper'
+import { useAdminRole, clearAdminSession } from '@/lib/admin-role'
 import { useRouter } from 'next/navigation'
 
 interface AssessmentAttempt {
@@ -31,6 +32,8 @@ interface MarketingUser {
 
 function MarketingAdminContent() {
   const router = useRouter()
+  const role = useAdminRole('marketing')
+  const isQa = role === 'qa'
   const [users, setUsers] = useState<MarketingUser[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedUser, setExpandedUser] = useState<number | null>(null)
@@ -76,8 +79,7 @@ function MarketingAdminContent() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_marketing_token')
-    localStorage.removeItem('admin_marketing_expiry')
+    clearAdminSession('marketing')
     router.push('/adminmarketing/auth')
   }
 
@@ -118,6 +120,7 @@ function MarketingAdminContent() {
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold">Marketing Admin</h1>
+                {isQa && <span className="text-xs font-bold px-2 py-1 rounded-full bg-violet-100 text-violet-800">QA · read-only</span>}
                 <p className="text-sm" style={{ color: 'var(--text-secondary-on-white)' }}>
                   {users.length} registered users
                 </p>
@@ -500,7 +503,8 @@ function MarketingAdminContent() {
 
                             {/* Delete User */}
                             <div className="pt-4 border-t border-gray-100">
-                              <button
+                              {!isQa && (
+<button
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   handleDeleteUser(user.id)
@@ -511,6 +515,7 @@ function MarketingAdminContent() {
                                 <Trash2 className="w-4 h-4" />
                                 {deletingUser === user.id ? 'Deleting...' : 'Delete User & All Data'}
                               </button>
+)}
                             </div>
                           </div>
                         </motion.div>

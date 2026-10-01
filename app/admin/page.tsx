@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback, Fragment } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone, BarChart3 } from 'lucide-react'
+import { Users, CheckCircle, XCircle, Clock, RefreshCw, Trash2, LogOut, MessageCircle, ChevronDown, ChevronUp, StickyNote, Sparkles, Keyboard, ClipboardPaste, AlertTriangle, Download, Loader2, Flame, Zap, Play, Pause, X, Video, GraduationCap, RotateCcw, Lock, Unlock, Briefcase, Megaphone, BarChart3, Eye } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import AdminWrapper from './admin-wrapper'
 import { SimCategory, OverallFeedback, calculateWeightedScore, getWeightsForReport, getScoreColor, getScoreLabel, getCategoryScoreColor, getSimTypeLabel } from '@/lib/sim-scoring'
 import { useAdminRole, clearAdminSession, QA_TABS } from '@/lib/admin-role'
 import AnalyticsTab from '@/components/admin/AnalyticsTab'
+import QaTrackingTab from '@/components/admin/QaTrackingTab'
 import { DAY_BUCKETS, DAY_BUCKET_LABELS, DayBucket, dayBucket, relativeDateLabel } from '@/lib/dates'
 import ScriptAdherenceCard from '@/components/admin/ScriptAdherenceCard'
 import AccountabilityTab from '@/components/admin/AccountabilityTab'
@@ -68,7 +69,7 @@ interface SimReport {
 
 function AdminPanelContent() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser' | 'accountability' | 'costs' | 'analytics'>('assessments')
+  const [activeTab, setActiveTab] = useState<'assessments' | 'simulations' | 'peruser' | 'accountability' | 'costs' | 'analytics' | 'qatracking'>('assessments')
   const [analyticsUser, setAnalyticsUser] = useState<string | null>(null)
   const role = useAdminRole()
   const isQa = role === 'qa'
@@ -1125,6 +1126,20 @@ function AdminPanelContent() {
             </button>
             {!isQa && (
             <button
+              onClick={() => setActiveTab('qatracking')}
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
+                activeTab === 'qatracking'
+                  ? 'bg-gradient-to-r from-gray-700 to-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <Eye className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline">QA Tracking</span>
+              <span className="sm:hidden">QA</span>
+            </button>
+            )}
+            {!isQa && (
+            <button
               onClick={() => setActiveTab('costs')}
               className={`flex-1 py-2.5 md:py-3 px-2 md:px-4 rounded-lg font-semibold text-xs md:text-base transition-all flex items-center justify-center gap-1 md:gap-2 ${
                 activeTab === 'costs'
@@ -1140,6 +1155,7 @@ function AdminPanelContent() {
           </div>
 
           {activeTab === 'accountability' && <AccountabilityTab />}
+          {activeTab === 'qatracking' && !isQa && <QaTrackingTab />}
           {activeTab === 'analytics' && <AnalyticsTab reports={simReports} users={users} selectedUser={analyticsUser} onSelectUser={setAnalyticsUser} />}
           {activeTab === 'costs' && <CostsTab />}
 

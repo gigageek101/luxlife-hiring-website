@@ -55,6 +55,24 @@ export function ensureTrackingTables(): Promise<void> {
           value TEXT,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`
+      await sql`
+        CREATE TABLE IF NOT EXISTS qa_activity (
+          id SERIAL PRIMARY KEY,
+          session_id VARCHAR(64) NOT NULL,
+          qa_email VARCHAR(255) NOT NULL,
+          platform VARCHAR(20) NOT NULL DEFAULT 'admin',
+          event_type VARCHAR(40) NOT NULL,
+          label TEXT,
+          path VARCHAR(500),
+          detail JSONB,
+          duration_ms INTEGER,
+          client_ts TIMESTAMPTZ NOT NULL,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          user_agent TEXT,
+          ip VARCHAR(64)
+        )`
+      await sql`CREATE INDEX IF NOT EXISTS idx_qa_activity_email_ts ON qa_activity(qa_email, client_ts)`
+      await sql`CREATE INDEX IF NOT EXISTS idx_qa_activity_session ON qa_activity(session_id)`
     })().catch((error) => {
       ensured = null
       throw error
@@ -98,4 +116,30 @@ export async function logClaudeUsage(row: ClaudeUsageRow): Promise<void> {
   await sql`
     INSERT INTO claude_usage (route, model, input_tokens, output_tokens, cache_read_tokens, cost_usd, status, detail)
     VALUES (${row.route}, ${row.model}, ${row.inputTokens}, ${row.outputTokens}, ${row.cacheReadTokens}, ${row.costUsd}, ${row.status}, ${row.detail})`
+}
+
+export interface QaActivityRow {
+  sessionId: string
+  email: string
+  platform: string
+  type: string
+  label: string | null
+  path: string | null
+  detail: string | null
+  durationMs: number | null
+  clientTs: string
+  userAgent: string | null
+  ip: string | null
+}
+
+/** Inserts a batch of QA tracker events (chunks of 20 in parallel). */
+export async function logQaEvents(rows: QaActivityRow[]): Promise<void> {
+  const sql = getSql()
+  if (!sql || rows.length === 0) return
+  await ensureTrackingTables()
+  for (let i = 0; i < rows.length; i += 20) {
+    await Promise.all(rows.slice(i, i + 20).map((r) => sql`
+      INSERT INTO qa_activity (session_id, qa_email, platform, event_type, label, path, detail, duration_ms, client_ts, user_agent, ip)
+      VALUES (${r.sessionId}, ${r.email}, ${r.platform}, ${r.type}, ${r.label}, ${r.path}, ${r.detail}::jsonb, ${r.durationMs}, ${r.clientTs}, ${r.userAgent}, ${r.ip})`))
+  }
 }

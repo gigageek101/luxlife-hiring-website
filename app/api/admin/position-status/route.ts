@@ -1,34 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, initDatabase } from '@/lib/db'
+import { adminFromRequest, isSuperAdmin } from '@/lib/admin-auth'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const ADMIN_EMAIL = 'luxlife.agentur@gmail.com'
-
-function isValidAdminToken(token: string | null): boolean {
-  if (!token) return false
-  try {
-    const decoded = Buffer.from(token, 'base64').toString('utf-8')
-    const [email, tsStr] = decoded.split(':')
-    if (email !== ADMIN_EMAIL) return false
-    const ts = parseInt(tsStr, 10)
-    if (!Number.isFinite(ts)) return false
-    // Tokens are valid for 30 days from creation
-    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000
-    if (Date.now() - ts > THIRTY_DAYS) return false
-    return true
-  } catch {
-    return false
-  }
-}
-
-function getBearerToken(req: NextRequest): string | null {
-  const auth = req.headers.get('authorization') || req.headers.get('Authorization')
-  if (!auth) return null
-  const match = auth.match(/^Bearer\s+(.+)$/i)
-  return match ? match[1].trim() : null
-}
+const isValidAdminToken = (request: NextRequest) => isSuperAdmin(adminFromRequest(request))
 
 type PositionRow = { position_type: string; is_open: boolean }
 
@@ -45,7 +22,7 @@ async function fetchStatus() {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isValidAdminToken(getBearerToken(request))) {
+  if (!isValidAdminToken(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   try {
@@ -62,7 +39,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isValidAdminToken(getBearerToken(request))) {
+  if (!isValidAdminToken(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   try {

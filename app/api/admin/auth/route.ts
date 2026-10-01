@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ADMIN_EMAIL, signAdminToken } from '@/lib/admin-auth'
 import { findQaAccount } from '@/lib/qa-access'
 
 // Disable caching
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const ADMIN_EMAIL = 'luxlife.agentur@gmail.com'
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Fym2022$$'
 
-// Token = base64("email:timestamp:role"). /api/admin/position-status reads email + timestamp and only accepts the admin email.
-function makeToken(email: string, role: 'admin' | 'qa') {
-  return Buffer.from(`${email}:${Date.now()}:${role}`).toString('base64')
-}
-
+/** Super-admin or QA login for /admin. Returns a signed token that carries the role. */
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json()
@@ -21,11 +17,11 @@ export async function POST(request: NextRequest) {
     }
     const mail = String(email).trim().toLowerCase()
     if (mail === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      return NextResponse.json({ success: true, role: 'admin', token: makeToken(ADMIN_EMAIL, 'admin') })
+      return NextResponse.json({ success: true, role: 'admin', token: signAdminToken({ email: ADMIN_EMAIL, role: 'admin', platform: 'admin' }) })
     }
     const qa = findQaAccount(mail, String(password))
     if (qa) {
-      return NextResponse.json({ success: true, role: 'qa', token: makeToken(qa.email, 'qa') })
+      return NextResponse.json({ success: true, role: 'qa', token: signAdminToken({ email: qa.email, role: 'qa', platform: 'admin' }) })
     }
     return NextResponse.json({ error: 'Invalid admin credentials' }, { status: 401 })
   } catch (error) {

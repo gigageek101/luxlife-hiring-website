@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ADMIN_EMAIL, signAdminToken } from '@/lib/admin-auth'
+import { findQaAccount } from '@/lib/qa-access'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const ADMIN_EMAIL = 'luxlife.agentur@gmail.com'
 const ADMIN_PASSWORD = 'Fym2022$$'
 
 export async function POST(request: NextRequest) {
@@ -17,19 +18,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      const token = Buffer.from(`${ADMIN_EMAIL}:marketing:${Date.now()}`).toString('base64')
-
-      return NextResponse.json({
-        success: true,
-        token
-      })
-    } else {
-      return NextResponse.json(
-        { error: 'Invalid admin credentials' },
-        { status: 401 }
-      )
+    const mail = String(email).trim().toLowerCase()
+    if (mail === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      return NextResponse.json({ success: true, role: 'admin', token: signAdminToken({ email: ADMIN_EMAIL, role: 'admin', platform: 'marketing' }) })
     }
+    const qa = findQaAccount(mail, String(password))
+    if (qa) {
+      return NextResponse.json({ success: true, role: 'qa', token: signAdminToken({ email: qa.email, role: 'qa', platform: 'marketing' }) })
+    }
+    return NextResponse.json({ error: 'Invalid admin credentials' }, { status: 401 })
   } catch (error) {
     console.error('Marketing admin auth error:', error)
     return NextResponse.json(

@@ -39,6 +39,7 @@ export default function MarketingAdminAuth() {
       
       localStorage.setItem('admin_marketing_token', data.token)
       localStorage.setItem('admin_marketing_expiry', expiryTime.toString())
+      localStorage.setItem('admin_marketing_role', data.role === 'qa' ? 'qa' : 'admin')
 
       router.push('/adminmarketing')
     } catch (err) {
