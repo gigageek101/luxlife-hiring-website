@@ -15,11 +15,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const handle = String(telegramUsername).trim().replace(/^@+/, '').toLowerCase()
+    const mail = String(email).trim().toLowerCase()
     const result = await sql`
       SELECT id, telegram_username, email
-      FROM users 
-      WHERE telegram_username = ${telegramUsername} 
-      AND email = ${email}
+      FROM users
+      WHERE LOWER(LTRIM(TRIM(telegram_username), '@')) = ${handle}
+      AND LOWER(TRIM(email)) = ${mail}
     `
 
     if (result.length === 0) {
